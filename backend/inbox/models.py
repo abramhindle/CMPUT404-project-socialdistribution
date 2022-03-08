@@ -14,8 +14,7 @@ class InboxItem(models.Model):
     published = models.DateTimeField(default=now, editable=False)
 
     def get_post(self):
-        queryset = Post.objects.filter(id=self.src)
-        if len(queryset) > 0:
-            return PostSerializer(queryset[0]).data
-        res = requests.get(self.src)
-        return res.json()
+        with requests.get(self.src) as res:
+            if res.status_code == 404:
+                self.delete()
+            return res.json()

@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { editPost } from '../../../services/posts';
+import { editPost } from '../../../Services/posts';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -37,7 +37,7 @@ export default function EditPostDialog({post, alertSuccess, alertError, open, on
 
     /* Validate Fields */
     const listValidator = new RegExp("^\\w+[,]?")
-    const fieldValidator = new RegExp("^\\w+")
+    const fieldValidator = new RegExp("^\\S+")
     const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && fieldValidator.test(data.content) && listValidator.test(formData.get("categories"));
 
     /* Send Data To backend */

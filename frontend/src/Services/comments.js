@@ -42,8 +42,8 @@ import { post, get, put, del } from "./requests";
 //     return get(authorID + "inbox/");
 // }
 
-export function createComments(postData, userID, commentData){
-    return post("authors/"+userID + "/posts/", postData, "/comments/", commentData);
+export function createComments(postData, commentData){
+    return post(postData.id + "comments/", commentData);
 }
 
 export function editComments(cmID, userID, postData, commentData){
@@ -55,7 +55,8 @@ export function deleteComments(cmID, userID, postData){
 }
 
 export function getComments(postID){
-    const url = postID + "comments"
+    const url = postID + "comments/"
+    console.log(url);
     return get(url);
 }
 

@@ -1,4 +1,3 @@
-import requests
 from .models import InboxItem
 from posts.models import Post
 from posts.serializers import PostSerializer
@@ -14,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.conf import settings
 
 
 class IsInboxOwnerOrAdmin(IsOwnerOrAdmin):
@@ -27,17 +27,8 @@ class IsInboxOwnerOrAdmin(IsOwnerOrAdmin):
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'size'
 
-    @staticmethod
-    def get_post(post):
-        queryset = Post.objects.filter(id=post["src"])
-        if len(queryset) > 0:
-            return PostSerializer(queryset[0]).data
-        res = requests.get(post["src"])
-        return res.json()
-
     def get_paginated_response(self, data, **kwargs):
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            return Response({'type': "inbox", 'author': kwargs["author"], 'items': data})
+        return Response({'type': "inbox", 'author': kwargs["author"], 'items': data})
 
 
 class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin):
@@ -56,12 +47,18 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
         for q in queryset:
             self.check_object_permissions(request, q)
 
-        # Fetch Posts
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            future = executor.map(lambda x: x.get_post(), queryset)
-        posts = [p for p in future if "type" in p]
+        # Fetch Local Posts
+        local_posts_src = [item.src for item in queryset if item.src.split("/authors/")[0] == settings.DOMAIN]
+        local_posts = [PostSerializer(p).data for p in Post.objects.filter(id__in=local_posts_src)]
+
+        # Fetch Foreign Posts
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.map(lambda x: x.get_post(), [item for item in queryset if item.src.split("/authors/")[0] != settings.DOMAIN])
+        foreign_posts = [p for p in future if "type" in p]
 
         # Paginate Response
+        posts = local_posts + foreign_posts
+        posts.sort(key=lambda x: x["published"], reverse=True)
         page = self.paginator.paginate_queryset(posts, request)
 
         # Return Response

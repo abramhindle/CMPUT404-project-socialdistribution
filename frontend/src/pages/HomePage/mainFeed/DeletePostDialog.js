@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { deletePost } from '../../../services/posts';
+import { deletePost } from '../../../Services/posts';
 
 export default function DeletePostDialog({post, alertSuccess, alertError, open, handleClose, removeFromFeed}) {
   const onDelete = () => {

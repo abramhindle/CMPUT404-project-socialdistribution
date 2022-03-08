@@ -13,7 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
-import {createComments} from "../../../services/comments"
+import {createComments} from "../../../Services/comments"
 import { useSelector } from 'react-redux';
 
 
