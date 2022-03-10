@@ -9,6 +9,7 @@ Django==4.0.2
 django-cors-headers==3.11.0
 djangorestframework==3.13.1
 drf-spectacular==0.21.2
+gunicorn==20.1.0
 idna==3.3
 importlib-resources==5.4.0
 inflection==0.5.1
@@ -27,4 +28,5 @@ simplejson==3.17.6
 sqlparse==0.4.2
 uritemplate==4.1.1
 urllib3==1.26.8
+whitenoise==6.0.0
 zipp==3.7.0

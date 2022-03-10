@@ -23,7 +23,12 @@ import MenuItem from '@mui/material/MenuItem';
 import EditIMGDialog from "./EditIMGDialog"
 import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+
+const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
+
+const PostImage = styled('img')({width: "100%"})
+
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
  */
@@ -79,6 +84,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   const [editOpen, setEditOpen] = React.useState(false);
   const closeEditDialog = () => setEditOpen(false);
   const openEditDialog = () => setEditOpen(true);
+
   /* State Hook For Opening Edit IMG Post Dialog */
   const [editIMGOpen, setEditIMGOpen] = React.useState(false);
   const closeEditIMGDialog = () => setEditIMGOpen(false);
@@ -97,6 +103,9 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
   /* State Hook For Showing IMG/Text Post */
   const [imgShow, setImgShow] = React.useState(false);
+
+  /* State Hook For Showing IMG/Text Post */
+  const [markdownShow, setMarkdownShow] = React.useState(false);
 
   /* State Hook For Showing IMG/Text Post */
   const [textShow, setTextShow] = React.useState(false);
@@ -129,17 +138,15 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
    /* Set visible condition for IMG/Text Post */
   React.useEffect(()=>{
-    if (post.content.includes("data:")){
-      setImgShow(true)
-      setTextShow(false)
-    }else{
-      setImgShow(false)
-      setTextShow(true)
+    if (post.contentType.includes("image")){
+      setImgShow(true);
+    } else if (post.contentType === "text/markdown") {
+      setMarkdownShow(true);
+    } else {
+      setTextShow(true);
     }
 }, [post])
 
-
-  
   /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
     getComments("dummy_author", "dummy_post")
@@ -150,11 +157,15 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       .catch( err => console.log(err) );
   };
 
-
   return (
     <Card sx={{m: "1px"}}>
       <CardHeader
-        avatar={ <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
+        avatar={ 
+          <AvatarContainer onClick={() => console.log(post.author.id)} >
+            <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />
+            <Typography variant="caption" display="block" gutterBottom sx={{paddingTop: "5px"}}>{post.author.displayName}</Typography>
+          </AvatarContainer>
+        }
         title={<Typography variant='h6'>{post.title}</Typography>}
         action={
           <IconButton aria-label="settings" onClick={handleClick}>
@@ -171,12 +182,13 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
         disableTypography={true}
       />
       <CardContent>
-        {textShow&&<Box sx={{width: "100%", px: "80px"}}>
-          <Typography paragraph>
-            {post.content}
-          </Typography>
+        {(post.contentType === "text/plain")&&<Box sx={{width: "100%", px: "20px"}}>
+          {post.content.split("\n").map((p, index) => <Typography key={index} paragraph> {p} </Typography>)}
         </Box>}
-        {imgShow &&<Box sx={{width: "100%"}}>
+        {(post.contentType === "text/markdown")&&<Box sx={{width: "100%", px: "20px"}}>
+          <ReactMarkdown components={{img: PostImage}}>{post.content}</ReactMarkdown>
+        </Box>}
+        {post.contentType.includes("image")&&<Box sx={{width: "100%", px: "20px"}}>
           <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
@@ -200,8 +212,8 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
           'aria-labelledby': 'basic-button',
         }}
         >
-          {textShow&&<MenuItem onClick={openEditDialog}>Edit</MenuItem>}
-          {imgShow &&<MenuItem onClick={openEditIMGDialog}>Edit</MenuItem>}
+          {((post.contentType === "text/markdown") || (post.contentType === "text/plain"))&&<MenuItem onClick={openEditDialog}>Edit</MenuItem>}
+          {post.contentType.includes("image")&&<MenuItem onClick={openEditIMGDialog}>Edit</MenuItem>}
           <MenuItem onClick={openDeleteDialog}>Remove Post</MenuItem>
         </Menu>
       <DeletePostDialog post={post} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={closeDeleteDialog} removeFromFeed={removeFromFeed} />
