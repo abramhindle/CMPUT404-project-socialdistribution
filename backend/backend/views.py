@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import HttpResponse
 from rest_framework import status
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -35,37 +36,44 @@ def get_headers(request):
 
 def proxy_get(url_str, request):
     res = r.get(url_str, params=request.query_params, headers={"Authorization": request.headers.get("Authorization", default="")})
-    status_code = status_codes[res.status_code]
-    response_body = res.json() if res.status_code == 200 else responses[res.status_code]
-    return status_code, response_body
+    content_type = res.headers.get("Content-Type", default="application/json")
+    if content_type == "application/json":
+        status_code = status_codes[res.status_code]
+        response_body = res.json() if res.status_code == 200 else responses[res.status_code]
+        return status_code, content_type, response_body
+    return status_codes[res.status_code], content_type, res.content
 
 
 def proxy_put(url_str, request):
     res = r.put(url_str, data=request.data, headers=get_headers(request))
+    content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code in [200, 201] else responses[res.status_code]
-    return status_code, response_body
+    return status_code, content_type, response_body
 
 
 def proxy_patch(url_str, request):
     res = r.patch(url_str, data=request.data, headers=get_headers(request))
+    content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code == 200 else responses[res.status_code]
-    return status_code, response_body
+    return status_code, content_type, response_body
 
 
 def proxy_post(url_str, request):
     res = r.post(url_str, data=request.data, headers=get_headers(request))
+    content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code == 201 else responses[res.status_code]
-    return status_code, response_body
+    return status_code, content_type, response_body
 
 
 def proxy_delete(url_str, request):
     res = r.delete(url_str, headers=get_headers(request))
+    content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = responses[res.status_code]
-    return status_code, response_body
+    return status_code, content_type, response_body
 
 
 def proxy_selector(request, proxy_url):
@@ -90,10 +98,18 @@ def proxy_requests(request, path):
     try:  # If Path Is A URL, We Need To Make A Request To Another Server
         validate = URLValidator()
         validate(path)
-        status_code, response_body = proxy_selector(request, "http://" + path.split("http://")[-1].replace("//", "/"))
+        status_code, content_type, response_body = proxy_selector(request, "http://" + path.split("http://")[-1].replace("//", "/"))
+        if content_type != "application/json":
+            response = HttpResponse(content_type=content_type)
+            response.write(response_body)
+            return response
         return Response(response_body, status=status_code, content_type="application/json")
     except ValidationError:  # If Path Is Not A URL, We Make The Request To Our Own Server
-        status_code, response_body = proxy_selector(request, f"{settings.DOMAIN}/api/authors/{path}/")
+        status_code, content_type, response_body = proxy_selector(request, f"{settings.DOMAIN}/api/authors/{path}/")
+        if content_type != "application/json":
+            response = HttpResponse(content_type=content_type)
+            response.write(response_body)
+            return response
         return Response(response_body, status=status_code, content_type="application/json")
 
 
