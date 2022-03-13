@@ -2,7 +2,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import storage from 'redux-persist/lib/storage';
 import { combineReducers, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
-import thunk from 'redux-thunk';
 import profileReducer from "./profileSlice"
 import inboxReducer from "./inboxSlice"
 

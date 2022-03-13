@@ -91,8 +91,9 @@ export default function HomePage() {
     
     /* Get Github feed from Github API */
     useEffect( () => {
+        console.log("https:/api.github.com/users/" + githubID + "/events/public")
         if (githubID.length !== 0) {
-            axios.get(("https:/api.github.com/users/" + githubID + "/events/public"))
+            axios.get("https:/api.github.com/users/" + githubID + "/events/public")
                 .then( res => {
                     console.log(res.data)
                     setGithubFeed(res.data) 
