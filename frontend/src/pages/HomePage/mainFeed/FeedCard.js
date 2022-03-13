@@ -24,6 +24,7 @@ import EditIMGDialog from "./EditIMGDialog"
 import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import { concat } from 'lodash/fp';
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -38,6 +39,7 @@ function isoToHumanReadableDate(isoDate) {
   const timeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric' });
   return dateFormat.format(date) + " - " + timeFormat.format(date);
 }
+
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
@@ -52,22 +54,17 @@ const ExpandMore = styled((props) => {
 function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color}) {
   return (
       <CardActions disableSpacing>
-        <IconButton aria-label="like" onClick={handleColor}>
-          <FavoriteIcon color = {color}/>
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        <div sx={{pr:8}}>
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <CommentIcon/>
-        </ExpandMore>
-        </div>
+          <IconButton aria-label="like" onClick={handleColor}>
+            <FavoriteIcon color = {color}/>
+          </IconButton>
+          <IconButton aria-label="share">
+            <ShareIcon />
+          </IconButton>
+          <div sx={{pr:8}}>
+            <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more" >
+              <CommentIcon/>
+            </ExpandMore>
+          </div>
       </CardActions>
   )
 }
@@ -100,15 +97,9 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
   /* State Hook For Comments */
   const [comments, setComments] = React.useState([]);
-
-  /* State Hook For Showing IMG/Text Post */
-  const [imgShow, setImgShow] = React.useState(false);
-
-  /* State Hook For Showing IMG/Text Post */
-  const [markdownShow, setMarkdownShow] = React.useState(false);
-
-  /* State Hook For Showing IMG/Text Post */
-  const [textShow, setTextShow] = React.useState(false);
+  const addComment = comment => setComments(concat(comments)(comment));
+  const removeComment = comment => setComments(comments.filter(x => x.id !== comment.id));
+  const editComment = comment => setComments(comments.map(x => x.id === comment.id ? comment : x))
 
   /* State Hook For Menu (edit/remove) */
   const [anchorEl, setAnchorEl] = React.useState(false);
@@ -117,35 +108,14 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   const [addCMOpen, setaddCMOpen] = React.useState(false);
 
   /* Hook handler For Menu (edit/remove) */
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClick = event => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
   
-  const handleColor = (event) =>{
-    setColor("secondary")
-  };
+  const handleColor = (event) =>setColor("secondary");
 
-  const handleAddCMClickOpen = () => {
-    setaddCMOpen(true);
-  };
+  const handleAddCMClickOpen = () => setaddCMOpen(true);
 
-  const handleAddCMClose = () => {
-    setaddCMOpen(false);
-  };
-
-   /* Set visible condition for IMG/Text Post */
-  React.useEffect(()=>{
-    if (post.contentType.includes("image")){
-      setImgShow(true);
-    } else if (post.contentType === "text/markdown") {
-      setMarkdownShow(true);
-    } else {
-      setTextShow(true);
-    }
-}, [post])
+  const handleAddCMClose = () => setaddCMOpen(false);
 
   /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
@@ -195,7 +165,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {comments.map((commentData) => ( <Grid item xs={12}> <CommentCard commentData={commentData} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
+          {comments.map((comment) => ( <Grid item xs={12}> <CommentCard removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
           <Grid item xs={12} sx={{marginTop: "8px"}}>
             <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
             <Button disableElevation={false} sx={{minHeight: "100px", fontSize: "1.15rem"}}  onClick={handleAddCMClickOpen} fullWidth>Add Comment</Button>
@@ -219,7 +189,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <DeletePostDialog post={post} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={closeDeleteDialog} removeFromFeed={removeFromFeed} />
       <EditPostDialog post={post} open={editOpen} onClose={closeEditDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
-      <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} author={post.author} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
+      <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} post={post} addComment={addComment} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
     </Card>
   );
 }

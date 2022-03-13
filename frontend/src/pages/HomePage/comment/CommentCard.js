@@ -6,13 +6,18 @@ import Grid from '@mui/material/Grid';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
 import EditCommentDialog from './EditCommentDialog';
 import EditIcon from '@mui/icons-material/Edit';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import DeleteCommentDialog from "../comment/DeleteCommentDialog"
 import Stack from '@mui/material/Stack';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+
+const PostImage = styled('img')({width: "100%"})
 
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
@@ -24,37 +29,27 @@ function isoToHumanReadableDate(isoDate) {
   return dateFormat.format(date) + " - " + timeFormat.format(date);
 }
 
-export default function CommentCard(props) {
+export default function CommentCard({comment, alertSuccess, alertError, removeComment, editComments}) {
   /* Hook For Like icon color */
   const [color, setColor] = React.useState("grey");
+
   /* Hook For comment edit dialog */
   const [editOpen, setEditOpen] = React.useState(false);
+  const handleEditClickOpen = () => setEditOpen(true);
+  const handleEditClose = () => setEditOpen(false);
+
   /* Hook For comment delete dialog */
   const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const handleDelClickOpen = () => setDeleteOpen(true);
+  const handleDelClose = () => setDeleteOpen(false);
+
   /* State Hook For Menu (edit/remove) */
   const [anchorEl, setAnchorEl] = React.useState(false);
+  const closeAnchorEl = () => setAnchorEl(false);
+  const openAnchorEl = () => setAnchorEl(true);
 
-  const handleColor = () =>{
-    setColor("secondary")
-    
-  }
+  const handleColor = () => setColor("secondary");
 
-
-  const handleEditClickOpen = () => {
-    setEditOpen(true);
-  };
-
-  const handleEditClose = () => {
-    setEditOpen(false);
-  };
-
-  const handleDelClickOpen = () => {
-    setDeleteOpen(true);
-  };
-
-  const handleDelClose = () => {
-    setDeleteOpen(false);
-  };
 
   /* Hook handler For Menu (edit/remove) */
   const handleClick = (event) => {
@@ -64,11 +59,6 @@ export default function CommentCard(props) {
     setAnchorEl(null);
   };
 
-
-    
-
-  
-
   return (
     <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
       <Grid container direction={'row'} spacing={12}>
@@ -76,15 +66,18 @@ export default function CommentCard(props) {
         <CardContent>
           <Stack direction="row" spacing={2}>
             <Typography gutterBottom variant="h6" component="div">
-              {props.commentData.author.type}
+              {comment.author.displayName}
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{pt: 1}}>
-              {isoToHumanReadableDate(props.commentData.published)}
+              {isoToHumanReadableDate(comment.published)}
             </Typography>
           </Stack>
-          <Typography variant="body2" color="text.primary" >
-              {props.commentData.comment}
-            </Typography>
+          {(comment.contentType === "text/plain")&&<Box sx={{width: "100%", px: 0}}>
+            {comment.comment.split("\n").map((p, index) => <Typography key={index} paragraph> {p} </Typography>)}
+          </Box>}
+          {(comment.contentType === "text/markdown")&&<Box sx={{width: "100%", px: 0}}>
+            <ReactMarkdown components={{img: PostImage}}>{comment.comment}</ReactMarkdown>
+          </Box>}
         </CardContent>
         </Grid>
         <Grid item xl={1} md={1}>
@@ -98,20 +91,12 @@ export default function CommentCard(props) {
           </Stack>
         </Grid>
       </Grid>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={anchorEl}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-        >
-          <MenuItem onClick={handleEditClickOpen}>Edit</MenuItem>
-          <MenuItem onClick={handleDelClickOpen}>Remove</MenuItem>
+      <Menu id="basic-menu" anchorEl={anchorEl} open={anchorEl} onClose={closeAnchorEl} MenuListProps={{ 'aria-labelledby': 'basic-button', }} >
+          <MenuItem onClick={ () => { handleEditClickOpen(); closeAnchorEl(); } }>Edit</MenuItem>
+          <MenuItem onClick={() => { handleDelClickOpen(); closeAnchorEl(); }}>Remove</MenuItem>
         </Menu>
-      <EditCommentDialog open={editOpen} handleClose={handleEditClose} commentData={props.commentData} alertSuccess={props.alertSuccess} alertError={props.alertError}></EditCommentDialog>
-      <DeleteCommentDialog open={deleteOpen} handleClose={handleDelClose} commentData={props.commentData} alertSuccess={props.alertSuccess} alertError={props.alertError}></DeleteCommentDialog>
+      <EditCommentDialog open={editOpen} onClose={handleEditClose} comment={comment} alertSuccess={alertSuccess} alertError={alertError} editComments={editComments} />
+      <DeleteCommentDialog comment={comment} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={handleDelClose} removeComment={removeComment} />
     </Card>
   );
 }

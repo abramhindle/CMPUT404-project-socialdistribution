@@ -1,4 +1,4 @@
-import { post, get, put, del } from "./requests";
+import { post, get, put, del, patch } from "./requests";
 
 // export function getComments(authorID, postID) {
 //     return new Promise( (resolve, reject) => {
@@ -42,22 +42,21 @@ import { post, get, put, del } from "./requests";
 //     return get(authorID + "inbox/");
 // }
 
-export function createComments(postData, commentData){
+export function createComment(postData, commentData){
+    console.log(postData.id + "comments/")
     return post(postData.id + "comments/", commentData);
 }
 
-export function editComments(cmID, userID, postData, commentData){
-    return put("authors/"+userID + "/posts/", postData, "/comments/", commentData);
+export function editComment(oldComment, content){
+    return patch(oldComment.id, content);
 }
 
-export function deleteComments(cmID, userID, postData){
-    return del("authors/"+userID + "/posts/", postData, cmID);
+export function deleteComment(comment){
+    return del(comment.id);
 }
 
 export function getComments(postID){
-    const url = postID + "comments/"
-    console.log(url);
-    return get(url);
+    return get(postID + "comments/");
 }
 
 // export function getInbox(authorID) {

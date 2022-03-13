@@ -9,17 +9,16 @@ import { deletePost } from '../../../Services/posts';
 
 export default function DeletePostDialog({post, alertSuccess, alertError, open, handleClose, removeFromFeed}) {
   const onDelete = () => {
-    deletePost(post.id)
+    deletePost(post)
       .then( _ => {
         alertSuccess("Success: Deleted Post!");
         removeFromFeed(post);
-        handleClose();
       } )
       .catch( err => { 
         console.log(err); 
         alertError("Error: Could Not Delete Post!");
-        handleClose();
-      } );
+      } )
+      .finally( handleClose );
   }
     
   return (

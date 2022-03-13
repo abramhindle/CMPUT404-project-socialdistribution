@@ -9,11 +9,14 @@ from posts.models import Post
 from authors.models import Author
 from .models import Comment
 
+
 class CommentPagination(PageNumberPagination):
     page_size_query_param = 'size'
     page_query_param = 'page'
+
     def get_paginated_response(self, data):
         return Response({'type': "comments", 'items': data})
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
@@ -22,12 +25,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post = self.kwargs["post"]
-        return Comment.objects.filter(post__local_id=post).order_by("-published")
+        return Comment.objects.filter(post__local_id=post).order_by("published")
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, local_id=self.kwargs["post"])
         author = get_object_or_404(Author, local_id=self.kwargs["author"])
-        serializer.save(author=author,post=post)
+        serializer.save(author_url=author.id, post=post)
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""

@@ -17,10 +17,11 @@ function App() {
       <PersistGate loading={null} persistor={persistor}>
         <HashRouter>
           <Routes>
-              <Route path="homepage" element={<HomePage />} />
-              <Route path="register" element={<RegistrationForm />} />
-              <Route path="" element={<LoginPage />} >
-            </Route>
+            <Route path="/" element={<BaseTemplate />} >
+                <Route path="" element={<LoginPage />} />
+                <Route path="register" element={<RegistrationForm />} />
+                <Route path="homepage" element={<HomePage />} />
+              </Route>
           </Routes>
         </HashRouter>
       </PersistGate>
