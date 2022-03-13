@@ -12,8 +12,8 @@ SECRET_KEY = 'django-insecure-1fon4d1f)xj3upklzud_xkf#lfke74okyw=*j6kbo$26^f0^_v
 # SECURITY WARNING: don't run with debug turned on in production!!
 DEBUG = True
 
-# DOMAIN = str(os.environ.get("DOMAIN", default="http://127.0.0.1:8000"))
-DOMAIN = str(os.environ.get("DOMAIN", default="http://project-socialdistribution.herokuapp.com"))
+#DOMAIN = str(os.environ.get("DOMAIN", default="http://127.0.0.1:8000"))
+DOMAIN = "http://project-socialdistribution.herokuapp.com"
 
 ALLOWED_HOSTS = [urlparse(DOMAIN).netloc.split(":")[0]] + ["127.0.0.1"]
 
