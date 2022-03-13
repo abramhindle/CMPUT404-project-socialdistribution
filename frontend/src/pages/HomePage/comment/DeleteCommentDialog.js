@@ -5,22 +5,22 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { deleteComments } from '../../../Services/comments';
+import { deleteComment } from '../../../Services/comments';
 
-export default function DeletePostDialog({commentData, alertSuccess, alertError, open, handleClose}) {
-    
+export default function DeletePostDialog({comment, alertSuccess, alertError, open, handleClose, removeComment}) {
+
   const onDelete = () => {
-    // deleteComments(post.id)
-    //   .then( _ => {
-    //     alertSuccess("Success: Deleted Comment!");
-    //     // removeFromFeed(post);
-    //     handleClose();
-    //   } )
-    //   .catch( err => { 
-    //     console.log(err); 
-    //     alertError("Error: Could Not Delete Comment!");
-    //     handleClose();
-    //   } );
+    deleteComment(comment)
+      .then( _ => {
+        alertSuccess("Success: Deleted Comment!");
+        handleClose();
+      } )
+      .catch( err => { 
+        console.log(err); 
+        alertError("Error: Could Not Delete Comment!");
+        handleClose();
+      } )
+      .finally( () => removeComment(comment) );
   }
     
   return (

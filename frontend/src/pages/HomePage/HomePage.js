@@ -69,7 +69,7 @@ export default function HomePage() {
 
     /* Hook For Navigating To The Home Page */
     const navigate = useNavigate();
-    const goToLogin = () => navigate("/login/")
+    const goToLogin = () => navigate("/")
 
     /* Logout Functionality */
     const onLogout = () => {
