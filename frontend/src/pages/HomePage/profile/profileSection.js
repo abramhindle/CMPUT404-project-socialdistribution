@@ -17,7 +17,7 @@ import ProfileListItem from './profileListItem';
 
 
 
-export default function ProfileSection() {
+export default function ProfileSection({author, editAuthor}) {
   const [isModalOpen, setOpen] = React.useState(false);
   const [isFollowingOpen, setFollowingOpen] = React.useState(true);
   const [isFollowerOpen, setFollowerOpen] = React.useState(true);
@@ -31,13 +31,13 @@ export default function ProfileSection() {
   const handleModalOpen = () => setOpen(true);
   const handleModalClose = () => setOpen(false);
 
-  const user_id = useSelector(state => state.profile.id);
-  const displayName = useSelector(state => state.profile.displayName);
-  const github = useSelector(state => state.profile.github);
-  const profileImage = useSelector(state => state.profile.profileImage);
-  const userURL = useSelector(state => state.profile.url);
-  const followerCount = useSelector(state => state.profile.followerCount);
-  const followingCount = useSelector(state => state.profile.followingCount);
+  const user_id = author.id;
+  const displayName = author.displayName;
+  const github = author.github;
+  const profileImage = author.profileImage;
+  const userURL = author.url;
+  const followerCount = author.followerCount;
+  const followingCount = author.followingCount;
 
   const style = {
     list: {
