@@ -12,9 +12,9 @@ SECRET_KEY = 'django-insecure-1fon4d1f)xj3upklzud_xkf#lfke74okyw=*j6kbo$26^f0^_v
 # SECURITY WARNING: don't run with debug turned on in production!!
 DEBUG = True
 
-DOMAIN = "http://project-socialdistribution.herokuapp.com"
+DOMAIN = str(os.environ.get("DOMAIN", default="http://project-socialdistribution.herokuapp.com"))
 
-ALLOWED_HOSTS = [urlparse(DOMAIN).netloc.split(":")[0]]
+ALLOWED_HOSTS = [urlparse(DOMAIN).netloc.split(":")[0]] + ["127.0.0.1"]
 
 
 # Application definition
@@ -90,6 +90,19 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 db_from_env = dj_database_url.config()
 DATABASES = {'default': dict()}
 DATABASES['default'].update(db_from_env)
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'social_distribution',
+        'USER': 'postgres',
+        'PASSWORD': 'pass',
+        'HOST': 'localhost',
+        'PORT': '5433',
+        'ATOMIC_REQUESTS': True
+    }
+}
+"""
 
 AUTH_PASSWORD_VALIDATORS = [
     {
