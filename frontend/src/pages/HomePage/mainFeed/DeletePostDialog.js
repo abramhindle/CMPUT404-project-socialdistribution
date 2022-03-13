@@ -9,7 +9,7 @@ import { deletePost } from '../../../Services/posts';
 
 export default function DeletePostDialog({post, alertSuccess, alertError, open, handleClose, removeFromFeed}) {
   const onDelete = () => {
-    deletePost(post)
+    deletePost(post.id)
       .then( _ => {
         alertSuccess("Success: Deleted Post!");
         removeFromFeed(post);

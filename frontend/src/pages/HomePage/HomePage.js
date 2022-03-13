@@ -81,13 +81,15 @@ export default function HomePage() {
         .catch( err => console.log(err) );
     }
 
-    /* Get Inbox From Server */
+    /* Get Inbox From Server  */
+    /*
     useEffect( () => {
         getInbox(userID)
             .then( res => dispatch(setInbox(res.data.items)) )
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
     }, [] );
+    */
     
     /* Get Github feed from Github API */
     useEffect( () => {
