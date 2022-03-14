@@ -24,7 +24,7 @@ export function put(path, data) {
 }
 
 export function patch(path, data) {
-    return axios.patch(path, data, {headers: {"Authorization": "Token " + localStorage.getItem("token")}});
+    return axios.patch(path, data, {headers: {"Authorization": "Token " + localStorage.getItem("token"), "X-CSRFToken": getCookie('csrftoken')}});
 }
 
 export function get(path) {

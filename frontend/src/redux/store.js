@@ -14,6 +14,7 @@ const reducers = combineReducers({
 const persistConfig = {
     key: 'root',
     storage,
+    whitelist: ['profile', 'inbox']
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

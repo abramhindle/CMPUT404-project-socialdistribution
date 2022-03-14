@@ -26,6 +26,7 @@ class Post(models.Model):
     description = models.CharField(max_length=500, blank=True)
     contentType = models.CharField(max_length=350, choices=ContentType.choices)
     content = models.TextField()
+    comments = models.URLField(max_length=350, blank=True)
     #target file for the image
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     categories = ArrayField(models.CharField(max_length=100))

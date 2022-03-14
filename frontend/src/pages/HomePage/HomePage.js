@@ -69,7 +69,7 @@ export default function HomePage() {
 
     /* Hook For Navigating To The Home Page */
     const navigate = useNavigate();
-    const goToLogin = () => navigate("/login/")
+    const goToLogin = () => navigate("/")
 
     /* Logout Functionality */
     const onLogout = () => {
@@ -81,13 +81,15 @@ export default function HomePage() {
         .catch( err => console.log(err) );
     }
 
-    /* Get Inbox From Server */
+    /* Get Inbox From Server  */
+    /*
     useEffect( () => {
         getInbox(userID)
             .then( res => dispatch(setInbox(res.data.items)) )
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
     }, [] );
+    */
     
     /* Get Github feed from Github API */
     useEffect( () => {

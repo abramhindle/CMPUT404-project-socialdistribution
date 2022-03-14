@@ -29,7 +29,7 @@ export default function LoginPage() {
 
   /* Hook For Navigating To The Home Page */
   const navigate = useNavigate();
-  const goToHome = () => navigate("/")
+  const goToHome = () => navigate("/homepage")
 
   const [openAlert, setOpenAlert] = React.useState({isOpen: false, message: "", severity: "error"})
   const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
