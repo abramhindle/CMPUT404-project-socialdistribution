@@ -13,8 +13,10 @@ import { useState, useEffect } from 'react';
 import { logout } from '../../redux/profileSlice';
 import { set, findIndex, concat } from 'lodash/fp';
 import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid, Button } from '@mui/material';
+import NotificationCard from './notifications/NotificationCard';
 import GithubFeedCard from './mainFeed/GithubFeedCard';
 import {styled} from '@mui/system'
+import { getNotifications } from '../../Services/notifications';
 import { pushToInbox, setInbox } from '../../redux/inboxSlice';
 import { getAuthorFromStorage, setAuthorInStorage  } from '../../LocalStorage/profile';
 import { setInboxInStorage, getInboxFromStorage } from '../../LocalStorage/inbox';
@@ -75,6 +77,10 @@ export default function HomePage() {
         setAuthorInStorage(newAuthor);
     }
 
+    /* State Hook For Notifications */
+    const [notifications, setNotifications] = useState([])
+    const removeNotification = (notification) => setNotifications(notifications.filter(x => x.id !== notification.id))
+
     /* State Hook For GitHub */
     const [githubFeed, setGithubFeed] = useState([]);
 
@@ -85,7 +91,6 @@ export default function HomePage() {
         return () => { window.removeEventListener('resize', windowResizeCallback) };
      });
     
-
     /* Hook For Navigating To The Home Page */
     const navigate = useNavigate();
     const goToLogin = () => navigate("/")
@@ -108,6 +113,14 @@ export default function HomePage() {
             .finally( () => console.log(inbox) )
     }, [] );
     */
+
+    /* Get Notifications From Server  */
+    useEffect( () => {
+        getNotifications(author.url)
+            .then( res => setNotifications(res.data.items) )
+            .catch( err => console.log(err) )
+            .finally( () => console.log(notifications) )
+    }, [] );
     
     /* Get Github feed from Github API */
     useEffect( () => {
@@ -193,7 +206,13 @@ export default function HomePage() {
                         </Paper>
                     </TabPanel >
                     <TabPanel value="4" sx={{p:0}}>
-                        Notifications
+                        <Paper sx={{p:0}}>
+                            {notifications.map((notification, index) => (
+                                (<Grid item xs={12} key={index}> 
+                                    <NotificationCard notification={notification} removeNotification={removeNotification} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} /> 
+                                </Grid>)
+                            ))}
+                        </Paper>
                     </TabPanel>
                     <TabPanel value="5" sx={{p:0}}>
                         {githubFeed?.map((event, index) => ( <Grid key={index} item xs={12}> <GithubFeedCard event={event} /> </Grid>))}

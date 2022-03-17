@@ -1,4 +1,8 @@
 from .models import InboxItem
+from notifications.models import Notification
+from rest_framework.parsers import JSONParser
+from notifications.serializers import NotificationSerializer
+from comment.serializers import CommentSerializer
 from posts.models import Post
 from posts.serializers import PostSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -35,6 +39,7 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
     serializer_class = InboxItemSerializer
     pagination_class = CustomPageNumberPagination
     authentication_classes = [TokenAuthentication]
+    parser_classes = [JSONParser]
 
     def list(self, request, *args, **kwargs):
         # Fetch The Owner
@@ -72,10 +77,21 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
             inbox_item.save()
             return Response(InboxItemSerializer(inbox_item).data, status=status.HTTP_201_CREATED)
         elif request.data["type"] == "follow":
+            summary = f"{request.data['author']['displayName']} Wants To Follow You!"
+            notification = Notification(type="Follow", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification.save()
             return Response({"success": "Follow Request Delivered!"}, status=status.HTTP_200_OK)
         elif request.data["type"] == "like":
-            return Response({"success": "Follow Request Delivered!"}, status=status.HTTP_200_OK)
-        return Response({"error": "Invalid Type: Must Be One Of 'post', 'follow', Or 'like'!"}, status=status.HTTP_400_BAD_REQUEST)
+            summary = f"{request.data['author']['displayName']} Likes Your Post!"
+            notification = Notification(type="Like", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification.save()
+            return Response({"success": "Like Delivered!"}, status=status.HTTP_200_OK)
+        elif request.data["type"] == "comment":
+            summary = f"{request.data['author']['displayName']} Commented On Your Post!"
+            notification = Notification(type="Comment", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification.save()
+            return Response({"success": "Comment Delivered!"}, status=status.HTTP_200_OK)
+        return Response({"error": "Invalid Type: Must Be One Of 'post', 'follow', 'comment', Or 'like'!"}, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         author = get_object_or_404(Author, local_id=kwargs["author"])

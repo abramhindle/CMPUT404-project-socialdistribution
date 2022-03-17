@@ -1,4 +1,5 @@
-from rest_framework.pagination  import PageNumberPagination
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
@@ -22,6 +23,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     pagination_class = CommentPagination
     serializer_class = CommentSerializer
+    parser_classes = [JSONParser]
 
     def get_queryset(self):
         post = self.kwargs["post"]
@@ -29,8 +31,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, local_id=self.kwargs["post"])
-        author = get_object_or_404(Author, local_id=self.kwargs["author"])
-        serializer.save(author_url=author.id, post=post)
+        serializer.save(author_url=self.request.data["author"]["url"], post=post)
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""

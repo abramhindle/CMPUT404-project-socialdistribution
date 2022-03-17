@@ -31,7 +31,9 @@ responses = {200: {"success": "OK!"},
 
 
 def get_headers(request):
-    return {"X-CSRFToken": request.headers.get("X-CSRFToken", default=""), "Authorization": request.headers.get("Authorization", default="")}
+    return {"X-CSRFToken": request.headers.get("X-CSRFToken", default=""),
+            "Authorization": request.headers.get("Authorization", default=""),
+            "Content-Type": request.headers.get("Content-Type", default="application/json")}
 
 
 def proxy_get(url_str, request):
@@ -61,10 +63,10 @@ def proxy_patch(url_str, request):
 
 
 def proxy_post(url_str, request):
-    res = r.post(url_str, data=request.data, headers=get_headers(request))
+    res = r.post(url_str, json=request.data, headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
-    response_body = res.json() if res.status_code == 201 else responses[res.status_code]
+    response_body = res.json() if res.status_code in [201, 200] else responses[res.status_code]
     return status_code, content_type, response_body
 
 
