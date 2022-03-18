@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'inbox.apps.InboxConfig',
     'authors.apps.AuthorsConfig',
     'posts.apps.PostsConfig',
+    'likes.apps.LikesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

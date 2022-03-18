@@ -1,0 +1,18 @@
+from rest_framework import serializers
+from likes.models import Likes
+import requests as r
+
+
+class LikesSerializer(serializers.ModelSerializer):
+
+    author = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Likes
+        # write_only_fields = ["local_id", "post"]
+        read_only_fields = ["author"]
+        fields = ["type", "summary", "context", "object"]
+
+    def get_author(self, obj: Likes):
+        author_url = obj.author_url
+        return r.get(author_url).json()

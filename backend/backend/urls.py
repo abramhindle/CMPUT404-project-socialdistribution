@@ -24,6 +24,9 @@ urlpatterns = [
     # Post API
     path('api/authors/<uuid:author>/posts/', include('posts.urls')),
 
+    # Likes API
+    path('api/authors/<uuid:author>/posts/<uuid:post>/likes/', include('likes.urls')),
+
     # Comment Api
     path('api/authors/<uuid:author>/posts/<uuid:post>/comments/', include('comment.urls')),
 
