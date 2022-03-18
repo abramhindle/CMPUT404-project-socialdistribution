@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [urlparse(DOMAIN).netloc.split(":")[0]] + ["127.0.0.1"]
 INSTALLED_APPS = [
     'followers.apps.FollowersConfig',
     'notifications.apps.NotificationsConfig',
+    'nodes.apps.NodesConfig',
     'comment.apps.CommentConfig',
     'inbox.apps.InboxConfig',
     'authors.apps.AuthorsConfig',
