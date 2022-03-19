@@ -7,9 +7,11 @@ from .models import Post
 from .serializers import PostSerializer
 from authors.models import Author
 import requests
+import json
 from inbox.models import InboxItem
 from concurrent.futures import ThreadPoolExecutor
 from authors.serializers import AuthorSerializer
+from nodes.models import Node
 
 
 @receiver(post_save, sender=Post)
@@ -31,6 +33,14 @@ def on_create_post(sender, **kwargs):
                 authors = Author.objects.all()
                 with ThreadPoolExecutor(max_workers=1) as executor:
                     executor.map(lambda author: requests.post(f"{author.id}inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
+                # Push Posts to Remote Recipient's Inbox
+                nodes = Node.objects.all()
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    futures = executor.map(lambda node: requests.get(f"{node.host}authors/"), nodes)
+                for future in futures:
+                    remote_authors = json.loads(future.text)["items"]
+                    with ThreadPoolExecutor(max_workers=1) as executor:
+                        executor.map(lambda author: requests.get(f"{author['id']}inbox/"), remote_authors)
             elif post.visibility == "FRIENDS":
                 authors = Author.objects.all()
                 with ThreadPoolExecutor(max_workers=1) as executor:
