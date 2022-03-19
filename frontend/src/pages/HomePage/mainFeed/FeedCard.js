@@ -82,7 +82,10 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   /* State Hook For Opening Edit Post Dialog */
   const [editOpen, setEditOpen] = React.useState(false);
   const closeEditDialog = () => setEditOpen(false);
-  const openEditDialog = () => setEditOpen(true);
+  const openEditDialog = () => {
+    setEditOpen(true);
+    setAnchorEl(false);
+  }
 
   /* State Hook For Opening Edit IMG Post Dialog */
   const [editIMGOpen, setEditIMGOpen] = React.useState(false);

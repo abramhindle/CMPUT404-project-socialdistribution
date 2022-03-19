@@ -1,4 +1,5 @@
 from django.conf import settings
+import json
 from django.http import HttpResponse
 from rest_framework import status
 from django.core.exceptions import ValidationError
@@ -47,7 +48,7 @@ def proxy_get(url_str, request):
 
 
 def proxy_put(url_str, request):
-    res = r.put(url_str, data=request.data, headers=get_headers(request))
+    res = r.put(url_str, data=json.dumps(request.data), headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code in [200, 201] else responses[res.status_code]
@@ -55,7 +56,7 @@ def proxy_put(url_str, request):
 
 
 def proxy_patch(url_str, request):
-    res = r.patch(url_str, data=request.data, headers=get_headers(request))
+    res = r.patch(url_str, data=json.dumps(request.data), headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code == 200 else responses[res.status_code]
@@ -63,7 +64,7 @@ def proxy_patch(url_str, request):
 
 
 def proxy_post(url_str, request):
-    res = r.post(url_str, json=request.data, headers=get_headers(request))
+    res = r.post(url_str, data=json.dumps(request.data), headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code in [201, 200] else responses[res.status_code]
@@ -101,6 +102,7 @@ def proxy_requests(request, path):
         validate = URLValidator()
         validate(path)
         path = path.replace("http:/", "http://")
+        path = path.replace("///", "//")
         if "followers" in path:
             parts = (path + "/").split("/")
             i = parts.index("authors") + 1

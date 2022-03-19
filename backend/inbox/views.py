@@ -69,12 +69,12 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
 
         # Fetch Local Posts
         local_posts_src = [item.src for item in queryset if item.src.split("/authors/")[0] == settings.DOMAIN]
-        local_posts = [PostSerializer(p).data for p in Post.objects.filter(id__in=local_posts_src)]
+        local_posts = [PostSerializer(p).data for p in Post.objects.filter(id__in=local_posts_src) if not p.unlisted]
 
         # Fetch Foreign Posts
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.map(lambda x: x.get_post(), [item for item in queryset if item.src.split("/authors/")[0] != settings.DOMAIN])
-        foreign_posts = [p for p in future if "type" in p]
+        foreign_posts = [p for p in future if "unlisted" in p and not p["unlisted"]]
 
         # Paginate Response
         posts = local_posts + foreign_posts
