@@ -10,5 +10,19 @@ services:
       - POSTGRES_DB=social_distribution
     volumes:
       - social-distribution-volume:/var/lib/postgresql/data
+
+  # For running two instances of the app
+  # test:
+  #   image: postgres
+  #   ports:
+  #     - 5533:5432
+  #   environment:
+  #     - POSTGRES_PASSWORD=pass
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_DB=social_distribution
+  #   volumes:
+  #     - social-distribution1-volume:/var/lib/postgresql/data
+
 volumes:
   social-distribution-volume:
+  # social-distribution1-volume:
