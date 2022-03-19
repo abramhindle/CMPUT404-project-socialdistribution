@@ -1,9 +1,12 @@
+import base64
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, renderer_classes
 from django.db.utils import IntegrityError
-from .models import Author
+from .models import Author, Avatar
 from django.contrib.auth.models import User
 from .serializers import AuthorSerializer
 from rest_framework import viewsets
@@ -55,6 +58,17 @@ class AuthorViewSet(viewsets.ModelViewSet):
         user: User = request.user
         user.auth_token.delete()
         return Response({"message": "Succesfully Logged Out!"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['GET'])
+    def avatar(self, request, pk):
+        author: Author = get_object_or_404(Author, local_id=pk)
+        avatar: Avatar = author.avatar
+        string = avatar.content
+        content = string.split("base64,")[1]
+        mimetype = string.split(";base64,")[0].split(":")[1]
+        response = HttpResponse(content_type=mimetype)
+        response.write(base64.b64decode(content))
+        return response
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""

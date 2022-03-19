@@ -1,4 +1,8 @@
 from .models import InboxItem
+from notifications.models import Notification
+from rest_framework.parsers import JSONParser
+from notifications.serializers import NotificationSerializer
+from comment.serializers import CommentSerializer
 from posts.models import Post
 from posts.serializers import PostSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -14,6 +18,21 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.conf import settings
+from .models import InboxItem
+from notifications.models import Notification
+from posts.models import Post
+from posts.serializers import PostSerializer
+from .serializers import InboxItemSerializer
+from django.conf import settings
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.shortcuts import get_object_or_404
+from concurrent.futures import ThreadPoolExecutor
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from authors.models import Author
+from rest_framework.decorators import api_view
+from backend.permissions import IsOwnerOrAdmin
 
 
 class IsInboxOwnerOrAdmin(IsOwnerOrAdmin):
@@ -35,6 +54,7 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
     serializer_class = InboxItemSerializer
     pagination_class = CustomPageNumberPagination
     authentication_classes = [TokenAuthentication]
+    parser_classes = [JSONParser]
 
     def list(self, request, *args, **kwargs):
         # Fetch The Owner
@@ -49,12 +69,12 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
 
         # Fetch Local Posts
         local_posts_src = [item.src for item in queryset if item.src.split("/authors/")[0] == settings.DOMAIN]
-        local_posts = [PostSerializer(p).data for p in Post.objects.filter(id__in=local_posts_src)]
+        local_posts = [PostSerializer(p).data for p in Post.objects.filter(id__in=local_posts_src) if not p.unlisted]
 
         # Fetch Foreign Posts
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.map(lambda x: x.get_post(), [item for item in queryset if item.src.split("/authors/")[0] != settings.DOMAIN])
-        foreign_posts = [p for p in future if "type" in p]
+        foreign_posts = [p for p in future if "unlisted" in p and not p["unlisted"]]
 
         # Paginate Response
         posts = local_posts + foreign_posts
@@ -67,15 +87,26 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
     @csrf_exempt
     def create(self, request, *args, **kwargs):
         author = get_object_or_404(Author, local_id=kwargs["author"])
-        if request.data["type"] == "post":
+        if request.data["type"].lower() == "post":
             inbox_item = InboxItem(owner=author, src=request.data["id"])
             inbox_item.save()
             return Response(InboxItemSerializer(inbox_item).data, status=status.HTTP_201_CREATED)
-        elif request.data["type"] == "follow":
+        elif request.data["type"].lower() == "follow":
+            summary = f"{request.data['actor']['displayName']} Wants To Follow You!"
+            notification = Notification(type="Follow", author=author, actor=request.data["actor"]["url"], summary=summary)
+            notification.save()
             return Response({"success": "Follow Request Delivered!"}, status=status.HTTP_200_OK)
-        elif request.data["type"] == "like":
-            return Response({"success": "Follow Request Delivered!"}, status=status.HTTP_200_OK)
-        return Response({"error": "Invalid Type: Must Be One Of 'post', 'follow', Or 'like'!"}, status=status.HTTP_400_BAD_REQUEST)
+        elif request.data["type"].lower() == "like":
+            summary = f"{request.data['author']['displayName']} Likes Your Post!"
+            notification = Notification(type="Like", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification.save()
+            return Response({"success": "Like Delivered!"}, status=status.HTTP_200_OK)
+        elif request.data["type"].lower() == "comment":
+            summary = f"{request.data['author']['displayName']} Commented On Your Post!"
+            notification = Notification(type="Comment", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification.save()
+            return Response({"success": "Comment Delivered!"}, status=status.HTTP_200_OK)
+        return Response({"error": "Invalid Type: Must Be One Of 'post', 'follow', 'comment', Or 'like'!"}, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         author = get_object_or_404(Author, local_id=kwargs["author"])

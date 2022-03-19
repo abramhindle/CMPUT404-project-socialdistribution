@@ -11,11 +11,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getInbox } from '../../Services/posts';
 import { useState, useEffect } from 'react';
 import { logout } from '../../redux/profileSlice';
-import { set, findIndex } from 'lodash/fp';
+import { set, findIndex, concat } from 'lodash/fp';
 import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid, Button } from '@mui/material';
+import NotificationCard from './notifications/NotificationCard';
 import GithubFeedCard from './mainFeed/GithubFeedCard';
 import {styled} from '@mui/system'
+import { getNotifications } from '../../Services/notifications';
 import { pushToInbox, setInbox } from '../../redux/inboxSlice';
+import { getAuthorFromStorage, setAuthorInStorage  } from '../../LocalStorage/profile';
+import { setInboxInStorage, getInboxFromStorage } from '../../LocalStorage/inbox';
+import { getFollowers } from '../../Services/followers';
 
 const drawerWidth = 400;
 
@@ -40,24 +45,48 @@ export default function HomePage() {
     /* A State Hook For Storing The Window Width */
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
+    /* State Hook For Followers */
+    const [followers, setFollowers] = useState([]);
+
     /* State Hook For Inbox */
-    const inbox = useSelector( state => state.inbox.items );
-    const addToFeed = item => dispatch(pushToInbox(item));
+    const [inbox, setInbox] = useState(getInboxFromStorage());
+    
+    /* Add A New Item To The Inbox */
+    const addToFeed = (item) => {
+        const newInbox = concat(inbox)(item).sort((a, b) => Date.parse(b.published) - Date.parse(a.published));
+        setInbox(newInbox);
+        setInboxInStorage(newInbox);
+    }
+    
+    /* Remove An Item From The Inbox */
     const removeFromFeed = item => {
-        console.log(inbox);
-        dispatch(setInbox(inbox.filter( x => x.id !== item.id)));
+        const newInbox = inbox.filter( x => x.id !== item.id);
+        setInbox(newInbox);
+        setInboxInStorage(newInbox);
     };
+
+    /* Update An Item In The Inbox */
     const updateFeed = (item) => {
         const index = findIndex(x => x.id === item.id)(inbox);
-        dispatch(setInbox(inbox.map((x, i) => i === index ? item : x)));
+        const newInbox = inbox.map((x, i) => i === index ? item : x);
+        setInbox(newInbox);
+        setInboxInStorage(newInbox);
     }
 
     /* State Hook For User ID */
-    const userID = useSelector( state => state.profile.url );
+    const [author, setAuthor] = useState(getAuthorFromStorage());
+    const editAuthor = (newGitHub, newProfileImage) => {
+        const newAuthor = set("profileImage")(newProfileImage)(set("github")(newGitHub)(author));
+        setAuthor(newAuthor);
+        setAuthorInStorage(newAuthor);
+    }
+
+    /* State Hook For Notifications */
+    const [notifications, setNotifications] = useState([])
+    const removeNotification = (notification) => setNotifications(notifications.filter(x => x.id !== notification.id))
 
     /* State Hook For GitHub */
     const [githubFeed, setGithubFeed] = useState([]);
-    const githubID = useSelector ( state => state.profile.github.substring(state.profile.github.lastIndexOf('/') + 1) );
 
     /* We Use This To Listen To Changes In The Window Size */
     useEffect( () => { 
@@ -66,7 +95,6 @@ export default function HomePage() {
         return () => { window.removeEventListener('resize', windowResizeCallback) };
      });
     
-
     /* Hook For Navigating To The Home Page */
     const navigate = useNavigate();
     const goToLogin = () => navigate("/")
@@ -81,20 +109,37 @@ export default function HomePage() {
         .catch( err => console.log(err) );
     }
 
-    /* Get Inbox From Server  */
-    /*
+    /* Get Inbox From Server 
     useEffect( () => {
-        getInbox(userID)
-            .then( res => dispatch(setInbox(res.data.items)) )
+        getInbox(author.url)
+            .then( res => setInbox(res.data.items) )
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
     }, [] );
     */
+
+    /* Get Notifications From Server  */
+    useEffect( () => {
+        getNotifications(author.url)
+            .then( res => setNotifications(res.data.items) )
+            .catch( err => console.log(err) )
+            .finally( () => console.log(notifications) )
+    }, [] );
+
+    /* Get Followers From Server  */
+    useEffect( () => {
+        getFollowers(author.id)
+            .then( res => console.log(res.data.items) )
+            .catch( err => console.log(err) )
+            .finally( () => console.log(followers) )
+    }, [] );
     
     /* Get Github feed from Github API */
     useEffect( () => {
+        const githubID = author.github.substring(author.github.lastIndexOf('/') + 1);
+        console.log("https:/api.github.com/users/" + githubID + "/events/public")
         if (githubID.length !== 0) {
-            axios.get(("https:/api.github.com/users/" + githubID + "/events/public"))
+            axios.get("https:/api.github.com/users/" + githubID + "/events/public")
                 .then( res => {
                     console.log(res.data)
                     setGithubFeed(res.data) 
@@ -143,7 +188,7 @@ export default function HomePage() {
             anchor="left" >
             <Toolbar />
             <Divider />
-            <ProfileSection alertSuccess={alertSuccess} alertError={alertError} /> 
+            <ProfileSection alertSuccess={alertSuccess} alertError={alertError} author={author} editAuthor={editAuthor} /> 
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
             <CreatePost alertSuccess={alertSuccess} alertError={alertError} addToFeed={addToFeed} />
@@ -152,28 +197,34 @@ export default function HomePage() {
                     <TabPanel value="1" sx={{p:0}}>
                         {inbox.filter(post => post.visibility === "PUBLIC").map((post, index) => (
                             (<Grid item xs={12} key={index}> 
-                                <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                <FeedCard post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                             </Grid>)
                         ))}
                     </TabPanel>
                     <TabPanel value="2" sx={{p:0}}>
                         {inbox.filter(post => post.visibility !== "PUBLIC").map((post, index) => (
                             (<Grid item xs={12} key={index}> 
-                                <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                <FeedCard post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                             </Grid>)
                         ))}
                     </TabPanel>
                     <TabPanel value="3" sx={{p:0}}>
                         <Paper sx={{p:0}}>
-                            {inbox.filter(post => post.author.id === userID).map((post, index) => (
+                            {inbox.filter(post => post.author.id === author.url).map((post, index) => (
                                 (<Grid item xs={12} key={index}> 
-                                    <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                    <FeedCard post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                                 </Grid>)
                             ))}
                         </Paper>
                     </TabPanel >
                     <TabPanel value="4" sx={{p:0}}>
-                        Notifications
+                        <Paper sx={{p:0}}>
+                            {notifications.map((notification, index) => (
+                                (<Grid item xs={12} key={index}> 
+                                    <NotificationCard notification={notification} removeNotification={removeNotification} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} /> 
+                                </Grid>)
+                            ))}
+                        </Paper>
                     </TabPanel>
                     <TabPanel value="5" sx={{p:0}}>
                         {githubFeed?.map((event, index) => ( <Grid key={index} item xs={12}> <GithubFeedCard event={event} /> </Grid>))}

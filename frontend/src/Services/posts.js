@@ -1,8 +1,6 @@
 import { post, get, put, del } from "./requests";
 
 export function getInbox(authorID) {
-    console.log("authors/" + authorID + "inbox/")
-    console.log(authorID)
     return get("authors/" + authorID + "inbox/");
 }
 

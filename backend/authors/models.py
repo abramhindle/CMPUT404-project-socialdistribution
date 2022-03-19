@@ -13,3 +13,9 @@ class Author(models.Model):
     profileImage = models.TextField(default=default_profile_image)
     verified = models.BooleanField(default=False)
     profile = models.OneToOneField(User, on_delete=models.CASCADE)
+
+
+class Avatar(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    author = models.OneToOneField(Author, on_delete=models.CASCADE)
+    content = models.TextField(default=default_profile_image)
