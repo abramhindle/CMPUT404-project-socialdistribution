@@ -51,10 +51,10 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color}) {
+function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleLikes, color}) {
   return (
       <CardActions disableSpacing>
-          <IconButton aria-label="like" onClick={handleColor}>
+          <IconButton aria-label="like" onClick={handleLikes} >
             <FavoriteIcon color = {color}/>
           </IconButton>
           <IconButton aria-label="share">
@@ -76,6 +76,19 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
   /* State Hook For Colour Scheme */
   const [color, setColor] = React.useState("grey");
+
+  /* State Hook For likes */
+  const [likes, setLikes] = React.useState(false);
+  const handleLikes = () => {
+    setLikes(!likes)
+    if (likes === false){
+      setColor("grey")
+
+    }else{
+      setColor("secondary")
+
+    }
+  }
 
   /* State Hook For Opening Edit Post Dialog */
   const [editOpen, setEditOpen] = React.useState(false);
@@ -162,7 +175,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
           <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
-      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
+      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           {comments.map((comment) => ( <Grid item xs={12}> <CommentCard removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
