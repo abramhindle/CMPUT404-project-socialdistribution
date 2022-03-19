@@ -18,6 +18,21 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.conf import settings
+from .models import InboxItem
+from notifications.models import Notification
+from posts.models import Post
+from posts.serializers import PostSerializer
+from .serializers import InboxItemSerializer
+from django.conf import settings
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.shortcuts import get_object_or_404
+from concurrent.futures import ThreadPoolExecutor
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from authors.models import Author
+from rest_framework.decorators import api_view
+from backend.permissions import IsOwnerOrAdmin
 
 
 class IsInboxOwnerOrAdmin(IsOwnerOrAdmin):
@@ -72,21 +87,21 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
     @csrf_exempt
     def create(self, request, *args, **kwargs):
         author = get_object_or_404(Author, local_id=kwargs["author"])
-        if request.data["type"] == "post":
+        if request.data["type"].lower() == "post":
             inbox_item = InboxItem(owner=author, src=request.data["id"])
             inbox_item.save()
             return Response(InboxItemSerializer(inbox_item).data, status=status.HTTP_201_CREATED)
-        elif request.data["type"] == "follow":
-            summary = f"{request.data['author']['displayName']} Wants To Follow You!"
-            notification = Notification(type="Follow", author=author, actor=request.data["author"]["url"], summary=summary)
+        elif request.data["type"].lower() == "follow":
+            summary = f"{request.data['actor']['displayName']} Wants To Follow You!"
+            notification = Notification(type="Follow", author=author, actor=request.data["actor"]["url"], summary=summary)
             notification.save()
             return Response({"success": "Follow Request Delivered!"}, status=status.HTTP_200_OK)
-        elif request.data["type"] == "like":
+        elif request.data["type"].lower() == "like":
             summary = f"{request.data['author']['displayName']} Likes Your Post!"
             notification = Notification(type="Like", author=author, actor=request.data["author"]["url"], summary=summary)
             notification.save()
             return Response({"success": "Like Delivered!"}, status=status.HTTP_200_OK)
-        elif request.data["type"] == "comment":
+        elif request.data["type"].lower() == "comment":
             summary = f"{request.data['author']['displayName']} Commented On Your Post!"
             notification = Notification(type="Comment", author=author, actor=request.data["author"]["url"], summary=summary)
             notification.save()

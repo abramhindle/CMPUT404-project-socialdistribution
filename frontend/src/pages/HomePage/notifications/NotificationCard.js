@@ -16,6 +16,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { CardActions, CardHeader } from '@mui/material';
 import { deleteNotification } from '../../../Services/notifications';
+import { addFollower } from '../../../Services/followers';
 
 const CardButton = styled(Button)({fontSize: "1.2rem", fontWeight: 500});
 
@@ -67,6 +68,19 @@ export default function NotificationCard({notification, alertSuccess, alertError
       } );
   }
 
+  /* Callback For Accepting Follow Requests */
+  const onAcceptFollow = () => {
+    addFollower(notification.author.id, notification.actor)
+      .then( _ => deleteNotification(notification.author.id, notification.id) )
+        .then( _ => { removeNotification(notification); return 1; } )
+        .catch( err => { console.log(err); return 0; } )
+          .then( res => res === 1 ? alertSuccess("Accepted Follow Request!") : alertError("Error: Could Not Accept Follow Request!") )
+      .catch( err => { 
+        console.log(err);
+        alertError("Error: Could Not Accept Follow Request!");
+      } );
+  }
+
   return (
     <Card fullwidth sx={{maxHeight: 200, my: "1px"}}>
         <CardHeader 
@@ -80,8 +94,8 @@ export default function NotificationCard({notification, alertSuccess, alertError
       </Menu>
       {notification.type === "Follow"&&
       <CardActions>
-          <CardButton onClick={() => console.log("Accept")}>Accept</CardButton>
-          <CardButton type="submit">Reject</CardButton>
+          <CardButton onClick={onAcceptFollow}>Accept</CardButton>
+          <CardButton type="submit" onClick={onDeleteNotification}>Reject</CardButton>
       </CardActions> }
     </Card>
   );

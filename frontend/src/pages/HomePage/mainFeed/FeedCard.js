@@ -25,6 +25,8 @@ import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { concat } from 'lodash/fp';
+import FollowRequestDialog from '../../../Components/FollowRequestDialog';
+import { getAuthorFromStorage } from '../../../LocalStorage/profile';
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -95,6 +97,11 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
     setAnchorEl(false);
   };
 
+  /* State Hook For Opening Follow Request Dialog */
+  const [followOpen, setFollowOpen] = React.useState(false);
+  const closeFollowDialog = () => setFollowOpen(false);
+  const openFollowDialog = () => setFollowOpen(post.author.id !== getAuthorFromStorage().id);
+
   /* State Hook For Comments */
   const [comments, setComments] = React.useState([]);
   const addComment = comment => setComments(concat(comments)(comment));
@@ -119,7 +126,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
   /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
-    getComments(post.id)
+    getComments(post)
       .then( res => { 
         setComments(res.data.items);
         setExpanded(!expanded);
@@ -131,7 +138,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
     <Card sx={{m: "1px"}}>
       <CardHeader
         avatar={ 
-          <AvatarContainer onClick={() => console.log(post.author.id)} >
+          <AvatarContainer onClick={() => openFollowDialog() } >
             <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />
             <Typography variant="caption" display="block" gutterBottom sx={{paddingTop: "5px"}}>{post.author.displayName}</Typography>
           </AvatarContainer>
@@ -190,6 +197,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <EditPostDialog post={post} open={editOpen} onClose={closeEditDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} post={post} addComment={addComment} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
+      <FollowRequestDialog  authorToFollow={post.author} alertSuccess={alertSuccess} alertError={alertError} open={followOpen} handleClose={closeFollowDialog} />
     </Card>
   );
 }

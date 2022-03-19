@@ -100,7 +100,17 @@ def proxy_requests(request, path):
     try:  # If Path Is A URL, We Need To Make A Request To Another Server
         validate = URLValidator()
         validate(path)
-        status_code, content_type, response_body = proxy_selector(request, "http://" + path.split("http://")[-1].replace("//", "/"))
+        path = path.replace("http:/", "http://")
+        if "followers" in path:
+            parts = (path + "/").split("/")
+            i = parts.index("authors") + 1
+            j = parts.index("followers")
+            url = "/".join(parts[0:i+1]) + "/" + "/".join(parts[j:])
+            if len(parts) - j > 4 and url[-2:] != "//":
+                url += "/"
+        else:
+            url = "http://" + (path + "/").split("http://")[-1].replace("//", "/")
+        status_code, content_type, response_body = proxy_selector(request, url)
         if content_type != "application/json":
             response = HttpResponse(content_type=content_type)
             response.write(response_body)

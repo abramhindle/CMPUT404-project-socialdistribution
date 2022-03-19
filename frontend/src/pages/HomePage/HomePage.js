@@ -20,6 +20,7 @@ import { getNotifications } from '../../Services/notifications';
 import { pushToInbox, setInbox } from '../../redux/inboxSlice';
 import { getAuthorFromStorage, setAuthorInStorage  } from '../../LocalStorage/profile';
 import { setInboxInStorage, getInboxFromStorage } from '../../LocalStorage/inbox';
+import { getFollowers } from '../../Services/followers';
 
 const drawerWidth = 400;
 
@@ -43,6 +44,9 @@ export default function HomePage() {
 
     /* A State Hook For Storing The Window Width */
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+    /* State Hook For Followers */
+    const [followers, setFollowers] = useState([]);
 
     /* State Hook For Inbox */
     const [inbox, setInbox] = useState(getInboxFromStorage());
@@ -120,6 +124,14 @@ export default function HomePage() {
             .then( res => setNotifications(res.data.items) )
             .catch( err => console.log(err) )
             .finally( () => console.log(notifications) )
+    }, [] );
+
+    /* Get Followers From Server  */
+    useEffect( () => {
+        getFollowers(author.id)
+            .then( res => console.log(res.data.items) )
+            .catch( err => console.log(err) )
+            .finally( () => console.log(followers) )
     }, [] );
     
     /* Get Github feed from Github API */

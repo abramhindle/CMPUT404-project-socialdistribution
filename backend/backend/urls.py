@@ -30,6 +30,9 @@ urlpatterns = [
     # Notification Api
     path('api/authors/<uuid:author>/notifications/', include('notifications.urls')),
 
+    # Followers Api
+    path('api/authors/<uuid:author>/followers/', include('followers.urls')),
+
     # Serve API Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
 
