@@ -29,4 +29,4 @@ class Likes(models.Model):
     summary = models.TextField(blank=False)
     context = models.URLField(blank=False)
     object= models.URLField(max_length=250, blank=False)
-    # post = models.ForeignKey(Post,on_delete=models.CASCADE)
+    # post = models.ForeignKey(Post,on_delete=models.CASCADE,default='')
