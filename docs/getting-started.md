@@ -26,3 +26,20 @@
    ```sh
    python manage.py runserver
    ```
+
+## Testing multiple servers
+
+We can run multiple independent servers using Docker to test the distributed aspect of the project
+
+1. Build the container
+   ```sh
+   docker build -t socialdistribution .
+   ```
+2. Run the container in detached mode
+   ```sh
+   docker run --rm -p 8001:8000 --name socialdistribution -d socialdistribution
+   ```
+3. Stop the container when you're done
+   ```sh
+   docker kill socialdistribution
+   ```

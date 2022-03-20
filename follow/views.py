@@ -8,13 +8,12 @@ from follow.models import AlreadyExistsError, Follow, Request
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from requests import Response
+
+from servers.views.generic.list_view import ServerListView
 
 
 USER_MODEL = get_user_model()
-
-
-def get_follow_list():
-    return getattr(settings, "FOLLOW_LIST", "users")
 
 
 def create_follow_request(request, to_username):
@@ -77,9 +76,21 @@ def unfollow_request(request, from_username):
         return redirect(from_user.get_absolute_url())
 
 
-class UsersView(LoginRequiredMixin, ListView):
+class UsersView(LoginRequiredMixin, ServerListView):
     model = USER_MODEL
     template_name = 'follow/user_list.html'
+    endpoint = '/authors/'
+
+    def serialize(self, response: Response):
+        jsonResponse = response.json()
+        jsonResponse['items']
+
+        def to_internal(representation):
+            return {
+                'get_full_name': representation['displayName'],
+                'username': representation['github'],
+            }
+        return [to_internal(user) for user in jsonResponse['items']]
 
     def get_queryset(self):
         return USER_MODEL.objects.filter(~Q(pk=self.request.user.id) & Q(is_staff=False))

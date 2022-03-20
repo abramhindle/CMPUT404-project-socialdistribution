@@ -20,15 +20,21 @@ body {
 
 /* Full-width input fields */
 
-input,
+input:not([type="submit"]),
 textarea,
 select {
   padding: 1rem;
-  width: -webkit-fill-available;
   font-size: 100%;
   border: none;
   background-color: #f1f1f1;
   font-family: inherit;
+}
+
+input:not([type="submit"]):focus,
+textarea:focus {
+  transition: 0.2s background-color;
+  background-color: #ddd;
+  outline: none;
 }
 
 textarea {
@@ -36,11 +42,17 @@ textarea {
   background-color: #f1f1f1;
 }
 
-input:focus,
-textarea:focus {
-  transition: 0.2s background-color;
-  background-color: #ddd;
-  outline: none;
+form th {
+  text-align: right;
+  margin-right: 1rem;
+}
+
+form td {
+  display: flex;
+}
+
+form td > * {
+  flex-grow: 1;
 }
 
 /* Overwrite default styles of hr */
@@ -84,14 +96,25 @@ hr {
 }
 
 /* Add a blue text color to links */
+
+input[type="submit"].link {
+  border: none;
+  background-color: inherit;
+  padding: 0;
+}
+
+input[type="submit"].link,
 a {
   color: dodgerblue;
   text-decoration: none;
   transition: 0.2s color;
+  font-size: 100%;
 }
 
+input[type="submit"].link:hover,
 a:hover {
   color: hsl(209.6, 100%, 70%);
+  cursor: pointer;
 }
 
 .alert {
@@ -208,7 +231,7 @@ ul.large-gap > li {
 
 .pill {
   border-radius: 8rem;
-  background-color: gray;
+  background-color: dodgerblue;
   padding: 0.5rem;
   color: white;
 }

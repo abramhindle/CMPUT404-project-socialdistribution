@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from posts.models import Post, Category, ContentType, Comment
+from posts.models import Post, Category, ContentType, Comment, Like
 from django.urls import reverse
 
 from .constants import COMMENT_DATA, POST_DATA
@@ -130,6 +130,59 @@ class PostDetailViewTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, 'Comments')
         self.assertContains(res, COMMENT_DATA['comment'], count=3)
+
+    def test_like_section(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:detail', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'Like')
+
+    def test_like(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.post(reverse('posts:like', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 302)
+        self.assertIsNotNone(Like.objects.get(author=self.user, post=self.post))
+
+    def test_like_require_csrf(self):
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.login(username='bob', password='password')
+        res = csrf_client.post(reverse('posts:like', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 403)
+
+    def test_disable_like(self):
+        Like.objects.create(author=self.user, post=self.post)
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:detail', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertNotContains(res, 'Like')
+
+
+class PostDeleteViewTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username='bob', password='password')
+        self.post = Post.objects.create(
+            title=POST_DATA['title'],
+            description=POST_DATA['description'],
+            content_type=POST_DATA['content_type'],
+            content=POST_DATA['content'],
+            author_id=self.user.id,
+            unlisted=True)
+        self.post.save()
+
+    def test_post_delete_view_page(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:delete', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'posts/delete_post.html')
+        self.assertContains(res, self.post.title)
+
+    def test_post_delete_view(self):
+        initial_post_count = len(Post.objects.all())
+        self.client.login(username='bob', password='password')
+        res = self.client.post(reverse('posts:delete', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(len(Post.objects.all()), initial_post_count - 1)
 
 
 class CreateCommentViewTests(TestCase):
