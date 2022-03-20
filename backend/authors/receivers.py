@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import Author
+from .models import Author, Avatar
 from django.contrib.auth.models import User
 from django.conf import settings
 
@@ -17,8 +17,16 @@ def on_create_profile(sender, **kwargs):
 def on_create_author(sender, **kwargs):
     """This task populates the ID field with the local id of a new author"""
     if kwargs.get('created'):
+        # Set Author ID
         author: Author = kwargs.get('instance')
         author.id = f"{settings.DOMAIN}/authors/{author.local_id}/"
+
+        # Create Avatar
+        avatar: Avatar = Avatar(author=author)
+        author.profileImage = f"{settings.DOMAIN}/api/authors/{author.local_id}/avatar/"
+        avatar.save()
+
+        # Save Author
         author.save()
 
 

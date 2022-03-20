@@ -129,7 +129,7 @@ export default function CommentCard({profile, comment, alertSuccess, alertError,
       <Menu id="basic-menu" anchorEl={anchorEl} open={anchorEl} onClose={closeAnchorEl} MenuListProps={{ 'aria-labelledby': 'basic-button', }} >
           <MenuItem onClick={ () => { handleEditClickOpen(); closeAnchorEl(); } }>Edit</MenuItem>
           <MenuItem onClick={() => { handleDelClickOpen(); closeAnchorEl(); }}>Remove</MenuItem>
-        </Menu>
+      </Menu>
       <EditCommentDialog open={editOpen} onClose={handleEditClose} comment={comment} alertSuccess={alertSuccess} alertError={alertError} editComments={editComments} />
       <DeleteCommentDialog comment={comment} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={handleDelClose} removeComment={removeComment} />
     </Card>

@@ -74,7 +74,7 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
         content: reader.result, 
         categories: formData.get("categories").replaceAll(" ", "").split(","), 
         visibility: formData.get("visibility"), 
-        unlisted: formData.get("unlisted")
+        unlisted: true
       }
 
       // console.log("unlisted data here!!!!", formData.get("unlisted"))
@@ -87,16 +87,35 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
       /* Send Data To backend */
       if (valid) {
         console.log(data);
+
+        /* Create Image Post */
         createPost(data, userID)
-          .then( res => { 
-            alertSuccess("Success: Created New Post!");
+          .then( res => {
+            console.log(res.data);
+            return res.data;
+          } )
+          .then( resData => {
+            const data = {
+              type: "post", 
+              title: formData.get("title"), 
+              description: formData.get("description"), 
+              contentType: "text/markdown", 
+              content: "![image](" + (resData.id + "image/") + ")\n\n**" + formData.get("textContent") + "**", 
+              categories: formData.get("categories").replaceAll(" ", "").split(","), 
+              visibility: formData.get("visibility"), 
+              unlisted: formData.get("unlisted")
+            }
+
+            console.log(data);
+            return createPost(data, userID);
+          } )
+          .then( res => {
             addToFeed(res.data);
             onClose();
-          })
-          .catch( err => { 
-            console.log(err);
-            alertError("Error: Could Not Create Post!");
-          });
+          } )
+          .catch( err => console.log(err) )
+          .finally( _ => onClose() );
+
       } else {
         alertError("Error: Must Fill In All Required Fields!");
       }
@@ -136,6 +155,19 @@ return (
                   name = "description"
                   required
                 />
+                </Box>
+              </Paper>
+              <Paper sx={{width: "100%", mt:2}}>
+                <Box sx={{width: "100%", p:1}}>
+                  <TextField
+                    id="textContent"
+                    label="Content"
+                    multiline
+                    rows={6}
+                    sx={{width: "100%"}}
+                    name = "textContent"
+                    required
+                  />
                   </Box>
               </Paper>
               <Grid container direction={'row'} spacing={1}>

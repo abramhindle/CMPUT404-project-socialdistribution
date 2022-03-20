@@ -12,7 +12,9 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
-import {createComment} from "../../../services/comments"
+import {createComment} from "../../../Services/comments"
+import { getAuthorFromStorage } from '../../../LocalStorage/profile';
+
 
 
 export default function AddCommentsDialog({open, handleAddCMClose, addComment, post, alertSuccess, alertError}) {
@@ -26,6 +28,7 @@ export default function AddCommentsDialog({open, handleAddCMClose, addComment, p
       type: "comment", 
       comment: formData.get("comment"), 
       contentType: formData.get("contentType"), 
+      author: getAuthorFromStorage(),
     }
 
     /* Validate Fields */
