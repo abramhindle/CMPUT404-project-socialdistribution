@@ -16,6 +16,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { createCommentLikes, getCommentLikes } from '../../../services/likes';
 
 const PostImage = styled('img')({width: "100%"})
 
@@ -29,7 +30,7 @@ function isoToHumanReadableDate(isoDate) {
   return dateFormat.format(date) + " - " + timeFormat.format(date);
 }
 
-export default function CommentCard({comment, alertSuccess, alertError, removeComment, editComments}) {
+export default function CommentCard({profile, comment, alertSuccess, alertError, removeComment, editComments}) {
   /* Hook For Like icon color */
   const [color, setColor] = React.useState("grey");
 
@@ -48,8 +49,27 @@ export default function CommentCard({comment, alertSuccess, alertError, removeCo
   const closeAnchorEl = () => setAnchorEl(false);
   const openAnchorEl = () => setAnchorEl(true);
 
-  const handleColor = () => setColor("secondary");
-
+  const handleColor = () => {
+    const data = {
+      type: "Like", 
+      summary: profile.displayName + " likes your comment",
+      context: "https://www.w3.org/ns/activitystreams",
+      object: comment.id, 
+      author: profile
+    }
+    if (color === "grey"){
+      createCommentLikes(comment, data)
+    .then( res => { 
+      alertSuccess("Success: Created New Like!");
+      setColor("secondary")
+    })
+    .catch( err => {console.log(err)
+      alertError("Error: Could Not Create Like!");
+    } );
+    }else{
+      alertError("You already liked this comment!");
+    }
+  }
 
   /* Hook handler For Menu (edit/remove) */
   const handleClick = (event) => {
@@ -58,6 +78,22 @@ export default function CommentCard({comment, alertSuccess, alertError, removeCo
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  React.useEffect( () => {
+   
+    getCommentLikes(comment)
+        .then( res => {
+          if (res.data.items !== undefined){
+            // console.log(res.data.items)
+            // console.log(res.data);
+            setColor("secondary");
+          }
+        })
+        .catch( err => {
+          console.log(err);
+        } )
+  
+}, [] );
 
   return (
     <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>

@@ -21,6 +21,9 @@ class LikesPagination(PageNumberPagination):
     page_query_param = 'page'
 
     def get_paginated_response(self, data):
+        if not data:
+            message = "object is empty!"
+            return Response({"message": message}, status=status.HTTP_204_NO_CONTENT)
         return Response({'type': "Like", 'items': data})
 
 
@@ -32,11 +35,38 @@ class LikesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
-        try:
-            if Likes.objects.filter(object=targetUrl):
-                return Likes.objects.filter(object=targetUrl)
-        except:
-            return Http404
+        return Likes.objects.filter(object=targetUrl)
+        
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        author = get_object_or_404(Author, local_id=self.kwargs["author"])
+        serializer.save(author_url=author.id)
+    
+
+    def get_permissions(self):
+        """Manages Permissions On A Per-Action Basis"""
+        if self.action in ['update', 'create', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
+class LikesCommentViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    pagination_class = LikesPagination
+    serializer_class = LikesSerializer
+
+
+    def get_queryset(self):
+        targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
+        #check if object is not empty
+        return Likes.objects.filter(object=targetUrl)
 
 
     def create(self, request, *args, **kwargs):
@@ -48,36 +78,8 @@ class LikesViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         author = get_object_or_404(Author, local_id=self.kwargs["author"])
-        # summary = author.displayName + "like your post"
         serializer.save(author_url=author.id)
     
-
-    # def perform_destroy(self, instance):
-        
-    #     print ("I am cccb")
-
-    
-    # def destroy(self, request, *args, **kwargs):
-    #     print("*****")
-    #     targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
-    #     print("*****")
-    #     print(targetUrl)
-    #     try:
-    #         like = Likes.objects.get(object=targetUrl)
-    #         like.delete()
-    #     except:
-    #         return Http404
-        
-
-    # def destroy(self, request, *args, **kwargs):
-    #     post = self.kwargs["post"]
-    #     print("post id########### is: ", post)
-    #     try:
-    #         instance = Likes.objects.get(object=post)
-    #         instance.delete()
-    #     except:
-    #         pass
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""

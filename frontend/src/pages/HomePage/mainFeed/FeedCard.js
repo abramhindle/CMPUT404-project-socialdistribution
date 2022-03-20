@@ -14,7 +14,7 @@ import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
 import Grid from '@mui/material/Grid';
 import CommentCard from '../comment/CommentCard';
-import { getComments } from '../../../Services/comments';
+import { getComments } from '../../../services/comments';
 import EditPostDialog from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -25,7 +25,7 @@ import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { concat } from 'lodash/fp';
-import { createLikes, getLikes, deleteLikes} from '../../../Services/likes';
+import { createLikes, getLikes, deleteLikes} from '../../../services/likes';
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -78,41 +78,41 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
   /* State Hook For Colour Scheme */
   const [color, setColor] = React.useState("grey");
 
-  /* State Hook For likes */
-  const [likes, setLikes] = React.useState(false);
+  // /* State Hook For likes */
+  // const [likes, setLikes] = React.useState(false);
   const handleLikes = () => {
-    setLikes(!likes)
-    if (likes === false){
-      deleteLikes(post)
-      .then( res => { 
-        alertSuccess("Success: Delete Like!");
-        setColor("grey")
-      })
-      .catch( err => {console.log(err)
-        alertError("Error: Could Not Delete Like!");
-      } );
-      
-
-    }else{
-      const data = {
-        type: "Like", 
-        summary: profile.displayName + " likes your post",
-        context: "https://www.w3.org/ns/activitystreams",
-        object: post.id, 
-        author: profile
-      }
-      // console.log("###########", data.object)
-      createLikes(post, data)
-      .then( res => { 
-        alertSuccess("Success: Created New Like!");
-        setColor("secondary")
-      })
-      .catch( err => {console.log(err)
-        alertError("Error: Could Not Create Like!");
-      } );
-      
-
+    // setLikes(!likes)
+    // if (likes === false){
+    //   deleteLikes(post)
+    //   .then( res => { 
+    //     alertSuccess("Success: Delete Like!");
+    //     setColor("grey")
+    //   })
+    //   .catch( err => {console.log(err)
+    //     alertError("Error: Could Not Delete Like!");
+    //   } );
+    // }else{
+    const data = {
+      type: "Like", 
+      summary: profile.displayName + " likes your post",
+      context: "https://www.w3.org/ns/activitystreams",
+      object: post.id, 
+      author: profile
     }
+    // console.log("###########", data.object)
+    if (color === "grey"){
+      createLikes(post, data)
+    .then( res => { 
+      alertSuccess("Success: Created New Like!");
+      setColor("secondary")
+    })
+    .catch( err => {console.log(err)
+      alertError("Error: Could Not Create Like!");
+    } );
+    }else{
+      alertError("You already liked this post!");
+    }
+    // }
   }
 
   /* State Hook For Opening Edit Post Dialog */
@@ -169,12 +169,9 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
    
       getLikes(post)
           .then( res => {
-            console.log(res.data.items)
-            // console.log(res.items.length)
-             
-            console.log(res.data);
-            setColor("secondary");
-            
+            if (res.data.items !== undefined){
+              setColor("secondary");
+            }
           })
           .catch( err => {
             console.log(err);
@@ -220,7 +217,7 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {comments.map((comment) => ( <Grid item xs={12}> <CommentCard removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
+          {comments.map((comment) => ( <Grid item xs={12}> <CommentCard profile = {profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
           <Grid item xs={12} sx={{marginTop: "8px"}}>
             <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
             <Button disableElevation={false} sx={{minHeight: "100px", fontSize: "1.15rem"}}  onClick={handleAddCMClickOpen} fullWidth>Add Comment</Button>

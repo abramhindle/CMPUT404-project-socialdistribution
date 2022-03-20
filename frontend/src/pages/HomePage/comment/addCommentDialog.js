@@ -12,7 +12,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
-import {createComment} from "../../../Services/comments"
+import {createComment} from "../../../services/comments"
 
 
 export default function AddCommentsDialog({open, handleAddCMClose, addComment, post, alertSuccess, alertError}) {

@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import {  useDispatch } from 'react-redux';
 import { login } from '../../redux/profileSlice';
 import { setInbox } from '../../redux/inboxSlice';
-import { getInbox } from '../../Services/posts';
+import { getInbox } from '../../services/posts';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 function Copyright(props) {
