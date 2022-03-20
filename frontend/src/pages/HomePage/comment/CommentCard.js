@@ -92,7 +92,6 @@ export default function CommentCard({profile, comment, alertSuccess, alertError,
         .catch( err => {
           console.log(err);
         } )
-  
 }, [] );
 
   return (
