@@ -1,4 +1,6 @@
 
+from urllib import response
+from django.http import Http404
 from rest_framework.pagination  import PageNumberPagination
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -10,6 +12,8 @@ from posts.models import Post
 from authors.models import Author
 from .models import Likes
 from rest_framework import status
+
+# from backend.likes import serializers
 
 
 class LikesPagination(PageNumberPagination):
@@ -25,28 +29,45 @@ class LikesViewSet(viewsets.ModelViewSet):
     pagination_class = LikesPagination
     serializer_class = LikesSerializer
 
+
     def get_queryset(self):
-        post = self.kwargs["post"]
-        print("#post is: ", post)
-        return Likes.objects.filter(object = post)
+        targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
+        try:
+            if Likes.objects.filter(object=targetUrl):
+                return Likes.objects.filter(object=targetUrl)
+        except:
+            return Http404
+
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        post = get_object_or_404(Post, local_id=self.kwargs["post"])
         author = get_object_or_404(Author, local_id=self.kwargs["author"])
-        serializer.save(author_url=author.id, post=post)
+        # summary = author.displayName + "like your post"
+        serializer.save(author_url=author.id)
     
+
     # def perform_destroy(self, instance):
-    #     if instance.type == 'userdefined':
-    #         instance.delete()
-    # def perform_destroy(self): 
-    #         # write custom code
-    #     print("##########################")
+        
+    #     print ("I am cccb")
+
+    
     # def destroy(self, request, *args, **kwargs):
-    #     print("dsfdsfadfadsfadsafadfadsf")
-    #     post = self.kwargs["post"]
-    #     print("post id########### is: ", post)
-    #     instance = Likes.objects.get(object=post)
-    #     self.perform_destroy(instance)
+    #     print("*****")
+    #     targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
+    #     print("*****")
+    #     print(targetUrl)
+    #     try:
+    #         like = Likes.objects.get(object=targetUrl)
+    #         like.delete()
+    #     except:
+    #         return Http404
+        
 
     # def destroy(self, request, *args, **kwargs):
     #     post = self.kwargs["post"]

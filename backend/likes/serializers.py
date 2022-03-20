@@ -10,8 +10,8 @@ class LikesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Likes
         # write_only_fields = ["local_id", "post"]
-        read_only_fields = ["author"]
-        fields = ["type", "summary", "context", "object"]
+        # read_only_fields = ["author"]
+        fields = ["type", "summary", "context", "object", "author"]
 
     def get_author(self, obj: Likes):
         author_url = obj.author_url

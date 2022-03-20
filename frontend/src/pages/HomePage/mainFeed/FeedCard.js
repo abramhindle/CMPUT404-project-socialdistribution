@@ -25,6 +25,7 @@ import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { concat } from 'lodash/fp';
+import { createLikes, getLikes, deleteLikes} from '../../../Services/likes';
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -70,7 +71,7 @@ function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleL
 }
 
 
-export default function FeedCard({post, isOwner, alertError, alertSuccess, updateFeed, removeFromFeed}) {
+export default function FeedCard({profile, post, isOwner, alertError, alertSuccess, updateFeed, removeFromFeed}) {
   /* State Hook For Expanding The Comments */
   const [expanded, setExpanded] = React.useState(false);
 
@@ -82,10 +83,34 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   const handleLikes = () => {
     setLikes(!likes)
     if (likes === false){
-      setColor("grey")
+      deleteLikes(post)
+      .then( res => { 
+        alertSuccess("Success: Delete Like!");
+        setColor("grey")
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Delete Like!");
+      } );
+      
 
     }else{
-      setColor("secondary")
+      const data = {
+        type: "Like", 
+        summary: profile.displayName + " likes your post",
+        context: "https://www.w3.org/ns/activitystreams",
+        object: post.id, 
+        author: profile
+      }
+      // console.log("###########", data.object)
+      createLikes(post, data)
+      .then( res => { 
+        alertSuccess("Success: Created New Like!");
+        setColor("secondary")
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Create Like!");
+      } );
+      
 
     }
   }
@@ -139,6 +164,23 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       })
       .catch( err => console.log(err) );
   };
+
+  React.useEffect( () => {
+   
+      getLikes(post)
+          .then( res => {
+            console.log(res.data.items)
+            // console.log(res.items.length)
+             
+            console.log(res.data);
+            setColor("secondary");
+            
+          })
+          .catch( err => {
+            console.log(err);
+          } )
+    
+}, [] );
 
   return (
     <Card sx={{m: "1px"}}>

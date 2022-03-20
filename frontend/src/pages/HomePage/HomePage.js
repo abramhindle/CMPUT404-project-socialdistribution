@@ -55,6 +55,9 @@ export default function HomePage() {
     /* State Hook For User ID */
     const userID = useSelector( state => state.profile.url );
 
+    /* State Hook For User*/
+    const userObj = useSelector( state => state.profile );
+
     /* State Hook For GitHub */
     const [githubFeed, setGithubFeed] = useState([]);
     const githubID = useSelector ( state => state.profile.github.substring(state.profile.github.lastIndexOf('/') + 1) );
@@ -152,7 +155,7 @@ export default function HomePage() {
                     <TabPanel value="1" sx={{p:0}}>
                         {inbox.filter(post => post.visibility === "PUBLIC").map((post, index) => (
                             (<Grid item xs={12} key={index}> 
-                                <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                <FeedCard profile = {userObj} post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                             </Grid>)
                         ))}
                     </TabPanel>
