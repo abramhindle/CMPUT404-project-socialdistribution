@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import AbstractUser
+from django.templatetags.static import static
 
 from .constants import CHAR_FIELD_MAX_LENGTH
 
@@ -15,3 +16,7 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse('auth_provider:profile', kwargs={'pk': self.id})
+
+    def clean(self):
+        if self.profile_image_url is None or self.profile_image_url == '':
+            self.profile_image_url = static('default.jpg')
