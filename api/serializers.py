@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
-from posts.models import Post
+from posts.models import Post, Like
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -34,5 +34,22 @@ class PostSerializer(NestedHyperlinkedModelSerializer):
         representation['type'] = 'post'
         representation['contentType'] = instance.content_type
         representation['published'] = instance.date_published
+        representation['categories'] = [category.category for category in instance.categories.all()]
+        return representation
+
+
+class LikesSerializer(NestedHyperlinkedModelSerializer):
+    parent_lookup_kwargs = {
+        'author_pk': 'author__pk',
+    }
+    author = AuthorSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Like
+        fields = ['summary', 'author', 'object']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['type'] = 'likes'
         representation['categories'] = [category.category for category in instance.categories.all()]
         return representation
