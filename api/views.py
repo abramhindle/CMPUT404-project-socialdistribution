@@ -1,11 +1,17 @@
-from rest_framework import viewsets
+import base64
+import os
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from rest_framework import permissions
+from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
+from rest_framework.decorators import action
 
 from api.serializers import AuthorSerializer, PostSerializer
 from api.util import page_number_pagination_class_factory
-from posts.models import Post
+from posts.models import Post, ContentType
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -28,3 +34,19 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Post.objects.filter(author=self.kwargs['author_pk']).order_by('-date_published')
+
+    # detail indicates  whether we can do this on the list (false), or only a single item (true)
+    @action(methods=['get'], detail=True, url_path='image', name='image')
+    def image(self, request, **kwargs):
+        author_id = kwargs['author_pk']
+        post_id = kwargs['pk']
+
+        img = get_object_or_404(Post.objects, author_id=author_id, pk=post_id)
+
+        if img.content_type != ContentType.PNG and img.content_type != ContentType.JPG:
+            return Response(status=404)
+
+        with open(os.path.abspath(settings.BASE_DIR) + img.img_content.url, 'rb') as img_file:
+            encoded_img = base64.b64encode(img_file.read()).decode('utf-8')
+
+        return HttpResponse(encoded_img, content_type=img.content_type)
