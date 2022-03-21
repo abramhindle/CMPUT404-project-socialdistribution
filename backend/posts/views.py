@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
@@ -6,6 +7,8 @@ from .models import Post
 from authors.models import Author
 from .serializers import PostSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import action
+import base64
 from rest_framework.authentication import TokenAuthentication
 from backend.permissions import IsOwnerOrAdmin
 
@@ -29,6 +32,16 @@ class PostViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     pagination_class = CustomPageNumberPagination
     serializer_class = PostSerializer
+
+    @action(detail=True, methods=['GET'])
+    def image(self, request, author, pk):
+        post: Post = get_object_or_404(Post, local_id=pk)
+        string = post.content
+        content = string.split("base64,")[1]
+        mimetype = string.split(";base64,")[0].split(":")[1]
+        response = HttpResponse(content_type=mimetype)
+        response.write(base64.b64decode(content))
+        return response
 
     def get_queryset(self):
         author = self.kwargs["author"]

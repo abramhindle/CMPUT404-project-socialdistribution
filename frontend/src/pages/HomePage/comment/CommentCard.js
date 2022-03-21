@@ -16,7 +16,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { createCommentLikes, getCommentLikes } from '../../../services/likes';
+import { createCommentLikes, getCommentLikes, deleteCommentLikes } from '../../../services/likes';
 
 const PostImage = styled('img')({width: "100%"})
 
@@ -49,6 +49,9 @@ export default function CommentCard({profile, comment, alertSuccess, alertError,
   const closeAnchorEl = () => setAnchorEl(false);
   const openAnchorEl = () => setAnchorEl(true);
 
+  // /* State Hook For likes */
+  const [likes, setLikes] = React.useState(false);
+
   const handleColor = () => {
     const data = {
       type: "Like", 
@@ -57,17 +60,26 @@ export default function CommentCard({profile, comment, alertSuccess, alertError,
       object: comment.id, 
       author: profile
     }
-    if (color === "grey"){
-      createCommentLikes(comment, data)
-    .then( res => { 
-      alertSuccess("Success: Created New Like!");
-      setColor("secondary")
-    })
-    .catch( err => {console.log(err)
-      alertError("Error: Could Not Create Like!");
-    } );
+    if (color !== "grey"){
+      deleteCommentLikes(comment, comment.id)
+      .then( res => { 
+        alertSuccess("Success: Deleted Like!");
+        setColor("grey")
+        setLikes(!likes)
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Delete Like!");
+      } );
     }else{
-      alertError("You already liked this comment!");
+      createCommentLikes(comment, data)
+      .then( res => { 
+        alertSuccess("Success: Created New Like!");
+        setColor("secondary")
+        setLikes(!likes)
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Create Like!");
+      } );
     }
   }
 
@@ -129,7 +141,7 @@ export default function CommentCard({profile, comment, alertSuccess, alertError,
       <Menu id="basic-menu" anchorEl={anchorEl} open={anchorEl} onClose={closeAnchorEl} MenuListProps={{ 'aria-labelledby': 'basic-button', }} >
           <MenuItem onClick={ () => { handleEditClickOpen(); closeAnchorEl(); } }>Edit</MenuItem>
           <MenuItem onClick={() => { handleDelClickOpen(); closeAnchorEl(); }}>Remove</MenuItem>
-        </Menu>
+      </Menu>
       <EditCommentDialog open={editOpen} onClose={handleEditClose} comment={comment} alertSuccess={alertSuccess} alertError={alertError} editComments={editComments} />
       <DeleteCommentDialog comment={comment} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={handleDelClose} removeComment={removeComment} />
     </Card>

@@ -62,13 +62,9 @@ class LikesViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'], url_path="decrement", url_name="decrement")
     def decrement(self, request, **kwargs):
         targetUrl = str(request.build_absolute_uri())[:-16].replace("/api", "")
-        # print ("target: ", targetUrl)
-        # "http://127.0.0.1:8000/authors/285709dd-b6c2-47bc-8624-c4fb19a1205a/posts/6473df33-fc94-47fc-977e-7ac71a565590/"
-        # "http://127.0.0.1:8000/authors/285709dd-b6c2-47bc-8624-c4fb19a1205a/posts/6473df33-fc94-47fc-977e-7ac71a565590/"
-        # print(")))))))))", targetUrl)
         delete_request = Likes.objects.get(object=targetUrl)
         delete_request.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
     def get_permissions(self):
@@ -102,6 +98,12 @@ class LikesCommentViewSet(viewsets.ModelViewSet):
         author = get_object_or_404(Author, local_id=self.kwargs["author"])
         serializer.save(author_url=author.id)
     
+    @action(detail=False, methods=['POST'], url_path="decrement", url_name="decrement")
+    def decrement(self, request, **kwargs):
+        targetUrl = str(request.build_absolute_uri())[:-16].replace("/api", "")
+        delete_request = Likes.objects.get(object=targetUrl)
+        delete_request.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""

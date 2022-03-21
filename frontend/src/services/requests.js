@@ -16,7 +16,7 @@ function getCookie(name) {
 }
 
 export function post(path, data) {
-    return axios.post(path, data, {headers: {"Authorization": "Token " + localStorage.getItem("token"), "X-CSRFToken": getCookie('csrftoken')}});
+    return axios.post(path, data, {headers: {"Authorization": "Token " + localStorage.getItem("token"), "X-CSRFToken": getCookie('csrftoken'), "Content-Type": "application/json"}});
 }
 
 export function put(path, data) {

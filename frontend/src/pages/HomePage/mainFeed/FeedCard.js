@@ -26,6 +26,9 @@ import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { concat } from 'lodash/fp';
 import { createLikes, getLikes, deleteLikes} from '../../../services/likes';
+import FollowRequestDialog from '../../../Components/FollowRequestDialog';
+import { getAuthorFromStorage } from '../../../LocalStorage/profile';
+
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -81,8 +84,7 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
   // /* State Hook For likes */
   const [likes, setLikes] = React.useState(false);
   const handleLikes = () => {
-    setLikes(!likes)
-    console.log(likes)
+    // console.log(likes)
     const data = {
       type: "Like", 
       summary: profile.displayName + " likes your post",
@@ -90,11 +92,12 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
       object: post.id, 
       author: profile
     }
-    if (likes === true){
+    if (color !== "grey"){
       deleteLikes(post, post.id)
       .then( res => { 
         alertSuccess("Success: Delete Like!");
         setColor("grey")
+        setLikes(!likes)
       })
       .catch( err => {console.log(err)
         alertError("Error: Could Not Delete Like!");
@@ -104,7 +107,7 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
       .then( res => { 
         alertSuccess("Success: Created New Like!");
         setColor("secondary")
-        
+        setLikes(!likes)
       })
       .catch( err => {console.log(err)
         alertError("Error: Could Not Create Like!");
@@ -116,7 +119,10 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
   /* State Hook For Opening Edit Post Dialog */
   const [editOpen, setEditOpen] = React.useState(false);
   const closeEditDialog = () => setEditOpen(false);
-  const openEditDialog = () => setEditOpen(true);
+  const openEditDialog = () => {
+    setEditOpen(true);
+    setAnchorEl(false);
+  }
 
   /* State Hook For Opening Edit IMG Post Dialog */
   const [editIMGOpen, setEditIMGOpen] = React.useState(false);
@@ -130,6 +136,11 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
     setDeleteOpen(true);
     setAnchorEl(false);
   };
+
+  /* State Hook For Opening Follow Request Dialog */
+  const [followOpen, setFollowOpen] = React.useState(false);
+  const closeFollowDialog = () => setFollowOpen(false);
+  const openFollowDialog = () => setFollowOpen(post.author.id !== getAuthorFromStorage().id);
 
   /* State Hook For Comments */
   const [comments, setComments] = React.useState([]);
@@ -155,7 +166,7 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
 
   /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
-    getComments(post.id)
+    getComments(post)
       .then( res => { 
         setComments(res.data.items);
         setExpanded(!expanded);
@@ -181,7 +192,7 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
     <Card sx={{m: "1px"}}>
       <CardHeader
         avatar={ 
-          <AvatarContainer onClick={() => console.log(post.author.id)} >
+          <AvatarContainer onClick={() => openFollowDialog() } >
             <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />
             <Typography variant="caption" display="block" gutterBottom sx={{paddingTop: "5px"}}>{post.author.displayName}</Typography>
           </AvatarContainer>
@@ -240,6 +251,7 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
       <EditPostDialog post={post} open={editOpen} onClose={closeEditDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} post={post} addComment={addComment} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
+      <FollowRequestDialog  authorToFollow={post.author} alertSuccess={alertSuccess} alertError={alertError} open={followOpen} handleClose={closeFollowDialog} />
     </Card>
   );
 }

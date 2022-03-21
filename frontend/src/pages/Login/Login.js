@@ -15,6 +15,8 @@ import {  useDispatch } from 'react-redux';
 import { login } from '../../redux/profileSlice';
 import { setInbox } from '../../redux/inboxSlice';
 import { getInbox } from '../../services/posts';
+import { setAuthorInStorage, getAuthorFromStorage } from '../../LocalStorage/profile';
+import { setInboxInStorage, getInboxFromStorage } from '../../LocalStorage/inbox';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 function Copyright(props) {
@@ -49,13 +51,14 @@ export default function LoginPage() {
 
             /* Set User Credentials */
             dispatch(login(res.data.author));
+            setAuthorInStorage(res.data.author);
             localStorage.setItem("token", res.data.token);
-            localStorage.setItem("author",res.data.author);
+            console.log(getAuthorFromStorage());
 
             /* Fetch Inbox */
             getInbox(res.data.author.url)
                 .then( res2 => {
-                  dispatch(setInbox(res2.data.items));
+                  setInboxInStorage(res2.data.items);
                   goToHome();
                 })
                 .catch( err => console.log(err) )

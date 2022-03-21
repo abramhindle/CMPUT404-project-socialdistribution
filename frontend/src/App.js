@@ -4,12 +4,10 @@ import HomePage from './pages/HomePage/HomePage';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import BaseTemplate from './pages/BaseTemplate';
 import LoginPage from './pages/Login/Login';
-import store from "./redux/store"
+import {store, persistor} from "./redux/store"
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
-
-let persistor = persistStore(store);
 
 function App() {
   return  (
@@ -18,10 +16,10 @@ function App() {
         <HashRouter>
           <Routes>
             <Route path="/" element={<BaseTemplate />} >
-                <Route path="" element={<LoginPage />} />
-                <Route path="register" element={<RegistrationForm />} />
-                <Route path="homepage" element={<HomePage />} />
-              </Route>
+              <Route path="" element={<LoginPage />} />
+              <Route path="register" element={<RegistrationForm />} />
+              <Route path="homepage" element={<HomePage />} />
+            </Route>
           </Routes>
         </HashRouter>
       </PersistGate>
