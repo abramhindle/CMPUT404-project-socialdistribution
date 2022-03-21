@@ -9,7 +9,7 @@ from .serializers import PostSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 import base64
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from backend.permissions import IsOwnerOrAdmin
 
 
@@ -29,7 +29,7 @@ class CustomPageNumberPagination(PageNumberPagination):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
     pagination_class = CustomPageNumberPagination
     serializer_class = PostSerializer
 
@@ -53,7 +53,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
-        if self.action in ['update', 'create', 'partial_update', 'destroy']:
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [IsAuthenticated]
+        elif self.action in ['update', 'create', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsPostOwnerOrAdmin]
         else:
             permission_classes = [AllowAny]
