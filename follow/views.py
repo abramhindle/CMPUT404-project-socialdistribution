@@ -93,7 +93,7 @@ class UsersView(LoginRequiredMixin, ServerListView):
         return [to_internal(user) for user in jsonResponse['items']]
 
     def get_queryset(self):
-        return USER_MODEL.objects.filter(~Q(pk=self.request.user.id) & Q(is_staff=False))
+        return USER_MODEL.objects.filter(~Q(pk=self.request.user.id) & Q(is_staff=False) & ~Q(is_api_user=False))
 
 
 class FriendRequestsView(LoginRequiredMixin, ListView):

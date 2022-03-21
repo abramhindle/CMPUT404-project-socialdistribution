@@ -11,7 +11,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     renderer_classes = [JSONRenderer]
     pagination_class = page_number_pagination_class_factory([('type', 'authors')])
 
-    queryset = get_user_model().objects.filter(is_active=True, is_staff=False).order_by('id')
+    queryset = get_user_model().objects.filter(is_active=True, is_staff=False, is_api_user=False).order_by('id')
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get']
