@@ -12,6 +12,7 @@ from posts.models import Post
 from authors.models import Author
 from .models import Likes
 from rest_framework import status
+from rest_framework.decorators import action
 
 # from backend.likes import serializers
 
@@ -26,6 +27,15 @@ class LikesPagination(PageNumberPagination):
             return Response({"message": message}, status=status.HTTP_204_NO_CONTENT)
         return Response({'type': "Like", 'items': data})
 
+class LikesRetrievedViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    pagination_class = LikesPagination
+    serializer_class = LikesSerializer
+
+
+    def get_queryset(self):
+        targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
+        return Likes.objects.filter(object=targetUrl)
 
 class LikesViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
@@ -47,7 +57,19 @@ class LikesViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         author = get_object_or_404(Author, local_id=self.kwargs["author"])
         serializer.save(author_url=author.id)
+
     
+    @action(detail=False, methods=['POST'], url_path="decrement", url_name="decrement")
+    def decrement(self, request, **kwargs):
+        targetUrl = str(request.build_absolute_uri())[:-16].replace("/api", "")
+        # print ("target: ", targetUrl)
+        # "http://127.0.0.1:8000/authors/285709dd-b6c2-47bc-8624-c4fb19a1205a/posts/6473df33-fc94-47fc-977e-7ac71a565590/"
+        # "http://127.0.0.1:8000/authors/285709dd-b6c2-47bc-8624-c4fb19a1205a/posts/6473df33-fc94-47fc-977e-7ac71a565590/"
+        # print(")))))))))", targetUrl)
+        delete_request = Likes.objects.get(object=targetUrl)
+        delete_request.delete()
+        return Response(status=status.HTTP_200_OK)
+
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""

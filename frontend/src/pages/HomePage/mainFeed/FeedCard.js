@@ -79,19 +79,10 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
   const [color, setColor] = React.useState("grey");
 
   // /* State Hook For likes */
-  // const [likes, setLikes] = React.useState(false);
+  const [likes, setLikes] = React.useState(false);
   const handleLikes = () => {
-    // setLikes(!likes)
-    // if (likes === false){
-    //   deleteLikes(post)
-    //   .then( res => { 
-    //     alertSuccess("Success: Delete Like!");
-    //     setColor("grey")
-    //   })
-    //   .catch( err => {console.log(err)
-    //     alertError("Error: Could Not Delete Like!");
-    //   } );
-    // }else{
+    setLikes(!likes)
+    console.log(likes)
     const data = {
       type: "Like", 
       summary: profile.displayName + " likes your post",
@@ -99,20 +90,27 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
       object: post.id, 
       author: profile
     }
-    // console.log("###########", data.object)
-    if (color === "grey"){
-      createLikes(post, data)
-    .then( res => { 
-      alertSuccess("Success: Created New Like!");
-      setColor("secondary")
-    })
-    .catch( err => {console.log(err)
-      alertError("Error: Could Not Create Like!");
-    } );
+    if (likes === true){
+      deleteLikes(post, post.id)
+      .then( res => { 
+        alertSuccess("Success: Delete Like!");
+        setColor("grey")
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Delete Like!");
+      } );
     }else{
-      alertError("You already liked this post!");
+      createLikes(post, data)
+      .then( res => { 
+        alertSuccess("Success: Created New Like!");
+        setColor("secondary")
+        
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Create Like!");
+      } );
+      
     }
-    // }
   }
 
   /* State Hook For Opening Edit Post Dialog */

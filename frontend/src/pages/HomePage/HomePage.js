@@ -16,6 +16,7 @@ import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Pap
 import GithubFeedCard from './mainFeed/GithubFeedCard';
 import {styled} from '@mui/system'
 import { pushToInbox, setInbox } from '../../redux/inboxSlice';
+import { getAllLikes } from '../../services/likes';
 
 const drawerWidth = 400;
 
@@ -106,6 +107,12 @@ export default function HomePage() {
                 .catch( err => console.log(err) )
                 .finally ( () => console.log(githubFeed) )
         }
+        getAllLikes(userObj)
+        .then( res => {
+            console.log(res.data)
+        })
+        .catch( err => console.log(err) )
+        
     }, [] );
 
   return (
