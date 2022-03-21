@@ -6,3 +6,5 @@ venv/
 .vscode
 media/images
 **/.DS_store
+
+staticfiles/
