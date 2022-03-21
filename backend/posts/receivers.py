@@ -24,6 +24,7 @@ def on_create_post(sender, **kwargs):
         post.id = url
         post.source = url if not post.source else post.source
         post.origin = url if not post.origin else post.origin
+        post.comments = url + "comments/" if not post.comments else post.comments
 
         # Push Posts To Recipient's Inbox
         if post.contentType != post.ContentType.PNG and post.contentType != post.ContentType.JPEG:
