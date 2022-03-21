@@ -154,7 +154,7 @@ export default function HomePage() {
         }
         getAllLikes(userObj)
         .then( res => {
-            console.log(res.data)
+            console.log("Post is: ", res.data)
         })
         .catch( err => console.log(err) )
         

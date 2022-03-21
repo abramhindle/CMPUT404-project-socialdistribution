@@ -23,25 +23,15 @@ class LikesPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
         if not data:
-            message = "object is empty!"
-            return Response({"message": message}, status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'type': "Like", 'items': data})
 
-class LikesRetrievedViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]
-    pagination_class = LikesPagination
-    serializer_class = LikesSerializer
 
-
-    def get_queryset(self):
-        targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
-        return Likes.objects.filter(object=targetUrl)
 
 class LikesViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     pagination_class = LikesPagination
     serializer_class = LikesSerializer
-
 
     def get_queryset(self):
         targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
@@ -112,3 +102,14 @@ class LikesCommentViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
+class LikesRetrievedViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    pagination_class = LikesPagination
+    serializer_class = LikesSerializer
+
+    def get_queryset(self):
+        # author = get_object_or_404(Author, local_id=self.kwargs["author"])
+        targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
+        print ("LLLLLLLL", targetUrl)
+        return Likes.objects.filter(author_url=targetUrl)

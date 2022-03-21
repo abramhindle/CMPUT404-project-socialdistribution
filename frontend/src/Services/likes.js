@@ -31,6 +31,6 @@ export function getLikes(postData){
 }
 
 export function getAllLikes(author){
-    console.log(author.id + "/likes/");
-    return get(author.id + "/likes/");
+    console.log(author.url + "likes/");
+    return get(author.url + "likes/");
 }
