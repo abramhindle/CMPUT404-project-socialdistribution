@@ -144,3 +144,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
+
+if os.environ.get('DATABASE_URL'):
+    # Heroku environment
+    import django_heroku  # noqa
+    django_heroku.settings(locals())
