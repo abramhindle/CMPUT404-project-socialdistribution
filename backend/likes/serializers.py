@@ -12,5 +12,5 @@ class LikesSerializer(serializers.ModelSerializer):
         fields = ["type", "summary", "context", "object", "author"]
 
     def get_author(self, obj: Likes):
-        author_url = obj.author_url
+        author_url = obj.object
         return r.get(author_url).json()

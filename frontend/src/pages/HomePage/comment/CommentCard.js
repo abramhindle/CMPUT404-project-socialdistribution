@@ -58,7 +58,7 @@ export default function CommentCard({profile, comment, alertSuccess, alertError,
       summary: profile.displayName + " likes your comment",
       context: "https://www.w3.org/ns/activitystreams",
       object: comment.id, 
-      author: profile
+      author_url: profile.id
     }
     if (color !== "grey"){
       deleteCommentLikes(comment, comment.id)

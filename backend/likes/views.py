@@ -1,4 +1,3 @@
-
 from urllib import response
 from django.http import Http404
 from rest_framework.pagination  import PageNumberPagination
@@ -14,7 +13,7 @@ from .models import Likes
 from rest_framework import status
 from rest_framework.decorators import action
 
-# from backend.likes import serializers
+
 
 
 class LikesPagination(PageNumberPagination):
@@ -32,7 +31,7 @@ class LikesViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     pagination_class = LikesPagination
     serializer_class = LikesSerializer
-
+    # print ("why I am also here")
     def get_queryset(self):
         targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
         return Likes.objects.filter(object=targetUrl)
@@ -45,8 +44,8 @@ class LikesViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        author = get_object_or_404(Author, local_id=self.kwargs["author"])
-        serializer.save(author_url=author.id)
+        data = self.request.data
+        serializer.save(author_url=data['author_url'])
 
     
     @action(detail=False, methods=['POST'], url_path="decrement", url_name="decrement")
@@ -85,8 +84,8 @@ class LikesCommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        author = get_object_or_404(Author, local_id=self.kwargs["author"])
-        serializer.save(author_url=author.id)
+        data = self.request.data
+        serializer.save(author_url=data['author_url'])
     
     @action(detail=False, methods=['POST'], url_path="decrement", url_name="decrement")
     def decrement(self, request, **kwargs):
@@ -107,9 +106,7 @@ class LikesRetrievedViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     pagination_class = LikesPagination
     serializer_class = LikesSerializer
-
     def get_queryset(self):
-        # author = get_object_or_404(Author, local_id=self.kwargs["author"])
         targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
-        print ("LLLLLLLL", targetUrl)
-        return Likes.objects.filter(author_url=targetUrl)
+        return Likes.objects.filter(author_url=targetUrl).order_by('author_url')
+        

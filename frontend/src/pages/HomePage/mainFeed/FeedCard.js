@@ -85,13 +85,15 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
   const [likes, setLikes] = React.useState(false);
   const handleLikes = () => {
     // console.log(likes)
+    // console.log (" is :", profile)
     const data = {
       type: "Like", 
       summary: profile.displayName + " likes your post",
       context: "https://www.w3.org/ns/activitystreams",
       object: post.id, 
-      author: profile
+      author_url: profile.id
     }
+    console.log (" is :", data)
     if (color !== "grey"){
       deleteLikes(post, post.id)
       .then( res => { 
