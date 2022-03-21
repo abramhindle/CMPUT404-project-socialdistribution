@@ -5,8 +5,8 @@
   {% if object.content_type == 'text/plain' %}
   <p>{{ object.content }}</p>
   {% elif object.content_type == 'image/png;base64' or object.content_type == 'image/jpeg;base64' %}
-  {% if object.imgContent %}
-  <img src="{{ object.imgContent.url }}" height="auto" width="100%" alt="alt" />
+  {% if object.img_content %}
+  <img src="{{ object.img_content.url }}" height="auto" width="100%" alt="alt" />
   {% else %}
   <img src="{{ object.content }}" height="auto" width="100%" alt="alt" />
   {% endif %}

@@ -5,9 +5,9 @@
         {% if post.content_type == 'text/plain' %}
             <p>{{ post.content }}</p>
         {% elif post.content_type == 'image/png;base64' or post.content_type == 'image/jpeg;base64' %}
-            {% if post.imgContent %}
+            {% if post.img_content %}
                 <img
-                src="{{ post.imgContent.url }}"
+                src="{{ post.img_content.url }}"
                 height="auto"
                 width="100%"
                 alt="alt"
