@@ -48,7 +48,6 @@ class Post(models.Model):
         return reverse('posts:detail', kwargs={'pk': self.id})
 
     def save(self, *args, **kwargs):
-        print('save')
         self.clean()
         return super(Post, self).save(*args, **kwargs)
 
