@@ -68,8 +68,8 @@ export default function ProfileSection({author, editAuthor}) {
        </Box>
       {<CardContent>
         <Grid container spacing={2}>
-          <Grid item><Link onClick={handleModalOpen} href='#' underline='none'>15</Link> following</Grid>
-          <Grid item><Link onClick={handleModalOpen} href='#' underline='none'>30</Link> followers</Grid>
+          <Grid item><Link onClick={handleModalOpen} underline='none'>15</Link> following</Grid>
+          <Grid item><Link onClick={handleModalOpen} underline='none'>30</Link> followers</Grid>
         </Grid>
       </CardContent>}
 
