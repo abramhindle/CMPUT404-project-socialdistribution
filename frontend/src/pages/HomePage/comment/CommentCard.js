@@ -10,13 +10,13 @@ import { styled } from '@mui/material/styles';
 import EditCommentDialog from './EditCommentDialog';
 import EditIcon from '@mui/icons-material/Edit';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import DeleteCommentDialog from "../comment/DeleteCommentDialog"
+import DeleteCommentDialog from "./DeleteCommentDialog"
 import Stack from '@mui/material/Stack';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { createCommentLikes, getCommentLikes, deleteCommentLikes } from '../../../services/likes';
+import { createCommentLikes, getCommentLikes, deleteCommentLikes } from '../../../Services/likes';
 
 const PostImage = styled('img')({width: "100%"})
 
@@ -101,7 +101,7 @@ export default function CommentCard({allLikes, profile, comment, alertSuccess, a
 }, [comment.id, allLikes] );
 
   return (
-    <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
+    <Card sx={{maxHeight: 200, mt:"1%"}}>
       <Grid container direction={'row'} spacing={12}>
         <Grid item xl={10} md={10}>
         <CardContent>
