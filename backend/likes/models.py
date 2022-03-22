@@ -1,7 +1,6 @@
 from django.db import models
-import uuid
-from posts.models import Post
-from authors.models import Author
+
+
 
 
   

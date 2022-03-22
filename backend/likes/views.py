@@ -31,10 +31,11 @@ class LikesViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     pagination_class = LikesPagination
     serializer_class = LikesSerializer
-    # print ("why I am also here")
     def get_queryset(self):
         targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
         return Likes.objects.filter(object=targetUrl)
+        
+        
         
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -107,6 +108,9 @@ class LikesRetrievedViewSet(viewsets.ModelViewSet):
     pagination_class = LikesPagination
     serializer_class = LikesSerializer
     def get_queryset(self):
-        targetUrl = str(self.request.build_absolute_uri())[:-6].replace("/api", "")
-        return Likes.objects.filter(author_url=targetUrl).order_by('author_url')
+
+        
+        targetUrl = get_object_or_404(Author, local_id=self.kwargs["author"])
+        print (targetUrl)
+        return Likes.objects.filter(author_url=targetUrl.local_id).order_by('author_url')
         

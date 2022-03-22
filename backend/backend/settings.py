@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'authors.apps.AuthorsConfig',
     'posts.apps.PostsConfig',
     'likes.apps.LikesConfig',
+    'liked.apps.LikedConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
