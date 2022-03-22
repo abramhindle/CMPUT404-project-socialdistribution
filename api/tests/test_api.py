@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from posts.models import Post, ContentType
+from posts.models import Post, ContentType, Like
 
 from posts.tests.constants import POST_DATA
 from .constants import POST_IMG_DATA
@@ -153,3 +153,24 @@ class ImageTests(TestCase):
     def test_image_require_login(self):
         res = self.client.get(f'/api/v1/authors/{self.author.id}/posts/{self.img_post.id}/image/')
         self.assertEqual(res.status_code, 403)
+
+
+class LikeTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.author = get_user_model().objects.create_user(username='bob', password='password1')
+
+        self.post = Post.objects.create(
+            title=POST_DATA['title'],
+            description=POST_DATA['description'],
+            content_type=POST_DATA['content_type'],
+            content=POST_DATA['content'],
+            author_id=self.author.id,
+            unlisted=POST_DATA['unlisted'])
+        self.post.full_clean()
+        self.post.save()
+
+        self.other_user = get_user_model().objects.create_user(username='alice', password='password2')
+        self.like_by_other_user = Like.objects.create(
+
+        )
