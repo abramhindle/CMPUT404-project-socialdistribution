@@ -103,14 +103,14 @@ class LikesCommentViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
-class LikesRetrievedViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]
-    pagination_class = LikesPagination
-    serializer_class = LikesSerializer
-    def get_queryset(self):
+# class LikesRetrievedViewSet(viewsets.ModelViewSet):
+#     authentication_classes = [TokenAuthentication]
+#     pagination_class = LikesPagination
+#     serializer_class = LikesSerializer
+#     def get_queryset(self):
 
         
-        targetUrl = get_object_or_404(Author, local_id=self.kwargs["author"])
-        print (targetUrl)
-        return Likes.objects.filter(author_url=targetUrl.local_id).order_by('author_url')
+#         targetUrl = get_object_or_404(Author, local_id=self.kwargs["author"])
+#         print (targetUrl)
+#         return Likes.objects.filter(author_url=targetUrl.local_id).order_by('author_url')
         

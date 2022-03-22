@@ -30,7 +30,7 @@ function isoToHumanReadableDate(isoDate) {
   return dateFormat.format(date) + " - " + timeFormat.format(date);
 }
 
-export default function CommentCard({profile, comment, alertSuccess, alertError, removeComment, editComments}) {
+export default function CommentCard({allLikes, profile, comment, alertSuccess, alertError, removeComment, editComments}) {
   /* Hook For Like icon color */
   const [color, setColor] = React.useState("grey");
 
@@ -93,18 +93,12 @@ export default function CommentCard({profile, comment, alertSuccess, alertError,
 
   React.useEffect( () => {
    
-    getCommentLikes(comment)
-        .then( res => {
-          if (res.data.items !== undefined){
-            // console.log(res.data.items)
-            // console.log(res.data);
-            setColor("secondary");
-          }
-        })
-        .catch( err => {
-          console.log(err);
-        } )
-}, [] );
+    for (var key in allLikes){
+       if (allLikes[key].object.match(comment.id)&& allLikes[key].object.match("comment")){
+          setColor("secondary")
+      }
+    }
+}, [comment.id, allLikes] );
 
   return (
     <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>

@@ -37,6 +37,10 @@ export default function HomePage() {
     /* State Hook For Tab Values */
     const [value, setValue] = React.useState('1');
 
+    /* State Hook For Likes */
+    const [allLikes, setAllLikes] = React.useState({});
+    var likeResults = [];
+
     /* State Hook For Displaying Alerts */
     const [openAlert, setOpenAlert] = useState({isOpen: false, message: "", severity: "error"})
     const alertSuccess = msg => setOpenAlert({isOpen: true, message: msg, severity: "success"})
@@ -156,7 +160,8 @@ export default function HomePage() {
         }
         getAllLikes(userObj)
         .then( res => {
-            console.log("Post is: ", res.data)
+            setAllLikes(res.data.items)
+            // console.log(res.data.items)
         })
         .catch( err => console.log(err) )
         
@@ -209,16 +214,14 @@ export default function HomePage() {
                     <TabPanel value="1" sx={{p:0}}>
                         {inbox.filter(post => post.visibility === "PUBLIC").map((post, index) => (
                             (<Grid item xs={12} key={index}> 
-
-                                <FeedCard profile = {userObj} post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
-
+                                <FeedCard allLikes= {allLikes} profile = {userObj} post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                             </Grid>)
                         ))}
                     </TabPanel>
                     <TabPanel value="2" sx={{p:0}}>
                         {inbox.filter(post => post.visibility !== "PUBLIC").map((post, index) => (
                             (<Grid item xs={12} key={index}> 
-                                <FeedCard post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                <FeedCard allLikes= {allLikes} post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                             </Grid>)
                         ))}
                     </TabPanel>
@@ -226,7 +229,7 @@ export default function HomePage() {
                         <Paper sx={{p:0}}>
                             {inbox.filter(post => post.author.id === author.url).map((post, index) => (
                                 (<Grid item xs={12} key={index}> 
-                                    <FeedCard post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                    <FeedCard allLikes= {allLikes} post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                                 </Grid>)
                             ))}
                         </Paper>

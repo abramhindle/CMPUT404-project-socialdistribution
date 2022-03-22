@@ -8,7 +8,6 @@ export function createCommentLikes(commentData, likesData){
 }
 
 export function getCommentLikes(commentData){
-    // console.log(postData.id + "likes/");
     return get(commentData.id + "likes/");
 }
 
@@ -17,7 +16,6 @@ export function deleteCommentLikes(commentData, likesData){
 }
 
 export function createLikes(postData, likesData){
-    // console.log(postData.id + "likes/", likesData)
     return post(postData.id + "likes/", likesData);
 }
 
@@ -26,7 +24,6 @@ export function deleteLikes(postData, likesData){
 }
 
 export function getLikes(postData){
-    // console.log(postData.id + "likes/");
     return get(postData.id + "likes/");
 }
 

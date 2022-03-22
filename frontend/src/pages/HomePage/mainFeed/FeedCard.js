@@ -74,10 +74,10 @@ function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleL
 }
 
 
-export default function FeedCard({profile, post, isOwner, alertError, alertSuccess, updateFeed, removeFromFeed}) {
+export default function FeedCard({allLikes, profile, post, isOwner, alertError, alertSuccess, updateFeed, removeFromFeed}) {
   /* State Hook For Expanding The Comments */
   const [expanded, setExpanded] = React.useState(false);
-
+  
   /* State Hook For Colour Scheme */
   const [color, setColor] = React.useState("grey");
 
@@ -175,20 +175,17 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
       })
       .catch( err => console.log(err) );
   };
+  
 
   React.useEffect( () => {
-   
-      getLikes(post)
-          .then( res => {
-            if (res.data.items !== undefined){
-              setColor("secondary");
-            }
-          })
-          .catch( err => {
-            console.log(err);
-          } )
+    for (var key in allLikes){
+       if (allLikes[key].object.match(post.id)&& !allLikes[key].object.match("comment")){
+          setColor("secondary")
+      }
+    }
     
-}, [] );
+    
+}, [post.id, allLikes] );
 
   return (
     <Card sx={{m: "1px"}}>
@@ -228,7 +225,7 @@ export default function FeedCard({profile, post, isOwner, alertError, alertSucce
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {comments.map((comment) => ( <Grid item xs={12}> <CommentCard profile = {profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
+          {comments.map((comment) => ( <Grid item xs={12}> <CommentCard allLikes={allLikes} profile = {profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
           <Grid item xs={12} sx={{marginTop: "8px"}}>
             <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
             <Button disableElevation={false} sx={{minHeight: "100px", fontSize: "1.15rem"}}  onClick={handleAddCMClickOpen} fullWidth>Add Comment</Button>
