@@ -103,10 +103,10 @@ def proxy_requests(request, path):
         validate(path)
         path = path.replace("http:/", "http://")
         path = path.replace("///", "//")
-        if "followers" in path:
+        if "followers" in path or "following" in path:
             parts = (path + "/").split("/")
             i = parts.index("authors") + 1
-            j = parts.index("followers")
+            j = parts.index("followers" if "followers" in path else "following")
             url = "/".join(parts[0:i+1]) + "/" + "/".join(parts[j:])
             if len(parts) - j > 4 and url[-2:] != "//":
                 url += "/"

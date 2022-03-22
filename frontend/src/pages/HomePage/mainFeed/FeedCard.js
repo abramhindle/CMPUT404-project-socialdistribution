@@ -151,14 +151,21 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   const editComment = comment => setComments(comments.map(x => x.id === comment.id ? comment : x))
 
   /* State Hook For Menu (edit/remove) */
-  const [anchorEl, setAnchorEl] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(undefined);
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   /* State Hook For Adding comment*/
   const [addCMOpen, setaddCMOpen] = React.useState(false);
 
   /* Hook handler For Menu (edit/remove) */
-  const handleClick = event => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const handleClick = event => { 
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true);
+  }
+  const handleClose = () => { 
+    setMenuOpen(false);
+    setAnchorEl(null);
+  }
   
   const handleColor = (event) =>setColor("secondary");
 
@@ -225,9 +232,11 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {comments.map((comment) => ( <Grid item xs={12}> <CommentCard allLikes={allLikes} profile = {profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
+
+          {comments.map((comment, index) => ( <Grid key={index} item xs={12}> <CommentCard allLikes={allLikes} profile = {profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth="true" /> </Grid>))}
+
           <Grid item xs={12} sx={{marginTop: "8px"}}>
-            <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
+            <Card fullwidth="true" sx={{maxHeight: 200, mt:"1%"}}>
             <Button disableElevation={false} sx={{minHeight: "100px", fontSize: "1.15rem"}}  onClick={handleAddCMClickOpen} fullWidth>Add Comment</Button>
             </Card>
           </Grid>
@@ -236,12 +245,8 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
         <Menu
         id="basic-menu"
         anchorEl={anchorEl}
-        open={anchorEl}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-        >
+        open={menuOpen}
+        onClose={handleClose} >
           {((post.contentType === "text/markdown") || (post.contentType === "text/plain"))&&<MenuItem onClick={openEditDialog}>Edit</MenuItem>}
           {post.contentType.includes("image")&&<MenuItem onClick={openEditIMGDialog}>Edit</MenuItem>}
           <MenuItem onClick={openDeleteDialog}>Remove Post</MenuItem>

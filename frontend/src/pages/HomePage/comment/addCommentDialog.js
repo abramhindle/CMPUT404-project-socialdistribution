@@ -26,8 +26,8 @@ export default function AddCommentsDialog({open, handleAddCMClose, addComment, p
     const formData = new FormData(event.currentTarget);
     const data = {
       type: "comment", 
-      comment: formData.get("comment"), 
-      contentType: formData.get("contentType"), 
+      comment: String(formData.get("comment")), 
+      contentType: String(formData.get("contentType")), 
       author: getAuthorFromStorage(),
     }
 
