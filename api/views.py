@@ -48,7 +48,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
         with open(os.path.abspath(settings.BASE_DIR) + img.img_content.url, 'rb') as img_file:
             encoded_img = base64.b64encode(img_file.read()).decode('utf-8')
-
         return HttpResponse(encoded_img, content_type=img.content_type)
 
 
@@ -60,10 +59,13 @@ class LikesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get']
 
+    @action(methods=['get'], detail=True, name='likes')
     def likes(self, request, **kwargs):
         author_id = kwargs['author_pk']
         post_id = kwargs['pk']
 
         likes = get_list_or_404(Like.objects, author_id=author_id, pk=post_id)
-
         return likes
+
+    def get_queryset(self):
+        return Post.objects.get(pk=self.kwargs['post_pk']).like_set.all().values()

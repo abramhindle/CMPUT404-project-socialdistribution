@@ -46,10 +46,11 @@ class LikesSerializer(NestedHyperlinkedModelSerializer):
 
     class Meta:
         model = Like
-        fields = ['summary', 'author', 'object']
+        fields = ['author']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['type'] = 'likes'
-        representation['categories'] = [category.category for category in instance.categories.all()]
+        representation['type'] = 'Like'
+        representation['object'] = "PostSerializer(instance.post).get_fields()['url']"
+        representation['summary'] = "instance.author.get_full_name() +" + " Likes your post"
         return representation

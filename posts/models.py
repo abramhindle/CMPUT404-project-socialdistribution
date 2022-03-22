@@ -63,5 +63,3 @@ class Comment(models.Model):
 class Like(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    summary = models.CharField(max_length=STR_MAX_LENGTH)
-    content_type = models.CharField(max_length=18, default=ContentType.PLAIN, choices=ContentType.choices)
