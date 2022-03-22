@@ -1,7 +1,7 @@
 import base64
 import os
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, permissions
@@ -9,9 +9,9 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import action
 
-from api.serializers import AuthorSerializer, PostSerializer
+from api.serializers import AuthorSerializer, PostSerializer, LikesSerializer
 from api.util import page_number_pagination_class_factory
-from posts.models import Post, ContentType
+from posts.models import Post, ContentType, Like
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -50,3 +50,20 @@ class PostViewSet(viewsets.ModelViewSet):
             encoded_img = base64.b64encode(img_file.read()).decode('utf-8')
 
         return HttpResponse(encoded_img, content_type=img.content_type)
+
+
+class LikesViewSet(viewsets.ModelViewSet):
+    renderer_classes = [JSONRenderer]
+    pagination_class = page_number_pagination_class_factory([('type', 'likes')])
+
+    serializer_class = LikesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get']
+
+    def likes(self, request, **kwargs):
+        author_id = kwargs['author_pk']
+        post_id = kwargs['pk']
+
+        likes = get_list_or_404(Like.objects, author_id=author_id, pk=post_id)
+
+        return likes

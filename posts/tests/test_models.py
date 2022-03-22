@@ -1,9 +1,9 @@
 from django.forms import ValidationError
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from posts.models import Post, Comment
+from posts.models import Post, Comment, Like
 
-from .constants import COMMENT_DATA, POST_DATA
+from .constants import COMMENT_DATA, POST_DATA, LIKE_DATA
 
 CURRENT_USER = 'bob'
 
@@ -71,3 +71,23 @@ class CommentTests(TestCase):
             content_type=COMMENT_DATA['content_type'],
         )
         self.assertEqual(len(self.post.comment_set.all()), 1)
+
+
+class LikeTests(TestCase):
+    def setup(self):
+        self.user = get_user_model().objects.create_user(username=CURRENT_USER, password='password')
+        self.post = Post.objects.create(
+            title=POST_DATA['title'],
+            description=POST_DATA['description'],
+            content_type=POST_DATA['content_type'],
+            content=POST_DATA['content'],
+            author_id=get_user_model().objects.get(username=CURRENT_USER).id,
+            unlisted=POST_DATA['unlisted'])
+
+    def test_post_association(self):
+        Like.objects.create(
+            summary=LIKE_DATA['summary'],
+            author_id=self.post.id,
+            post_id=self.post.id,
+        )
+        self.assertEqual(len(self.post.like_set.all()), 1)
