@@ -53,7 +53,6 @@ class FollowModelTests(TestCase):
     def test_unfollow_request(self):
         Follow.objects.follow_request(from_user=self.bob, to_user=self.alice).accept()
         Follow.objects.follow_request(from_user=self.alice, to_user=self.bob).accept()
-
         self.assertEqual(len(Follow.objects.true_friend(self.bob)), 1)
         self.assertEqual(len(Follow.objects.true_friend(self.alice)), 1)
 
