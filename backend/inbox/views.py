@@ -91,6 +91,13 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
             inbox_item = InboxItem(owner=author, src=request.data["id"])
             inbox_item.save()
             return Response(InboxItemSerializer(inbox_item).data, status=status.HTTP_201_CREATED)
+        elif request.data["type"].lower() == "post" and request.data["visibility" == "PRIVATE"]:
+            inbox_item = InboxItem(owner=author, src=request.data["id"])
+            summary = "Somebody send you a post!"
+            # summary = f"{request.data['author']['displayName']} send you a post!"
+            notification = Notification(type="Post", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification.save()
+            return Response({"success": "Post Delivered!"}, status=status.HTTP_200_OK)
         elif request.data["type"].lower() == "follow":
             summary = f"{request.data['actor']['displayName']} Wants To Follow You!"
             notification = Notification(type="Follow", author=author, actor=request.data["actor"]["url"], summary=summary)

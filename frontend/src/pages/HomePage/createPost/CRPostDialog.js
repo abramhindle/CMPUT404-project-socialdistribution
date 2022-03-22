@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 /*
  * Description: Detail view for each prize which allows user to purchase the prize
  */ 
-export default function CRPostDialog({alertSuccess, alertError, open, onClose, addToFeed}) {
+export default function CRPostDialog({alertSuccess, alertError, open, onClose, addToFeed, pri, }) {
 
   /* Hook For Post Content Type */
   const [content, setContent] = React.useState('text/plain');
@@ -47,8 +47,8 @@ export default function CRPostDialog({alertSuccess, alertError, open, onClose, a
   const handleSubmit = (event) => {
     /* Grab Form Data */
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = {
+    const formData = new FormData(event.currentTarget);    
+      const data = {
       type: "post", 
       title: formData.get("title"), 
       description: formData.get("description"), 
@@ -57,7 +57,8 @@ export default function CRPostDialog({alertSuccess, alertError, open, onClose, a
       categories: formData.get("categories").replaceAll(" ", "").split(","), 
       visibility: formData.get("visibility"), 
       unlisted: formData.get("unlisted")
-    }
+      }
+
     // console.log("unlisted data here!!!!", formData.get("unlisted"))
 
     /* Validate Fields */
@@ -186,11 +187,13 @@ return (
                     </Box>
                   </Paper>
                 </Grid>
+                {pri === false ?
                 <Grid item xl={6} md={6} sm={12} xs={12}>
                   <Paper sx={{width: "100%", mt:2}}>
                     <Box sx={{width: "100%", p:"6px"}}>
                      <FormControl required fullWidth>
-                        <InputLabel id="visibility">Visbility</InputLabel>
+                        <InputLabel id="visibility">Visibility</InputLabel>
+
                         <Select
                           labelId="visibility"
                           id="visibility"
@@ -199,13 +202,33 @@ return (
                           label="Visbility"
                           onChange={handleChange}
                         >
-                        <MenuItem value={"PUBLIC"}>Public Post</MenuItem>
-                        <MenuItem value={"FRIENDS"}>Friends Only</MenuItem>
+                            <MenuItem value={"PUBLIC"}>Public Post</MenuItem>
+                            <MenuItem value={"FRIENDS"}>Friends Only</MenuItem>
                         </Select>
                     </FormControl>
                     </Box>
                   </Paper>
-                </Grid>
+                </Grid>:
+                <Grid item xl={6} md={6} sm={12} xs={12}>
+                <Paper sx={{width: "100%", mt:2}}>
+                  <Box sx={{width: "100%", p:"6px"}}>
+                   <FormControl required fullWidth>
+                      <InputLabel id="visibility">Visibility</InputLabel>
+                      <Select
+                        labelId="visibility"
+                        id="visibility"
+                        name="visibility"
+                        value={"PUBLIC"}
+                        label="Visbility"
+                        onChange={handleChange}
+                      >
+                          <MenuItem value={"PUBLIC"}>Private</MenuItem>
+                      </Select>
+                  </FormControl>
+                  </Box>
+                </Paper>
+              </Grid>
+                }                
             </Grid>
             </Grid>
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}> Post it now?</Button>

@@ -9,6 +9,7 @@ class Notification(models.Model):
         FOLLOW_REQUEST = "Follow"
         COMMENT = "Comment"
         LIKE = "Like"
+        POST = "Post"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=100, blank=False, choices=ContentType.choices)

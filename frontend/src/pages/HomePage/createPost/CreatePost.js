@@ -52,8 +52,8 @@ export default function CreatePost({alertSuccess, alertError, addToFeed}) {
             </Grid>
           </Grid>
         </Box>
-        <CRPostDialog open={open} onClose={handleClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} />
-        <IMGPostDialog open={imgOpen} onClose={imgClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} ></IMGPostDialog>
+        <CRPostDialog open={open} onClose={handleClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} pri={false}/>
+        <IMGPostDialog open={imgOpen} onClose={imgClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} pri={false}></IMGPostDialog>
       </Paper>
   );
 }
