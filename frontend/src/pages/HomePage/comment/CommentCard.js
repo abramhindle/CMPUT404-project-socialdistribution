@@ -10,7 +10,7 @@ import { styled } from '@mui/material/styles';
 import EditCommentDialog from './EditCommentDialog';
 import EditIcon from '@mui/icons-material/Edit';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import DeleteCommentDialog from "../comment/DeleteCommentDialog"
+import DeleteCommentDialog from "./DeleteCommentDialog"
 import Stack from '@mui/material/Stack';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Box } from '@mui/system';
@@ -60,7 +60,7 @@ export default function CommentCard({comment, alertSuccess, alertError, removeCo
   };
 
   return (
-    <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
+    <Card sx={{maxHeight: 200, mt:"1%"}}>
       <Grid container direction={'row'} spacing={12}>
         <Grid item xl={10} md={10}>
         <CardContent>

@@ -1,22 +1,17 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import EditIcon from '@mui/icons-material/Edit';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import Stack from '@mui/material/Stack';
+import { useSelector, useDispatch } from 'react-redux';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { CardActions, CardHeader } from '@mui/material';
 import { deleteNotification } from '../../../Services/notifications';
-import { addFollower } from '../../../Services/followers';
+import { addFollower, getFollowers } from '../../../Services/followers';
+import { setFollowers } from '../../../redux/followersSlice';
 
 const CardButton = styled(Button)({fontSize: "1.2rem", fontWeight: 500});
 
@@ -31,58 +26,37 @@ function isoToHumanReadableDate(isoDate) {
 }
 
 export default function NotificationCard({notification, alertSuccess, alertError, removeNotification}) {
-  /* Hook For Follow Request Dialog */
-  const [acceptOpen, setAcceptOpen] = React.useState(false);
-  const handleEditClickOpen = () => setAcceptOpen(true);
-  const handleEditClose = () => setAcceptOpen(false);
-
-  /* Hook For comment delete dialog */
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
-  const handleDelClickOpen = () => setDeleteOpen(true);
-  const handleDelClose = () => setDeleteOpen(false);
-
   /* State Hook For Menu (edit/remove) */
   const [anchorEl, setAnchorEl] = React.useState(false);
   const closeAnchorEl = () => setAnchorEl(false);
-  const openAnchorEl = () => setAnchorEl(true);
 
-  /* Hook handler For Menu (edit/remove) */
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  /* State Hook For Updating Followers */
+  const dispatch = useDispatch();
+
+  /* State Hook For Author */
+  const author = useSelector(state => state.profile);
 
   /* Callback For Deleting Notifications */
   const onDeleteNotification = () => {
     closeAnchorEl();
     deleteNotification(notification.author.id, notification.id)
-      .then( _ => {
-        removeNotification(notification);
-        alertSuccess("Successfully Deleted Notification!");
-      } )
-      .catch( err => { 
-        console.log(err);
-        alertError("Error: Could Not Delete Notification!");
-      } );
+      .then( _ => removeNotification(notification) )
+      .then( _ => alertSuccess("Successfully Deleted Notification!"))
+      .catch( err => { console.log(err); alertError("Error: Could Not Delete Notification!"); } );
   }
 
   /* Callback For Accepting Follow Requests */
   const onAcceptFollow = () => {
     addFollower(notification.author.id, notification.actor)
-      .then( _ => deleteNotification(notification.author.id, notification.id) )
-        .then( _ => { removeNotification(notification); return 1; } )
-        .catch( err => { console.log(err); return 0; } )
-          .then( res => res === 1 ? alertSuccess("Accepted Follow Request!") : alertError("Error: Could Not Accept Follow Request!") )
-      .catch( err => { 
-        console.log(err);
-        alertError("Error: Could Not Accept Follow Request!");
-      } );
+      .then( _ => Promise.all([deleteNotification(notification.author.id, notification.id), getFollowers(author.id)]))
+      .then( values => dispatch(setFollowers(values[1].data.items)) )
+      .then( _ => removeNotification(notification) )
+      .then( _ => alertSuccess("Accepted Follow Request!") )
+      .catch( err => { console.log(err); alertError("Error: Could Not Accept Follow Request!"); } );
   }
 
   return (
-    <Card fullwidth sx={{maxHeight: 200, my: "1px"}}>
+    <Card fullwidth="true" sx={{maxHeight: 200, my: "1px"}}>
         <CardHeader 
           sx={{paddingBottom: notification.type === "Follow" ? "0px" : "16px"}}
           action={ <IconButton aria-label="settings" onClick={event => setAnchorEl(event.currentTarget)}> <MoreVertIcon /> </IconButton> } 

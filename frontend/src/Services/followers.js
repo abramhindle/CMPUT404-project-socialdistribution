@@ -13,3 +13,20 @@ export function addFollower(authorID, followerID) {
 export function deleteFollower(authorID, followerID) {
     return del(authorID + "followers/" + followerID + "/");
 }
+
+export function getFollowing(authorID) {
+    return get("authors/" + authorID + "/following/");
+}
+
+export function checkFollowing(authorID, followerID) {
+    console.log("authors/" + authorID + "/following/" + followerID + "/");
+    return get("authors/" + authorID + "/following/" + followerID + "/");
+}
+
+export function addFollowing(authorID, followerID) {
+    return put("authors/" + authorID + "/following/" + followerID + "/", {});
+}
+
+export function deleteFollowing(authorID, followerID) {
+    return del("authors/" + authorID + "/following/" + followerID + "/");
+}
