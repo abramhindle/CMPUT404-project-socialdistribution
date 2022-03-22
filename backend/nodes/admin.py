@@ -16,5 +16,6 @@ class NodeAdmin(admin.ModelAdmin):
             obj.credentials.username
         ))
     user_link.short_description = 'credentials'
+    list_display = ('name', 'host', 'username',)
 
 admin.site.register(Node, NodeAdmin)

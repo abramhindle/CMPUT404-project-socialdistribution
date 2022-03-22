@@ -14,12 +14,14 @@ class NodeViewSet(viewsets.ModelViewSet):
     def create(self, request):
         try:
             user = User.objects.create_user(
-                username=request.data["username"], 
-                password=request.data["password"]
+                username=request.data["remote_username"], 
+                password=request.data["remote_password"]
             )
             node = Node.objects.create(
                 name=request.data["name"],
-                host=request.data["host"], 
+                host=request.data["host"],
+                username=request.data["username"],
+                password=request.data["password"], 
                 credentials=user
             )
             node.save()

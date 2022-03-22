@@ -38,12 +38,13 @@ def on_create_post(sender, **kwargs):
                 # Push Posts to Remote Recipient's Inbox
                 nodes = Node.objects.all()
                 try:
-                    with ThreadPoolExecutor(max_workers=1) as executor:
-                        futures = executor.map(lambda node: requests.get(f"{node.host}authors/"), nodes)
-                    for future in futures:
-                        remote_authors = json.loads(future.text)["items"]
+                    for node in nodes:
                         with ThreadPoolExecutor(max_workers=1) as executor:
-                            executor.map(lambda author: requests.get(f"{author['id']}inbox/"), remote_authors)
+                            futures = executor.map(requests.get(f"{node.host}authors/", auth=(node.username, node.password)))
+                        for future in futures:
+                            remote_authors = json.loads(future.text)["items"]
+                            with ThreadPoolExecutor(max_workers=1) as executor:
+                                executor.map(lambda author: requests.get(f"{author['id']}inbox/", auth=(node.username, node.password)), remote_authors)
                 except RequestException as e:
                     print(e)
             elif post.visibility == "FRIENDS":
