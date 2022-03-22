@@ -14,7 +14,7 @@ import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
 import Grid from '@mui/material/Grid';
 import CommentCard from '../comment/CommentCard';
-import { getComments } from '../../../Services/comments';
+import { getComments } from '../../../services/comments';
 import EditPostDialog from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -25,8 +25,10 @@ import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { concat } from 'lodash/fp';
+import { createLikes, getLikes, deleteLikes} from '../../../services/likes';
 import FollowRequestDialog from '../../../Components/FollowRequestDialog';
 import { getAuthorFromStorage } from '../../../LocalStorage/profile';
+
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -53,10 +55,10 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color}) {
+function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleLikes, color}) {
   return (
       <CardActions disableSpacing>
-          <IconButton aria-label="like" onClick={handleColor}>
+          <IconButton aria-label="like" onClick={handleLikes} >
             <FavoriteIcon color = {color}/>
           </IconButton>
           <IconButton aria-label="share">
@@ -72,12 +74,49 @@ function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color})
 }
 
 
-export default function FeedCard({post, isOwner, alertError, alertSuccess, updateFeed, removeFromFeed}) {
+export default function FeedCard({allLikes, profile, post, isOwner, alertError, alertSuccess, updateFeed, removeFromFeed}) {
   /* State Hook For Expanding The Comments */
   const [expanded, setExpanded] = React.useState(false);
-
+  
   /* State Hook For Colour Scheme */
   const [color, setColor] = React.useState("grey");
+
+  // /* State Hook For likes */
+  const [likes, setLikes] = React.useState(false);
+  const handleLikes = () => {
+    // console.log(likes)
+    // console.log (" is :", profile)
+    const data = {
+      type: "Like", 
+      summary: profile.displayName + " likes your post",
+      context: "https://www.w3.org/ns/activitystreams",
+      object: post.id, 
+      author_url: profile.id
+    }
+    console.log (" is :", data)
+    if (color !== "grey"){
+      deleteLikes(post, post.id)
+      .then( res => { 
+        alertSuccess("Success: Delete Like!");
+        setColor("grey")
+        setLikes(!likes)
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Delete Like!");
+      } );
+    }else{
+      createLikes(post, data)
+      .then( res => { 
+        alertSuccess("Success: Created New Like!");
+        setColor("secondary")
+        setLikes(!likes)
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Create Like!");
+      } );
+      
+    }
+  }
 
   /* State Hook For Opening Edit Post Dialog */
   const [editOpen, setEditOpen] = React.useState(false);
@@ -143,6 +182,17 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       })
       .catch( err => console.log(err) );
   };
+  
+
+  React.useEffect( () => {
+    for (var key in allLikes){
+       if (allLikes[key].object.match(post.id)&& !allLikes[key].object.match("comment")){
+          setColor("secondary")
+      }
+    }
+    
+    
+}, [post.id, allLikes] );
 
   return (
     <Card sx={{m: "1px"}}>
@@ -179,10 +229,12 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
           <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
-      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
+      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {comments.map((comment, index) => ( <Grid key={index} item xs={12}> <CommentCard removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth="true" /> </Grid>))}
+
+          {comments.map((comment, index) => ( <Grid key={index} item xs={12}> <CommentCard allLikes={allLikes} profile = {profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth="true" /> </Grid>))}
+
           <Grid item xs={12} sx={{marginTop: "8px"}}>
             <Card fullwidth="true" sx={{maxHeight: 200, mt:"1%"}}>
             <Button disableElevation={false} sx={{minHeight: "100px", fontSize: "1.15rem"}}  onClick={handleAddCMClickOpen} fullWidth>Add Comment</Button>

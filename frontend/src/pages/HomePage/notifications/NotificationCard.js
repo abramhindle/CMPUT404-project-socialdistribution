@@ -13,6 +13,7 @@ import { deleteNotification } from '../../../Services/notifications';
 import { addFollower, getFollowers } from '../../../Services/followers';
 import { setFollowers } from '../../../redux/followersSlice';
 
+
 const CardButton = styled(Button)({fontSize: "1.2rem", fontWeight: 500});
 
 /* 
