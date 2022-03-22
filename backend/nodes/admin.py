@@ -7,15 +7,14 @@ from .models import Node
 class NodeAdmin(admin.ModelAdmin):
     ordering = ('name',)
     search_fields = ('name', 'host')
-    list_display = ('name', 'host', 'user_link')
+    list_display = ('name', 'host', 'username', 'password', 'user_link')
     readonly_fields = ('user_link',)
 
     def user_link(self, obj):
         return mark_safe('<a href="{}">{}</a>'.format(
-            reverse("admin:auth_user_change", args=(obj.credentials.pk,)),
-            obj.credentials.username
+            reverse("admin:auth_user_change", args=(obj.remote_credentials.pk,)),
+            obj.remote_credentials.username
         ))
-    user_link.short_description = 'credentials'
-    list_display = ('name', 'host', 'username',)
+    user_link.short_description = 'remote credentials'
 
 admin.site.register(Node, NodeAdmin)
