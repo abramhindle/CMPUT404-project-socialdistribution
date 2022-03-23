@@ -3,12 +3,20 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from .serializers import CommentSerializer
 from posts.models import Post
-from authors.models import Author
 from .models import Comment
+from backend.permissions import IsOwnerOrAdmin
+
+
+class IsPostOwnerOrAdmin(IsOwnerOrAdmin):
+    """Only Allow Owners Or Admins To Access The Object"""
+
+    @staticmethod
+    def get_owner(obj: Comment):
+        return obj.post.author.profile
 
 
 class CommentPagination(PageNumberPagination):
@@ -20,7 +28,7 @@ class CommentPagination(PageNumberPagination):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
     pagination_class = CommentPagination
     serializer_class = CommentSerializer
     parser_classes = [JSONParser]
@@ -35,8 +43,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
-        if self.action in ['update', 'create', 'partial_update', 'destroy']:
-            permission_classes = [IsAuthenticated]
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
         else:
-            permission_classes = [AllowAny]
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
         return [permission() for permission in permission_classes]

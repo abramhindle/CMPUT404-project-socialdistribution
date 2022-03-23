@@ -2,7 +2,7 @@ import base64
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework import status
 from rest_framework.decorators import action, renderer_classes
 from django.db.utils import IntegrityError
@@ -24,11 +24,10 @@ class CustomPageNumberPagination(PageNumberPagination):
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
     serializer_class = AuthorSerializer
-    queryset = Author.objects.all()
+    queryset = Author.objects.all().order_by("displayName")
     pagination_class = CustomPageNumberPagination
-    permission_classes = [AllowAny]
 
     @action(detail=False, methods=['post'])
     def register(self, request):
@@ -76,8 +75,10 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
-        if self.action in ['login']:
+        if self.action in ['login', 'register', 'logout']:
+            permission_classes = [AllowAny]
+        elif self.action in ["avatar"]:
             permission_classes = [AllowAny]
         else:
-            permission_classes = [AllowAny]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
