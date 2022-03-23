@@ -1,5 +1,4 @@
 import json
-
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.conf import settings
@@ -25,7 +24,6 @@ def on_create_post(sender, **kwargs):
         post.id = url
         post.source = url if not post.source else post.source
         post.origin = url if not post.origin else post.origin
-        post.comments = url + "comments/" if not post.comments else post.comments
 
         # Push Posts To Recipient's Inbox
         if post.contentType != post.ContentType.PNG and post.contentType != post.ContentType.JPEG:
