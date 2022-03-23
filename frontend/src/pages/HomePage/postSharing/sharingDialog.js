@@ -12,9 +12,11 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import UrlSharingBox from './urlSharingBox';
 
-export default function SharingDialog({open, onClose, post}) {
 
+export default function SharingDialog({open, onClose, post, alertSuccess, alertError}) {
+    
     const followers = useSelector(state => state.followers.items);
+
     
     // state hook for showing listitem or not 
     const [showingItem, setShowingItem] = React.useState(false)
@@ -26,6 +28,9 @@ export default function SharingDialog({open, onClose, post}) {
     React.useEffect( () => {
         handleVisable()
     }, [] );
+
+    
+    
 
   return (
     <div>
@@ -40,7 +45,7 @@ export default function SharingDialog({open, onClose, post}) {
                 </DialogContentText>
               {followers.slice(0, followers.length).map((followers, index) => (
                 <Paper sx={{mt:2}}>
-                <RecipientListItem followers={followers}></RecipientListItem>
+                <RecipientListItem followers={followers} post={post} alertSuccess={alertSuccess} alertError={alertError}></RecipientListItem>
                 </Paper>
                 ))}
           </Box>
@@ -49,10 +54,7 @@ export default function SharingDialog({open, onClose, post}) {
             </DialogContentText>
         }  
         </DialogContent>
-        <UrlSharingBox post={post}></UrlSharingBox>
-
-
-        <DialogActions>
+        <DialogActions sx={{pr:1.5}}>
           <Button onClick={onClose}>Cancel</Button>
         </DialogActions>
       </Dialog>
