@@ -3,6 +3,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 
 from posts.models import Post, ContentType
+from follow.models import Follow, Request
 
 from posts.tests.constants import POST_DATA
 from .constants import POST_IMG_DATA
@@ -151,4 +152,41 @@ class ImageTests(TestCase):
 
     def test_image_require_login(self):
         res = self.client.get(f'/api/v1/authors/{self.author.id}/posts/{self.img_post.id}/image/')
+        self.assertEqual(res.status_code, 403)
+
+
+class FollowersTest(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.author = get_user_model().objects.create_user(username='bob', password='password')
+        self.other_user = get_user_model().objects.create_user(username='alice', password='password')
+        self.other_user2 = get_user_model().objects.create_user(username='tom', password='password')
+        self.follow = Follow.objects.create(
+            followee=self.author,
+            follower=self.other_user
+        )
+        self.follow2 = Follow.objects.create(
+            followee=self.author,
+            follower=self.other_user2
+        )
+        self.follow.save()
+        self.follow2.save()
+        return
+
+    def test_get(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(f'/api/v1/authors/{self.author.id}/followers/')
+        self.assertEqual(res.status_code, 200)
+        body = json.loads(res.content.decode('utf-8'))
+        self.assertEqual(body['type'], 'followers')
+        for follower in body['items']:
+            self.assertEqual(follower['type'], 'author')
+            self.assertIn('id', follower)
+            self.assertIn('url', follower)
+            self.assertIn('displayName', follower)
+            self.assertIn('github', follower)
+            self.assertIn('profileImage', follower)
+
+    def test_follower_require_login(self):
+        res = self.client.get(f'/api/v1/authors/{self.author.id}/followers/')
         self.assertEqual(res.status_code, 403)
