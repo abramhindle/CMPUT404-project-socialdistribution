@@ -83,8 +83,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
-        if self.action in ['login', 'register', 'logout', 'avatar']:
-            permission_classes = [AllowAny]
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [IsAuthenticated]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]

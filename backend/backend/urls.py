@@ -9,6 +9,9 @@ urlpatterns = [
     # Django Admin Site
     path('admin/', admin.site.urls),
 
+    # Node Management
+    path('nodes/', include('nodes.urls')),
+
     # List All Authors On The Local Server
     path('authors/', views.get_authors, name='get_authors'),
 

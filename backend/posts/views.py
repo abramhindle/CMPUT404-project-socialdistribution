@@ -61,7 +61,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
-        if self.action in ['update', 'create', 'partial_update', 'destroy']:
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [IsAuthenticated]
+        elif self.action in ['update', 'create', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsPostOwnerOrAdmin]
         elif self.action in ["image"]:
             permission_classes = [AllowAny]
