@@ -10,12 +10,13 @@ import { styled } from '@mui/material/styles';
 import EditCommentDialog from './EditCommentDialog';
 import EditIcon from '@mui/icons-material/Edit';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import DeleteCommentDialog from "../comment/DeleteCommentDialog"
+import DeleteCommentDialog from "./DeleteCommentDialog"
 import Stack from '@mui/material/Stack';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { createCommentLikes, getCommentLikes, deleteCommentLikes } from '../../../services/likes';
 
 const PostImage = styled('img')({width: "100%"})
 
@@ -29,7 +30,7 @@ function isoToHumanReadableDate(isoDate) {
   return dateFormat.format(date) + " - " + timeFormat.format(date);
 }
 
-export default function CommentCard({comment, alertSuccess, alertError, removeComment, editComments}) {
+export default function CommentCard({allLikes, profile, comment, alertSuccess, alertError, removeComment, editComments}) {
   /* Hook For Like icon color */
   const [color, setColor] = React.useState("grey");
 
@@ -48,8 +49,39 @@ export default function CommentCard({comment, alertSuccess, alertError, removeCo
   const closeAnchorEl = () => setAnchorEl(false);
   const openAnchorEl = () => setAnchorEl(true);
 
-  const handleColor = () => setColor("secondary");
+  // /* State Hook For likes */
+  const [likes, setLikes] = React.useState(false);
 
+  const handleColor = () => {
+    const data = {
+      type: "Like", 
+      summary: profile.displayName + " likes your comment",
+      context: "https://www.w3.org/ns/activitystreams",
+      object: comment.id, 
+      author_url: profile.id
+    }
+    if (color !== "grey"){
+      deleteCommentLikes(comment, comment.id)
+      .then( res => { 
+        alertSuccess("Success: Deleted Like!");
+        setColor("grey")
+        setLikes(!likes)
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Delete Like!");
+      } );
+    }else{
+      createCommentLikes(comment, data)
+      .then( res => { 
+        alertSuccess("Success: Created New Like!");
+        setColor("secondary")
+        setLikes(!likes)
+      })
+      .catch( err => {console.log(err)
+        alertError("Error: Could Not Create Like!");
+      } );
+    }
+  }
 
   /* Hook handler For Menu (edit/remove) */
   const handleClick = (event) => {
@@ -59,8 +91,17 @@ export default function CommentCard({comment, alertSuccess, alertError, removeCo
     setAnchorEl(null);
   };
 
+  React.useEffect( () => {
+   
+    for (var key in allLikes){
+       if (allLikes[key].object.match(comment.id)&& allLikes[key].object.match("comment")){
+          setColor("secondary")
+      }
+    }
+}, [comment.id, allLikes] );
+
   return (
-    <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
+    <Card sx={{maxHeight: 200, mt:"1%"}}>
       <Grid container direction={'row'} spacing={12}>
         <Grid item xl={10} md={10}>
         <CardContent>
