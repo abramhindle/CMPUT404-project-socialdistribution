@@ -14,6 +14,8 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.contrib import auth
 from rest_framework.authtoken.models import Token
+from likes.models import Likes
+from likes.serializers import LikesSerializer
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -28,6 +30,12 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     queryset = Author.objects.all().order_by("displayName")
     pagination_class = CustomPageNumberPagination
+
+    @action(detail=True, methods=['GET'])
+    def liked(self, request, pk):
+        author: Author = get_object_or_404(Author, local_id=pk)
+        likes = Likes.objects.all().filter(author_url=author.id)
+        return Response({"type": "liked", "items": LikesSerializer(likes, many=True).data}, content_type="application/json")
 
     @action(detail=False, methods=['post'])
     def register(self, request):
@@ -75,10 +83,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
-        if self.action in ['login', 'register', 'logout']:
-            permission_classes = [AllowAny]
-        elif self.action in ["avatar"]:
+        if self.action in ['login', 'register', 'logout', 'avatar']:
             permission_classes = [AllowAny]
         else:
-            permission_classes = [IsAuthenticated]
+            permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]

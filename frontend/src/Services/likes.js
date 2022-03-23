@@ -1,10 +1,14 @@
 import { post, get, put, del, patch } from "./requests";
 
 
-
-export function createCommentLikes(commentData, likesData){
-    console.log(commentData.id + "likes/", likesData)
-    return post(commentData.id + "likes/", likesData);
+export function createCommentLikes(commentData, sender){
+    const data = {
+        "summary": `${sender.displayName} Likes Your Comment!`,         
+        "type": "Like",
+        "author": sender,    
+        "object": commentData.id
+    }
+    return post("authors/" + commentData.author.id + "/inbox/", data);
 }
 
 export function getCommentLikes(commentData){
@@ -15,8 +19,14 @@ export function deleteCommentLikes(commentData, likesData){
     return post(commentData.id + "likes/decrement/", likesData);
 }
 
-export function createLikes(postData, likesData){
-    return post(postData.id + "likes/", likesData);
+export function createPostLikes(postData, sender){
+    const data = {
+        "summary": `${sender.displayName} Likes Your Post!`,         
+        "type": "Like",
+        "author": sender,    
+        "object": postData.id
+    }
+    return post("authors/" + postData.author.id + "/inbox/", data);
 }
 
 export function deleteLikes(postData, likesData){
@@ -28,6 +38,5 @@ export function getLikes(postData){
 }
 
 export function getAllLikes(author){
-    console.log(author.url + "liked/");
     return get(author.url + "liked/");
 }

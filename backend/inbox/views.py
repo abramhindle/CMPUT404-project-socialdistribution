@@ -1,4 +1,5 @@
 from rest_framework.parsers import JSONParser
+from likes.models import Likes
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -80,9 +81,13 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
             notification.save()
             return Response({"success": "Follow Request Delivered!"}, status=status.HTTP_200_OK)
         elif request.data["type"].lower() == "like":
-            summary = f"{request.data['author']['displayName']} Likes Your Post!"
-            notification = Notification(type="Like", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification = Notification(type="Like", author=author, actor=request.data["author"]["url"], summary=request.data["summary"])
             notification.save()
+            request.data.pop("@context", "")
+            like_author = request.data.pop("author")
+            like = Likes.objects.create(**request.data)
+            like.author_url = like_author["id"]
+            like.save()
             return Response({"success": "Like Delivered!"}, status=status.HTTP_200_OK)
         elif request.data["type"].lower() == "comment":
             summary = f"{request.data['author']['displayName']} Commented On Your Post!"

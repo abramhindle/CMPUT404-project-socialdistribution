@@ -28,8 +28,20 @@ function isoToHumanReadableDate(isoDate) {
 
 export default function NotificationCard({notification, alertSuccess, alertError, removeNotification}) {
   /* State Hook For Menu (edit/remove) */
-  const [anchorEl, setAnchorEl] = React.useState(false);
-  const closeAnchorEl = () => setAnchorEl(false);
+  const [anchorEl, setAnchorEl] = React.useState(undefined);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  /* Hook handler For Menu Open */
+  const handleClick = event => { 
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true);
+  }
+
+  /* Hook handler For Menu Close */
+  const handleClose = () => { 
+    setMenuOpen(false);
+    setAnchorEl(null);
+  }
 
   /* State Hook For Updating Followers */
   const dispatch = useDispatch();
@@ -39,7 +51,7 @@ export default function NotificationCard({notification, alertSuccess, alertError
 
   /* Callback For Deleting Notifications */
   const onDeleteNotification = () => {
-    closeAnchorEl();
+    handleClose();
     deleteNotification(notification.author.id, notification.id)
       .then( _ => removeNotification(notification) )
       .then( _ => alertSuccess("Successfully Deleted Notification!"))
@@ -60,11 +72,11 @@ export default function NotificationCard({notification, alertSuccess, alertError
     <Card fullwidth="true" sx={{maxHeight: 200, my: "1px"}}>
         <CardHeader 
           sx={{paddingBottom: notification.type === "Follow" ? "0px" : "16px"}}
-          action={ <IconButton aria-label="settings" onClick={event => setAnchorEl(event.currentTarget)}> <MoreVertIcon /> </IconButton> } 
+          action={ <IconButton aria-label="settings" onClick={handleClick}> <MoreVertIcon /> </IconButton> } 
           title={<Typography gutterBottom variant="h4" component="div"> {notification.summary} </Typography>}
           subheader={isoToHumanReadableDate(notification.published)}
         />
-      <Menu id="basic-menu" anchorEl={anchorEl} open={anchorEl} onClose={closeAnchorEl} MenuListProps={{ 'aria-labelledby': 'basic-button', }} >
+      <Menu id="basic-menu" anchorEl={anchorEl} open={menuOpen} onClose={handleClose} MenuListProps={{ 'aria-labelledby': 'basic-button', }} >
           <MenuItem onClick={onDeleteNotification}>Delete</MenuItem>
       </Menu>
       {notification.type === "Follow"&&

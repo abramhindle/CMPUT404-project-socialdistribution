@@ -9,6 +9,9 @@ from .serializers import CommentSerializer
 from posts.models import Post
 from .models import Comment
 from backend.permissions import IsOwnerOrAdmin
+from rest_framework.decorators import action
+from likes.models import Likes
+from likes.serializers import LikesSerializer
 
 
 class IsPostOwnerOrAdmin(IsOwnerOrAdmin):
@@ -33,6 +36,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     parser_classes = [JSONParser]
 
+    @action(detail=True, methods=['GET'])
+    def likes(self, request, author, post, pk):
+        comment: Comment = get_object_or_404(Comment, local_id=pk)
+        likes = Likes.objects.all().filter(object=comment.id)
+        return Response({"type": "likes", "items": LikesSerializer(likes, many=True).data}, content_type="application/json")
+
     def get_queryset(self):
         post = self.kwargs["post"]
         return Comment.objects.filter(post__local_id=post).order_by("published")
@@ -46,5 +55,5 @@ class CommentViewSet(viewsets.ModelViewSet):
         if self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
         else:
-            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
