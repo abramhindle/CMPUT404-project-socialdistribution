@@ -7,7 +7,7 @@ import AddCircleSharpIcon from '@mui/icons-material/AddCircleSharp';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { profileEdit } from '../../../redux/profileSlice';
-import { editProfile, editGitHub } from '../../../Services/profile';
+import { editProfile, editGitHub } from '../../../services/profile';
 
 const style = {
     textField: { minWidth: '20rem' },

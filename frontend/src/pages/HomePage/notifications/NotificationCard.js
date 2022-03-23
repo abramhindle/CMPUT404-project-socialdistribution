@@ -9,8 +9,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { CardActions, CardHeader } from '@mui/material';
-import { deleteNotification } from '../../../Services/notifications';
-import { addFollower, getFollowers } from '../../../Services/followers';
+import { deleteNotification } from '../../../services/notifications';
+import { addFollower, getFollowers } from '../../../services/followers';
 import { setFollowers } from '../../../redux/followersSlice';
 
 

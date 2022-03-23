@@ -7,8 +7,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { getAuthorFromStorage } from '../LocalStorage/profile';
-import { pushToInbox } from '../Services/inbox';
-import { addFollowing } from '../Services/followers';
+import { pushToInbox } from '../services/inbox';
+import { addFollowing } from '../services/followers';
 
 export default function FollowRequestDialog({authorToFollow, alertSuccess, alertError, open, handleClose}) {
 
