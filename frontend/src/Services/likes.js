@@ -3,7 +3,6 @@ import { post, get, put, del, patch } from "./requests";
 
 
 export function createCommentLikes(commentData, likesData){
-    console.log(commentData.id + "likes/", likesData)
     return post(commentData.id + "likes/", likesData);
 }
 
@@ -28,6 +27,5 @@ export function getLikes(postData){
 }
 
 export function getAllLikes(author){
-    console.log(author.url + "liked/");
     return get(author.url + "liked/");
 }

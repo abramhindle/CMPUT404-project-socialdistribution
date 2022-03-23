@@ -28,7 +28,7 @@ import { concat } from 'lodash/fp';
 import { createLikes, getLikes, deleteLikes} from '../../../Services/likes';
 import FollowRequestDialog from '../../../Components/FollowRequestDialog';
 import { getAuthorFromStorage } from '../../../LocalStorage/profile';
-
+import SharingDialog from "../postSharing/sharingDialog"
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -55,13 +55,13 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleLikes, color}) {
+function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleLikes, color, handleSharingDialogClickOpen}) {
   return (
       <CardActions disableSpacing>
           <IconButton aria-label="like" onClick={handleLikes} >
             <FavoriteIcon color = {color}/>
           </IconButton>
-          <IconButton aria-label="share">
+          <IconButton aria-label="share" onClick={handleSharingDialogClickOpen}>
             <ShareIcon />
           </IconButton>
           <div sx={{pr:8}}>
@@ -84,8 +84,6 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   // /* State Hook For likes */
   const [likes, setLikes] = React.useState(false);
   const handleLikes = () => {
-    // console.log(likes)
-    // console.log (" is :", profile)
     const data = {
       type: "Like", 
       summary: profile.displayName + " likes your post",
@@ -93,7 +91,6 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
       object: post.id, 
       author_url: profile.id
     }
-    console.log (" is :", data)
     if (color !== "grey"){
       deleteLikes(post, post.id)
       .then( res => { 
@@ -157,6 +154,10 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   /* State Hook For Adding comment*/
   const [addCMOpen, setaddCMOpen] = React.useState(false);
 
+  /* State Hook For Opening of Share post dialog*/
+  const [openSharingDialog, setSharingDialogOpen] = React.useState(false);
+
+
   /* Hook handler For Menu (edit/remove) */
   const handleClick = event => { 
     setAnchorEl(event.currentTarget);
@@ -166,6 +167,16 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
     setMenuOpen(false);
     setAnchorEl(null);
   }
+
+  /* Hook handler For Share post dialog (open/close) */
+  const handleSharingDialogClickOpen = () => {
+    setSharingDialogOpen(true);
+  };
+
+  const handleSharingDialogClose = () => {
+    console.log ("lalalalal")
+    setSharingDialogOpen(false);
+  };
   
   const handleColor = (event) =>setColor("secondary");
 
@@ -183,7 +194,7 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
       .catch( err => console.log(err) );
   };
   
-
+  /* This Runs When The alllikes and post.id has changed */
   React.useEffect( () => {
     for (var key in allLikes){
        if (allLikes[key].object.match(post.id)&& !allLikes[key].object.match("comment")){
@@ -229,7 +240,7 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
           <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
-      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color}/>
+      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color} handleSharingDialogClickOpen={handleSharingDialogClickOpen}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
 
@@ -256,6 +267,7 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
       <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} post={post} addComment={addComment} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
       <FollowRequestDialog  authorToFollow={post.author} alertSuccess={alertSuccess} alertError={alertError} open={followOpen} handleClose={closeFollowDialog} />
+      <SharingDialog open ={openSharingDialog} onClose={handleSharingDialogClose}></SharingDialog>
     </Card>
   );
 }

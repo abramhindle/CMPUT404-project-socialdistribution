@@ -93,7 +93,6 @@ export default function HomePage() {
     /* State Hook For User*/
     const userObj = useSelector( state => state.profile );
 
-    // console.log ("profile is", userObj)
 
     /* State Hook For GitHub */
     const [githubFeed, setGithubFeed] = useState([]);
