@@ -28,8 +28,9 @@ import { concat } from 'lodash/fp';
 import { createPostLikes, getLikes, deleteLikes} from '../../../Services/likes';
 import FollowRequestDialog from '../../../Components/FollowRequestDialog';
 import { getAuthorFromStorage } from '../../../LocalStorage/profile';
-import SharingDialog from "../postSharing/sharingDialog"
 import { set } from 'lodash/fp';
+import SharingDialog from "../postSharing/sharingDialog";
+import SharingUnlistedDialog from "../postSharing/sharingUnlistedDialog";
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -56,13 +57,13 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleLikes, color, handleSharingDialogClickOpen}) {
+function CardButtons({isOwner, handleColor, expanded, handleExpandClick, handleLikes, color, handleSharingDialogClickOpen, handleSharingUnlistedOpen, post}) {
   return (
       <CardActions disableSpacing>
           <IconButton aria-label="like" onClick={handleLikes} >
             <FavoriteIcon color = {color}/>
           </IconButton>
-          <IconButton aria-label="share" onClick={handleSharingDialogClickOpen}>
+          <IconButton aria-label="share" onClick={post.unlisted !== true ? handleSharingDialogClickOpen:handleSharingUnlistedOpen}>
             <ShareIcon />
           </IconButton>
           <div sx={{pr:8}}>
@@ -158,6 +159,8 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   /* State Hook For Opening of Share post dialog*/
   const [openSharingDialog, setSharingDialogOpen] = React.useState(false);
 
+  /* State Hook For Opening of Share unlisted post dialog*/
+  const [openSharUnlistedDialog, setSharUnlistedDialogOpen] = React.useState(false);
 
   /* Hook handler For Menu (edit/remove) */
   const handleClick = event => { 
@@ -175,8 +178,17 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   };
 
   const handleSharingDialogClose = () => {
-    console.log ("lalalalal")
     setSharingDialogOpen(false);
+  };
+
+  /* Hook handler For Share post dialog (open/close) */
+  const handleSharingUnlistedOpen = () => {
+    setSharUnlistedDialogOpen(true);
+    console.log ("rendering")
+  };
+
+  const handleSharingUnlistedDialogClose = () => {
+    setSharUnlistedDialogOpen(false);
   };
   
   const handleColor = (event) =>setColor("secondary");
@@ -235,7 +247,7 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
           <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
-      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color} handleSharingDialogClickOpen={handleSharingDialogClickOpen}/>
+      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color} handleSharingDialogClickOpen={handleSharingDialogClickOpen} handleSharingUnlistedOpen={handleSharingUnlistedOpen} post={post}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           {comments.map((comment, index) => ( 
@@ -263,7 +275,8 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
       <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} post={post} addComment={addComment} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
       <FollowRequestDialog  authorToFollow={post.author} alertSuccess={alertSuccess} alertError={alertError} open={followOpen} handleClose={closeFollowDialog} />
-      <SharingDialog open ={openSharingDialog} onClose={handleSharingDialogClose} post={post}></SharingDialog>
+      <SharingDialog open ={openSharingDialog} onClose={handleSharingDialogClose} post={post} alertSuccess={alertSuccess} alertError={alertError}></SharingDialog>
+      <SharingUnlistedDialog open ={openSharUnlistedDialog} onClose={handleSharingUnlistedDialogClose} post={post} alertSuccess={alertSuccess} alertError={alertError}></SharingUnlistedDialog>
     </Card>
   );
 }

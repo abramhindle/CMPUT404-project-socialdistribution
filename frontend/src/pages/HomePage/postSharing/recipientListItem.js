@@ -1,26 +1,37 @@
-
-
-
 import * as React from 'react';
 import { ListItemButton, Avatar, ListItemText, ListItemAvatar } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FolderIcon from '@mui/icons-material/Folder';
 import IconButton from '@mui/material/IconButton';
 import SendIcon from '@mui/icons-material/Send';
+import {createPost} from "../../../Services/posts"
+import { useSelector, useDispatch } from 'react-redux';
 
 
-export default function RecipientListItem({followers}) {
+export default function RecipientListItem({followers, post, alertSuccess, alertError}) {
     const [dense, setDense] = React.useState(false);
+    const author = useSelector(state => state.profile);
+    // handler for sending share request
+    const handleSending = () => {
+      post.source = author.url
+      post.title = author.displayName + " Share you this post: " + post.title 
+      // console.log("post is: ", post.title)
+      //source dont match origin mean post is not yours
+      createPost(post, followers.id)
+        .then( res => { 
+          alertSuccess("Success: Sharing post to " + followers.displayName + "!");
+        })
+        .catch( err => {console.log(err)
+          alertError("Error: Could Not Sharing post to " + followers.displayName + "!");
+        } );
+        
+    };
     return (
         <List dense={dense}>
             <ListItem
               secondaryAction={
-                <IconButton edge="end" aria-label="send">
+                <IconButton edge="end" aria-label="send" onClick={handleSending}>
                   <SendIcon />
                 </IconButton>
               }

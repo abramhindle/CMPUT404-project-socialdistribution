@@ -6,9 +6,8 @@ import Paper from '@mui/material/Paper';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 
-export default function urlSharingBox({post}) {
+export default function urlSharingBox({post, alertSuccess}) {
 
- console.log("LOLOLOL")
 
   return (
       
@@ -19,7 +18,7 @@ export default function urlSharingBox({post}) {
           defaultValue={post.id}
           sx={{width: "75%"}}
         />
-        <Button sx={{ml:1, width: "20%", height:55}} variant="outlined" startIcon={<ContentCopyIcon />} onClick={() =>  navigator.clipboard.writeText(post.id)}>
+        <Button sx={{ml:1, mb: 2, width: "20%", height:55}} variant="outlined" startIcon={<ContentCopyIcon />} onClick={() =>  navigator.clipboard.writeText(post.id)}>
         Copy
       </Button>
     

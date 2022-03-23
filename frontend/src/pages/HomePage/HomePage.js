@@ -22,6 +22,8 @@ import { getAllLikes } from '../../Services/likes';
 import { getAuthorFromStorage, setAuthorInStorage  } from '../../LocalStorage/profile';
 import { setInboxInStorage, getInboxFromStorage } from '../../LocalStorage/inbox';
 import { getFollowers } from '../../Services/followers';
+import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
+import ReceivedURLDialogs from './postSharing/receivedURL';
 
 const drawerWidth = 400;
 
@@ -39,7 +41,6 @@ export default function HomePage() {
 
     /* State Hook For Likes */
     const [allLikes, setAllLikes] = React.useState([]);
-    var likeResults = [];
 
     /* State Hook For Displaying Alerts */
     const [openAlert, setOpenAlert] = useState({isOpen: false, message: "", severity: "error"})
@@ -96,6 +97,15 @@ export default function HomePage() {
 
     /* State Hook For GitHub */
     const [githubFeed, setGithubFeed] = useState([]);
+    /* State Hook For ReceivedURL dialog*/
+    const [openReceivedURL, setReceivedURLOpen] = React.useState(false);
+
+    const handleReceivedURLClickOpen = () => {
+        setReceivedURLOpen(true);
+    };
+    const handleReceivedURLClose = () => {
+        setReceivedURLOpen(false);
+    };
 
     /* We Use This To Listen To Changes In The Window Size */
     useEffect( () => { 
@@ -179,6 +189,7 @@ export default function HomePage() {
             <Toolbar sx={{ flexWrap: 'wrap' }}>
                 <Typography variant="h5" noWrap component="div"> Social Distribution </Typography>
                 <span style={{float: "right", position: "absolute", right: 5}}>
+                    <IconButton aria-label="delete" size="large" onClick={handleReceivedURLClickOpen}><PageviewRoundedIcon /></IconButton>
                     <NavButton onClick={() => setValue("1") }>Public</NavButton>
                     <NavButton onClick={() => setValue("2") }>Personal</NavButton>
                     <NavButton onClick={() => setValue("3") }>Management</NavButton>
@@ -247,6 +258,8 @@ export default function HomePage() {
                 </TabContext>
             </Box>
         </Box>
+        <ReceivedURLDialogs open ={openReceivedURL} onClose={handleReceivedURLClose} alertSuccess={alertSuccess} alertError={alertError}></ReceivedURLDialogs>
     </Body>
+    
   );
 }
