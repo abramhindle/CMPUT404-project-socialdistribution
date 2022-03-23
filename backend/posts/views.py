@@ -6,9 +6,11 @@ from rest_framework.pagination import PageNumberPagination
 from .models import Post
 from authors.models import Author
 from .serializers import PostSerializer
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 import base64
+from likes.models import Likes
+from likes.serializers import LikesSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from backend.permissions import IsOwnerOrAdmin
 
@@ -34,6 +36,12 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
 
     @action(detail=True, methods=['GET'])
+    def likes(self, request, author, pk):
+        post: Post = get_object_or_404(Post, local_id=pk)
+        likes = Likes.objects.all().filter(object=post.id)
+        return Response({"type": "likes", "items": LikesSerializer(likes, many=True).data}, content_type="application/json")
+
+    @action(detail=True, methods=['GET'])
     def image(self, request, author, pk):
         post: Post = get_object_or_404(Post, local_id=pk)
         string = post.content
@@ -57,6 +65,8 @@ class PostViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         elif self.action in ['update', 'create', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsPostOwnerOrAdmin]
-        else:
+        elif self.action in ["image"]:
             permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]

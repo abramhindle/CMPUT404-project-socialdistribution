@@ -8,6 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { getAuthorFromStorage } from '../LocalStorage/profile';
 import { pushToInbox } from '../Services/inbox';
+import { addFollowing } from '../Services/followers';
 
 export default function FollowRequestDialog({authorToFollow, alertSuccess, alertError, open, handleClose}) {
 
@@ -22,6 +23,7 @@ export default function FollowRequestDialog({authorToFollow, alertSuccess, alert
     };
     console.log(JSON.stringify(data));
     pushToInbox(authorToFollow.id, data)
+        .then( _ => addFollowing(author.url, authorToFollow.id) )
         .then( _ => alertSuccess("Follow Request Sent!") )
         .catch( err => { console.log(err); alertError("Error: Could Not Send Follow Request!"); } )
         .finally( handleClose );

@@ -3,12 +3,23 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from .serializers import CommentSerializer
 from posts.models import Post
-from authors.models import Author
 from .models import Comment
+from backend.permissions import IsOwnerOrAdmin
+from rest_framework.decorators import action
+from likes.models import Likes
+from likes.serializers import LikesSerializer
+
+
+class IsPostOwnerOrAdmin(IsOwnerOrAdmin):
+    """Only Allow Owners Or Admins To Access The Object"""
+
+    @staticmethod
+    def get_owner(obj: Comment):
+        return obj.post.author.profile
 
 
 class CommentPagination(PageNumberPagination):
@@ -20,10 +31,16 @@ class CommentPagination(PageNumberPagination):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
     pagination_class = CommentPagination
     serializer_class = CommentSerializer
     parser_classes = [JSONParser]
+
+    @action(detail=True, methods=['GET'])
+    def likes(self, request, author, post, pk):
+        comment: Comment = get_object_or_404(Comment, local_id=pk)
+        likes = Likes.objects.all().filter(object=comment.id)
+        return Response({"type": "likes", "items": LikesSerializer(likes, many=True).data}, content_type="application/json")
 
     def get_queryset(self):
         post = self.kwargs["post"]
@@ -35,8 +52,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
-        if self.action in ['list', 'retrieve', 'update', 'create', 'partial_update', 'destroy']:
-            permission_classes = [IsAuthenticated]
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
         else:
-            permission_classes = [AllowAny]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]

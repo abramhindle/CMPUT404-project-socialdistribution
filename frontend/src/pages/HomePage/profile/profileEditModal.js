@@ -6,7 +6,8 @@ import Avatar from '@mui/material/Avatar';
 import AddCircleSharpIcon from '@mui/icons-material/AddCircleSharp';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
-import { login } from '../../../redux/profileSlice';
+import { profileEdit } from '../../../redux/profileSlice';
+import { editProfile, editGitHub } from '../../../Services/profile';
 
 const style = {
     textField: { minWidth: '20rem' },
@@ -44,6 +45,7 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 
 
 export default function ProfileEditModal(props) {
+    const profile = useSelector(state => state.profile);
     const displayName = useSelector(state => state.profile.displayName);
     const userID = useSelector(state => state.profile.id);
     const profileImage = useSelector(state => state.profile.profileImage);
@@ -53,38 +55,45 @@ export default function ProfileEditModal(props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const newData = { github: data.get('github') };
-        axios.patch(`/api/authors/${userID}/`, newData).then(console.log('profile changed successfully'))
-            .catch(err => console.log(err.response.data.error));
+        const imageChanged = (image !== null);
 
-    };
+        if (imageChanged) {
+            const imageData = data.get('img');
+            const reader = new FileReader();
+            reader.readAsDataURL(imageData)
+            reader.onload = () => { 
+                editProfile(profile, reader.result, data.get('github'))
+                    .then( values => {
+                        console.log(values[1].data) ;
+                        dispatch(profileEdit(values[1].data));
+                        window.location.reload(false);
+                    })
+                    .catch( err => console.log(err) );
+            }
+        } else {
+            editGitHub(profile.url, data.get('github'))
+                .then( res => {
+                    console.log(res.data) ;
+                    dispatch(profileEdit(res.data));
+                })
+                .catch( err => console.log(err) );
+        }
+    }
 
     const [image, _setImage] = React.useState(null);
-    const inputFileRef = React.createRef(null);
+
+    const onImageChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            _setImage(URL.createObjectURL(event.target.files[0]));
+        }
+    };
 
     const cleanup = () => {
-        URL.revokeObjectURL(image);
-        inputFileRef.current.value = null;
-    };
-
-    const setImage = (newImage) => {
-        if (image) {
-            cleanup();
-        }
-        _setImage(newImage);
-    };
-
-    const handleOnChange = (event) => {
-        const newImage = event.target?.files?.[0];
-
-        if (newImage) {
-            setImage(URL.createObjectURL(newImage));
-        }
+        _setImage(null);
     };
 
     const cancelChanges = () => {
         cleanup();
-        _setImage(profileImage)
         props.onClose();
     }
 
@@ -113,12 +122,12 @@ export default function ProfileEditModal(props) {
                         >
                             <Avatar alt={displayName} src={image ? image : profileImage} sx={style.avatar} />
                             <input
-                                ref={inputFileRef}
                                 accept='image/*'
                                 hidden
                                 type='file'
                                 id='profile-image-upload'
-                                onChange={handleOnChange}
+                                name='img'
+                                onChange={onImageChange}
                             />
                         </Badge></Grid>
 
@@ -127,7 +136,7 @@ export default function ProfileEditModal(props) {
                             id='github'
                             name="github"
                             label="Github Link"
-                            defaultValue={github}
+                            defaultValue={github.split("github.com/")[1]}
                             sx={style.textField}
                         />
                     </Grid>

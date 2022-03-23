@@ -1,37 +1,21 @@
-from .models import InboxItem
-from notifications.models import Notification
 from rest_framework.parsers import JSONParser
-from notifications.serializers import NotificationSerializer
-from comment.serializers import CommentSerializer
-from posts.models import Post
-from posts.serializers import PostSerializer
+from likes.models import Likes
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import mixins, viewsets
-from backend.permissions import IsOwnerOrAdmin
-from django.shortcuts import get_object_or_404
-from rest_framework import status
-from authors.models import Author
-from .serializers import InboxItemSerializer
-from rest_framework.response import Response
-from concurrent.futures import ThreadPoolExecutor
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.conf import settings
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from .models import InboxItem
 from notifications.models import Notification
 from posts.models import Post
 from posts.serializers import PostSerializer
 from .serializers import InboxItemSerializer
 from django.conf import settings
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from concurrent.futures import ThreadPoolExecutor
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from authors.models import Author
-from rest_framework.decorators import api_view
 from backend.permissions import IsOwnerOrAdmin
 
 
@@ -53,7 +37,7 @@ class CustomPageNumberPagination(PageNumberPagination):
 class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin):
     serializer_class = InboxItemSerializer
     pagination_class = CustomPageNumberPagination
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
     parser_classes = [JSONParser]
 
     def list(self, request, *args, **kwargs):
@@ -97,9 +81,13 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
             notification.save()
             return Response({"success": "Follow Request Delivered!"}, status=status.HTTP_200_OK)
         elif request.data["type"].lower() == "like":
-            summary = f"{request.data['author']['displayName']} Likes Your Post!"
-            notification = Notification(type="Like", author=author, actor=request.data["author"]["url"], summary=summary)
+            notification = Notification(type="Like", author=author, actor=request.data["author"]["url"], summary=request.data["summary"])
             notification.save()
+            request.data.pop("@context", "")
+            like_author = request.data.pop("author")
+            like = Likes.objects.create(**request.data)
+            like.author_url = like_author["id"]
+            like.save()
             return Response({"success": "Like Delivered!"}, status=status.HTTP_200_OK)
         elif request.data["type"].lower() == "comment":
             summary = f"{request.data['author']['displayName']} Commented On Your Post!"
@@ -123,5 +111,5 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
         if self.action in ['list', 'destroy']:
             permission_classes = [IsAuthenticated, IsInboxOwnerOrAdmin]
         else:
-            permission_classes = [AllowAny]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
