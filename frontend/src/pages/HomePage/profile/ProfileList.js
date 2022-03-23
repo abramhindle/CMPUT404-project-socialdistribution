@@ -6,7 +6,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useSelector, useDispatch } from 'react-redux';
 import { fontWeight, width } from '@mui/system';
 
-export default function ProfileList({type, profiles, title, author, removeProfile, alertError, alertSuccess}) {
+export default function ProfileList({type, profiles, title, author, removeProfile, alertError, alertSuccess, addToFeed}) {
     const profileImage = useSelector(state => state.profile.profileImage);
 
     const defaultShowCount = 5;
@@ -39,7 +39,7 @@ export default function ProfileList({type, profiles, title, author, removeProfil
                 <Typography sx={style.count}>{profiles.length}</Typography>
             </ListItemText>
             {profiles.slice(0, showingCount).map((profile, index) => (
-                <ProfileListItem key={index} type={type} author={author} profile={profile} removeProfile={removeProfile} alertError={alertError} alertSuccess={alertSuccess} />))}
+                <ProfileListItem key={index} type={type} author={author} profile={profile} removeProfile={removeProfile} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed}/>))}
 
             {profiles.length > defaultShowCount &&
             <ListItemButton onClick={handleCollapse} sx={style.listHeader}>

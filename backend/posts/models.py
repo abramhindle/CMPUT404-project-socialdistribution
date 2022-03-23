@@ -16,7 +16,6 @@ class Post(models.Model):
     class Visibility(models.TextChoices):
         PUBLIC = "PUBLIC"
         FRIENDS = "FRIENDS"
-        PRIVATE = "PRIVATE"
 
     local_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=100, default="post")

@@ -7,7 +7,7 @@ import CRPostDialog from "../createPost/CRPostDialog";
 import IMGPostDialog from '../createPost/IMGPostDialog';
 import ButtonGroup from '@mui/material/ButtonGroup';
 
-export default function ProfilePrivateMessage({alertSuccess, alertError, open, onClose, addToFeed}) {
+export default function ProfilePrivateMessage({alertSuccess, alertError, open, onClose, addToFeed, profile}) {
 
   const [appear, setAppear] = React.useState(false);
   const handleClose = () => {
@@ -35,8 +35,8 @@ return (
                   {buttons}
               </ButtonGroup>
             </Grid>
-            <CRPostDialog open={appear} onClose={handleClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} />
-            <IMGPostDialog open={imgOpen} onClose={imgClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} />
+            <CRPostDialog open={appear} profile={profile} onClose={handleClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} />
+            <IMGPostDialog open={imgOpen} profile={profile} onClose={imgClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} />
           </DialogContent>
       </Dialog>
   );

@@ -12,7 +12,7 @@ import Collapse from '@mui/material/Collapse';
 /*
  * Description: Detail view for each prize which allows user to purchase the prize
  */ 
-export default function IMGPostDialog({alertSuccess, alertError, open, onClose, addToFeed, pri}) {
+export default function IMGPostDialog({alertSuccess, alertError, open, onClose, addToFeed, pri, profile}) {
 
   /* Hook For Post Content Type */
   const [content, setContent] = React.useState('image/png;base64');
@@ -258,11 +258,11 @@ return (
                         labelId="visibility"
                         id="visibility"
                         name="visibility"
-                        value={"PRIVATE"}
+                        value={profile.id}
                         label="Visbility"
                         onChange={handleChange}
                       >
-                          <MenuItem value={"PRIVATE"}>Private</MenuItem>
+                          <MenuItem value={profile.id}>Private</MenuItem>
                       </Select>
                   </FormControl>
                   </Box>

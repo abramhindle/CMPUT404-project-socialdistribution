@@ -9,7 +9,7 @@ import { removeFollowing as removeFollowingReducer } from "../../../redux/follow
 
 
 
-export default function ProfileSection({alertError, alertSuccess}) {
+export default function ProfileSection({alertError, alertSuccess, addToFeed}) {
   const [isModalOpen, setOpen] = React.useState(false);
   const [isFollowingOpen, setFollowingOpen] = React.useState(true);
   const [isFollowerOpen, setFollowerOpen] = React.useState(true);
@@ -62,9 +62,9 @@ export default function ProfileSection({alertError, alertSuccess}) {
         <Typography variant='subtitle1'>{github}</Typography>
       </Box>
       <Divider />
-      <ProfileList type="following" profiles={following} title="Following" author={author} removeProfile={removeFollowing} alertError={alertError} alertSuccess={alertSuccess} />
+      <ProfileList type="following" profiles={following} title="Following" author={author} removeProfile={removeFollowing} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed}/>
       <Divider />
-      <ProfileList title='Followers' profiles={followers} handleCollapse={handleFollower} isListOpen={isFollowerOpen} />
+      <ProfileList title='Followers' profiles={followers} handleCollapse={handleFollower} isListOpen={isFollowerOpen} addToFeed={addToFeed}/>
 
       <ProfileEditModal alertSuccess={alertSuccess} isOpen={isModalOpen} onClose={handleModalClose} />
     </Paper >

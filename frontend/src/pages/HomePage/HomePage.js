@@ -205,7 +205,7 @@ export default function HomePage() {
             anchor="left" >
             <Toolbar />
             <Divider />
-            <ProfileSection alertSuccess={alertSuccess} alertError={alertError} author={author} editAuthor={editAuthor} /> 
+            <ProfileSection alertSuccess={alertSuccess} alertError={alertError} author={author} editAuthor={editAuthor} addToFeed={addToFeed}/> 
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
             <CreatePost alertSuccess={alertSuccess} alertError={alertError} addToFeed={addToFeed} />

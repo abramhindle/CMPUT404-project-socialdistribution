@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 /*
  * Description: Detail view for each prize which allows user to purchase the prize
  */ 
-export default function CRPostDialog({alertSuccess, alertError, open, onClose, addToFeed, pri, }) {
+export default function CRPostDialog({alertSuccess, alertError, open, onClose, addToFeed, pri, profile}) {
 
   /* Hook For Post Content Type */
   const [content, setContent] = React.useState('text/plain');
@@ -218,11 +218,11 @@ return (
                         labelId="visibility"
                         id="visibility"
                         name="visibility"
-                        value={"PUBLIC"}
+                        value={profile.id}
                         label="Visbility"
                         onChange={handleChange}
                       >
-                          <MenuItem value={"PUBLIC"}>Private</MenuItem>
+                          <MenuItem value={profile.id}>Private</MenuItem>
                       </Select>
                   </FormControl>
                   </Box>
