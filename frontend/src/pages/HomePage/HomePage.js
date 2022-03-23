@@ -38,7 +38,7 @@ export default function HomePage() {
     const [value, setValue] = React.useState('1');
 
     /* State Hook For Likes */
-    const [allLikes, setAllLikes] = React.useState({});
+    const [allLikes, setAllLikes] = React.useState([]);
     var likeResults = [];
 
     /* State Hook For Displaying Alerts */
@@ -160,7 +160,6 @@ export default function HomePage() {
         getAllLikes(userObj)
         .then( res => {
             setAllLikes(res.data.items)
-            // console.log(res.data.items)
         })
         .catch( err => console.log(err) )
         

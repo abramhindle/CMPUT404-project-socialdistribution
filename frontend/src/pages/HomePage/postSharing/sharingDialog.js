@@ -32,17 +32,15 @@ export default function SharingDialog({open, onClose, post}) {
       <Dialog open={open} onClose={onClose} fullWidth>
         <DialogTitle>Sharing the post</DialogTitle>
         <DialogContent>
-          
           {showingItem?
           <Box>
-                <DialogContentText>
-                    Please choose your recipient below
-                </DialogContentText>
-              {followers.slice(0, followers.length).map((followers, index) => (
-                <Paper sx={{mt:2}}>
-                <RecipientListItem followers={followers}></RecipientListItem>
-                </Paper>
-                ))}
+            <DialogContentText>
+                Please choose your recipient below
+            </DialogContentText>
+            {followers.slice(0, followers.length).map((followers, index) => (
+            <Paper key={index} sx={{mt:2}}>
+              <RecipientListItem followers={followers}></RecipientListItem>
+            </Paper>))}
           </Box>
           : <DialogContentText>
                 Oops, Looks like you don't have recipient to share with

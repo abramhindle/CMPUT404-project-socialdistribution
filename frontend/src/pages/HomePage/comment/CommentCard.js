@@ -17,6 +17,7 @@ import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { createCommentLikes, getCommentLikes, deleteCommentLikes } from '../../../Services/likes';
+import { set } from 'lodash/fp';
 
 const PostImage = styled('img')({width: "100%"})
 
@@ -71,7 +72,7 @@ export default function CommentCard({allLikes, profile, comment, alertSuccess, a
         alertError("Error: Could Not Delete Like!");
       } );
     }else{
-      createCommentLikes(comment, data)
+      createCommentLikes(comment, set("id")(profile.url)(profile))
       .then( res => { 
         alertSuccess("Success: Created New Like!");
         setColor("secondary")
@@ -92,13 +93,8 @@ export default function CommentCard({allLikes, profile, comment, alertSuccess, a
   };
 
   React.useEffect( () => {
-   
-    for (var key in allLikes){
-       if (allLikes[key].object.match(comment.id)&& allLikes[key].object.match("comment")){
-          setColor("secondary")
-      }
-    }
-}, [comment.id, allLikes] );
+    setColor(allLikes.map(x => x.object).includes(comment.id) ? "secondary" : "grey");
+  }, [comment.id, allLikes] );
 
   return (
     <Card sx={{maxHeight: 200, mt:"1%"}}>

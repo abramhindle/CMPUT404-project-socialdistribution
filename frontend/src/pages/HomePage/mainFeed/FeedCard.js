@@ -25,10 +25,11 @@ import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { concat } from 'lodash/fp';
-import { createLikes, getLikes, deleteLikes} from '../../../Services/likes';
+import { createPostLikes, getLikes, deleteLikes} from '../../../Services/likes';
 import FollowRequestDialog from '../../../Components/FollowRequestDialog';
 import { getAuthorFromStorage } from '../../../LocalStorage/profile';
 import SharingDialog from "../postSharing/sharingDialog"
+import { set } from 'lodash/fp';
 
 const AvatarContainer = styled('div')({display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"});
 
@@ -102,7 +103,7 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
         alertError("Error: Could Not Delete Like!");
       } );
     }else{
-      createLikes(post, data)
+      createPostLikes(post, set("id")(profile.url)(profile))
       .then( res => { 
         alertSuccess("Success: Created New Like!");
         setColor("secondary")
@@ -196,14 +197,8 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   
   /* This Runs When The alllikes and post.id has changed */
   React.useEffect( () => {
-    for (var key in allLikes){
-       if (allLikes[key].object.match(post.id)&& !allLikes[key].object.match("comment")){
-          setColor("secondary")
-      }
-    }
-    
-    
-}, [post.id, allLikes] );
+    setColor(allLikes.map(x => x.object).includes(post.id) ? "secondary" : "grey");
+  }, [post.id, allLikes] );
 
   return (
     <Card sx={{m: "1px"}}>
@@ -243,9 +238,10 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} handleLikes = {handleLikes} color={color} handleSharingDialogClickOpen={handleSharingDialogClickOpen}/>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-
-          {comments.map((comment, index) => ( <Grid key={index} item xs={12}> <CommentCard allLikes={allLikes} profile = {profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth="true" /> </Grid>))}
-
+          {comments.map((comment, index) => ( 
+          <Grid key={index} item xs={12}> 
+            <CommentCard allLikes={allLikes} profile={profile} removeComment={removeComment} editComments={editComment} comment={comment} alertSuccess={alertSuccess} alertError={alertError} fullWidth="true" /> 
+          </Grid>))}
           <Grid item xs={12} sx={{marginTop: "8px"}}>
             <Card fullwidth="true" sx={{maxHeight: 200, mt:"1%"}}>
             <Button disableElevation={false} sx={{minHeight: "100px", fontSize: "1.15rem"}}  onClick={handleAddCMClickOpen} fullWidth>Add Comment</Button>
