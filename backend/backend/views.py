@@ -8,7 +8,7 @@ import requests as r
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, renderer_classes, permission_classes, authentication_classes
 
@@ -19,7 +19,9 @@ status_codes = {200: status.HTTP_200_OK,
                 401: status.HTTP_401_UNAUTHORIZED,
                 403: status.HTTP_403_FORBIDDEN,
                 404: status.HTTP_404_NOT_FOUND,
-                409: status.HTTP_409_CONFLICT}
+                405: status.HTTP_405_METHOD_NOT_ALLOWED,
+                409: status.HTTP_409_CONFLICT,
+                500: status.HTTP_500_INTERNAL_SERVER_ERROR}
 
 responses = {200: {"success": "OK!"},
              201: {"success": "Successfully Created!"},
@@ -28,7 +30,9 @@ responses = {200: {"success": "OK!"},
              401: {"error": "Unauthorized!"},
              403: {"error": "Forbidden!!"},
              404: {"error": "Not Found!"},
-             409: {"error": "Conflict!"}}
+             405: {"error": "Method Not Allowed!"},
+             409: {"error": "Conflict!"},
+             500: {"error": "Internal Server Error!"}}
 
 
 def get_headers(request):
@@ -96,7 +100,7 @@ def proxy_selector(request, proxy_url):
 @permission_classes([AllowAny])
 @renderer_classes([JSONRenderer])
 @api_view(['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([TokenAuthentication, BasicAuthentication])
 def proxy_requests(request, path):
     try:  # If Path Is A URL, We Need To Make A Request To Another Server
         validate = URLValidator()
@@ -129,6 +133,9 @@ def proxy_requests(request, path):
 
 @api_view(['GET'])
 @renderer_classes([JSONRenderer])
+@authentication_classes([TokenAuthentication, BasicAuthentication])
+@permission_classes([AllowAny])
 def get_authors(request):
-    res = r.get(f"{settings.DOMAIN}/api/authors")
+    print(get_headers(request))
+    res = r.get(f"{settings.DOMAIN}/api/authors", headers=get_headers(request))
     return Response(res.json(), status=status_codes[res.status_code])

@@ -6,7 +6,9 @@ from .serializers import FollowerSerializer, FollowingSerializer
 from rest_framework.response import Response
 from .models import Follower, Following
 from authors.models import Author
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from backend.permissions import IsOwnerOrAdmin
 
 
@@ -27,23 +29,28 @@ class IsFollowingOwnerOrAdmin(IsOwnerOrAdmin):
 
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def followers_list(request, author):
     author_object = get_object_or_404(Author, local_id=author)
+    print(author_object.profile.password)
     with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.map(lambda x: r.get(x).json(), [f.actor for f in author_object.follower_set.all()])
+        future = executor.map(lambda x: r.get(x, headers={"Authorization": f"Basic Sm9zaHVhQmlsbHNvbjpLQEtjcjIwNg=="}).json(), [f.actor for f in author_object.follower_set.all()])
     followers = [f for f in future if "type" in f]
     followers.sort(key=lambda x: x["displayName"])
     return Response({"type": "followers", "items": followers}, content_type="application/json")
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def followers_detail(request, author, follower):
     author_object = get_object_or_404(Author, local_id=author)
     if request.method == 'GET':
         author_followers = [f.actor for f in author_object.follower_set.all() if f.actor == follower]
         return Response({"ok": author_followers}, content_type="application/json")
     elif request.method == 'PUT':
-        follower_json = r.get(follower).json()
+        follower_json = r.get(follower, headers={"Authorization": f"Basic Sm9zaHVhQmlsbHNvbjpLQEtjcjIwNg=="}).json()
         if "displayName" in follower_json:
             summary = f"{follower_json['displayName']} Wants To Follow {author_object.displayName}"
             follower_object = Follower(summary=summary, object=author_object, actor=follower)
@@ -59,10 +66,12 @@ def followers_detail(request, author, follower):
 
 
 @api_view(['PUT', 'DELETE'])
+@authentication_classes([TokenAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def following_detail(request, author, following):
     author_object = get_object_or_404(Author, local_id=author)
     if request.method == 'PUT':
-        following_json = r.get(following).json()
+        following_json = r.get(following, headers={"Authorization": f"Basic Sm9zaHVhQmlsbHNvbjpLQEtjcjIwNg=="}).json()
         if "displayName" in following_json:
             following_object = Following(author=author_object, follows=following)
             if len(Following.objects.filter(author=author_object, follows=following)) == 0:
@@ -77,13 +86,15 @@ def following_detail(request, author, following):
 
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def following_list(request, author):
     author_object = get_object_or_404(Author, local_id=author)
     with ThreadPoolExecutor(max_workers=1) as executor:
-        future_1 = executor.map(lambda x: r.get(x).json(), [f.follows for f in author_object.following_set.all()])
+        future_1 = executor.map(lambda x: r.get(x, headers={"Authorization": f"Basic Sm9zaHVhQmlsbHNvbjpLQEtjcjIwNg=="}).json(), [f.follows for f in author_object.following_set.all()])
     following = [f for f in future_1 if "id" in f]
     with ThreadPoolExecutor(max_workers=1) as executor:
-        future_2 = executor.map(lambda x: r.get(x).json(), [f"{f['id']}followers/{author_object.id}/" for f in following])
+        future_2 = executor.map(lambda x: r.get(x, headers={"Authorization": f"Basic Sm9zaHVhQmlsbHNvbjpLQEtjcjIwNg=="}).json(), [f"{f['id']}followers/{author_object.id}/" for f in following])
     confirmed_following = [f[0] for f in zip(following, [f for f in future_2]) if len(f[1]["ok"]) > 0]
     confirmed_following.sort(key=lambda x: x["displayName"])
     return Response({"type": "following", "items": confirmed_following}, content_type="application/json")
