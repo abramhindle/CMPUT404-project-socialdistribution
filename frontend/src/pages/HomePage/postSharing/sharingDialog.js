@@ -10,12 +10,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import RecipientListItem from "./recipientListItem";
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-// import ProfileListItem from '../profile/profileListItem';
+import UrlSharingBox from './urlSharingBox';
 
-export default function SharingDialog({open, onClose}) {
+export default function SharingDialog({open, onClose, post}) {
 
     const followers = useSelector(state => state.followers.items);
-    // console.log("followers is:", followers)
     
     // state hook for showing listitem or not 
     const [showingItem, setShowingItem] = React.useState(false)
@@ -33,19 +32,26 @@ export default function SharingDialog({open, onClose}) {
       <Dialog open={open} onClose={onClose} fullWidth>
         <DialogTitle>Sharing the post</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Please choose your recipient below
-          </DialogContentText>
+          
           {showingItem?
-          <Box sx={{pt:2}}>
+          <Box>
+                <DialogContentText>
+                    Please choose your recipient below
+                </DialogContentText>
               {followers.slice(0, followers.length).map((followers, index) => (
-                <Paper>
+                <Paper sx={{mt:2}}>
                 <RecipientListItem followers={followers}></RecipientListItem>
                 </Paper>
                 ))}
           </Box>
-          : <></>}  
+          : <DialogContentText>
+                Oops, Looks like you don't have recipient to share with
+            </DialogContentText>
+        }  
         </DialogContent>
+        <UrlSharingBox post={post}></UrlSharingBox>
+
+
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
         </DialogActions>

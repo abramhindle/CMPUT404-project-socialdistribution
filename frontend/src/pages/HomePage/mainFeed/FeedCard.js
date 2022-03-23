@@ -267,7 +267,7 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
       <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} post={post} addComment={addComment} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
       <FollowRequestDialog  authorToFollow={post.author} alertSuccess={alertSuccess} alertError={alertError} open={followOpen} handleClose={closeFollowDialog} />
-      <SharingDialog open ={openSharingDialog} onClose={handleSharingDialogClose}></SharingDialog>
+      <SharingDialog open ={openSharingDialog} onClose={handleSharingDialogClose} post={post}></SharingDialog>
     </Card>
   );
 }
