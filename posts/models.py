@@ -62,4 +62,7 @@ class Comment(models.Model):
 
 class Like(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    type = models.CharField(max_length=4, default="Like")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    summary = models.TextField(default="")
+    object = models.JSONField(default=dict, max_length=500)

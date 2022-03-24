@@ -1,7 +1,7 @@
+from email.policy import default
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
-
 from posts.models import Post, Like
 
 
@@ -38,19 +38,21 @@ class PostSerializer(NestedHyperlinkedModelSerializer):
         return representation
 
 
-class LikesSerializer(NestedHyperlinkedModelSerializer):
+class LikesSerializer(serializers.ModelSerializer):
     parent_lookup_kwargs = {
         'author_pk': 'author__pk',
     }
-    author = AuthorSerializer(many=False, read_only=True)
+    author = AuthorSerializer(many=False, required=True)
+    type = serializers.CharField(default='Like', read_only=True)
 
     class Meta:
         model = Like
-        fields = ['author']
+        fields = ['type', 'author', 'summary', 'object']
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['type'] = 'Like'
-        representation['object'] = "PostSerializer(instance.post).get_fields()['url']"
-        representation['summary'] = "instance.author.get_full_name() +" + " Likes your post"
-        return representation
+    def create(self, validated_data):
+        # author_data = validated_data["author"]
+        # if author_data:
+        #     author = get_user_model().objects.get(**author_data)
+        #     validated_data["author"] = author
+        like = Like.objects.get_or_create(**validated_data)
+        return like

@@ -8,7 +8,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import action
-
+from django.http.request import HttpRequest
 from api.serializers import AuthorSerializer, PostSerializer, LikesSerializer
 from api.util import page_number_pagination_class_factory
 from posts.models import Post, ContentType, Like
@@ -59,8 +59,7 @@ class LikesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get']
 
-    @action(methods=['get'], detail=True, name='likes')
-    def likes(self, request, **kwargs):
+    def likes(self, **kwargs):
         author_id = kwargs['author_pk']
         post_id = kwargs['pk']
 
