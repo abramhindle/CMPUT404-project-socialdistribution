@@ -80,4 +80,4 @@ class LikesViewSet(viewsets.ModelViewSet):
         return likes
 
     def get_queryset(self):
-        return Post.objects.get(pk=self.kwargs['post_pk']).like_set.all().values()
+        return Post.objects.get(pk=self.kwargs['post_pk']).like_set.all()
