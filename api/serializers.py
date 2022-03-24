@@ -41,7 +41,7 @@ class PostSerializer(NestedHyperlinkedModelSerializer):
         return representation
 
 
-class FollowersSerializer(serializers.ModelSerializer):
+class FollowersSerializer(NestedHyperlinkedModelSerializer):
     parent_lookup_kwargs = {
         'author_pk': 'author__pk',
     }

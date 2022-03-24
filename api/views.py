@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, permissions, status
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import action
@@ -91,3 +92,16 @@ class FollowersViewSet(viewsets.ModelViewSet):
             raise Http404
         Follow.objects.unfollow(followee=followee, follower=follower)
         return Response(status.HTTP_204_NO_CONTENT)
+
+    def retrieve(self, request, *args, **kwargs):
+        followee_id = kwargs['author_pk']
+        follower_id = kwargs['pk']
+        try:
+            followee = get_user_model().objects.get(id=followee_id)
+            follower = get_user_model().objects.get(id=follower_id)
+        except get_user_model().DoesNotExist as e:
+            raise Http404
+
+        follow = get_object_or_404(Follow.objects, follower=follower, followee=followee)
+        serializer = self.serializer_class(follow, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
