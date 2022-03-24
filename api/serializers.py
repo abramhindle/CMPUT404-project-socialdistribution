@@ -42,6 +42,9 @@ class PostSerializer(NestedHyperlinkedModelSerializer):
 
 
 class FollowersSerializer(serializers.ModelSerializer):
+    parent_lookup_kwargs = {
+        'author_pk': 'author__pk',
+    }
     follower = AuthorSerializer(many=False, read_only=True)
 
     class Meta:

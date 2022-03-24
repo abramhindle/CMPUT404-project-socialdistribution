@@ -1,4 +1,6 @@
+from email import header
 import json
+from click import password_option
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 
@@ -161,6 +163,7 @@ class FollowersTest(TestCase):
         self.author = get_user_model().objects.create_user(username='bob', password='password')
         self.other_user = get_user_model().objects.create_user(username='alice', password='password')
         self.other_user2 = get_user_model().objects.create_user(username='tom', password='password')
+        self.other_user3 = get_user_model().objects.create_user(username='smith', password='password')
         self.follow = Follow.objects.create(
             followee=self.author,
             follower=self.other_user
@@ -190,3 +193,35 @@ class FollowersTest(TestCase):
     def test_follower_require_login(self):
         res = self.client.get(f'/api/v1/authors/{self.author.id}/followers/')
         self.assertEqual(res.status_code, 403)
+
+    def test_add_follower(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.put(f'/api/v1/authors/{self.author.id}/followers/{self.other_user3.id}/')
+        self.assertEqual(len(Follow.objects.filter(followee=self.author)), 3)
+        self.assertEqual(res.status_code, 200)
+
+    def test_add_follower_duplicate(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.put(f'/api/v1/authors/{self.author.id}/followers/{self.other_user2.id}/')
+        self.assertEqual(len(Follow.objects.filter(followee=self.author)), 2)
+        # this need to be verify later
+        self.assertEqual(res.status_code, 200)
+
+    def test_add_follower_not_exit(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.put(f'/api/v1/authors/{self.author.id}/followers/100/')
+        self.assertEqual(len(Follow.objects.filter(followee=self.author)), 2)
+        self.assertEqual(res.status_code, 404)
+
+    def test_delete_follower(self):
+        self.client.login(username='bob', password='password')
+        self.assertEqual(len(Follow.objects.filter(followee=self.author)), 2)
+        res = self.client.delete(f'/api/v1/authors/{self.author.id}/followers/{self.other_user2.id}/')
+        self.assertEqual(len(Follow.objects.filter(followee=self.author)), 1)
+        self.assertEqual(res.status_code, 200)
+
+    def test_delete_follower_not_exit(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.delete(f'/api/v1/authors/{self.author.id}/followers/100/')
+        self.assertEqual(len(Follow.objects.filter(followee=self.author)), 2)
+        self.assertEqual(res.status_code, 404)

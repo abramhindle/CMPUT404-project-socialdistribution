@@ -1,7 +1,8 @@
 import base64
 from cmath import e
 import os
-from django.http import HttpResponse
+from django.db import IntegrityError
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -60,7 +61,33 @@ class FollowersViewSet(viewsets.ModelViewSet):
     pagination_class = page_number_pagination_class_factory([('type', 'followers')])
     serializer_class = FollowersSerializer
     permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get']
+    http_method_names = ['get', 'put', 'delete']
 
     def get_queryset(self):
         return Follow.objects.filter(followee=self.kwargs['author_pk']).order_by('-created')
+
+    def update(self, request, *args, **kwargs):
+        followee_id = kwargs['author_pk']
+        follower_id = kwargs['pk']
+        try:
+            followee = get_user_model().objects.get(id=followee_id)
+            follower = get_user_model().objects.get(id=follower_id)
+        except get_user_model().DoesNotExist as e:
+            raise Http404
+
+        follow, create = Follow.objects.get_or_create(followee=followee, follower=follower)
+        if not create:
+            return Response(status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        followee_id = kwargs['author_pk']
+        follower_id = kwargs['pk']
+        try:
+            followee = get_user_model().objects.get(id=followee_id)
+            follower = get_user_model().objects.get(id=follower_id)
+        except get_user_model().DoesNotExist as e:
+            raise Http404
+        Follow.objects.unfollow(followee=followee, follower=follower)
+        return Response(status.HTTP_204_NO_CONTENT)
