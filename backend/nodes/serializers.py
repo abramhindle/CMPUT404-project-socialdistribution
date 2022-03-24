@@ -9,7 +9,7 @@ class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Node
         write_only_fields = ["username", "password"]
-        fields = ["name", "host", "username", "password", "remote_username", "remote_password"]
+        fields = ["name", "host", "username", "password", "remote_username", "remote_password", "outbound_username", "outbound_password"]
 
     def create(self, validated_data):
         validated_data.pop('remote_username', None)

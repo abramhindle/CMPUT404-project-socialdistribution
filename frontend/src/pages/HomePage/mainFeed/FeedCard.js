@@ -122,7 +122,8 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   const closeEditDialog = () => setEditOpen(false);
   const openEditDialog = () => {
     setEditOpen(true);
-    setAnchorEl(false);
+    setMenuOpen(false);
+    setAnchorEl(undefined);
   }
 
   /* State Hook For Opening Edit IMG Post Dialog */
@@ -135,7 +136,8 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   const closeDeleteDialog = () => setDeleteOpen(false);
   const openDeleteDialog = () => {
     setDeleteOpen(true);
-    setAnchorEl(false);
+    setMenuOpen(false);
+    setAnchorEl(undefined);
   };
 
   /* State Hook For Opening Follow Request Dialog */

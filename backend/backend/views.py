@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, renderer_classes, permission_classes, authentication_classes
+from .helpers import get, post, patch, put, delete
 
 status_codes = {200: status.HTTP_200_OK,
                 201: status.HTTP_201_CREATED,
@@ -36,13 +37,16 @@ responses = {200: {"success": "OK!"},
 
 
 def get_headers(request):
-    return {"X-CSRFToken": request.headers.get("X-CSRFToken", default=""),
-            "Authorization": request.headers.get("Authorization", default=""),
-            "Content-Type": request.headers.get("Content-Type", default="application/json")}
+    headers = {"Content-Type": request.headers.get("Content-Type", default="application/json")}
+    if "X-CSRFToken" in request.headers:
+        headers["X-CSRFToken"] = request.headers.get("X-CSRFToken")
+    if "Authorization" in request.headers:
+        headers["Authorization"] = request.headers.get("Authorization")
+    return headers
 
 
 def proxy_get(url_str, request):
-    res = r.get(url_str, params=request.query_params, headers={"Authorization": request.headers.get("Authorization", default="")})
+    res = get(url_str, params=request.query_params, headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     if content_type == "application/json":
         status_code = status_codes[res.status_code]
@@ -52,7 +56,7 @@ def proxy_get(url_str, request):
 
 
 def proxy_put(url_str, request):
-    res = r.put(url_str, data=json.dumps(request.data), headers=get_headers(request))
+    res = put(url_str, data=json.dumps(request.data), headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code in [200, 201] else responses[res.status_code]
@@ -60,7 +64,7 @@ def proxy_put(url_str, request):
 
 
 def proxy_patch(url_str, request):
-    res = r.patch(url_str, data=json.dumps(request.data), headers=get_headers(request))
+    res = patch(url_str, data=json.dumps(request.data), headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code == 200 else responses[res.status_code]
@@ -68,7 +72,7 @@ def proxy_patch(url_str, request):
 
 
 def proxy_post(url_str, request):
-    res = r.post(url_str, data=json.dumps(request.data), headers=get_headers(request))
+    res = post(url_str, data=json.dumps(request.data), headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code in [201, 200] else responses[res.status_code]
@@ -76,7 +80,7 @@ def proxy_post(url_str, request):
 
 
 def proxy_delete(url_str, request):
-    res = r.delete(url_str, headers=get_headers(request))
+    res = delete(url_str, headers=get_headers(request))
     content_type = res.headers.get("Content-Type", default="application/json")
     status_code = status_codes[res.status_code]
     response_body = responses[res.status_code]
@@ -136,6 +140,5 @@ def proxy_requests(request, path):
 @authentication_classes([TokenAuthentication, BasicAuthentication])
 @permission_classes([AllowAny])
 def get_authors(request):
-    print(get_headers(request))
     res = r.get(f"{settings.DOMAIN}/api/authors", headers=get_headers(request))
     return Response(res.json(), status=status_codes[res.status_code])

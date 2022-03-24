@@ -10,9 +10,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 import base64
 from likes.models import Likes
-from likes.serializers import LikesSerializer
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from backend.permissions import IsOwnerOrAdmin
+from likes.helper import get_likes
 
 
 class IsPostOwnerOrAdmin(IsOwnerOrAdmin):
@@ -39,7 +39,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def likes(self, request, author, pk):
         post: Post = get_object_or_404(Post, local_id=pk)
         likes = Likes.objects.all().filter(object=post.id)
-        return Response({"type": "likes", "items": LikesSerializer(likes, many=True).data}, content_type="application/json")
+        return Response(get_likes(likes), content_type="application/json")
 
     @action(detail=True, methods=['GET'])
     def image(self, request, author, pk):
