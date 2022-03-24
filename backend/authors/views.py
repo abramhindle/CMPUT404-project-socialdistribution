@@ -15,7 +15,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.contrib import auth
 from rest_framework.authtoken.models import Token
 from likes.models import Likes
-from likes.serializers import LikesSerializer
+from likes.helper import get_liked
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -35,7 +35,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     def liked(self, request, pk):
         author: Author = get_object_or_404(Author, local_id=pk)
         likes = Likes.objects.all().filter(author_url=author.id)
-        return Response({"type": "liked", "items": LikesSerializer(likes, many=True).data}, content_type="application/json")
+        return Response(get_liked(likes), content_type="application/json")
 
     @action(detail=False, methods=['post'])
     def register(self, request):

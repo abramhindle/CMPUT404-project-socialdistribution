@@ -1,3 +1,4 @@
+from backend.helpers import get
 from rest_framework import serializers
 from comment.models import Comment
 import requests as r
@@ -15,4 +16,5 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_author(self, obj: Comment):
         author_url = obj.author_url
-        return r.get(author_url).json()
+        author = get(author_url)
+        return author.json() if author is not None else {"error": "Author Not Found!"}

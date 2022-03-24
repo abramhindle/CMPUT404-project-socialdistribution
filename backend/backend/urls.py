@@ -39,6 +39,9 @@ urlpatterns = [
     # Following Api
     path('api/authors/<uuid:author>/following/', include('followers.following_urls')),
 
+    # Friends Api
+    path('api/authors/<uuid:author>/friends/', include('followers.friends_urls')),
+
     # Serve API Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
 

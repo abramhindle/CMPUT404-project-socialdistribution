@@ -11,7 +11,7 @@ from .models import Comment
 from backend.permissions import IsOwnerOrAdmin
 from rest_framework.decorators import action
 from likes.models import Likes
-from likes.serializers import LikesSerializer
+from likes.helper import get_likes
 
 
 class IsPostOwnerOrAdmin(IsOwnerOrAdmin):
@@ -40,7 +40,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def likes(self, request, author, post, pk):
         comment: Comment = get_object_or_404(Comment, local_id=pk)
         likes = Likes.objects.all().filter(object=comment.id)
-        return Response({"type": "likes", "items": LikesSerializer(likes, many=True).data}, content_type="application/json")
+        return Response(get_likes(likes), content_type="application/json")
 
     def get_queryset(self):
         post = self.kwargs["post"]

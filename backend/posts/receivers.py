@@ -12,6 +12,8 @@ from inbox.models import InboxItem
 from concurrent.futures import ThreadPoolExecutor
 from authors.serializers import AuthorSerializer
 from nodes.models import Node
+from followers.models import Follower
+from backend import helpers
 
 
 @receiver(post_save, sender=Post)
@@ -30,25 +32,24 @@ def on_create_post(sender, **kwargs):
             data = PostSerializer(post).data
             data["author"] = AuthorSerializer(post.author).data
             if post.visibility == "PUBLIC":
-                authors = Author.objects.all()
-                with ThreadPoolExecutor(max_workers=1) as executor:
-                    executor.map(lambda author: requests.post(f"{author.id}inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
-                # Push Posts to Remote Recipient's Inbox
+                # Get List Of Remote Authors
+                authors = []
                 nodes = Node.objects.all()
-                try:
-                    for node in nodes:
-                        with ThreadPoolExecutor(max_workers=1) as executor:
-                            futures = executor.map(requests.get(f"{node.host}authors/", auth=(node.username, node.password)))
-                        for future in futures:
-                            remote_authors = json.loads(future.text)["items"]
-                            with ThreadPoolExecutor(max_workers=1) as executor:
-                                executor.map(lambda author: requests.get(f"{author['id']}inbox/", auth=(node.username, node.password)), remote_authors)
-                except RequestException as e:
-                    print(e)
-            elif post.visibility == "FRIENDS":
-                authors = Author.objects.all()
                 with ThreadPoolExecutor(max_workers=1) as executor:
-                    executor.map(lambda author: requests.post(f"{author.id}inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
+                    futures = executor.map(lambda node: helpers.get_authors(node.host), nodes)
+                for future in futures:
+                    if "items" in future:
+                        authors += future["items"]
+
+                # Push To Author's Inbox
+                authors = list(map(lambda x: x["url"], authors))
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.map(lambda author: helpers.post(f"{author.rstrip('/')}/inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
+
+            elif post.visibility == "FRIENDS":
+                followers = [follower.actor for follower in post.author.follower_set.all()] + [post.author.id]
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.map(lambda follower: helpers.post(f"{follower.rstrip('/')}/inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), followers)
             else:
                 pass
 
