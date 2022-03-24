@@ -16,7 +16,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Box } from '@mui/system';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { createCommentLikes, getCommentLikes, deleteCommentLikes } from '../../../services/likes';
+import { createCommentLikes, getCommentLikes, deleteCommentLikes } from '../../../Services/likes';
 
 const PostImage = styled('img')({width: "100%"})
 

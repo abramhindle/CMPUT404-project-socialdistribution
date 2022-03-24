@@ -14,7 +14,7 @@ import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
 import Grid from '@mui/material/Grid';
 import CommentCard from '../comment/CommentCard';
-import { getComments } from '../../../services/comments';
+import { getComments } from '../../../Services/comments';
 import EditPostDialog from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -25,7 +25,7 @@ import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { concat } from 'lodash/fp';
-import { createLikes, getLikes, deleteLikes} from '../../../services/likes';
+import { createLikes, getLikes, deleteLikes} from '../../../Services/likes';
 import FollowRequestDialog from '../../../Components/FollowRequestDialog';
 import { getAuthorFromStorage } from '../../../LocalStorage/profile';
 

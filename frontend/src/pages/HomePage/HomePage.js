@@ -8,7 +8,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getInbox } from '../../services/posts';
+import { getInbox } from '../../Services/posts';
 import { useState, useEffect } from 'react';
 import { logout } from '../../redux/profileSlice';
 import { set, findIndex, concat } from 'lodash/fp';
@@ -16,12 +16,12 @@ import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Pap
 import NotificationCard from './notifications/NotificationCard';
 import GithubFeedCard from './mainFeed/GithubFeedCard';
 import {styled} from '@mui/system'
-import { getNotifications } from '../../services/notifications';
+import { getNotifications } from '../../Services/notifications';
 import { pushToInbox, setInbox } from '../../redux/inboxSlice';
-import { getAllLikes } from '../../services/likes';
+import { getAllLikes } from '../../Services/likes';
 import { getAuthorFromStorage, setAuthorInStorage  } from '../../LocalStorage/profile';
 import { setInboxInStorage, getInboxFromStorage } from '../../LocalStorage/inbox';
-import { getFollowers } from '../../services/followers';
+import { getFollowers } from '../../Services/followers';
 
 const drawerWidth = 400;
 

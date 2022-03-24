@@ -12,7 +12,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
-import {createComment} from "../../../services/comments"
+import {createComment} from "../../../Services/comments"
 import { getAuthorFromStorage } from '../../../LocalStorage/profile';
 
 

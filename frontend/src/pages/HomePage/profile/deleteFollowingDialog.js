@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { deleteFollowing, deleteFollower } from '../../../services/followers';
+import { deleteFollowing, deleteFollower } from '../../../Services/followers';
 
 export default function DeleteFollowingDialog({author, following, alertSuccess, alertError, open, handleClose, removeFollowing}) {
 
