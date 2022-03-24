@@ -1,4 +1,3 @@
-from dataclasses import fields
 from email.policy import default
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -55,18 +54,18 @@ class FollowersSerializer(serializers.ModelSerializer):
 class LikesSerializer(serializers.ModelSerializer):
     parent_lookup_kwargs = {
         'author_pk': 'author__pk',
+        'post_pk': 'post__pk',
     }
-    author = AuthorSerializer(many=False, required=True)
-    type = serializers.CharField(default='Like', read_only=True)
+
+    author = AuthorSerializer(many=False, read_only=True)
+    post = PostSerializer(many=False, read_only=True)
 
     class Meta:
         model = Like
-        fields = ['type', 'author', 'summary', 'object']
+        fields = ['author', 'post']
 
-    def create(self, validated_data):
-        # author_data = validated_data["author"]
-        # if author_data:
-        #     author = get_user_model().objects.get(**author_data)
-        #     validated_data["author"] = author
-        like = Like.objects.get_or_create(**validated_data)
-        return like
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['object'] = representation['post']['url']
+        del representation['post']
+        return representation
