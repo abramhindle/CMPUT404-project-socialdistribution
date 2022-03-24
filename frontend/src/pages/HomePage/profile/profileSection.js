@@ -64,7 +64,7 @@ export default function ProfileSection({alertError, alertSuccess, addToFeed}) {
       <Divider />
       <ProfileList type="following" profiles={following} title="Following" author={author} removeProfile={removeFollowing} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed}/>
       <Divider />
-      <ProfileList title='Followers' profiles={followers} handleCollapse={handleFollower} isListOpen={isFollowerOpen} addToFeed={addToFeed}/>
+      <ProfileList title='Followers' profiles={followers} handleCollapse={handleFollower} isListOpen={isFollowerOpen} alertSuccess={alertSuccess} addToFeed={addToFeed}/>
 
       <ProfileEditModal alertSuccess={alertSuccess} isOpen={isModalOpen} onClose={handleModalClose} />
     </Paper >

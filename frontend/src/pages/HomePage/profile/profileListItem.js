@@ -34,7 +34,7 @@ export default function ProfileListItem({type, author, profile, removeProfile, a
             </ListItemAvatar>
             <ListItemText primary={profile.displayName} />
             <Button sx={{minHeight: "45px", fontSize: "1.15rem"}} key="CRPost"  onClick={handleClickAppear} fullWidth>Send Post</Button>
-            {type == "following" && <Button sx={{minHeight: "45px", fontSize: "1.15rem"}} key="IMGPost" onClick={handleClickOpen} fullWidth>Unfollow</Button>}
+            {type === "following" && <Button sx={{minHeight: "45px", fontSize: "1.15rem"}} key="IMGPost" onClick={handleClickOpen} fullWidth>Unfollow</Button>}
         </ListItemButton>
         <ProfilePrivateMessage open={appear} onClose={appearClose} profile={profile} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} />
         {type === "following" && <DeleteFollowingDialog author={author} following={profile} alertSuccess={alertSuccess} alertError={alertError} open={open} handleClose={handleClose} removeFollowing={removeProfile}/>}

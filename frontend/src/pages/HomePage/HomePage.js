@@ -186,6 +186,7 @@ export default function HomePage() {
                     <NavButton onClick={() => setValue("3") }>Management</NavButton>
                     <NavButton onClick={() => setValue("4") }>Notifications</NavButton>
                     <NavButton onClick={() => setValue("5") }>GitHub</NavButton>
+                    <NavButton onClick={() => setValue("6") }>Private</NavButton>
                     <IconButton
                         onClick={onLogout}
                         id="account-icon"
@@ -219,7 +220,7 @@ export default function HomePage() {
                         ))}
                     </TabPanel>
                     <TabPanel value="2" sx={{p:0}}>
-                        {inbox.filter(post => post.visibility == "FRIENDS").map((post, index) => (
+                        {inbox.filter(post => post.visibility === "FRIENDS").map((post, index) => (
                             (<Grid item xs={12} key={index}> 
                                 <FeedCard allLikes= {allLikes} post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                             </Grid>)
@@ -245,6 +246,13 @@ export default function HomePage() {
                     </TabPanel>
                     <TabPanel value="5" sx={{p:0}}>
                         {githubFeed?.map((event, index) => ( <Grid key={index} item xs={12}> <GithubFeedCard event={event} /> </Grid>))}
+                    </TabPanel>
+                    <TabPanel value="6" sx={{p:0}}>
+                        {inbox.filter(post => post.visibility === author.id).map((post, index) => (
+                            (<Grid item xs={12} key={index}> 
+                                <FeedCard allLikes= {allLikes} post={post} isOwner={post.author.id === author.url} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                            </Grid>)
+                        ))}
                     </TabPanel>
                 </TabContext>
             </Box>

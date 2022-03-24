@@ -36,12 +36,15 @@ def on_create_post(sender, **kwargs):
                 with ThreadPoolExecutor(max_workers=1) as executor:
                     executor.map(lambda author: requests.post(f"{author.id}inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
             else:
-                authors = Author.objects.all()
-                with ThreadPoolExecutor(max_workers=1) as executor:
-                    executor.map(lambda author: requests.post(f"{author.id}inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
-                # headers = {"Content-Type": "application/json"}
-                # url = f"{post.visibility}/inbox/"
-                # requests.post(url=url, headers=headers, data=json.dumps(data))              
+                # authors = Author.objects.all()
+                # with ThreadPoolExecutor(max_workers=1) as executor:
+                #     executor.map(lambda author: requests.post(f"{author.id}inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
+                author = Author.objects.all()
+                headers = {"Content-Type": "application/json"}
+                url = f"{post.visibility}/inbox/"
+                url1 = f"{post.author.id}/inbox/"
+                requests.post(url=url, headers=headers, data=json.dumps(data))
+                requests.post(url=url1, headers=headers, data=json.dumps(data))               
         # Save The Post
         post.save()
 
