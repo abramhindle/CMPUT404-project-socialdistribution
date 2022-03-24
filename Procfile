@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath backend backend.wsgi --workers 10
+web: gunicorn --pythonpath backend backend.wsgi --workers 100
