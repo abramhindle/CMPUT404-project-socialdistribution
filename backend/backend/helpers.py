@@ -1,7 +1,10 @@
+from authors.models import Author
+from authors.serializers import AuthorSerializer
 from urllib import parse
 from nodes.models import Node
 from requests.auth import HTTPBasicAuth
 import requests as r
+from django.conf import settings
 
 
 def get_node(url):
@@ -47,6 +50,11 @@ def put(url, data, headers=None):
 
 
 def get_author(author, headers=None):
+    p = parse.urlparse(author)
+    hostname = f"{p.scheme}://{p.hostname}"
+    if hostname in settings.DOMAIN:
+        authors = Author.objects.filter(id__contains=author)
+        return AuthorSerializer(authors[0]).data if len(authors) > 0 else {"error": "Author Not Found!"}
     response = get(author, headers)
     return response.json() if response is not None and response.status_code == 200 else {"error": "Author Not Found!"}
 

@@ -2,7 +2,6 @@ import json
 from backend.helpers import get_author
 from likes.serializers import LikesSerializer
 from concurrent.futures import ThreadPoolExecutor
-from rest_framework.response import Response
 
 
 def get_likes_helper(like_objects):
