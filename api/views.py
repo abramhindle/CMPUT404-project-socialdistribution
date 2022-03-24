@@ -1,17 +1,19 @@
 import base64
+from cmath import e
 import os
 from django.http import HttpResponse
 from django.shortcuts import get_list_or_404, get_object_or_404
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import action
 
-from api.serializers import AuthorSerializer, PostSerializer, LikesSerializer
+from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer, LikesSerializer
 from api.util import page_number_pagination_class_factory
 from posts.models import Post, ContentType, Like
+from follow.models import Follow
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -49,6 +51,16 @@ class PostViewSet(viewsets.ModelViewSet):
         with open(os.path.abspath(settings.BASE_DIR) + img.img_content.url, 'rb') as img_file:
             encoded_img = base64.b64encode(img_file.read()).decode('utf-8')
         return HttpResponse(encoded_img, content_type=img.content_type)
+
+class FollowersViewSet(viewsets.ModelViewSet):
+    renderer_classes = [JSONRenderer]
+    pagination_class = page_number_pagination_class_factory([('type', 'followers')])
+    serializer_class = FollowersSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get']
+
+    def get_queryset(self):
+        return Follow.objects.filter(followee=self.kwargs['author_pk']).order_by('-created')
 
 
 class LikesViewSet(viewsets.ModelViewSet):
