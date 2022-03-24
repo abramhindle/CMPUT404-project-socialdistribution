@@ -1,8 +1,6 @@
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseNotAllowed
-from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.shortcuts import redirect
 from django.views.generic.list import ListView
 from follow.models import AlreadyExistsError, Follow, Request
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -93,7 +91,7 @@ class UsersView(LoginRequiredMixin, ServerListView):
         return [to_internal(user) for user in jsonResponse['items']]
 
     def get_queryset(self):
-        return USER_MODEL.objects.filter(~Q(pk=self.request.user.id) & Q(is_staff=False) & ~Q(is_api_user=False))
+        return USER_MODEL.objects.filter(~Q(pk=self.request.user.id) & Q(is_staff=False) & Q(is_api_user=False))
 
 
 class FriendRequestsView(LoginRequiredMixin, ListView):

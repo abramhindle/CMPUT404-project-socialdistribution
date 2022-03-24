@@ -29,12 +29,13 @@ class FollowManager(models.Manager):
         return followers
 
     def true_friend(self, user):
-        qs1 = Follow.objects.filter(follower=user, true_friend=True).all()
-        qs2 = Follow.objects.filter(followee=user, true_friend=True).all()
-        friend1 = [_.followee for _ in qs1]
-        friend2 = [_.follower for _ in qs2]
-
-        return list(set(friend1 + friend2))
+        followers = self.followers(user)
+        followings = set(self.followings(user))
+        friends = []
+        for follower in followers:
+            if follower in followings:
+                friends.append(follower)
+        return friends
 
     def request(self, user):
         qs = (Request.objects.select_related("from_user", "to_user").filter(to_user=user).all())
@@ -50,14 +51,16 @@ class FollowManager(models.Manager):
         '''create follow request'''
         if from_user == to_user:
             raise ValidationError("User cannot follow themselves.")
+            return
 
         if self.check_follow(from_user, to_user):
-            raise AlreadyExistsError("Users has already followed.")
+            return
 
         if Request.objects.filter(
                 from_user=from_user,
                 to_user=to_user).exists():
             raise AlreadyExistsError("User has sent the follow request.")
+            return
 
         request, created = Request.objects.get_or_create(from_user=from_user, to_user=to_user)
         if created is False:
@@ -72,19 +75,13 @@ class FollowManager(models.Manager):
     def unfollow(self, follower, followee):
         try:
             Follow.objects.get(follower=follower, followee=followee).delete()
-            try:
-                true_friend_bidirect = Follow.objects.get(follower=followee, followee=follower)
-                true_friend_bidirect.true_friend = False
-                true_friend_bidirect.save()
-            except Follow.DoesNotExist:
-                return False
             return True
         except Follow.DoesNotExist:
             return False
 
     def check_follow(self, follower: str, followee: str):
         try:
-            Follow.objects.get(follower__username=follower, followee__username=followee)
+            Follow.objects.get(follower=follower, followee=followee)
             return True
         except Follow.DoesNotExist:
             return False
@@ -92,11 +89,9 @@ class FollowManager(models.Manager):
     def check_true_friend(self, follower, followee):
         if Follow.objects.filter(
             follower=follower,
-            followee=followee,
-            true_friend=True).exists() and Follow.objects.filter(
+            followee=followee).exists() and Follow.objects.filter(
                 follower=followee,
-                followee=follower,
-                true_friend=True).exists():
+                followee=follower).exists():
             return True
         else:
             return False
@@ -106,7 +101,6 @@ class Follow(models.Model):
     followee = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="followee")
     follower = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="follower")
     created = models.DateTimeField(auto_now_add=True)
-    true_friend = models.BooleanField(default=False)
     objects = FollowManager()
 
     class Meta:
@@ -120,8 +114,6 @@ class Follow(models.Model):
             raise ValidationError("User cannot follow themselves.")
         try:
             follow_reverse = Follow.objects.get(follower=self.followee, followee=self.follower)
-            self.true_friend = True
-            follow_reverse.true_friend = True
         except Follow.DoesNotExist:
             pass
         super().save(*args, **kwargs)
@@ -160,9 +152,7 @@ class Request(models.Model):
 
         try:
             relation_reverse = Follow.objects.get(follower=self.to_user, followee=self.from_user)
-            relation_reverse.real_friend = True
             relation_reverse.save()
-            relation.real_friend = True
             relation.save()
         except Follow.DoesNotExist:
             pass
