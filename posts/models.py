@@ -1,3 +1,5 @@
+import os
+import uuid
 from django.db import models
 from django.forms import ValidationError
 from django.urls import reverse
@@ -21,6 +23,12 @@ class ContentType(models.TextChoices):
     JPG = 'image/jpeg;base64', _('JPEG')
 
 
+def img_content_filename(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4().hex, ext)
+    return os.path.join('images/', filename)
+
+
 class Post(models.Model):
     class Visibility(models.TextChoices):
         PUBLIC = "PUBLIC"
@@ -31,7 +39,7 @@ class Post(models.Model):
     content_type = models.CharField(max_length=18, default=ContentType.PLAIN, choices=ContentType.choices)
     visibility = models.CharField(max_length=7, default=Visibility.PUBLIC, choices=Visibility.choices)
     content = models.TextField()
-    img_content = models.ImageField(null=True, blank=True, upload_to='images/', verbose_name='Image')
+    img_content = models.ImageField(null=True, blank=True, upload_to=img_content_filename, verbose_name='Image')
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     date_published = models.DateTimeField(auto_now_add=True)
     unlisted = models.BooleanField()

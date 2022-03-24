@@ -1,21 +1,30 @@
 <a href="{{ post.get_absolute_url }}" style="color: inherit">
     <div class="card interactable">
         <h3>{{ post.title }}</h3>
-        <p>{{ post.description }}</p>
+        <p>
+            {{ post.description }}
+        </p>
         {% if post.content_type == 'text/plain' %}
-            <p>{{ post.content }}</p>
+            <p>
+                {{ post.content }}
+            </p>
         {% elif post.content_type == 'image/png;base64' or post.content_type == 'image/jpeg;base64' %}
             {% if post.img_content %}
-                <img
-                src="{{ post.img_content.url }}"
-                height="auto"
-                width="100%"
-                alt="alt"
-                />
+                <img src="{{ post.img_content.url }}"                     
+                     height="auto"
+                     width="100%"
+                     alt=""
+                     onerror="this.src='/static/broken-img.jpg'"/>
             {% else %}
-                <img src="{{ post.content }}" height="auto" width="100%" alt="alt" />
+                <img src="{{ post.content }}"
+                     height="auto"
+                     width="100%"
+                     alt=""
+                     onerror="this.src='/static/broken-img.jpg'"/>
             {% endif %}
         {% endif %}
-        <p>{{ post.date_published }}</p>
+        <p>
+            {{ post.date_published }}
+        </p>
     </div>
 </a>
