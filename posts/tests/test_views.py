@@ -157,6 +157,15 @@ class PostDetailViewTests(TestCase):
         self.assertNotContains(res, 'Like')
 
 
+class PostDetailViewTests(TestCase):
+    def setUp(self) -> None:
+        pass
+
+    def test_remote_detail_view_page(self):
+        # TODO: Add tests
+        pass
+
+
 class PostDeleteViewTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()

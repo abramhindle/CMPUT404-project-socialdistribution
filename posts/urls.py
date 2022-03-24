@@ -3,6 +3,7 @@ from django.urls import path
 
 app_name = 'posts'
 urlpatterns = [
+    path('remote/<path:url>', views.RemotePostDetailView.as_view(), name='remote-detail'),
     path('<int:pk>/edit', views.EditPostView.as_view(), name='edit'),
     path('<int:pk>/delete', views.DeletePostView.as_view(), name='delete'),
     path('<int:pk>/comments/new', views.CreateCommentView.as_view(), name='new-comment'),
