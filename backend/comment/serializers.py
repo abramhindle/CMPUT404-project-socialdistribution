@@ -15,6 +15,4 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ["type", "author", "comment", "contentType", "published", "id"]
 
     def get_author(self, obj: Comment):
-        author_url = obj.author_url
-        author = get(author_url)
-        return author.json() if author is not None else {"error": "Author Not Found!"}
+        return obj.author_url

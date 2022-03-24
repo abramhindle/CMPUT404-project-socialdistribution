@@ -12,6 +12,7 @@ from backend.permissions import IsOwnerOrAdmin
 from rest_framework.decorators import action
 from likes.models import Likes
 from likes.helper import get_likes
+from .helpers import get_comments
 
 
 class IsPostOwnerOrAdmin(IsOwnerOrAdmin):
@@ -41,6 +42,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment: Comment = get_object_or_404(Comment, local_id=pk)
         likes = Likes.objects.all().filter(object=comment.id)
         return Response(get_likes(likes), content_type="application/json")
+
+    def list(self, request, *args, **kwargs):
+        # Fetch The Comments
+        post = get_object_or_404(Post, local_id=self.kwargs["post"])
+        comment_objects = post.comment_set.all()
+        comments = get_comments(comment_objects)
+
+        # Paginate Response
+        page = self.paginator.paginate_queryset(comments, request)
+
+        # Return Response
+        return self.paginator.get_paginated_response(page)
 
     def get_queryset(self):
         post = self.kwargs["post"]
