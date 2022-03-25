@@ -20,7 +20,8 @@ def get(url, headers=None, params=None):
     if headers is not None and "Authorization" in headers:
         return r.get(url, headers=headers, params=params)
     node = get_node(url)
-    return r.get(url, headers=headers, params=params, auth=HTTPBasicAuth(username=node.outbound_username, password=node.outbound_password)) if node is not None else None
+    res = r.get(url, headers=headers, params=params, auth=HTTPBasicAuth(username=node.outbound_username, password=node.outbound_password)) if node is not None else None
+    return res
 
 
 def post(url, data, headers=None):
@@ -75,7 +76,8 @@ def get_author_list(authors, headers=None):
 
 
 def get_authors(host: str, headers=None):
-    response = get(f"{host.rstrip('/')}/authors/", headers)
+    print(f"{host.rstrip('/')}/authors")
+    response = get(f"{host.rstrip('/')}/authors", headers)
     return response.json() if response is not None and response.status_code == 200 else {"error": "Cannot Connect To Host!"}
 
 
@@ -123,5 +125,5 @@ def extract_content_type(remote_post):
 def extract_posts_url(author):
     host = author["host"]
     if host == "http://squawker-cmput404.herokuapp.com/":
-        return f"{host}api/authors/{extract_local_id(author)}/posts/"
-    return f"{host}api/authors/{extract_local_id(author)}/posts/"
+        return f"{host}api/authors/{extract_local_id(author)}/posts"
+    return f"{host}api/authors/{extract_local_id(author)}/posts"

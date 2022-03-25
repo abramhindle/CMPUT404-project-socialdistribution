@@ -79,7 +79,7 @@ class InboxItemList(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.C
         # Prepare Fetched Remote Posts
         foreign_posts = []
         for f in futures:
-            if f.status_code == 200 and f.headers.get("Content-Type", "") == "application/json":
+            if f is not None and f.status_code == 200 and f.headers.get("Content-Type", "") == "application/json":
                 foreign_posts += f.json()["posts"]
         for post in foreign_posts:
             post["visibility"] = "PUBLIC"
