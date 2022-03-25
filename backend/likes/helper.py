@@ -1,14 +1,18 @@
 import json
 from backend.helpers import get_author
 from likes.serializers import LikesSerializer
+from django import db
 from concurrent.futures import ThreadPoolExecutor
 from backend.DjangoConnectionThreadPoolExecutor import DjangoConnectionThreadPoolExecutor
 
 
 def get_likes_helper(like_objects):
     likes = json.loads(json.dumps(LikesSerializer(like_objects, many=True).data))
-    with DjangoConnectionThreadPoolExecutor(max_workers=1) as executor:
+    db.connections.close_all()
+    with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.map(lambda x: get_author(x["author"]), likes)
+        for f in future:
+            f.add_done_callback()
     items = []
     for like, author in zip(likes, future):
         item = dict(**like)
