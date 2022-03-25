@@ -276,4 +276,25 @@ class LikeTests(TestCase):
         self.post.save()
 
         self.other_user = get_user_model().objects.create_user(username='alice', password='password2')
-        self.like_by_other_user = Like.objects.create()
+        self.like_by_other_user = Like.objects.create(
+            author_id=self.other_user.id,
+            post_id=self.post.id,
+        )
+
+        self.like_by_user = Like.objects.create(
+            author_id=self.author.id,
+            post_id=self.post.id,
+        )
+        self.post.save()
+        return
+
+    def test_get(self):
+        self.client.login(username='bob', password='password1')
+        res = self.client.get(f'/api/v1/authors/{self.author.id}/posts/{self.post.id}/likes/')
+        self.assertEqual(res.status_code, 200)
+        body = json.loads(res.content.decode('utf-8'))
+        self.assertEqual(body['type'], 'likes')
+        for like in body['items']:
+            self.assertEqual(like['type'], 'Like')
+            self.assertIn('summary', like)
+            self.assertIn('object', like)

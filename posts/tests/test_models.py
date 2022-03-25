@@ -85,9 +85,17 @@ class LikeTests(TestCase):
             unlisted=POST_DATA['unlisted'])
 
     def test_post_association(self):
+        self.user = get_user_model().objects.create_user(username=CURRENT_USER, password='password')
+        self.post = Post.objects.create(
+            title=POST_DATA['title'],
+            description=POST_DATA['description'],
+            content_type=POST_DATA['content_type'],
+            content=POST_DATA['content'],
+            author_id=get_user_model().objects.get(username=CURRENT_USER).id,
+            unlisted=POST_DATA['unlisted'])
+
         Like.objects.create(
-            summary=LIKE_DATA['summary'],
-            author_id=self.post.id,
+            author_id=self.user.id,
             post_id=self.post.id,
         )
         self.assertEqual(len(self.post.like_set.all()), 1)

@@ -19,12 +19,6 @@ from django.http import HttpResponse
 import os
 from cmath import e
 import base64
-<< << << < HEAD
-== == == =
->>>>>> > c1b6dbc92670305061f993bdfa212f1162604dc9
-<< << << < HEAD
-== == == =
->>>>>> > c1b6dbc92670305061f993bdfa212f1162604dc9
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
