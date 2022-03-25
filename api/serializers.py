@@ -1,6 +1,5 @@
 from email.policy import default
 from django.contrib.auth import get_user_model
-from matplotlib.style import context
 from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from posts.models import Post, Like
