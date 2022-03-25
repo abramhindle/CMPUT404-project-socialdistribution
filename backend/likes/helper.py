@@ -1,14 +1,11 @@
 import json
 from backend.helpers import get_author, get_author_list
 from likes.serializers import LikesSerializer
-from django import db
-from concurrent.futures import ThreadPoolExecutor
-from backend.DjangoConnectionThreadPoolExecutor import DjangoConnectionThreadPoolExecutor
 
 
 def get_likes_helper(like_objects):
     likes = json.loads(json.dumps(LikesSerializer(like_objects, many=True).data))
-    authors = get_author([like["author"] for like in likes])
+    authors = get_author_list([like["author"] for like in likes])
     for like in likes:
         found = False
         for author in authors:

@@ -1,21 +1,17 @@
-import json
-from backend.helpers import get_author
-from .models import Comment
+from backend.helpers import get_author_list
 from .serializers import CommentSerializer
-from likes.serializers import LikesSerializer
-from backend.DjangoConnectionThreadPoolExecutor import DjangoConnectionThreadPoolExecutor
-from django import db
-from concurrent.futures import ThreadPoolExecutor
 
 
 def get_comments(comment_objects):
     comments = CommentSerializer(comment_objects, many=True).data
-    db.connections.close_all()
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.map(lambda x: get_author(x["author"]), comments)
-    items = []
-    for comment, author in zip(comments, future):
-        item = dict(**comment)
-        item["author"] = author
-        items.append(item)
-    return items
+    authors = get_author_list([comment["author"] for comment in comments])
+    for comment in comments:
+        found = False
+        for author in authors:
+            if "id" in author and (comment["author"] in author["id"] or author["id"] in comment["author"]):
+                found = True
+                comment["author"] = author
+                break
+        if not found:
+            comment["author"] = {"error": "Author Not Found!"}
+    return comments
