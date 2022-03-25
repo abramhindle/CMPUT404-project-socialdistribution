@@ -1,19 +1,13 @@
 import base64
-from cmath import e
-import os
 import requests
-from django.db import IntegrityError
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, permissions, status
-from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound
-
 from socialdistribution.storage import ImageStorage
 from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer
 from api.util import page_number_pagination_class_factory

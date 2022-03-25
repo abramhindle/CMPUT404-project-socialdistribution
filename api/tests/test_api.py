@@ -1,13 +1,11 @@
-from email import header
 import json
-from click import password_option
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
-from posts.models import Post, ContentType
-from follow.models import Follow, Request
+from posts.models import Post, ContentType, Comment
+from follow.models import Follow
 
-from posts.tests.constants import POST_DATA
+from posts.tests.constants import POST_DATA, COMMENT_DATA
 from .constants import POST_IMG_DATA
 
 TEST_USERNAME = 'bob'
@@ -87,7 +85,9 @@ class PostTests(TestCase):
             self.assertIn('type', post)
             self.assertIn('contentType', post)
             self.assertIn('published', post)
-            self.assertIn('url', post)
+            self.assertIn('source', post)
+            self.assertIn('origin', post)
+            self.assertIn('count', post)
             self.assertIn('categories', post)
 
     def test_posts_require_login(self):
@@ -95,6 +95,14 @@ class PostTests(TestCase):
         self.assertEqual(res.status_code, 403)
 
     def test_post_detail(self):
+        comment = Comment.objects.create(
+            comment=COMMENT_DATA['comment'],
+            author_id=self.other_user.id,
+            post_id=self.post.id,
+            content_type=COMMENT_DATA['content_type'],
+        )
+        comment.save()
+
         self.client.login(username='bob', password='password')
         res = self.client.get(f'/api/v1/authors/{self.user.id}/posts/{self.post.id}/')
         self.assertEqual(res.status_code, 200)
@@ -109,8 +117,12 @@ class PostTests(TestCase):
         self.assertIn('type', post)
         self.assertIn('contentType', post)
         self.assertIn('published', post)
-        self.assertIn('url', post)
+        self.assertIn('source', post)
+        self.assertIn('origin', post)
+        self.assertIn('count', post)
         self.assertIn('categories', post)
+
+        self.assertEqual(post['count'], len(self.post.comment_set.all()))
 
 
 class ImageTests(TestCase):
