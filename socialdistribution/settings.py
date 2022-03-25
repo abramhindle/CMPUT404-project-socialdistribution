@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +46,7 @@ INSTALLED_APPS = [
     'auth_provider.apps.AuthProviderConfig',
     'follow.apps.FollowConfig',
     'servers.apps.ServersConfig',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -120,13 +124,21 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Amazon AWS S3
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+AWS_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
+AWS_S3_REGION_NAME = 'us-west-2'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+# AWS_QUERYSTRING_AUTH = False # this is something that we may want to adjust later...
+
+
+# Static files and storage (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
@@ -149,3 +161,5 @@ if os.environ.get('DATABASE_URL'):
     # Heroku environment
     import django_heroku  # noqa
     django_heroku.settings(locals())
+
+TEST_RUNNER = 'socialdistribution.test_runner.FastTestRunner'
