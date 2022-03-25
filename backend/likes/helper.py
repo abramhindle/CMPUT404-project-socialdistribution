@@ -11,8 +11,6 @@ def get_likes_helper(like_objects):
     db.connections.close_all()
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.map(lambda x: get_author(x["author"]), likes)
-        for f in future:
-            f.add_done_callback()
     items = []
     for like, author in zip(likes, future):
         item = dict(**like)
