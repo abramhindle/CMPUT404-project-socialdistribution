@@ -75,7 +75,6 @@ class LikesViewSet(viewsets.ModelViewSet):
     def likes(self, **kwargs):
         author_id = kwargs['author_pk']
         post_id = kwargs['pk']
-
         likes = get_list_or_404(Like.objects, author_id=author_id, pk=post_id)
         return likes
 
