@@ -10,8 +10,10 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from requests import Response
 
 from posts.models import Post, Category, Comment, Like
+from servers.views.generic.detailed_view import ServerDetailView
 
 
 class PostForm(ModelForm):
@@ -71,6 +73,35 @@ class PostDetailView(LoginRequiredMixin, DetailView):
         except Like.DoesNotExist:
             pass
         return context
+
+
+class RemotePostDetailView(LoginRequiredMixin, ServerDetailView):
+    model = Post
+    template_name = 'posts/remote_post_detail.html'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        try:
+            # TODO: Fetch likes endpoint
+            context['has_liked'] = False
+        except Like.DoesNotExist:
+            pass
+        return context
+
+    def to_internal(self, response: Response) -> Post:
+        json_response = response.json()
+        return {
+            'id': json_response['id'],
+            'title': json_response['title'],
+            'description': json_response['description'],
+            'content_type': json_response['contentType'],
+            'content': json_response['content'],
+            'author': json_response['author'],
+            'categories': json_response['categories'],
+            'date_published': json_response['published'],
+            'visibility': json_response['visibility'],
+            'unlisted': json_response['unlisted'],
+        }
 
 
 class DeletePostView(LoginRequiredMixin, DeleteView):

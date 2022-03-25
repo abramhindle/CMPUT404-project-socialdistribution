@@ -29,7 +29,7 @@ def get_test_image_png():
                      'Y', '\xe7', '\x00', '\x00', '\x00', '\x00',
                      'I', 'E', 'N', 'D', '\xae', 'B', '`', '\x82']
     valid_png_bin = bytes("".join(valid_png_hex), "utf-8")
-    png = SimpleUploadedFile("tiny.png", valid_png_bin)
+    png = SimpleUploadedFile(name="test.png", content=valid_png_bin, content_type='image/png')
     return png
 
 

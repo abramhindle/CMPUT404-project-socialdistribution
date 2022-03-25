@@ -26,10 +26,11 @@ class PostSerializer(NestedHyperlinkedModelSerializer):
         'author_pk': 'author__pk',
     }
     author = AuthorSerializer(many=False, read_only=True)
+    url_field_name = 'source'
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'description', 'content', 'author', 'visibility', 'unlisted', 'url']
+        fields = ['id', 'title', 'description', 'content', 'author', 'visibility', 'unlisted', 'source']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -37,10 +38,15 @@ class PostSerializer(NestedHyperlinkedModelSerializer):
         representation['contentType'] = instance.content_type
         representation['published'] = instance.date_published
         representation['categories'] = [category.category for category in instance.categories.all()]
+        representation['origin'] = representation['source']  # TODO: Update this when we have post sharing
+        representation['count'] = len(instance.comment_set.all())
         return representation
 
 
-class FollowersSerializer(serializers.ModelSerializer):
+class FollowersSerializer(NestedHyperlinkedModelSerializer):
+    parent_lookup_kwargs = {
+        'author_pk': 'author__pk',
+    }
     follower = AuthorSerializer(many=False, read_only=True)
 
     class Meta:

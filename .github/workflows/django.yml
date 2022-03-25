@@ -1,5 +1,10 @@
 name: CI
 
+env:
+  AWS_STORAGE_BUCKET_NAME: 'cmput404-test'
+  AWS_ACCESS_KEY_ID: 'AKIA4HM362I6GGM65U6F'
+  AWS_SECRET_ACCESS_KEY: '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'  
+
 on:
   push:
     branches: [master]

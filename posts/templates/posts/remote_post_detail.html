@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block content %}
+<div class="card">
+  <h2>{{ object.title }}</h2>
+  <h3 class="subtitle">{{ object.author.get_full_name }}</h3>
+  {% if object.content_type == 'text' %} <!-- TODO: Update this when our friends have updated their contentType field -->
+  <p>{{ object.content }}</p>
+  {% elif object.content_type == 'image/png;base64' or object.content_type == 'image/jpeg;base64' %}
+  {% if object.img_content %}
+  <img src="{{ object.img_content.url }}" height="auto" width="100%" alt="alt" />
+  {% else %}
+  <img src="{{ object.content }}" height="auto" width="100%" alt="alt" />
+  {% endif %}
+  {% endif %}
+
+  <p>{{ object.date_published }}</p>
+
+  <section id="categories">
+    <ol class="horizontal no-indent">
+      {% for category in object.categories.all %}
+      <li class="pill">{{ category.category }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <!-- TODO: Re-add comments section -->
+  <!-- TODO: Re-add likes section -->
+</div>
+{% endblock content %}

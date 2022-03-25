@@ -1,19 +1,30 @@
-import base64
-from cmath import e
-import os
-from django.http import HttpResponse
-from django.shortcuts import get_list_or_404, get_object_or_404
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from rest_framework.decorators import action
-from django.http.request import HttpRequest
-from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer, LikesSerializer
-from api.util import page_number_pagination_class_factory
-from posts.models import Post, ContentType, Like
 from follow.models import Follow
+from posts.models import Post, ContentType, Like
+from api.util import page_number_pagination_class_factory
+from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer
+from socialdistribution.storage import ImageStorage
+from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer, LikesSerializer
+from django.http.request import HttpRequest
+from rest_framework.decorators import action
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework import viewsets, permissions, status
+from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.http import Http404, HttpResponse
+import requests
+from django.shortcuts import get_list_or_404, get_object_or_404
+from django.http import HttpResponse
+import os
+from cmath import e
+import base64
+<< << << < HEAD
+== == == =
+>>>>>> > c1b6dbc92670305061f993bdfa212f1162604dc9
+<< << << < HEAD
+== == == =
+>>>>>> > c1b6dbc92670305061f993bdfa212f1162604dc9
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -43,14 +54,15 @@ class PostViewSet(viewsets.ModelViewSet):
         author_id = kwargs['author_pk']
         post_id = kwargs['pk']
 
-        img = get_object_or_404(Post.objects, author_id=author_id, pk=post_id)
+        post = get_object_or_404(Post.objects, author_id=author_id, pk=post_id)
 
-        if img.content_type != ContentType.PNG and img.content_type != ContentType.JPG:
+        if post.content_type != ContentType.PNG and post.content_type != ContentType.JPG:
             return Response(status=404)
 
-        with open(os.path.abspath(settings.BASE_DIR) + img.img_content.url, 'rb') as img_file:
-            encoded_img = base64.b64encode(img_file.read()).decode('utf-8')
-        return HttpResponse(encoded_img, content_type=img.content_type)
+        location = post.img_content.url if post.img_content else post.content
+        encoded_img = base64.b64encode(requests.get(location).content)
+
+        return HttpResponse(encoded_img, content_type=post.content_type)
 
 
 class FollowersViewSet(viewsets.ModelViewSet):
@@ -58,10 +70,49 @@ class FollowersViewSet(viewsets.ModelViewSet):
     pagination_class = page_number_pagination_class_factory([('type', 'followers')])
     serializer_class = FollowersSerializer
     permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get']
+    http_method_names = ['get', 'put', 'delete']
 
     def get_queryset(self):
         return Follow.objects.filter(followee=self.kwargs['author_pk']).order_by('-created')
+
+    def update(self, request, *args, **kwargs):
+        followee_id = kwargs['author_pk']
+        follower_id = kwargs['pk']
+        try:
+            followee = get_user_model().objects.get(id=followee_id)
+            follower = get_user_model().objects.get(id=follower_id)
+        except get_user_model().DoesNotExist as e:
+            raise Http404
+
+        follow, create = Follow.objects.get_or_create(followee=followee, follower=follower)
+        if not create:
+            return Response(status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        followee_id = kwargs['author_pk']
+        follower_id = kwargs['pk']
+        try:
+            followee = get_user_model().objects.get(id=followee_id)
+            follower = get_user_model().objects.get(id=follower_id)
+        except get_user_model().DoesNotExist as e:
+            raise Http404
+        Follow.objects.unfollow(followee=followee, follower=follower)
+        return Response(status.HTTP_204_NO_CONTENT)
+
+    def retrieve(self, request, *args, **kwargs):
+        followee_id = kwargs['author_pk']
+        follower_id = kwargs['pk']
+        try:
+            followee = get_user_model().objects.get(id=followee_id)
+            follower = get_user_model().objects.get(id=follower_id)
+        except get_user_model().DoesNotExist as e:
+            raise Http404
+
+        follow = get_object_or_404(Follow.objects, follower=follower, followee=followee)
+        serializer = self.serializer_class(follow, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LikesViewSet(viewsets.ModelViewSet):

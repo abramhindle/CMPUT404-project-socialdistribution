@@ -74,6 +74,7 @@ class StreamViewTests(TestCase):
         ]'''
         mock_json_response = json.loads(mock_raw_json_response)
         mock_response = Response()
+        mock_response.url = 'http://localhost:5555/api/v2/authors/1/posts'
         mock_response.json = MagicMock(return_value=mock_json_response)
 
         mock_server = Server(

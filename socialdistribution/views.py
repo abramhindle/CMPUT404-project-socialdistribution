@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import QuerySet
 from requests import Response
+import urllib.parse
 
 from posts.models import Post
 from servers.views.generic.list_view import ServerListView
@@ -43,13 +44,18 @@ class StreamView(LoginRequiredMixin, ServerListView):
         json_response = response.json()
 
         def to_internal(representation: dict[str, Any]):
+            request_url = response.url
+            if not request_url.endswith('/'):
+                request_url += '/'
+            post_url = urllib.parse.urljoin(request_url, representation['id'])  # TODO: Update this to source or origin
+            absolute_url = reverse('posts:remote-detail', kwargs={'url': post_url})
             return {
                 'title': representation['title'],
                 'description': representation['description'],
                 'content_type': representation['contentType'],
                 'content': representation['content'],
                 'date_published': representation['published'],
-                'get_absolute_url': representation['source'],  # TODO: Verify whether this is the correct field
+                'get_absolute_url': absolute_url,
             }
 
         # TODO: Add ['items'] once our groupmates are ready (have the results nested)

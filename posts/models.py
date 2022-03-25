@@ -1,9 +1,12 @@
+import os
+import uuid
 from django.db import models
 from django.forms import ValidationError
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
+from socialdistribution.storage import ImageStorage
 from lib.url import is_url_valid_image
 
 STR_MAX_LENGTH = 512
@@ -21,6 +24,12 @@ class ContentType(models.TextChoices):
     JPG = 'image/jpeg;base64', _('JPEG')
 
 
+def img_content_filename(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4().hex, ext)
+    return filename
+
+
 class Post(models.Model):
     class Visibility(models.TextChoices):
         PUBLIC = "PUBLIC"
@@ -31,7 +40,12 @@ class Post(models.Model):
     content_type = models.CharField(max_length=18, default=ContentType.PLAIN, choices=ContentType.choices)
     visibility = models.CharField(max_length=7, default=Visibility.PUBLIC, choices=Visibility.choices)
     content = models.TextField()
-    img_content = models.ImageField(null=True, blank=True, upload_to='images/', verbose_name='Image')
+    img_content = models.ImageField(
+        null=True,
+        blank=True,
+        storage=ImageStorage(),
+        upload_to=img_content_filename,
+        verbose_name='Image')
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     date_published = models.DateTimeField(auto_now_add=True)
     unlisted = models.BooleanField()
