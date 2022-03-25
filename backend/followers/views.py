@@ -4,7 +4,7 @@ from rest_framework import status
 from .serializers import FollowerSerializer, FollowingSerializer
 from rest_framework.response import Response
 from .models import Follower, Following
-from backend.helpers import get_author, get
+from backend.helpers import get_author, get, extract_remote_id, extract_profile_image
 from authors.models import Author
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
@@ -49,9 +49,11 @@ def friends_list(request, author):
 @permission_classes([IsAuthenticated])
 def followers_list(request, author):
     author_object = get_object_or_404(Author, local_id=author)
+    print([extract_remote_id(f.actor) for f in author_object.follower_set.all()])
     with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.map(lambda x: get_author(x), [f.actor for f in author_object.follower_set.all()])
+        future = executor.map(lambda x: get_author(x), [extract_remote_id(f.actor) for f in author_object.follower_set.all()])
     followers = [f for f in future if "type" in f]
+    print(followers)
     followers.sort(key=lambda x: x["displayName"])
     return Response({"type": "followers", "items": followers}, content_type="application/json")
 
@@ -110,8 +112,12 @@ def following_list(request, author):
     with ThreadPoolExecutor(max_workers=1) as executor:
         future_1 = executor.map(lambda x: get_author(x), [f.follows for f in author_object.following_set.all()])
     following = [f for f in future_1 if "id" in f]
+    for author in following:
+        author["displayImage"] = extract_profile_image(author)
+        author["id"] = extract_remote_id(author["id"])
+
     with ThreadPoolExecutor(max_workers=1) as executor:
-        future_2 = executor.map(lambda x: get(x), [f"{f['id']}followers/{author_object.id}/" for f in following])
+        future_2 = executor.map(lambda x: get(x), [f"{f['id'].rstrip()}/followers/{author_object.id}/" for f in following])
     confirmed_following = [f[0] for f in zip(following, [f for f in future_2]) if f[1] is not None and f[1].status_code != 404]
     confirmed_following.sort(key=lambda x: x["displayName"])
     return Response({"type": "following", "items": confirmed_following}, content_type="application/json")

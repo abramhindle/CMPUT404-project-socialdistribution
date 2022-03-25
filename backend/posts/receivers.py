@@ -1,18 +1,13 @@
-import json
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.conf import settings
 from .models import Post
 from .serializers import PostSerializer
-from authors.models import Author
-import requests
-from requests import RequestException
 import json
 from inbox.models import InboxItem
 from concurrent.futures import ThreadPoolExecutor
 from authors.serializers import AuthorSerializer
 from nodes.models import Node
-from followers.models import Follower
 from backend import helpers
 
 
@@ -42,9 +37,9 @@ def on_create_post(sender, **kwargs):
                         authors += future["items"]
 
                 # Push To Author's Inbox
-                authors = list(map(lambda x: x["url"], authors))
+                authors = list(map(lambda author: helpers.extract_inbox_url(author), authors))
                 with ThreadPoolExecutor(max_workers=1) as executor:
-                    executor.map(lambda author: helpers.post(f"{author.rstrip('/')}/inbox/", json.dumps(data), headers={"Content-Type": "application/json"}), authors)
+                    executor.map(lambda author: helpers.post(author, json.dumps(data), headers={"Content-Type": "application/json"}), authors)
 
             elif post.visibility == "FRIENDS":
                 followers = [follower.actor for follower in post.author.follower_set.all()] + [post.author.id]

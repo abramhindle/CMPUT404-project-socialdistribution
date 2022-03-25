@@ -128,14 +128,13 @@ export default function HomePage() {
         .catch( err => console.log(err) );
     }
 
-    /* Get Inbox From Server 
+    /* Get Inbox From Server */
     useEffect( () => {
         getInbox(author.url)
             .then( res => setInbox(res.data.items) )
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
     }, [] );
-    */
 
     /* Get Notifications From Server  */
     useEffect( () => {

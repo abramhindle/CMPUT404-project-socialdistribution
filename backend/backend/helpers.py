@@ -83,3 +83,45 @@ def get_hostname(url):
     p = parse.urlparse(url)
     return f"{p.scheme}://{p.hostname}"
 
+
+def extract_local_id(author):
+    return author["id"].split("/authors/")[1].rstrip("/")
+
+
+def extract_inbox_url(author):
+    host = author["host"]
+    if host == "http://squawker-cmput404.herokuapp.com/":
+        return f"{host}api/authors/{extract_local_id(author)}/inbox/"
+    return f"{host}api/authors/{extract_local_id(author)}/inbox/"
+
+
+def extract_profile_image(author):
+    return author["profileImage"] if "http://" in author["profileImage"] else "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"
+
+
+def extract_visibility(remote_post):
+    host = remote_post["id"]
+    if host == "http://squawker-cmput404.herokuapp.com/":
+        return remote_post["visibility"].upper() if remote_post["visibility"] == "public" or remote_post["visibility"] == "friends" else remote_post["visibility"]
+    return remote_post["visibility"]
+
+
+def extract_remote_id(url):
+    host = get_hostname(url)
+    if host.rstrip("/") == "http://squawker-cmput404.herokuapp.com/".rstrip("/"):
+        return f"{host}/api/authors/{url.split('/authors/')[1]}/"
+    return url
+
+
+def extract_content_type(remote_post):
+    host = get_hostname(remote_post["id"])
+    if host.rstrip("/") == "http://squawker-cmput404.herokuapp.com/".rstrip("/"):
+        return remote_post["content_type"]
+    return remote_post["contentType"]
+
+
+def extract_posts_url(author):
+    host = author["host"]
+    if host == "http://squawker-cmput404.herokuapp.com/":
+        return f"{host}api/authors/{extract_local_id(author)}/posts/"
+    return f"{host}api/authors/{extract_local_id(author)}/posts/"

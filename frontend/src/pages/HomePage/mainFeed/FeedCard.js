@@ -203,6 +203,7 @@ export default function FeedCard({allLikes, profile, post, isOwner, alertError, 
   const handleExpandClick = () => {
     getComments(post)
       .then( res => { 
+        console.log(res.data);
         setComments(res.data.items);
         setExpanded(!expanded);
       })

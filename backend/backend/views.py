@@ -120,6 +120,7 @@ def proxy_requests(request, path):
                 url += "/"
         else:
             url = "http://" + (path + "/").split("http://")[-1].replace("//", "/")
+            print(url)
         status_code, content_type, response_body = proxy_selector(request, url)
         if content_type != "application/json":
             response = HttpResponse(content_type=content_type)
