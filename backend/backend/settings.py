@@ -92,7 +92,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-db_from_env = dj_database_url.config()
+db_from_env = dj_database_url.config(conn_max_age=10)
 DATABASES = {'default': dict()}
 DATABASES['default'].update(db_from_env)
 """
