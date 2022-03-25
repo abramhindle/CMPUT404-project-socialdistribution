@@ -43,3 +43,38 @@ POST_IMG_DATA = {
     'visibility': Post.Visibility.PUBLIC,
     'unlisted': False,
 }
+
+# TODO: Update this when our groupmates have updated their interface
+SAMPLE_REMOTE_POST = '''
+[{
+    "title": "anonymouspost",
+    "id": "1",
+    "source": "https://cmput404-project-t12.herokuapp.com/posts/1",
+    "origin": "https://cmput404-project-t12.herokuapp.com/posts/1",
+    "description": "anonymouspost",
+    "contentType": "text",
+    "content": "anonymouspost",
+    "image": null,
+    "image_src": "",
+    "author": "3",
+    "categories": "undefined",
+    "like_count": 3,
+    "comments": "",
+    "published": "2022-03-21T22:44:16.876579Z",
+    "visibility": "PUBLIC",
+    "unlisted": false
+}]'''
+
+SAMPLE_AUTHORS = '''
+{
+    "type": "authors",
+    "items": [
+        {
+        "id": "32d6cbd8-3a30-4a78-a4c4-c1d99e208f6a",
+        "host": "https://cmput404-project-t12.herokuapp.com/",
+        "displayName": "zhijian1",
+        "github": "https://github.com/Zhijian-Mei",
+        "profileImage": "/mysite/img/default_mSfB41u.jpeg"
+        }
+    ]
+}'''
