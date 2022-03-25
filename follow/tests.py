@@ -2,8 +2,9 @@ import json
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from requests import Response
+from api.tests.constants import SAMPLE_AUTHORS
 
 from servers.models import Server
 from follow.admin import AddFriendAction
@@ -88,18 +89,7 @@ class UsersViewTests(TestCase):
         self.assertNotContains(res, self.api_user.username)
 
     def test_contains_users_from_other_servers(self):
-        mock_raw_json_response = '''{
-            "type": "authors",
-            "items": [
-                {
-                "id": "32d6cbd8-3a30-4a78-a4c4-c1d99e208f6a",
-                "host": "https://cmput404-project-t12.herokuapp.com/",
-                "displayName": "zhijian1",
-                "github": "https://github.com/Zhijian-Mei",
-                "profileImage": "/mysite/img/default_mSfB41u.jpeg"
-                }]
-            }'''
-        mock_json_response = json.loads(mock_raw_json_response)
+        mock_json_response = json.loads(SAMPLE_AUTHORS)
         mock_response = Response()
         mock_response.json = MagicMock(return_value=mock_json_response)
 
@@ -110,11 +100,12 @@ class UsersViewTests(TestCase):
         )
         mock_server.get = MagicMock(return_value=mock_response)
 
-        mock_servers = [mock_server]
-        Server.objects.all = MagicMock(return_value=mock_servers)
+        with patch('servers.models.Server.objects') as MockServerObjects:
+            MockServerObjects.all.return_value = [mock_server]
 
-        self.client.login(username=self.bob.username, password='password')
-        res = self.client.get(reverse('follow:users'))
+            self.client.login(username=self.bob.username, password='password')
+            res = self.client.get(reverse('follow:users'))
+            self.assertEqual(res.status_code, 200)
 
-        for author in mock_json_response['items']:
-            self.assertContains(res, author['displayName'])
+            for author in mock_json_response['items']:
+                self.assertContains(res, author['displayName'])

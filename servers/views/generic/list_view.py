@@ -23,8 +23,8 @@ class ServerListView(ListView):
         context = super().get_context_data(**kwargs)
         context['object_list'] = [obj for obj in context['object_list']]
 
-        for endpoint in self.get_endpoints():
-            for server in Server.objects.all():
+        for (server, endpoints) in self.get_server_to_endpoints_mapping():
+            for endpoint in endpoints:
                 try:
                     resp = server.get(endpoint)
                     context['object_list'] += self.serialize(resp)
@@ -33,10 +33,9 @@ class ServerListView(ListView):
         return context
 
     # Override this method if there are multiple endpoints to fetch
-    def get_endpoints(self) -> list[str]:
+    def get_server_to_endpoints_mapping(self) -> list[tuple[Server, list[str]]]:
         if self.endpoint is None:
             raise ImproperlyConfigured(
                 "No endpoint configured for multi resource list"
             )
-
-        return [self.endpoint]
+        return [(server, [self.endpoint]) for server in Server.objects.all()]
