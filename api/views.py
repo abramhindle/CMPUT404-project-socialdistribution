@@ -3,7 +3,7 @@ from posts.models import Post, ContentType, Like
 from api.util import page_number_pagination_class_factory
 from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer
 from socialdistribution.storage import ImageStorage
-from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer, LikesSerializer
+from api.serializers import AuthorSerializer, FollowersSerializer, PostSerializer, LikesSerializer, InboxSerializer
 from django.http.request import HttpRequest
 from rest_framework.decorators import action
 from rest_framework.renderers import JSONRenderer
@@ -119,3 +119,26 @@ class LikesViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Post.objects.get(pk=self.kwargs['post_pk']).like_set.all()
+
+
+class LikedViewSet(viewsets.ModelViewSet):
+    renderer_classes = [JSONRenderer]
+    pagination_class = page_number_pagination_class_factory([('type', 'liked')])
+
+    serializer_class = LikesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get']
+
+    def get_queryset(self):
+        return Post.objects.get(pk=self.kwargs['author_pk']).like_set.all()
+
+
+class InboxViewSet(viewsets.ModelViewSet):
+    renderer_classes = [JSONRenderer]
+    pagination_class = page_number_pagination_class_factory([('type', 'likes')])
+    serializer_class = InboxSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get']
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.kwargs['author_pk']).like_set.all()

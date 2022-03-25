@@ -2,7 +2,7 @@ from email.policy import default
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
-from posts.models import Post, Like
+from posts.models import Post, Like, Inbox
 from follow.models import Follow
 
 
@@ -76,3 +76,13 @@ class LikesSerializer(serializers.ModelSerializer):
         representation['object'] = representation['post']['source']
         del representation['post']
         return representation
+
+
+class InboxSerializer(serializers.ModelSerializer):
+    parent_lookup_kwargs = {
+        'author_pk': 'author__pk',
+        'post_pk': 'post__pk',
+    }
+
+    class Meta:
+        model = Inbox
