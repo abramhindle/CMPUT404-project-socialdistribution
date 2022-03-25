@@ -1,3 +1,4 @@
+from django import db
 from concurrent.futures import ThreadPoolExecutor
 from authors.models import Author
 from authors.serializers import AuthorSerializer
@@ -64,6 +65,7 @@ def get_author_list(authors, headers=None):
     local_authors = [get_author(author) for author in authors if get_hostname(author) in settings.DOMAIN]
 
     # Fetch Remote Authors
+    db.connections.close_all()
     remote_authors = [author for author in authors if get_hostname(author) not in settings.DOMAIN]
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.map(lambda author: get_author(author), remote_authors)
