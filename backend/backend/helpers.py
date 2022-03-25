@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from authors.models import Author
 from authors.serializers import AuthorSerializer
 from urllib import parse
@@ -50,8 +51,7 @@ def put(url, data, headers=None):
 
 
 def get_author(author, headers=None):
-    p = parse.urlparse(author)
-    hostname = f"{p.scheme}://{p.hostname}"
+    hostname = get_hostname(author)
     if hostname in settings.DOMAIN:
         authors = Author.objects.filter(id__contains=author)
         return AuthorSerializer(authors[0]).data if len(authors) > 0 else {"error": "Author Not Found!"}
@@ -59,6 +59,25 @@ def get_author(author, headers=None):
     return response.json() if response is not None and response.status_code == 200 else {"error": "Author Not Found!"}
 
 
+def get_author_list(authors, headers=None):
+    # Fetch Local Authors
+    local_authors = [get_author(author) for author in authors if get_hostname(author) in settings.DOMAIN]
+
+    # Fetch Remote Authors
+    remote_authors = [author for author in authors if get_hostname(author) not in settings.DOMAIN]
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.map(lambda author: get_author(author), remote_authors)
+
+    # Sort And Return Authors
+    return local_authors + [author for author in future]
+
+
 def get_authors(host: str, headers=None):
     response = get(f"{host.rstrip('/')}/authors/", headers)
     return response.json() if response is not None and response.status_code == 200 else {"error": "Cannot Connect To Host!"}
+
+
+def get_hostname(url):
+    p = parse.urlparse(url)
+    return f"{p.scheme}://{p.hostname}"
+
