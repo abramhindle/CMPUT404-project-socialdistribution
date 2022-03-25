@@ -117,11 +117,5 @@ class LikesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get']
 
-    def likes(self, **kwargs):
-        author_id = kwargs['author_pk']
-        post_id = kwargs['pk']
-        likes = get_list_or_404(Like.objects, author_id=author_id, pk=post_id)
-        return likes
-
     def get_queryset(self):
         return Post.objects.get(pk=self.kwargs['post_pk']).like_set.all()

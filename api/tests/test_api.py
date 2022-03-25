@@ -294,6 +294,7 @@ class LikeTests(TestCase):
         self.assertEqual(res.status_code, 200)
         body = json.loads(res.content.decode('utf-8'))
         self.assertEqual(body['type'], 'likes')
+        self.assertEqual(len(self.post.like_set.all()), 2)
         for like in body['items']:
             self.assertEqual(like['type'], 'Like')
             self.assertIn('summary', like)

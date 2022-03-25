@@ -72,7 +72,6 @@ class LikesSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['type'] = 'Like'
-        # representation['@context'] = getattr(self.Meta, 'context', {})
         representation['summary'] = instance.author.get_full_name() + ' likes your post'
         representation['object'] = representation['post']['source']
         del representation['post']
