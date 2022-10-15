@@ -9,8 +9,12 @@ from rest_framework.response import Response
 
 class AuthorView(APIView):
     def get(self,request,*args, **kwargs):
-        authors = [author.display_name for author in Author.objects.all()]
-        return Response(authors)
+        
+        authors = Author.objects.all()
+        serializer = AuthorSerializer(authors,many=True)
+
+        return Response(serializer.data)
+        
         
     
     def post(self,request,*args, **kwargs):

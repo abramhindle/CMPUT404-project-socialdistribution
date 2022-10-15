@@ -11,6 +11,6 @@ from .views import(
 # first argument, endpoint, second argument is the view that calling the url will send the request to
 #router.register('authors',views.AuthorView)
 urlpatterns = [
-    path('api',AuthorView.as_view())
+    path('authors',AuthorView.as_view())
     #path('',include(router.urls))
 ]
