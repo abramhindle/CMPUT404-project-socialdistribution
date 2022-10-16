@@ -14,7 +14,16 @@ class AuthorsView(APIView):
         serializer = AuthorSerializer(authors,many=True)
 
         return Response(serializer.data)
-        
+    
+    def post(self,request,*args, **kwargs):
+        author_data = request.data
+
+        new_author = Author.objects.create(display_name=author_data["display_name"],profile_image=author_data["profile_image"],github_handle=author_data["github_handle"])
+
+        new_author.save()
+        serializer = AuthorSerializer(new_author)
+
+        return Response(serializer.data)
         
 
 class SingleAuthorView(APIView):
