@@ -1,16 +1,14 @@
 from django.urls import path,include
-
+from . import views
 from .views import(
-    AuthorView,
+    SingleAuthorView,
+    AuthorsView,
 )
 
-#from . import views
-#from rest_framework import routers
-
-#router = routers.DefaultRouter()
 # first argument, endpoint, second argument is the view that calling the url will send the request to
-#router.register('authors',views.AuthorView)
+
 urlpatterns = [
-    path('authors',AuthorView.as_view())
-    #path('',include(router.urls))
+    path('authors',AuthorsView.as_view()),
+    path('authors/<int:author_id>/',SingleAuthorView.as_view())
+    
 ]

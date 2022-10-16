@@ -6,6 +6,9 @@ class Author(models.Model):
     profile_image = models.CharField(max_length=250)
     github_handle = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.display_name
+
 class FollowRequest(models.Model):
     sender =  models.ForeignKey(Author,related_name='sender',on_delete=models.CASCADE)
     receiver =  models.ForeignKey(Author,related_name='receiver',on_delete=models.CASCADE) 
