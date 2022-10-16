@@ -1,51 +1,49 @@
-import profile
-import re
-from django.shortcuts import render
-#from rest_framework import viewsets
 from rest_framework.views import APIView
 from .models import Author
 from .serializers import AuthorSerializer
 from rest_framework.response import Response
+from rest_framework import status
 
 class AuthorsView(APIView):
-    def get(self,request,*args, **kwargs):
-        
+    def get(self, request, *args, **kwargs):
         authors = Author.objects.all()
-        serializer = AuthorSerializer(authors,many=True)
+        serializer = AuthorSerializer(authors, many=True, context={'request': request})
 
-        return Response(serializer.data)
-    
-    def post(self,request,*args, **kwargs):
-        author_data = request.data
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        new_author = Author.objects.create(display_name=author_data["display_name"],profile_image=author_data["profile_image"],github_handle=author_data["github_handle"])
+    # commenting out this post request because we will likely need to add two more new fields
+    # username and password to the Author model and we also need to set up a separate serializer
+    # for creating authors
+    # def post(self,request,*args, **kwargs):
+    #     author_data = request.data
 
-        new_author.save()
-        serializer = AuthorSerializer(new_author)
+    #     new_author = Author.objects.create(displayS_name=author_data["display_name"],profile_image=author_data["profile_image"],github_handle=author_data["github_handle"])
 
-        return Response(serializer.data)
+    #     new_author.save()
+    #     serializer = AuthorSerializer(new_author)
+
+    #     return Response(serializer.data)
         
 
-class SingleAuthorView(APIView):
-    def get(self,request,author_id,*args, **kwargs):
-        author = Author.objects.get(id=author_id)
-        serializer = AuthorSerializer(author)
+class AuthorDetailView(APIView):
+    # TODO: handle author not found
+    def get(self, request, pk, *args, **kwargs):
+        author = Author.objects.get(pk=pk)
+        serializer = AuthorSerializer(author, context={'request': request})
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # TODO: handle author not found and set up partial update
+    def post(self, request, pk, *args, **kwargs):
+        author = Author.objects.get(pk=pk)
+        data = {
+            "display_name": request.data.get('display_name'),
+            "profile_image": request.data.get('profile_image'),
+            "github_handle": request.data.get('github_handle')
+        }
         
-        
-    
-    def post(self,request,author_id,*args, **kwargs):
-        author_data = request.data
-        
-        update_author_id = Author.objects.filter(id=author_id).update(display_name=author_data["display_name"],profile_image=author_data["profile_image"],github_handle=author_data["github_handle"])
-
-        update_author = Author.objects.get(id=update_author_id)
-        
-        update_author.save()
-        serializer = AuthorSerializer(update_author)
-
-        return Response(serializer.data)
-
-
-# Create your views here.
+        serializer = AuthorSerializer(instance=author, data=data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
