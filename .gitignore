@@ -130,3 +130,6 @@ dmypy.json
 
 work_session.txt
 setup.txt
+
+# note stuff
+/frontend/node_modules
