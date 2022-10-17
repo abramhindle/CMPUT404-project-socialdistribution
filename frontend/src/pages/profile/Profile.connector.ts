@@ -1,9 +1,8 @@
-import { FASTElement } from "@microsoft/fast-element";
 import { Profile } from "./Profile";
 import { ProfilePageStyles as styles } from "./Profile.styles";
 import { ProfilePageTemplate as template } from "./Profile.template";
 
-export const profilePageDefinition = {
+export const profilePage = {
     name: "profile-page",
     template,
     styles,
@@ -13,4 +12,3 @@ export const profilePageDefinition = {
 };
 
 export class ProfilePageComponent extends Profile {};
-FASTElement.define(ProfilePageComponent, profilePageDefinition);

@@ -1,9 +1,8 @@
-import { FASTElement } from "@microsoft/fast-element";
 import { Main } from "./Main";
 import { MainPageStyles as styles } from "./Main.styles";
 import { MainPageTemplate as template } from "./Main.template";
 
-export const mainPageDefinition = {
+export const mainPage = {
     name: "main-page",
     template,
     styles,
@@ -13,4 +12,3 @@ export const mainPageDefinition = {
 };
 
 export class MainPageComponent extends Main {};
-FASTElement.define(MainPageComponent, mainPageDefinition);

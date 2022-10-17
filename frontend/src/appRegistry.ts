@@ -1,16 +1,28 @@
-import { MyTemplateComponent } from "./components/templateComponent/TemplateComponent.connector";
-import { MainPageComponent } from "./pages/main/Main.connector";
-import { ProfilePageComponent } from "./pages/profile/Profile.connector";
+import { PartialFASTElementDefinition } from "@microsoft/fast-element";
+import { TemplateComponent } from "./components/templateComponent/TemplateComponent";
+import { templateComponent } from "./components/templateComponent/TemplateComponent.connector";
+import { mainPage, MainPageComponent } from "./pages/main/Main.connector";
+import { profilePage, ProfilePageComponent } from "./pages/profile/Profile.connector";
 
-const pageDictionary = {
-    "main-page": MainPageComponent,
-    "profile-page": ProfilePageComponent
+export class ComponentEntry {
+    public definition: PartialFASTElementDefinition;
+    public type: any;
+
+    constructor(definition: PartialFASTElementDefinition, type: any) {
+        this.definition = definition;
+        this.type = type;
+    }
 }
 
-const componentDictionary = {
-    "my-template-component": MyTemplateComponent
-}
+// Pages
+const pages: ComponentEntry[] = [
+    new ComponentEntry(mainPage, MainPageComponent),
+    new ComponentEntry(profilePage, ProfilePageComponent)
+]
 
-const libraryDictionary = {};
+// Common Components
+const webComponents: ComponentEntry[] = [
+    new ComponentEntry(templateComponent, TemplateComponent)
+]
 
-export const appRegistry = { pageDictionary, componentDictionary, libraryDictionary };
+export const appRegistry = [ ...pages, ...webComponents ];
