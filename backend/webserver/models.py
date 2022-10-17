@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 
 
@@ -24,10 +25,10 @@ class Post(models.Model):
     edited_at = models.DateTimeField("date edited",null=True)
     title = models.CharField(max_length=300)
     description = models.TextField(blank=True)
-    source = models.CharField(max_length=200,null=True)
-    origin = models.CharField(max_length=200,null=True)
+    source = models.CharField(max_length=200,default='')
+    origin = models.CharField(max_length=200,default='')
     unlisted = models.BooleanField(default=False) 
-    
+
     VISIBILITY_CHOICES = [
         ("PUBLIC","Public"),
         ("FRIENDS","Friends"),
@@ -58,3 +59,11 @@ class Like(models.Model):
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     post = models.ForeignKey(Post,on_delete=models.CASCADE,null=True)
     comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
+
+class Inbox(models.Model):
+    author= models.ForeignKey(Author,on_delete=models.CASCADE)
+    accepted = models.ForeignKey(Author, related_name='following_requests_accepted', on_delete=models.CASCADE)
+    requested = models.ForeignKey(Author, related_name='inbox_requests_received', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post,on_delete=models.CASCADE,null=True)
+    comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
+    like = models.ForeignKey(Like,on_delete=models.CASCADE,null=True)
