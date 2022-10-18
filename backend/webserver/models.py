@@ -44,7 +44,6 @@ class Author(AbstractBaseUser):
     objects = AuthorUserManager()
     
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['display_name']
 
     def __str__(self):
         return self.display_name
