@@ -1,4 +1,4 @@
-
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from .models import Author
@@ -22,23 +22,21 @@ class AuthorDetailView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    # TODO: handle author not found
+    def get_author(self,pk):
+        author = get_object_or_404(Author,pk=pk)
+        return author
+
+    
     def get(self, request, pk, *args, **kwargs):
-        author = Author.objects.get(pk=pk)
+        author = self.get_author(pk)
         serializer = AuthorSerializer(author, context={'request': request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # TODO: handle author not found and set up partial update
+    
     def post(self, request, pk, *args, **kwargs):
-        author = Author.objects.get(pk=pk)
-        data = {
-            "display_name": request.data.get('display_name'),
-            "profile_image": request.data.get('profile_image'),
-            "github_handle": request.data.get('github_handle')
-        }
-        
-        serializer = AuthorSerializer(instance=author, data=data, partial=True, context={'request': request})
+        author = self.get_author(pk)
+        serializer = AuthorSerializer(instance=author, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

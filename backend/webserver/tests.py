@@ -51,6 +51,7 @@ class AuthorDetailView(APITestCase):
         """TODO"""
         pass
         
+        
     def test_get(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
         url = f'/authors/{author_1.id}/'
@@ -61,19 +62,90 @@ class AuthorDetailView(APITestCase):
     
     def test_get_404(self):
         """If an author requested does not exist, should return 404"""
-        pass    # TODO
+        fake_id = 500124540593854
+        url = f'/authors/{fake_id}/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        
     
-    def test_post(self):
+    def test_post_all_fields(self):
         """POST request works on all editable data fields"""
-        pass    # TODO
+        author_1 = Author.objects.create()
+        url = f'/authors/{author_1.id}/'
+        self.client.force_authenticate(user=mock.Mock())
+        payload = {
+            "display_name": "Mark McGoey",
+            "profile_image": "No image",
+            "github_handle": "mmcgoey"
+        }
+        response = self.client.post(url,data=payload)
+        self.assertEqual(response.data["display_name"], "Mark McGoey")
+        self.assertEqual(response.data["profile_image"], "No image")
+        self.assertEqual(response.data["github_handle"], "mmcgoey")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    
+    
+    def test_post_no_fields(self):
+        author_1 = Author.objects.create()
+        url = f'/authors/{author_1.id}/'
+        self.client.force_authenticate(user=mock.Mock())
+        payload = {}
+        response = self.client.post(url,data=payload)
+        self.assertEqual(response.data["display_name"], "")
+        self.assertEqual(response.data["profile_image"], "")
+        self.assertEqual(response.data["github_handle"], "")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
     
     def test_partial_post(self):
         """POST request can handle partial update"""
-        pass    # TODO
+        author_1 = Author.objects.create()
+        url = f'/authors/{author_1.id}/'
+        payload = {
+            "display_name": "Mark McGoey",
+            "github_handle": "mmcgoey"
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.post(url,data=payload)
+        self.assertEqual(response.data["display_name"], "Mark McGoey")
+        self.assertEqual(response.data["profile_image"], "")
+        self.assertEqual(response.data["github_handle"], "mmcgoey")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        
     
     def test_post_404(self):
         """If an author to be updated does not exist, should return 404"""
-        pass    # TODO
+        fake_id = 500124540593854
+        url = f'/authors/{fake_id}/'
+        payload = {
+            "display_name": "Mark McGoey",
+            "profile_image": "No image",
+            "github_handle": "mmcgoey"
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.post(url,data=payload)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_post_non_editable_fields(self):
+        author_1 = Author.objects.create()
+        url = f'/authors/{author_1.id}/'
+        new_id = 500124540593854
+        new_url = f'/authors/{new_id}/'
+        payload = {
+            "id":new_id,
+            "url":new_url
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.post(url,data=payload)
+        
+        self.assertEqual(response.data["id"], author_1.id)
+        self.assertEqual(response.data["url"],'http://testserver'+url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+
 
 class AuthorRegistrationTestCase(APITestCase):
     def test_register_successful(self):
