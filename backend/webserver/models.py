@@ -61,9 +61,9 @@ class Like(models.Model):
     comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
 
 class Inbox(models.Model):
-    author= models.ForeignKey(Author,on_delete=models.CASCADE)
-    accepted = models.ForeignKey(Author, related_name='following_requests_accepted', on_delete=models.CASCADE)
-    requested = models.ForeignKey(Author, related_name='inbox_requests_received', on_delete=models.CASCADE)
+    target_author = models.ForeignKey(Author,on_delete=models.CASCADE)
+    follow_request_acceptor = models.ForeignKey(Author, related_name='accepted_follow_requests', on_delete=models.CASCADE, verbose_name='author who accepted the follow request', null=True)
+    follow_request_sender = models.ForeignKey(Author, related_name='sent_follow_requests', on_delete=models.CASCADE, verbose_name='author who sent the follow request', null=True)
     post = models.ForeignKey(Post,on_delete=models.CASCADE,null=True)
     comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
     like = models.ForeignKey(Like,on_delete=models.CASCADE,null=True)
