@@ -7,6 +7,25 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+Setup
+=================
+## Backend
+1. Move into the backend directory of the repository: `cd backend`
+2. Create an start a virtual environment:
+```
+python3 -m venv env
+source env/bin/activate  # On Windows use `env\Scripts\activate`
+```
+3. Install dependencies
+```
+pip install django
+pip install djangorestframework
+```
+4. Run the webserver
+```
+python manage.py runserver
+```
+
 API Information
 =================
 ## API Endpoints
