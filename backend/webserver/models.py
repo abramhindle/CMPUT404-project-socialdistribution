@@ -67,7 +67,10 @@ class Author(AbstractBaseUser):
 
 class FollowRequest(models.Model):
     sender =  models.ForeignKey(Author, related_name='follow_requests_sent', on_delete=models.CASCADE)
-    receiver =  models.ForeignKey(Author, related_name='follow_requests_received', on_delete=models.CASCADE) 
+    receiver =  models.ForeignKey(Author, related_name='follow_requests_received', on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ['sender', 'receiver']
 
 class Follow(models.Model):
     follower = models.ForeignKey(Author, related_name='following_authors', on_delete=models.CASCADE)
