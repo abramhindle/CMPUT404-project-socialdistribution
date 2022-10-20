@@ -7,6 +7,15 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+API Information
+=================
+## API Endpoints
+| Resource                  | POST                    | GET                           | PUT                                     | PATCH             | DELETE  |
+| ------------------------- |:-------------:| -----:| -----:| -----:| -----:|
+| /api/login/                | Logs in an author | - | - | - | - |
+| /api/register/ | Registers a new author | - | - | - | - |
+| /api/logout/                | Logs out an author  | - | - | - | - |
+
 Contributing
 ============
 
