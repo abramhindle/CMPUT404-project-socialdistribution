@@ -1,11 +1,12 @@
 from rest_framework import serializers
-from .models import Author
+from .models import Author, FollowRequest
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Author
         fields = ['url', 'id', 'display_name', 'profile_image', 'github_handle']
+
 
 class AuthorRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
@@ -26,3 +27,26 @@ class AuthorRegistrationSerializer(serializers.ModelSerializer):
         author.set_password(password)
         author.save()
         return author
+
+
+class ActorSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    url = serializers.URLField()
+
+
+class SendFollowRequestSerializer(serializers.Serializer):
+    sender = ActorSerializer()
+    receiver = ActorSerializer()
+
+
+class FollowRequestSerializer(serializers.ModelSerializer):
+    sender = AuthorSerializer(read_only=True)
+
+    class Meta:
+        model = FollowRequest
+        fields = ['sender']
+
+    # reduces one layer of nesting i.e. removes the 'sender' key and just returns the value instead
+    def to_representation(self, instance):
+        data = super(FollowRequestSerializer, self).to_representation(instance)
+        return data['sender']
