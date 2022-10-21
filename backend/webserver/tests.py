@@ -38,7 +38,7 @@ class AuthorsViewTestCase(APITestCase):
         Author.objects.create(username="author_2", display_name="author_2")
         Author.objects.create(username="author_3", display_name="author_3")
         
-        url = "/authors/"
+        url = "/api/authors/"
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -54,7 +54,7 @@ class AuthorDetailView(APITestCase):
         
     def test_get(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
-        url = f'/authors/{author_1.id}/'
+        url = f'/api/authors/{author_1.id}/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -63,7 +63,7 @@ class AuthorDetailView(APITestCase):
     def test_get_404(self):
         """If an author requested does not exist, should return 404"""
         fake_id = 500124540593854
-        url = f'/authors/{fake_id}/'
+        url = f'/api/authors/{fake_id}/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -72,7 +72,7 @@ class AuthorDetailView(APITestCase):
     def test_post_all_fields(self):
         """POST request works on all editable data fields"""
         author_1 = Author.objects.create()
-        url = f'/authors/{author_1.id}/'
+        url = f'/api/authors/{author_1.id}/'
         self.client.force_authenticate(user=mock.Mock())
         payload = {
             "display_name": "Mark McGoey",
@@ -89,7 +89,7 @@ class AuthorDetailView(APITestCase):
     
     def test_post_no_fields(self):
         author_1 = Author.objects.create()
-        url = f'/authors/{author_1.id}/'
+        url = f'/api/authors/{author_1.id}/'
         self.client.force_authenticate(user=mock.Mock())
         payload = {}
         response = self.client.post(url,data=payload)
@@ -102,7 +102,7 @@ class AuthorDetailView(APITestCase):
     def test_partial_post(self):
         """POST request can handle partial update"""
         author_1 = Author.objects.create()
-        url = f'/authors/{author_1.id}/'
+        url = f'/api/authors/{author_1.id}/'
         payload = {
             "display_name": "Mark McGoey",
             "github_handle": "mmcgoey"
@@ -119,7 +119,7 @@ class AuthorDetailView(APITestCase):
     def test_post_404(self):
         """If an author to be updated does not exist, should return 404"""
         fake_id = 500124540593854
-        url = f'/authors/{fake_id}/'
+        url = f'/api/authors/{fake_id}/'
         payload = {
             "display_name": "Mark McGoey",
             "profile_image": "No image",
@@ -131,9 +131,9 @@ class AuthorDetailView(APITestCase):
     
     def test_post_non_editable_fields(self):
         author_1 = Author.objects.create()
-        url = f'/authors/{author_1.id}/'
+        url = f'/api/authors/{author_1.id}/'
         new_id = 500124540593854
-        new_url = f'/authors/{new_id}/'
+        new_url = f'/api/authors/{new_id}/'
         payload = {
             "id":new_id,
             "url":new_url
@@ -154,7 +154,7 @@ class AuthorRegistrationTestCase(APITestCase):
             "password": "password",
             "password2": "password"
         }
-        response = self.client.post("/register/", data=request_payload, format="json")
+        response = self.client.post("/api/register/", data=request_payload, format="json")
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual("best_author", response.data["display_name"])
     
@@ -166,7 +166,7 @@ class AuthorRegistrationTestCase(APITestCase):
             "password": "password",
             "password2": "password"
         }
-        response = self.client.post("/register/", data=request_payload, format="json")
+        response = self.client.post("/api/register/", data=request_payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
     
     def test_register_with_mismatched_passwords(self):
@@ -176,7 +176,7 @@ class AuthorRegistrationTestCase(APITestCase):
             "password": "password",
             "password2": "other password"
         }
-        response = self.client.post("/register/", data=request_payload, format="json")
+        response = self.client.post("/api/register/", data=request_payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
     
     def test_register_with_incomplete_data(self):
@@ -186,7 +186,7 @@ class AuthorRegistrationTestCase(APITestCase):
             "display_name": "best_author",
             "password": "password"
         }
-        response = self.client.post("/register/", data=request_payload, format="json")
+        response = self.client.post("/api/register/", data=request_payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
 
@@ -197,24 +197,24 @@ class LoginTestCase(APITestCase):
         author.save()
 
         request_payload = {"username": "author_1", "password": "pass123"}
-        response = self.client.post("/login/", data=request_payload, format="json")
+        response = self.client.post("/api/login/", data=request_payload, format="json")
         self.assertEqual(status.HTTP_200_OK, response.status_code)
     
     def test_login_with_invalid_credentials(self):
         request_payload = {"username": "author_1", "password": "pass123"}
-        response = self.client.post("/login/", data=request_payload, format="json")
+        response = self.client.post("/api/login/", data=request_payload, format="json")
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
     
     def test_login_with_incomplete_request_payload(self):
         request_payload = {"username": "author_1"}
-        response = self.client.post("/login/", data=request_payload, format="json")
+        response = self.client.post("/api/login/", data=request_payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
 
 class LogoutTestCase(APITestCase):
     def test_logout(self):
         """Always logs out a request"""
-        response = self.client.post("/logout/")
+        response = self.client.post("/api/logout/")
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
 
@@ -237,7 +237,7 @@ class FollowRequestProcessorTestCase(APITestCase):
             }
         }
         self.assertEqual(0, FollowRequest.objects.count())
-        url = f'/authors/{author_2.id}/inbox/'
+        url = f'/api/authors/{author_2.id}/inbox/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.post(url, data=payload, format="json")
 
@@ -270,7 +270,7 @@ class FollowRequestProcessorTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        url = f'/authors/{author_2.id}/inbox/'
+        url = f'/api/authors/{author_2.id}/inbox/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.post(url, data=payload, format="json")
         self.assertEqual(status.HTTP_409_CONFLICT, response.status_code)
@@ -294,7 +294,7 @@ class FollowRequestProcessorTestCase(APITestCase):
                 "id": author_1.id,
             }
         }
-        url = f'/authors/{author_1.id}/inbox/'
+        url = f'/api/authors/{author_1.id}/inbox/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.post(url, data=payload, format="json")
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
@@ -318,7 +318,7 @@ class FollowRequestProcessorTestCase(APITestCase):
                 "id": author_1.id,
             }
         }
-        url = f'/authors/{author_1.id}/inbox/'
+        url = f'/api/authors/{author_1.id}/inbox/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.post(url, data=payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
@@ -339,7 +339,7 @@ class FollowRequestProcessorTestCase(APITestCase):
                 "id": author_1.id,
             }
         }
-        url = f'/authors/{author_1.id}/inbox/'
+        url = f'/api/authors/{author_1.id}/inbox/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.post(url, data=payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
@@ -367,7 +367,7 @@ class FollowRequestProcessorTestCase(APITestCase):
             }
         }
         
-        url = f'/authors/{author_2.id}/inbox/'
+        url = f'/api/authors/{author_2.id}/inbox/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.post(url, data=payload, format="json")
 
@@ -388,7 +388,7 @@ class FollowRequestsTestCase(APITestCase):
         FollowRequest.objects.create(sender=author_2, receiver=author_1)
         FollowRequest.objects.create(sender=author_3, receiver=author_1)
         
-        url = f'/authors/{author_1.id}/follow-requests/'
+        url = f'/api/authors/{author_1.id}/follow-requests/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url)
 
@@ -408,7 +408,7 @@ class FollowRequestsTestCase(APITestCase):
 
     def test_author_has_no_follow_requests(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
-        url = f'/authors/{author_1.id}/follow-requests/'
+        url = f'/api/authors/{author_1.id}/follow-requests/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url)
 
@@ -417,7 +417,7 @@ class FollowRequestsTestCase(APITestCase):
 
     def test_author_does_not_exist(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
-        url = f'/authors/{author_1.id + 1}/follow-requests/'
+        url = f'/api/authors/{author_1.id + 1}/follow-requests/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url)
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
