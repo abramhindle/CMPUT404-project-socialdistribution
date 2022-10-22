@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<title>14Degrees - Home</title>
+<link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
+{% endblock %}
+
+{% block body %}
+  <home-page></home-page>
+  {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'home.js' %}"></script>
+{% endblock %}

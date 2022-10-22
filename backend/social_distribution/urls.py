@@ -19,7 +19,9 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='index.html')),
+    path('', TemplateView.as_view(template_name='home.html')),
+    path('home/', TemplateView.as_view(template_name='home.html')),
+    path('signon/', TemplateView.as_view(template_name='signon.html')),
     path('api/', include('webserver.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

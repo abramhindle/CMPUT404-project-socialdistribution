@@ -3,5 +3,5 @@ import { TemplateComponent } from "./TemplateComponent";
 
 
 export const TemplateComponentTemplate = html<TemplateComponent>`
-    <div>${x => x.greeting} world!</div>
+    <div>Template world!</div>
 `;
