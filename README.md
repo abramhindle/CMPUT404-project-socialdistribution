@@ -38,6 +38,8 @@ API Information
 | /api/authors/<author_id>/                | Retrieves an author's profile [A] | Updates an author's profile [A] | - | - |
 | /api/authors/<author_id>/inbox/  [WIP]              | Creates a new inbox item for an author [A]  | - | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
+| /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
+| /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
 
 
 ### Notes
@@ -223,6 +225,18 @@ None
 - `200 OK`
 - `401 Unauthorized`
 - `404 Not Found`
+
+### Accept a follow request
+// TODO
+
+### Remove a follower
+// TODO
+
+### Check if an author is following some other author
+// TODO
+
+### Retrieve a list of all the followers for an author
+// TODO
 
 
 Contributing
