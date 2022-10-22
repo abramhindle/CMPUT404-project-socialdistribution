@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-  <signon-page></signon-page>
+  <signon-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}"></signon-page>
   {% endblock %}
 
 {% block scripts %}

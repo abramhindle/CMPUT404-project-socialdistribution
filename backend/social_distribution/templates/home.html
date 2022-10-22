@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-  <home-page></home-page>
+  <home-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}"></home-page>
   {% endblock %}
 
 {% block scripts %}

@@ -1,10 +1,7 @@
-import { baseHeightMultiplier, neutralColor } from "@microsoft/fast-components";
-import { attr, FASTElement, observable } from "@microsoft/fast-element";
+import { observable } from "@microsoft/fast-element";
+import { Page } from "../Page";
 
-export class Home extends FASTElement {
-    @observable
-    public isAuth: boolean = false;
-
+export class Home extends Page {
     public connectedCallback() {
         super.connectedCallback();
     }

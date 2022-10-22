@@ -8,7 +8,8 @@ module.exports = function(env, { mode }) {
     devtool: production ? 'source-map' : 'inline-source-map',
     entry: {
       home: ['./src/pages/home/index.ts'],
-      profle: ['./src/pages/profile/index.ts'],
+      profile: ['./src/pages/profile/index.ts'],
+      signon: ['./src/pages/signon/index.ts']
     },
     output: {
       filename: '[name].js',
@@ -64,7 +65,7 @@ module.exports = function(env, { mode }) {
           test: /\.(png|jpe?g|gif|jp2|webp)$/,
           loader: 'file-loader',
           options: {
-            name: '[name].[ext]',
+            name: 'assets/images/[name].[ext]',
           },
         }
       ]

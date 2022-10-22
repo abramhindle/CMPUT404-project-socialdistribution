@@ -1,8 +1,6 @@
-import { attr, FASTElement } from "@microsoft/fast-element";
+import { Page } from "../Page";
 
-export class Profile extends FASTElement {
-    @attr greeting: string = 'Hello';
-
+export class Profile extends Page {
     public connectedCallback() {
         super.connectedCallback();
     }
