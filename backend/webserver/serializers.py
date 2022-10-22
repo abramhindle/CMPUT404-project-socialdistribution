@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Author, FollowRequest
+from .models import Author, Follow, FollowRequest
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -50,3 +50,19 @@ class FollowRequestSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super(FollowRequestSerializer, self).to_representation(instance)
         return data['sender']
+
+
+class AcceptFollowRequestSerializer(serializers.Serializer):
+    follow_request_sender = ActorSerializer()
+
+class FollowerSerializer(serializers.ModelSerializer):
+    follower = AuthorSerializer(read_only=True)
+
+    class Meta:
+        model = Follow
+        fields = ['follower']
+
+    # reduces one layer of nesting i.e. removes the 'follower' key and just returns the value instead
+    def to_representation(self, instance):
+        data = super(FollowerSerializer, self).to_representation(instance)
+        return data['follower']
