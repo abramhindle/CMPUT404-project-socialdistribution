@@ -23,6 +23,7 @@ urlpatterns = [
     path('home/', TemplateView.as_view(template_name='home.html')),
     path('signon/', TemplateView.as_view(template_name='signon.html')),
     path('create-post/', TemplateView.as_view(template_name='createPost.html')),
+    path('edit-post/', TemplateView.as_view(template_name='editPost.html')),
     path('api/', include('webserver.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

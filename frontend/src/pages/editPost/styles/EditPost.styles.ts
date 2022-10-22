@@ -3,21 +3,13 @@ import {ResetStyles} from "./reset.styles";
 import {DefaultStyles} from "./default.styles";
 import {GeneralStyles} from "./general.styles";
 
-export const CreatePostPageStyles = css`
+
+export const EditPostPageStyles = css`
   ${ResetStyles}
   ${DefaultStyles}
   ${GeneralStyles}
-    
-  //:host {
-  //  display: flex;
-  //  flex-direction: column;
-  //  align-items: center;
-  //  justify-content: center;
-  //  height: 100vh;
-  //  width: 100vw;
-  //}
 
-  .create-post-container {
+  .edit-post-container {
     width: 100%;
     display: flex;
     overflow: auto;
@@ -25,7 +17,7 @@ export const CreatePostPageStyles = css`
     align-items: center;
     flex-direction: column;
   }
-  .create-post-banner {
+  .edit-post-banner {
     width: 100%;
     height: 100%;
     display: flex;
@@ -36,12 +28,12 @@ export const CreatePostPageStyles = css`
     justify-content: space-between;
     background-image: linear-gradient(93.58deg, #9F83C7 0%, #ABD9FF 100%);;
   }
-  .create-post-text {
+  .edit-post-text {
     color: #277bc0;
     font-size: 3rem;
     text-align: center;
   }
-  .create-post-container1 {
+  .edit-post-container1 {
     width: 60%;
     height: auto;
     display: flex;
@@ -49,14 +41,14 @@ export const CreatePostPageStyles = css`
     flex-direction: column;
     justify-content: flex-start;
   }
-  .create-post-textinput {
+  .edit-post-textinput {
     width: 100%;
     align-self: center;
     margin-top: var(--dl-space-space-unit);
     border-width: 0px;
     background-color: #d9d9d9;
   }
-  .create-post-textarea {
+  .edit-post-textarea {
     width: 100%;
     height: 147px;
     align-self: center;
@@ -64,20 +56,20 @@ export const CreatePostPageStyles = css`
     border-width: 0px;
     background-color: #d9d9d9;
   }
-  .create-post-button {
+  .edit-post-button {
     align-self: center;
     margin-top: var(--dl-space-space-unit);
     border-width: 0px;
     border-radius: var(--dl-radius-radius-radius8);
     background-color: #b4cde6;
   }
-  .create-post-text1 {
+  .edit-post-text01 {
     color: #277bc0;
   }
-  .create-post-text2 {
+  .edit-post-text02 {
     font-weight: 700;
   }
-  .create-post-container2 {
+  .edit-post-container2 {
     width: 50%;
     height: 35px;
     display: flex;
@@ -88,40 +80,88 @@ export const CreatePostPageStyles = css`
     margin-right: var(--dl-space-space-twounits);
     justify-content: flex-start;
   }
-  .create-post-text4 {
+  .edit-post-text04 {
     flex: 1;
     align-self: center;
     text-align: right;
     font-weight: 700;
     padding-right: var(--dl-space-space-oneandhalfunits);
   }
-  .create-post-select {
+  .edit-post-select {
     flex: 1;
     width: 50%;
     height: 24px;
     align-self: center;
   }
-  .create-post-button1 {
+  .edit-post-container3 {
+    gap: 30%;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .edit-post-button1 {
     align-self: center;
     margin-top: var(--dl-space-space-unit);
     border-width: 0px;
     border-radius: var(--dl-radius-radius-radius8);
     background-color: #b4cde6;
   }
-  .create-post-text5 {
+  .edit-post-text05 {
     color: #277bc0;
   }
-  .create-post-text6 {
+  .edit-post-text06 {
     font-weight: 700;
   }
+  .edit-post-button2 {
+    align-self: center;
+    margin-top: var(--dl-space-space-unit);
+    border-width: 0px;
+    border-radius: var(--dl-radius-radius-radius8);
+    background-color: #b4cde6;
+  }
+  .edit-post-text08 {
+    color: #277bc0;
+  }
+  .edit-post-text09 {
+    font-weight: 700;
+  }
+  @media(max-width: 991px) {
+    .edit-post-text {
+      color: rgb(39, 123, 192);
+    }
+    .edit-post-container3 {
+      gap: 30%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+    .edit-post-text05 {
+      color: rgb(39, 123, 192);
+    }
+    .edit-post-text06 {
+      font-weight: 700;
+    }
+    .edit-post-text08 {
+      color: rgb(39, 123, 192);
+    }
+    .edit-post-text09 {
+      font-weight: 700;
+    }
+  }
   @media(max-width: 767px) {
-    .create-post-banner {
+    .edit-post-banner {
       padding-left: var(--dl-space-space-twounits);
       padding-right: var(--dl-space-space-twounits);
     }
+    .edit-post-container3 {
+      gap: 30%;
+    }
   }
   @media(max-width: 479px) {
-    .create-post-banner {
+    .edit-post-banner {
       padding-top: var(--dl-space-space-twounits);
       padding-left: var(--dl-space-space-unit);
       padding-right: var(--dl-space-space-unit);
