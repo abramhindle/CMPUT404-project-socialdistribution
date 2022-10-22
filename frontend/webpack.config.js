@@ -7,7 +7,9 @@ module.exports = function(env, { mode }) {
     mode: production ? 'production' : 'development',
     devtool: production ? 'source-map' : 'inline-source-map',
     entry: {
-      app: ['./src/app.ts']
+      home: ['./src/pages/home/index.ts'],
+      profile: ['./src/pages/profile/index.ts'],
+      signon: ['./src/pages/signon/index.ts']
     },
     output: {
       filename: '[name].js',
@@ -15,7 +17,7 @@ module.exports = function(env, { mode }) {
       chunkFilename: '[id].[chunkhash].js'
     },
     resolve: {
-      extensions: ['.ts', '.js'],
+      extensions: ['.ts', '.js', '.png'],
       modules: ['src', 'node_modules']
     },
     devServer: {
@@ -25,17 +27,27 @@ module.exports = function(env, { mode }) {
       devMiddleware: {
         writeToDisk: true,
       },
+      compress: true,
       static: {
         directory: path.join(__dirname, './')
-      }
+      },
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
+      hot: true
     },
     plugins: [
       new CleanWebpackPlugin()
     ],
     optimization: {
       splitChunks: {
-        chunks: 'all',
-        name: 'vendors',
+        cacheGroups: {
+          commons: {
+            name: 'vendors',
+            chunks: 'initial',
+            minChunks: 2,
+          },
+        },
       },
     },
     module: {
@@ -48,6 +60,13 @@ module.exports = function(env, { mode }) {
             }
           ],
           exclude: /node_modules/
+        },
+        {
+          test: /\.(png|jpe?g|gif|jp2|webp)$/,
+          loader: 'file-loader',
+          options: {
+            name: 'assets/images/[name].[ext]',
+          },
         }
       ]
     }

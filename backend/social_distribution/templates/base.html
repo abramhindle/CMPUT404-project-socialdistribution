@@ -2,14 +2,20 @@
 
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
+  {% block head %}
+  {% endblock %}
 </head>
-<body>
-    <main-page></main-page>
+
+<body style="margin: 0">
+  {% block body %}
+  {% endblock %}
 </body>
 
 <script src="{% static 'vendors.js' %}"></script>
-<script src="{% static 'app.js' %}"></script>
+{% block scripts %}
+{% endblock %}
 
 </html>

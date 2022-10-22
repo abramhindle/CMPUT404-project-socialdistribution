@@ -1,6 +1,6 @@
 import { css } from "@microsoft/fast-element";
 
-export const MainPageStyles = css`
+export const SignOnPageStyles = css`
     :host {
         display: flex;
         flex-direction: column;

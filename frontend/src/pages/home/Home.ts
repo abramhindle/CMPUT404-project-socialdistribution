@@ -1,6 +1,7 @@
+import { observable } from "@microsoft/fast-element";
 import { Page } from "../Page";
 
-export class Profile extends Page {
+export class Home extends Page {
     public connectedCallback() {
         super.connectedCallback();
     }
