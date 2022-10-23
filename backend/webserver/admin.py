@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from .models import Author, FollowRequest
+from .models import Author, FollowRequest, Follow, Inbox, Post
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -82,3 +82,6 @@ admin.site.unregister(Group)
 
 # Register your models here.
 admin.site.register(FollowRequest)
+admin.site.register(Post)
+admin.site.register(Follow)
+admin.site.register(Inbox)

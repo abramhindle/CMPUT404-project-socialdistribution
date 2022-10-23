@@ -1,11 +1,30 @@
 from rest_framework import serializers
-from .models import Author, Follow, FollowRequest
+from .models import Author, Follow, FollowRequest, Post
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Author
         fields = ['url', 'id', 'display_name', 'profile_image', 'github_handle']
+
+
+class PostSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(read_only=True)
+    class Meta:
+        model = Post
+        fields = ['author','created_at','edited_at','title','description','source','origin','unlisted','content_type','content','visibility']
+
+class UpdatePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['title','description','unlisted','content']
+    
+    
+
+class CreatePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['title','description','unlisted','content','visibility',"content_type"]
 
 
 class AuthorRegistrationSerializer(serializers.ModelSerializer):
@@ -37,7 +56,9 @@ class ActorSerializer(serializers.Serializer):
 class SendFollowRequestSerializer(serializers.Serializer):
     sender = ActorSerializer()
     receiver = ActorSerializer()
-
+    
+class SendPrivatePostSerializer(serializers.Serializer):
+    receiver = ActorSerializer()
 
 class FollowRequestSerializer(serializers.ModelSerializer):
     sender = AuthorSerializer(read_only=True)
