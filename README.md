@@ -36,7 +36,7 @@ API Information
 | /api/logout/                | Logs out an author  | - | - | - |
 | /api/authors/                | Logs out an author [A] | - | - | - |
 | /api/authors/<author_id>/                | Retrieves an author's profile [A] | Updates an author's profile [A] | - | - |
-| /api/authors/<author_id>/inbox/  [WIP]              | Creates a new inbox item for an author [A]  | - | - | - |
+| /api/authors/<author_id>/inbox/  [WIP]              | Creates a new inbox item for an author [A]  | Retrieve's an author's inbox [A] | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
 | /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
 | /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
@@ -305,6 +305,55 @@ Retrieve the list of followers for author_id 4 -
     }
 ]
 ```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Retrieve an author's inbox
+#### Sample Usage
+Retrieve the inbox of author with id 3 -
+![image](https://user-images.githubusercontent.com/43586048/197410090-66eba6cd-74ed-48d5-a41d-83e2c0569c50.png)
+
+#### Sample Response
+```
+[
+    {
+        "sender": {
+            "url": "http://localhost:8000/api/authors/4/",
+            "id": 4,
+            "display_name": "noob_author",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "type": "follow"
+    },
+    {
+        "author": {
+            "url": "http://localhost:8000/api/authors/4/",
+            "id": 4,
+            "display_name": "noob_author",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "created_at": "2022-10-23T03:25:09.184425Z",
+        "edited_at": null,
+        "title": "Post 1",
+        "description": "Sample description",
+        "source": "",
+        "origin": "",
+        "unlisted": false,
+        "content_type": "text/plain",
+        "content": "What's up people?",
+        "visibility": "FRIENDS",
+        "type": "post"
+    }
+]
+```
+
+Notes:
+- The `type` field will be present in each inbox item. This specifies the type of the inbox. Possible values: `"post"` for a new post, `"follow"` for a follow request
 
 #### Possible Status Codes
 - `200 OK`
