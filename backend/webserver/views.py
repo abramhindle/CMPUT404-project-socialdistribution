@@ -3,7 +3,17 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from .models import Author, Follow, FollowRequest, Inbox, Post
-from .serializers import AcceptFollowRequestSerializer, AuthorSerializer, AuthorRegistrationSerializer, FollowRequestSerializer, FollowerSerializer, SendFollowRequestSerializer, CreatePostSerializer, PostSerializer, UpdatePostSerializer,  SendPrivatePostSerializer
+from .serializers import (AcceptFollowRequestSerializer, 
+                          AuthorSerializer, 
+                          AuthorRegistrationSerializer, 
+                          FollowRequestSerializer, 
+                          FollowerSerializer, 
+                          SendFollowRequestSerializer, 
+                          CreatePostSerializer, 
+                          PostSerializer, 
+                          UpdatePostSerializer,  
+                          SendPrivatePostSerializer,
+                          InboxSerializer)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
@@ -229,7 +239,7 @@ class FollowRequestProcessor(object):
                 with transaction.atomic():
                     follow_request = FollowRequest.objects.create(sender=sender, receiver=receiver)
                     # update the inbox of the receiver
-                    Inbox.objects.create(target_author=receiver, follow_request_sender=sender)
+                    Inbox.objects.create(target_author=receiver, follow_request_received=follow_request)
 
                 # TODO: return the new inbox item when we have an Inbox serializer
                 return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
@@ -305,6 +315,12 @@ class FollowersDetailView(APIView):
 class InboxView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, author_id):
+        """Returns the list of inbox items in the order of newest to oldest"""
+        author = get_object_or_404(Author, pk=author_id)
+        serializer = InboxSerializer(author.inbox.all().order_by('-created_at'), many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, author_id):
         if 'type' not in request.data:
