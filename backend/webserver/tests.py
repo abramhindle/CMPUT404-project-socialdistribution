@@ -1,5 +1,5 @@
 from django.test import TestCase
-from webserver.models import Author, FollowRequest, Inbox
+from webserver.models import Author, FollowRequest, Inbox, Follow
 from rest_framework.test import APITestCase
 from rest_framework import status
 from unittest import mock
@@ -376,6 +376,31 @@ class FollowRequestProcessorTestCase(APITestCase):
         fr = FollowRequest.objects.first()
         self.assertEqual(author_1, fr.sender)
         self.assertEqual(author_2, fr.receiver)
+    
+    def test_cannot_send_follow_request_if_already_a_follower(self):
+        """Cannot send a follow request to someone who's already being followed"""
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        Follow.objects.create(follower=author_1, followee=author_2)
+        self.assertEqual(1, Follow.objects.count())
+        
+        payload = {
+            "type": "follow",
+            "sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_1.id}',
+                "id": author_1.id,
+            },
+            "receiver": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}',
+                "id": author_2.id,
+            }
+        }
+        url = f'/api/authors/{author_2.id}/inbox/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.post(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(0, FollowRequest.objects.count())
+
 
 class FollowRequestsTestCase(APITestCase):
     def setUp(self):
@@ -418,6 +443,180 @@ class FollowRequestsTestCase(APITestCase):
     def test_author_does_not_exist(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
         url = f'/api/authors/{author_1.id + 1}/follow-requests/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+
+
+class FollowersViewTestCase(APITestCase):
+    def test_author_has_multiple_followers(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        author_3 = Author.objects.create(username="author_3", display_name="author_3")
+        Follow.objects.create(followee=author_1, follower=author_2)
+        Follow.objects.create(followee=author_1, follower=author_3)
+        
+        url = f'/api/authors/{author_1.id}/followers/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(2, len(response.data))
+        f1 = response.data[0]
+        f2 = response.data[1]
+        expected_fields = ['id', 'url', 'display_name', 'profile_image', 'github_handle']
+        for field in expected_fields:
+            self.assertTrue(field in f1)
+            self.assertTrue(field in f2)
+
+        self.assertTrue(f1['url'].startswith('http'))
+        self.assertTrue(f1['url'].endswith('/authors/2/'))
+        self.assertEqual(author_2.id, f1['id'])
+        self.assertEqual(author_3.id, f2['id'])
+    
+    def test_author_has_no_followers(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        url = f'/api/authors/{author_1.id}/followers/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(0, len(response.data))
+
+
+class FollowersDetailViewTestCase(APITestCase):
+    def test_author_accepts_a_follow_request(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        FollowRequest.objects.create(sender=author_2, receiver=author_1)
+        self.assertEqual(1, FollowRequest.objects.count())
+        
+        # author_1 accepts the request
+        url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        payload = {
+            "follow_request_sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}',
+                "id": author_2.id,
+            }
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.put(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(1, Follow.objects.count())
+        self.assertEqual(0, FollowRequest.objects.count())
+
+        new_follow = Follow.objects.first()
+        self.assertEqual(author_1, new_follow.followee)
+        self.assertEqual(author_2, new_follow.follower)
+        
+    def test_follow_request_does_not_exist(self):
+        """Author cannot accept a follow request when a request does not exist to begin with"""
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        self.assertEqual(0, FollowRequest.objects.count())
+
+        url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        payload = {
+            "follow_request_sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}',
+                "id": author_2.id,
+            }
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.put(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(0, Follow.objects.count())
+    
+    def test_valid_request_data_is_not_given(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        FollowRequest.objects.create(sender=author_2, receiver=author_1)
+        self.assertEqual(1, FollowRequest.objects.count())
+        
+        # author_1 accepts the request
+        url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        payload = {
+            "follow_request_sender": {
+                "id": author_2.id,
+            }
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.put(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(0, Follow.objects.count())
+    
+    def test_author_does_not_exist(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        url = f'/api/authors/{author_1.id}/followers/{author_1.id + 1}/'
+        payload = {
+            "follow_request_sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_1.id + 1}',
+                "id": author_1.id + 1,
+            }
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.put(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+    
+    def test_reverse_follow_is_allowed(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        Follow.objects.create(follower=author_2, followee=author_1)
+        FollowRequest.objects.create(sender=author_1, receiver=author_2)
+        self.assertEqual(1, Follow.objects.count())
+        self.assertEqual(1, FollowRequest.objects.count())
+        
+        # author_2 accepts the request
+        url = f'/api/authors/{author_2.id}/followers/{author_1.id}/'
+        payload = {
+            "follow_request_sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_1.id}',
+                "id": author_1.id,
+            }
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.put(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(2, Follow.objects.count())
+        self.assertEqual(0, FollowRequest.objects.count())
+
+    def test_get(self):
+        """The given foreign_author_id is a follower of author_id"""
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        Follow.objects.create(follower=author_2, followee=author_1)
+        url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+    
+    def test_get_404(self):
+        """the given foreign_author_id is NOT a follower of author_id"""
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+    
+    def test_delete(self):
+        """Remove foreign_author_id as a follower of author_id"""
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        Follow.objects.create(follower=author_2, followee=author_1)
+        self.assertEqual(1, Follow.objects.count())
+
+        url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.delete(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(0, Follow.objects.count())
+    
+    def test_delete_404(self):
+        """Cannot remove a follower that does not exist"""
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url)
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)

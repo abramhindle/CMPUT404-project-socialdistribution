@@ -2,8 +2,8 @@ from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
-from .models import Author, FollowRequest, Inbox
-from .serializers import AuthorSerializer, AuthorRegistrationSerializer, FollowRequestSerializer, SendFollowRequestSerializer
+from .models import Author, Follow, FollowRequest, Inbox
+from .serializers import AcceptFollowRequestSerializer, AuthorSerializer, AuthorRegistrationSerializer, FollowRequestSerializer, FollowerSerializer, SendFollowRequestSerializer
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
@@ -114,6 +114,11 @@ class FollowRequestProcessor(object):
             except Author.DoesNotExist:
                 return Response({'message': f'sender author with id {serializer.data["sender"]["id"]} does not exist'}, 
                                 status=status.HTTP_404_NOT_FOUND)
+            
+            follow = Follow.objects.filter(follower=sender, followee=receiver)
+            if follow.count() > 0:
+                return Response({'message': 'sender already follows the receiver'}, status=status.HTTP_400_BAD_REQUEST)
+
             try:
                 # https://docs.djangoproject.com/en/4.1/topics/db/transactions/#controlling-transactions-explicitly
                 with transaction.atomic():
@@ -126,15 +131,76 @@ class FollowRequestProcessor(object):
             except IntegrityError:
                 return Response({'message': 'this follow request already exists'}, status=status.HTTP_409_CONFLICT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def get_response(self):
         return self.response
 
 
-class InboxView(APIView):
+class FollowersView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     
+    def get(self, request, author_id):
+        author = get_object_or_404(Author, pk=author_id)
+        serializer = FollowerSerializer(author.followed_by_authors.all(), many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FollowersDetailView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, author_id, foreign_author_id):
+        try:
+            follow = Follow.objects.get(follower=foreign_author_id, followee=author_id)
+            # TODO: return the serialized follow
+            return Response({'message': 'follower indeed'}, status=status.HTTP_200_OK)
+        except Follow.DoesNotExist:
+            return Response({'message': f'{foreign_author_id} is not a follower of {author_id}'}, 
+                            status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, author_id, foreign_author_id):
+        if author_id == foreign_author_id:
+            return Response({'message': 'author cannot add themself as a follower'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = AcceptFollowRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            # it is safe to assume that the followee will be someone from our server
+            # because they are accepting the follow request
+            followee = get_object_or_404(Author, pk=author_id)
+            
+            # TODO: for project part 2; check the 'url' of the follow_request_sender
+            # if it's not someone from our server we probably need to save the follower in a different field
+            # such as 'remote_follower_url' or find some other solution that works
+            
+            # assume that foreign_author_id is someone from our server for now
+            follower = get_object_or_404(Author, pk=foreign_author_id)
+            try:
+                follow_request = FollowRequest.objects.get(sender=follower, receiver=followee)
+            except FollowRequest.DoesNotExist:
+                error_message = 'matching follow request does not exist; you need to create a follow request before '\
+                    'you can accept one'
+                return Response({'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                with transaction.atomic():
+                    follow_request_accepted = Follow.objects.create(follower=follower, followee=followee)
+                    follow_request.delete()
+                
+                # TODO: return the serialized follow_request_accepted as response
+                return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response({'message': 'follower already exists'}, status=status.HTTP_409_CONFLICT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, author_id, foreign_author_id):
+        follow = get_object_or_404(Follow, follower=foreign_author_id, followee=author_id)
+        follow.delete()
+        return Response({'message': 'follower removed'}, status=status.HTTP_200_OK)
+
+class InboxView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, author_id):
         if 'type' not in request.data:
             return Response({'message': 'must specify the type of inbox'}, status=status.HTTP_400_BAD_REQUEST)

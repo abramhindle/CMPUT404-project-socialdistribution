@@ -75,6 +75,9 @@ class FollowRequest(models.Model):
 class Follow(models.Model):
     follower = models.ForeignKey(Author, related_name='following_authors', on_delete=models.CASCADE)
     followee = models.ForeignKey(Author, related_name='followed_by_authors', on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ['follower', 'followee']
 
 class Post(models.Model):
 

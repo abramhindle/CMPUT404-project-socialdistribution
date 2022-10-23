@@ -38,6 +38,8 @@ API Information
 | /api/authors/<author_id>/                | Retrieves an author's profile [A] | Updates an author's profile [A] | - | - |
 | /api/authors/<author_id>/inbox/  [WIP]              | Creates a new inbox item for an author [A]  | - | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
+| /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
+| /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
 
 
 ### Notes
@@ -181,6 +183,8 @@ None
 #### Sample Request
 <img width="1130" alt="image" src="https://user-images.githubusercontent.com/43586048/197077735-cf2ece3b-eb75-491c-b118-37279b37ff53.png">
 
+**Note**: You may wonder why the author `url`s are needed with the request payload. This is needed for project part 2 to differentiate between a local author and a remote one. If an author is a remote one, we will forward the follow request to it's matching remote server.
+
 #### Sample Response
 ```
 {
@@ -224,6 +228,88 @@ None
 - `401 Unauthorized`
 - `404 Not Found`
 
+### Accept a follow request
+#### Sample Request
+Author with id 4 accepts a follow request of author with id 3 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197364676-4013d4c9-e3d2-4532-b5d4-98fee42112dd.png">
+
+#### Sample Response
+```
+{
+    "message": "OK"
+}
+```
+
+#### Possible Status Codes
+- `201 Created`
+- `400 Bad Request`: This can be returned under a few different circumstances - when a matching follow request does not exist, when valid request payload is not given, or when an authors try to follow themselves
+- `401 Unauthorized`
+- `404 Not Found`
+
+
+### Remove a follower
+#### Sample Request
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197364958-af8cb572-74ab-4c0a-9b61-dde0b778a181.png">
+
+#### Sample Response
+```
+{
+    "message": "follower removed"
+}
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`: this can be returned when a matching follower can't be found
+
+### Check if an author is following some other author
+#### Sample Usage
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197365074-6dee55b0-600c-46c1-a3c7-291ae3e07779.png">
+
+#### Sample Response
+```
+{
+    "message": "3 is not a follower of 4"
+}
+```
+
+**Note:** We can update the response messages over time if requested.
+
+#### Possible Status Codes
+- `200 OK`: this is returned when a matching follower specified by the resource url was found.
+- `401 Unauthorized`
+- `404 Not Found`: this is returned when a matching follower is not found
+
+### Retrieve a list of all the followers for an author
+#### Sample Usage
+Retrieve the list of followers for author_id 4 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197365185-7183f1f8-755f-4739-8440-5f0a495e6f7a.png">
+
+#### Sample Response
+```
+[
+    {
+        "url": "http://localhost:8000/api/authors/3/",
+        "id": 3,
+        "display_name": "myuser",
+        "profile_image": "",
+        "github_handle": ""
+    },
+    {
+        "url": "http://localhost:8000/api/authors/5/",
+        "id": 5,
+        "display_name": "author_Z",
+        "profile_image": "",
+        "github_handle": ""
+    }
+]
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
 
 Contributing
 ============
