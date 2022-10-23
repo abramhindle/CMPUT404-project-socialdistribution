@@ -253,7 +253,7 @@ class FollowRequestProcessorTestCase(APITestCase):
         self.assertEqual(1, Inbox.objects.count())
         inbox = Inbox.objects.first()
         self.assertEqual(author_2, inbox.target_author)
-        self.assertEqual(author_1, inbox.follow_request_sender)
+        self.assertEqual(fr, inbox.follow_request_received)
     
     def test_duplicate_follow_request_is_not_allowed(self):
         """It should raise an error when you try to create a follow request that already exists"""
@@ -1241,3 +1241,43 @@ class AllPostTestCase(APITestCase):
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class InboxViewTestCase(APITestCase):
+    def test_get_different_types_of_inbox_items(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+
+        Follow.objects.create(follower=author_1, followee=author_2)
+        fr = FollowRequest.objects.create(sender=author_2, receiver=author_1)
+        
+        post = Post.objects.create(
+            author=author_2,
+            title="Post 1",
+            description="Sample description",
+            visibility="FRIENDS",
+            content_type="text/plain",
+            content="What's up people?"
+        )
+
+        # author_1 should see the new post from author_2 and the follow request from author_2
+        Inbox.objects.create(target_author=author_1, post=post)
+        Inbox.objects.create(target_author=author_1, follow_request_received=fr)
+        
+        url = f'/api/authors/{author_1.id}/inbox/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(2, len(response.data))
+        
+        follow_inbox = response.data[0]
+        post_inbox = response.data[1]
+        self.assertEqual("post", post_inbox["type"])
+        self.assertEqual("follow", follow_inbox["type"])
+        
+        # check the data fields of the response
+        self.assertEqual("Post 1", post_inbox["title"])
+        self.assertEqual("Sample description", post_inbox["description"])
+        self.assertTrue("sender" in follow_inbox)
+        self.assertTrue("url" in follow_inbox["sender"])
+        self.assertTrue(f'http://testserver/api/authors/{author_2.id}/', follow_inbox["sender"]["url"])

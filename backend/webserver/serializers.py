@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Author, Follow, FollowRequest, Post
+from .models import Author, Follow, FollowRequest, Inbox, Post
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -87,3 +87,34 @@ class FollowerSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super(FollowerSerializer, self).to_representation(instance)
         return data['follower']
+
+
+class InboxFollowRequestSerializer(FollowRequestSerializer):
+    # adds the 'sender' field back into the representation
+    def to_representation(self, instance):
+        data = super(InboxFollowRequestSerializer, self).to_representation(instance)
+        return {"sender": data}
+
+
+class InboxSerializer(serializers.ModelSerializer):
+    post = PostSerializer(read_only=True)
+    follow_request_received = InboxFollowRequestSerializer(read_only=True)
+    
+    class Meta:
+        model = Inbox
+        fields = ['post', 'follow_request_received']
+    
+    # https://www.django-rest-framework.org/api-guide/relations/#generic-relationships
+    def to_representation(self, instance):
+        data = super(InboxSerializer, self).to_representation(instance)
+        type = ''
+        if instance.post:
+            type = 'post'
+            data = data['post']
+        elif instance.follow_request_received:
+            type = 'follow'
+            data = data['follow_request_received']
+        else:
+            raise Exception('Unexpected type of inbox item')
+        data['type'] = type
+        return data
