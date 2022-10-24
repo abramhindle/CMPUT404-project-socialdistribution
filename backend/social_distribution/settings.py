@@ -139,3 +139,8 @@ REST_FRAMEWORK = {
 AUTH_PROFILE_MODEL = 'webserver.Author'
 
 AUTH_USER_MODEL = 'webserver.Author'
+
+# Routes and redirects
+LOGIN_REDIRECT_URL = "/"
+
+LOGIN_URL = "/login/"

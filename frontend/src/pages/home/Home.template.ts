@@ -8,7 +8,7 @@ homeNavigation;
 
 const navigationTemplate = html<Home>`
     <home-navigation
-        :isAuth=${x => true}>
+        :user=${x => x.user}>
     </home-navigation>
 `;
 

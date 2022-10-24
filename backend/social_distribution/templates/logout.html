@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block head %}
-<title>14Degrees - Home</title>
+<title>14Degrees - Login</title>
 {% endblock %}
 
 {% block body %}
-  <signon-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}"></signon-page>
+  <signon-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}" signOnType="logout"></signon-page>
   {% endblock %}
 
 {% block scripts %}
