@@ -9,12 +9,12 @@ module.exports = function(env, { mode }) {
     entry: {
       home: ['./src/pages/home/index.ts'],
       profile: ['./src/pages/profile/index.ts'],
-      signon: ['./src/pages/signon/index.ts']
+      signon: ['./src/pages/signon/index.ts'],
     },
     output: {
       filename: '[name].js',
       path: __dirname + '/build',
-      chunkFilename: '[id].[chunkhash].js'
+      chunkFilename: production ? '[id].[chunkhash].js' : '[id].chunk.js'
     },
     resolve: {
       extensions: ['.ts', '.js', '.png'],
@@ -27,14 +27,11 @@ module.exports = function(env, { mode }) {
       devMiddleware: {
         writeToDisk: true,
       },
+      liveReload: true,
       compress: true,
-      static: {
-        directory: path.join(__dirname, './')
-      },
       headers: {
         'Access-Control-Allow-Origin': '*'
-      },
-      hot: true
+      }
     },
     plugins: [
       new CleanWebpackPlugin()

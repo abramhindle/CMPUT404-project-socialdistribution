@@ -1,4 +1,5 @@
 import { FASTElement, observable } from "@microsoft/fast-element";
+import { Author } from "../../../libs/api-service/SocialApiModel";
 
 const NavItem = Object.freeze({
     Home: "Home",
@@ -10,17 +11,13 @@ type NavItem = typeof NavItem[keyof typeof NavItem];
 
 export class HomeNavigation extends FASTElement {
     @observable
-    public isAuth: boolean = false;
+    public user?: Author | null;
 
     public readonly navigationItems = [
         NavItem.Home,
         NavItem.Inbox,
         NavItem.Friends
     ];
-
-    public connectedCallback() {
-        super.connectedCallback();
-    }
 
     public getNavigationIconUrl(navigationItem: string) {
         switch(navigationItem) {

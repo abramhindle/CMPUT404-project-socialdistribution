@@ -1,9 +1,12 @@
 import { html, ref, repeat } from "@microsoft/fast-element";
-import { SignOn } from "./SignOn";
+import { logoComponent } from "../../components/logo";
+import { SignOn, SignOnType } from "./SignOn";
+
+logoComponent;
 
 const errorMessagesTemplate = html<SignOn>`
     <div>
-        ${repeat(x => x.errorMessages!, html<string>`
+        ${repeat(x => x.errorMessages, html<string>`
             <div class="alert alert-error">
                 ${x => x}
             </div>
@@ -11,42 +14,69 @@ const errorMessagesTemplate = html<SignOn>`
     </div>
 `;
 
-export const SignOnPageTemplate = html<SignOn>`
-    ${errorMessagesTemplate}
-    <form ${ref("form")} @submit="${(x, c) => x.register(c.event)}" id="register-form" enctype="application/x-www-form-urlencoded">
+const SignOnTypeTemplate = (signOnType?: SignOnType) => {
+    switch (signOnType) {
+        case SignOnType.Register:
+            return RegisterTemplate;
+        case SignOnType.Login:
+            return LoginTemplate;
+        case SignOnType.Logout:
+            return LogoutTemplate;
+        default:
+            return "";
+    }
+}
+
+const RegisterTemplate = html<SignOn>`
+    <form ${ref("form")} @submit="${(x, c) => x.register(c.event)}" id="register-form">
         <div class="form-element">
-            <label for="accountType">Select an account type</label>
-            <select name="accountType" form="register-form" class="form-control">
-                <option value="Student">Student</option>
-                <option value="Instructor">Instructor</option>
-            </select>
+            <fast-text-field type="text" placeholder="Display Name" name="display_name" required></fast-text-field>
         </div>
         <div class="form-element">
-            <label for="firstname">Enter your first name (alphabetic characters only):</label>
-            <input class="form-control" type="text" name="display_name" placeholder="First Name..."
-                required>
+            <fast-text-field type="text" placeholder="Username" name="username" required></fast-text-field>
         </div>
         <div class="form-element">
-            <label for="lastname">Enter your last name (alphabetic chracters only):</label>
-            <input class="form-control" type="text" name="lastname" placeholder="Last Name..." required>
+            <fast-text-field type="password" placeholder="Password" name="password" required></fast-text-field>
         </div>
         <div class="form-element">
-            <label for="username">Enter your username (More than 6 characters, no special characters or spaces):</label>
-            <input class="form-control" type="text" name="username" placeholder="Username..."required minlength="6">
+            <fast-text-field type="password" placeholder="Confirm Your Password" name="password2" required></fast-text-field>
         </div>
         <div class="form-element">
-            <!--6 or more characters-->
-            <label for="password1">Enter your password (8 or more characters, no whitespace):</label>
-            <input type="password" class="form-control" name="password"
-                placeholder="Password... (8 or more characters, no whitespace)" required minlength="8">
-        </div>
-        <div class="form-element">
-            <!--6 or more characters-->
-            <label for="password2">Confirm your password:</label>
-            <input class="form-control" type="password" name="password2" placeholder="Confirm your Password..." required minlength="8">
-        </div>
-        <div class="form-element">
-            <button id="submit">Register</button>
+            <button id="submit">Sign Up</button>
         </div>
     </form>
+`;
+
+const LoginTemplate = html<SignOn>`
+    <form ${ref("form")} @submit="${(x, c) => x.login(c.event)}" id="login-form">
+        <div class="form-element">
+            <fast-text-field type="text" placeholder="Username" name="username" required></fast-text-field>
+        </div>
+        <div class="form-element">
+            <fast-text-field type="password" placeholder="Password" name="password" required></fast-text-field>
+        </div>
+        <div class="form-element">
+            <button id="submit">Log In</button>
+        </div>
+    </form>
+`;
+
+const LogoutTemplate = html<SignOn>`
+    <div id="login-form">
+        <button @click="${(x, c) => x.logout(c.event)}" class="logout">
+            Log out?
+        </button>
+        <a href="/">
+            <button class="cancel">Cancel</button>
+        </a>
+    </div>
+`;
+
+export const SignOnPageTemplate = html<SignOn>`
+    <h1>Find your new best friend, within 14 degrees of separation</h1>
+    <div class="form-container">
+        <site-logo></site-logo>
+        ${errorMessagesTemplate}
+        ${x => SignOnTypeTemplate(x.signOnType)}
+    </div>
 `;

@@ -17,8 +17,7 @@ export const LogoStyles = css`
     }
 
     img {
-        height: 40px;
-        width: 40px;
-        margin-right: 24px;
+        width: 20%;
+        margin-right: 5%;
     }
 `;
