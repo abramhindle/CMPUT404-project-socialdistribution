@@ -112,7 +112,7 @@ class PostView(APIView):
                 serializer = UpdatePostSerializer(instance=post,data=request.data,partial=True,context={'request': request})
                 for field in request.data:
                     if field not in serializer.fields:
-                        return Response({'message': 'Cannot edit this field'}, status=status.HTTP_400_BAD_REQUEST)
+                        return Response({'message': 'You cannot edit this field'}, status=status.HTTP_400_BAD_REQUEST)
                 if serializer.is_valid():
                     serializer.save(edited_at=datetime.datetime.utcnow().replace(tzinfo=utc))
                     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -171,9 +171,9 @@ class AllPosts(APIView):
                         with transaction.atomic():
                             Inbox.objects.create(target_author=follow.follower,post=new_post)
                 elif new_post.visibility == "PUBLIC":
-                    for authors in Author.objects.all().iterator():
+                    for author in Author.objects.all().iterator():
                         with transaction.atomic():
-                            Inbox.objects.create(target_author=authors,post=new_post)  
+                            Inbox.objects.create(target_author=author,post=new_post)  
                 elif new_post.visibility == "PRIVATE":
                     private_post_serializer = SendPrivatePostSerializer(data=request.data)
                     if private_post_serializer.is_valid():
