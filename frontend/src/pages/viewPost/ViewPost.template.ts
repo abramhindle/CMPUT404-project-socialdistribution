@@ -1,4 +1,4 @@
-import { html } from "@microsoft/fast-element";
+import { html, repeat } from "@microsoft/fast-element";
 import {ViewPost} from "./ViewPost";
 
 
@@ -6,46 +6,30 @@ export const ViewPostPageTemplate = html<ViewPost>`
     <div class="post-container">
         <div class="post-container1">
             <img
-                    src="https://play.teleporthq.io/static/svg/default-img.svg"
-                    alt="image"
+                    src="${x => x.post_image_url}"
+                    alt="post image"
                     class="post-image"
             />
             <div class="post-container2">
-                <span class="post-text">Text</span>
+                <span class="post-text">${x => x.post_text}</span>
                 <div class="post-container3">
-                    <span>Zebra Zigby | 2022-10-13</span>
+                    <span>${x => x.post_author} | ${x => x.post_edit_date}</span>
                 </div>
             </div>
         </div>
         <ul class="post-ul list">
             <li class="post-li list-item">
-                <div class="post-container4">
-                    <span class="post-text2">Text:</span>
-                    <span class="post-text3">Text</span>
-                    <img
-                            alt="image"
-                            src="https://play.teleporthq.io/static/svg/default-img.svg"
-                            class="post-image1"
-                    />
-                </div>
-                <div class="post-container5">
-                    <span class="post-text4">Text:</span>
-                    <span class="post-text5">Text</span>
-                    <img
-                            alt="image"
-                            src="https://play.teleporthq.io/static/svg/default-img.svg"
-                            class="post-image2"
-                    />
-                </div>
-                <div class="post-container6">
-                    <span class="post-text6">Text:</span>
-                    <span class="post-text7">Text</span>
-                    <img
-                            alt="image"
-                            src="https://play.teleporthq.io/static/svg/default-img.svg"
-                            class="post-image3"
-                    />
-                </div>
+                ${repeat(x => x.comments, html<string>`
+                    <div class="comment-container">
+                        <span class="comment-display-name">${x.display_name}</span>
+                        <span class="comment-content">${x.content}</span>
+                        <img
+                                alt="image"
+                                src="https://play.teleporthq.io/static/svg/default-img.svg"
+                                class="comment-profile-icon"
+                        />
+                    </div>
+                `)}
             </li>
         </ul>
     </div>

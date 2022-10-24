@@ -98,7 +98,7 @@ export const ViewPostPageStyles = css`
     border-bottom-right-radius: var(--dl-radius-radius-radius4);
   }
 
-  .post-container4 {
+  .comment-container {
     gap: var(--dl-space-space-unit);
     flex: 0 0 auto;
     width: 100%;
@@ -117,7 +117,7 @@ export const ViewPostPageStyles = css`
     border-bottom-right-radius: var(--dl-radius-radius-radius4);
   }
 
-  .post-text2 {
+  .comment-display-name {
     margin-top: var(--dl-space-space-halfunit);
     margin-left: var(--dl-space-space-unit);
     border-radius: var(--dl-radius-radius-radius4);
@@ -128,7 +128,7 @@ export const ViewPostPageStyles = css`
     border-bottom-right-radius: var(--dl-radius-radius-radius4);
   }
 
-  .post-text3 {
+  .comment-content {
     margin-top: var(--dl-space-space-halfunit);
     margin-right: var(--dl-space-space-unit);
     border-radius: var(--dl-radius-radius-radius4);
@@ -139,117 +139,7 @@ export const ViewPostPageStyles = css`
     border-bottom-right-radius: var(--dl-radius-radius-radius4);
   }
 
-  .post-image1 {
-    top: 0px;
-    right: 0px;
-    width: auto;
-    height: 100%;
-    position: absolute;
-    object-fit: cover;
-    border-radius: var(--dl-radius-radius-radius4);
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-container5 {
-    gap: var(--dl-space-space-unit);
-    flex: 0 0 auto;
-    width: 100%;
-    height: auto;
-    display: flex;
-    position: relative;
-    align-items: flex-start;
-    border-radius: var(--dl-radius-radius-radius4);
-    margin-bottom: var(--dl-space-space-unit);
-    padding-right: 0px;
-    justify-content: flex-start;
-    background-color: #d9d9d9;
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-text4 {
-    margin-top: var(--dl-space-space-halfunit);
-    margin-left: var(--dl-space-space-unit);
-    border-radius: var(--dl-radius-radius-radius4);
-    margin-bottom: var(--dl-space-space-halfunit);
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-text5 {
-    margin-top: var(--dl-space-space-halfunit);
-    margin-right: var(--dl-space-space-unit);
-    border-radius: var(--dl-radius-radius-radius4);
-    margin-bottom: var(--dl-space-space-halfunit);
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-image2 {
-    top: 0px;
-    right: 0px;
-    width: auto;
-    height: 100%;
-    position: absolute;
-    object-fit: cover;
-    border-radius: var(--dl-radius-radius-radius4);
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-container6 {
-    gap: var(--dl-space-space-unit);
-    flex: 0 0 auto;
-    width: 100%;
-    height: auto;
-    display: flex;
-    position: relative;
-    align-items: flex-start;
-    border-radius: var(--dl-radius-radius-radius4);
-    margin-bottom: var(--dl-space-space-unit);
-    padding-right: 0px;
-    justify-content: flex-start;
-    background-color: #d9d9d9;
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-text6 {
-    margin-top: var(--dl-space-space-halfunit);
-    margin-left: var(--dl-space-space-unit);
-    border-radius: var(--dl-radius-radius-radius4);
-    margin-bottom: var(--dl-space-space-halfunit);
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-text7 {
-    margin-top: var(--dl-space-space-halfunit);
-    margin-right: var(--dl-space-space-unit);
-    border-radius: var(--dl-radius-radius-radius4);
-    margin-bottom: var(--dl-space-space-halfunit);
-    border-top-left-radius: var(--dl-radius-radius-radius4);
-    border-top-right-radius: var(--dl-radius-radius-radius4);
-    border-bottom-left-radius: var(--dl-radius-radius-radius4);
-    border-bottom-right-radius: var(--dl-radius-radius-radius4);
-  }
-
-  .post-image3 {
+  .comment-profile-icon {
     top: 0px;
     right: 0px;
     width: auto;
