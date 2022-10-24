@@ -1115,13 +1115,11 @@ class AllPostTestCase(APITestCase):
         response = self.client.post(url,data=payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         inbox = Inbox.objects.all()
-        # The count should be 6 since the post should also be sent to the author that made the post
-        self.assertEqual(5,Inbox.objects.count())
-        self.assertEqual(author_1, inbox[0].target_author)
-        self.assertEqual(author_2, inbox[1].target_author)
-        self.assertEqual(author_3, inbox[2].target_author)
-        self.assertEqual(author_4, inbox[3].target_author)
-        self.assertEqual(author_5, inbox[4].target_author)
+        self.assertEqual(4,Inbox.objects.count())
+        self.assertEqual(author_2, inbox[0].target_author)
+        self.assertEqual(author_3, inbox[1].target_author)
+        self.assertEqual(author_4, inbox[2].target_author)
+        self.assertEqual(author_5, inbox[3].target_author)
 
     def test_send_private_post_to_inbox(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1148,14 +1146,13 @@ class AllPostTestCase(APITestCase):
         response = self.client.post(url,data=payload,format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         inbox = Inbox.objects.all()
-        self.assertEqual(2,Inbox.objects.count())
+        self.assertEqual(1,Inbox.objects.count())
         self.assertEqual(author_2, inbox[0].target_author)
-        self.assertEqual(author_1, inbox[1].target_author)
-        self.assertEqual(payload["title"],inbox[1].post.title)
-        self.assertEqual(payload["description"],inbox[1].post.description)
-        self.assertEqual(payload["unlisted"],inbox[1].post.unlisted)
-        self.assertEqual(payload["visibility"],inbox[1].post.visibility)
-        self.assertEqual(payload["content_type"],inbox[1].post.content_type)
+        self.assertEqual(payload["title"],inbox[0].post.title)
+        self.assertEqual(payload["description"],inbox[0].post.description)
+        self.assertEqual(payload["unlisted"],inbox[0].post.unlisted)
+        self.assertEqual(payload["visibility"],inbox[0].post.visibility)
+        self.assertEqual(payload["content_type"],inbox[0].post.content_type)
 
     def test_cannot_create_new_posts_for_other_authors(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1275,12 +1272,11 @@ class AllPostTestCase(APITestCase):
         response = self.client.post(url,data=payload,format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         inbox = Inbox.objects.all()
-        # The count should be 4 since the post should also be sent to the author of the post
-        self.assertEqual(4, Inbox.objects.count())
-        self.assertEqual(author_1, inbox[0].target_author)
-        self.assertEqual(author_2, inbox[1].target_author)
-        self.assertEqual(author_3, inbox[2].target_author)
-        self.assertEqual(author_4, inbox[3].target_author)
+        self.assertEqual(3, Inbox.objects.count())
+        self.assertEqual(author_2, inbox[0].target_author)
+        self.assertEqual(author_3, inbox[1].target_author)
+        self.assertEqual(author_4, inbox[2].target_author)
+        
 
     def test_public_post_sent_to_friends_inbox(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1308,12 +1304,12 @@ class AllPostTestCase(APITestCase):
         response = self.client.post(url,data=payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         inbox = Inbox.objects.all()
-        self.assertEqual(5, Inbox.objects.count())
-        self.assertEqual(author_1, inbox[0].target_author)
-        self.assertEqual(author_2, inbox[1].target_author)
-        self.assertEqual(author_3, inbox[2].target_author)
-        self.assertEqual(author_4, inbox[3].target_author)
-        self.assertEqual(author_5, inbox[4].target_author)
+        self.assertEqual(4, Inbox.objects.count())
+        self.assertEqual(author_2, inbox[0].target_author)
+        self.assertEqual(author_3, inbox[1].target_author)
+        self.assertEqual(author_4, inbox[2].target_author)
+        self.assertEqual(author_5, inbox[3].target_author)
+        
 
 class InboxViewTestCase(APITestCase):
     def test_get_different_types_of_inbox_items(self):
