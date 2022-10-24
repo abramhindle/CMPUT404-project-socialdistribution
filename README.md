@@ -40,7 +40,8 @@ API Information
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
 | /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
 | /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
-
+| /api/authors/<author_id>/posts/               | Creates a new post for an author [A]| Retrieves recent posts from an author [A]| - | - |
+| /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | Retrieves an authors post [A] | - | Delete an authors post [A] |
 
 ### Notes
 - [A] specifies that the request must be authenticated
