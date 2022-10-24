@@ -1,5 +1,6 @@
 import { accentColor, bodyFont, controlCornerRadius, neutralColor, neutralFillStrongHover, typeRampPlus2FontSize } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
+import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const SignOnPageStyles = css`
     :host {
@@ -26,7 +27,7 @@ export const SignOnPageStyles = css`
     }
 
     .form-container {
-        width: 26%;
+        width: 80%;
         height: 65%;
         border-radius: 20px;
         background-color: white;
@@ -36,6 +37,14 @@ export const SignOnPageStyles = css`
         align-content: center;
         align-items: center;
         padding: 16px 0px;
+    }
+
+    .form-container.${LayoutStyleClass.Tablet} {
+        width: 50%;
+    }
+
+    .form-container.${LayoutStyleClass.Desktop} {
+        width: 35%;
     }
 
     #register-form, #login-form {
