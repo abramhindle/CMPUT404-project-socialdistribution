@@ -25,11 +25,11 @@ const callToActionTemplate = html<HomeNavigation>`
 export const HomeNavigationTemplate = html<HomeNavigation>`
     <header class="navigation-container">
     <site-logo></site-logo>
-    ${when(x => x.isAuth, html<HomeNavigation>`
+    ${when(x => x.user, html<HomeNavigation>`
         ${navigationItemsTemplate}
         ${navProfileTemplate}
     `)}
-    ${when(x => !x.isAuth, html<HomeNavigation>`
+    ${when(x => !x.user, html<HomeNavigation>`
         ${callToActionTemplate}
     `)}
     </header>

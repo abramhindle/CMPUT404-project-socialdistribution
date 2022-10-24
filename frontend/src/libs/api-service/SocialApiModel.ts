@@ -1,13 +1,14 @@
-const ContentType = Object.freeze({
+export const ContentType = Object.freeze({
     Markdown: "markdown",
     Plain: "plain"
 });
 
-export type ContentType = typeof ContentType[keyof typeof ContentType];
+export type ContentType = keyof typeof ContentType;
 
 export class Author {
     id: string;
     displayName: string;
+    url?: string;
     profileImage?: string;
     githubHandle?: string;
 
