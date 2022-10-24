@@ -168,9 +168,9 @@ class AllPosts(APIView):
                         with transaction.atomic():
                             Inbox.objects.create(target_author=follow.follower,post=new_post)
                 elif new_post.visibility == "PUBLIC":
-                    for author_2 in Author.objects.exclude(username=author.username):
+                    for author in Author.objects.exclude(username=author.username):
                         with transaction.atomic():
-                            Inbox.objects.create(target_author=author_2,post=new_post)  
+                            Inbox.objects.create(target_author=author,post=new_post)  
                 elif new_post.visibility == "PRIVATE":
                     private_post_serializer = SendPrivatePostSerializer(data=request.data)
                     if private_post_serializer.is_valid():
