@@ -1,14 +1,15 @@
 import { bodyFont, neutralColor } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
+import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const LogoStyles = css`
-    :host {
+    .logo-container {
         display: flex;
         align-content: center;
         justify-content: center;
         align-items: center;
         font-family: ${bodyFont};
-        width: 250px;
+        width: 100%;
         height: 60px;
         background-color: ${neutralColor};
         color: white;
@@ -17,7 +18,10 @@ export const LogoStyles = css`
     }
 
     img {
-        width: 20%;
-        margin-right: 5%;
+        width: 45px;
+    }
+
+    .${LayoutStyleClass.Desktop} img {
+        margin-right: 20px;
     }
 `;

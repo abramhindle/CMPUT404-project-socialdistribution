@@ -1,5 +1,6 @@
 import { html, ref, repeat } from "@microsoft/fast-element";
 import { logoComponent } from "../../components/logo";
+import { LayoutHelpers } from "../../libs/core/Helpers";
 import { SignOn, SignOnType } from "./SignOn";
 
 logoComponent;
@@ -74,8 +75,11 @@ const LogoutTemplate = html<SignOn>`
 
 export const SignOnPageTemplate = html<SignOn>`
     <h1>Find your new best friend, within 14 degrees of separation</h1>
-    <div class="form-container">
-        <site-logo></site-logo>
+    <div class="form-container ${x => LayoutHelpers.getLayoutStyle(x.layoutType)}">
+        <site-logo
+            :layoutType=${x => x.layoutType}
+            :layoutStyleClass=${x => LayoutHelpers.getLayoutStyle(x.layoutType)}>
+        </site-logo>
         ${errorMessagesTemplate}
         ${x => SignOnTypeTemplate(x.signOnType)}
     </div>
