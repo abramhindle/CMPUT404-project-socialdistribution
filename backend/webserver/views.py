@@ -109,10 +109,12 @@ class PostView(APIView):
 
         if post.visibility == "PUBLIC":   
             if author.id == request.user.id:
-                post.edited_at = datetime.datetime.utcnow().replace(tzinfo=utc)
                 serializer = UpdatePostSerializer(instance=post,data=request.data,partial=True,context={'request': request})
+                for field in request.data:
+                    if field not in serializer.fields:
+                        return Response({'message': 'Cannot edit this field'}, status=status.HTTP_400_BAD_REQUEST)
                 if serializer.is_valid():
-                    serializer.save()
+                    serializer.save(edited_at=datetime.datetime.utcnow().replace(tzinfo=utc))
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -161,10 +163,17 @@ class AllPosts(APIView):
                     content=serializer.data["content"],
                     visibility=serializer.data["visibility"]
                 )
-                if new_post.visibility == "FRIENDS" or new_post.visibility == "PUBLIC":
+                if new_post.visibility == "FRIENDS":
+                    with transaction.atomic():
+                        # The post should also be sent to the inbox of the author that made the post
+                        Inbox.objects.create(target_author=author,post=new_post)
                     for follow in author.followed_by_authors.iterator():
                         with transaction.atomic():
                             Inbox.objects.create(target_author=follow.follower,post=new_post)
+                elif new_post.visibility == "PUBLIC":
+                    for authors in Author.objects.all().iterator():
+                        with transaction.atomic():
+                            Inbox.objects.create(target_author=authors,post=new_post)  
                 elif new_post.visibility == "PRIVATE":
                     private_post_serializer = SendPrivatePostSerializer(data=request.data)
                     if private_post_serializer.is_valid():
@@ -175,12 +184,13 @@ class AllPosts(APIView):
                             return Response({'message': f'receiver author with id {private_post_serializer.data["receiver"]["id"]} does not exist'}, status=status.HTTP_404_NOT_FOUND)
                         with transaction.atomic():
                             Inbox.objects.create(target_author=receiver, post=new_post)
-                        return Response({'message': 'OK'}, status=status.HTTP_201_CREATED) 
+                            # The post should also be sent to the inbox of the author that made the post
+                            Inbox.objects.create(target_author=author,post=new_post)     
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         else:
             return Response({'message': 'You cannot create a post for another user'}, status=status.HTTP_400_BAD_REQUEST)
 
