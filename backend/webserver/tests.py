@@ -2,7 +2,7 @@ from django.test import TestCase
 from webserver.models import Author, FollowRequest, Inbox, Follow, Post
 from rest_framework.test import APITestCase
 from rest_framework import status
-from unittest import mock
+from unittest import mock, skip
 import datetime
 import json
 from django.utils.timezone import utc
@@ -43,11 +43,103 @@ class AuthorsViewTestCase(APITestCase):
         
         url = "/api/authors/"
         self.client.force_authenticate(user=mock.Mock())
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
         author_1 = response.data[0]
         self.assertEqual(author_1["display_name"], "author_1")
+
+
+class PaginationTestCase(APITestCase):
+    def setUp(self):
+        self.default_page_size = 10
+
+    def test_pagination_for_multiple_authors_set(self):
+        authors_count = 20
+        for i in range(0, authors_count):
+            username = f'author_{i}'
+            display_name = f'author_{i}_handle'
+            Author.objects.create(username=username, display_name=display_name)
+        
+        url = "/api/authors/?page=1"
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertTrue("count" in response.data)
+        self.assertTrue("next" in response.data)
+        self.assertTrue("previous" in response.data)
+        self.assertTrue("results" in response.data)
+        self.assertEqual(authors_count, response.data["count"])
+        self.assertEqual(self.default_page_size, len(response.data["results"]))
+        self.assertEqual("author_0_handle", response.data["results"][0]["display_name"])
+    
+    def test_pagination_for_empty_authors_set(self):
+        url = "/api/authors/?page=1"
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(0, response.data["count"])
+        self.assertEqual(0, len(response.data["results"]))
+        self.assertIsNone(response.data["previous"])
+        self.assertIsNone(response.data["next"])
+    
+    def test_pagination_page_size(self):
+        authors_count = 20
+        for i in range(0, authors_count):
+            username = f'author_{i}'
+            display_name = f'author_{i}_handle'
+            Author.objects.create(username=username, display_name=display_name)
+        
+        page_size = authors_count
+        url = f'/api/authors/?page=1&size={page_size}'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(page_size, len(response.data["results"]))
+        self.assertIsNone(response.data["previous"])
+        self.assertIsNone(response.data["next"])
+    
+    def test_pagination_next(self):
+        authors_count = 20
+        for i in range(0, authors_count):
+            username = f'author_{i}'
+            display_name = f'author_{i}_handle'
+            Author.objects.create(username=username, display_name=display_name)
+
+        url = "/api/authors/?page=1"
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        self.assertEqual(self.default_page_size, len(response.data["results"]))
+        self.assertEqual("http://testserver/api/authors/?page=2", response.data["next"])
+        self.assertEqual("author_0_handle", response.data["results"][0]["display_name"])
+
+        response_next = self.client.get(response.data["next"])
+        self.assertEqual(status.HTTP_200_OK, response_next.status_code)
+        self.assertEqual(self.default_page_size, len(response_next.data["results"]))
+        self.assertEqual("author_10_handle", response_next.data["results"][0]["display_name"])
+    
+    def test_pagination_prev(self):
+        authors_count = 20
+        for i in range(0, authors_count):
+            username = f'author_{i}'
+            display_name = f'author_{i}_handle'
+            Author.objects.create(username=username, display_name=display_name)
+        
+        url = "/api/authors/?page=2&size=10"
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        self.assertEqual(self.default_page_size, len(response.data["results"]))
+        self.assertEqual("author_10_handle", response.data["results"][0]["display_name"])
+
+        response_previous = self.client.get(response.data["previous"])
+        self.assertEqual(status.HTTP_200_OK, response_previous.status_code)
+        self.assertEqual(self.default_page_size, len(response_previous.data["results"]))
+        self.assertEqual("author_0_handle", response_previous.data["results"][0]["display_name"])
+
 
 class AuthorDetailView(APITestCase):
     def test_requests_require_authentication(self):
