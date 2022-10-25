@@ -502,6 +502,65 @@ Delete the post for author id 5 with post id 55 -
 - `401 Unauthorized`
 - `404 Not Found`
 - `400 Bad Request`
+
+
+## Pagination
+### Retrieve a paginated list of authors
+#### Sample Request
+![image](https://user-images.githubusercontent.com/43586048/197662427-57359a86-43d4-4b2b-a7ba-b37f3ede8be1.png)
+
+#### Sample Response
+```
+{
+    "count": 27,
+    "next": "http://localhost:8000/api/authors/?page=2&size=5",
+    "previous": null,
+    "results": [
+        {
+            "url": "http://localhost:8000/api/authors/1/",
+            "id": 1,
+            "display_name": "",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/2/",
+            "id": 2,
+            "display_name": "zarif",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/3/",
+            "id": 3,
+            "display_name": "author_0_handle",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/4/",
+            "id": 4,
+            "display_name": "author_1_handle",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/5/",
+            "id": 5,
+            "display_name": "author_2_handle",
+            "profile_image": "",
+            "github_handle": ""
+        }
+    ]
+}
+```
+
+#### Notes
+- Use the `page` query parameter to specify the page you would like to fetch. If you just specify the `page` query param without the `size`, a default size of 10 will be used
+- Use the `size` query parameter to specify the size of the page. You cannot use this on it's one (you also need to pass the `page` query parameter).
+- `count` specifies the total number of records available at this resource
+- Send requests to the urls specified in `next` and `prev` to use the pagination
+
 Contributing
 ============
 

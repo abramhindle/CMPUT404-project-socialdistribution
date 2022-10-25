@@ -38,9 +38,10 @@ class Author(AbstractBaseUser):
     display_name = models.CharField(max_length=200)
     profile_image = models.CharField(max_length=250, blank=True)
     github_handle = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(verbose_name="date created", auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    
+
     objects = AuthorUserManager()
     
     USERNAME_FIELD = 'username'
