@@ -213,6 +213,28 @@ class AllPosts(APIView, PaginationHandlerMixin):
             return Response({'message': 'You cannot create a post for another user'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class AllPublicPostsView(APIView, PaginationHandlerMixin):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = BasicPagination
+
+    def get_serializer(self, request, queryset):
+        return PostSerializer(queryset, many=True, context={'request': request})
+
+    def get(self, request):
+        """Returns recent public posts"""
+        posts = Post.objects.filter(visibility="PUBLIC").order_by("-created_at")
+        page = self.paginate_queryset(posts)
+        if page is not None:
+            serializer = self.get_paginated_response(
+                self.get_serializer(request, page).data
+            )
+        else:
+            serializer = self.get_serializer(request, posts)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class FollowRequestsView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
