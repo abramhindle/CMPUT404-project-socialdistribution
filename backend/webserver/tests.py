@@ -1442,3 +1442,32 @@ class InboxViewTestCase(APITestCase):
         self.assertTrue("sender" in follow_inbox)
         self.assertTrue("url" in follow_inbox["sender"])
         self.assertTrue(f'http://testserver/api/authors/{author_2.id}/', follow_inbox["sender"]["url"])
+
+
+class AllPublicPostsTestCase(APITestCase):
+    def test_get_all_public_posts(self):
+        author = Author.objects.create(username="author_1", display_name="author_1")
+        post_1 = Post.objects.create(
+            author=author,
+            title="Post 1",
+            description="Sample description",
+            visibility="FRIENDS",
+            content_type="text/plain",
+            content="What's up people?"
+        )
+        post_2 = Post.objects.create(
+            author=author,
+            title="Post 2",
+            description="Sample description 2",
+            visibility="PUBLIC",
+            content_type="text/plain",
+            content="Public service announcement"
+        )
+        self.assertEqual(2, Post.objects.count())
+        
+        url = f'/api/posts/'
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(1, len(response.data))
+        self.assertEqual("Post 2", response.data[0]["title"])
