@@ -561,6 +561,11 @@ Delete the post for author id 5 with post id 55 -
 - `count` specifies the total number of records available at this resource
 - Send requests to the urls specified in `next` and `prev` to use the pagination
 
+Planning & Design
+============
+- You can view the [ER model for our app here](https://github.com/zarifmahfuz/project-socialdistribution/blob/master/docs/ERModelv2.png).
+- You can view the Figma designs for our UI here.
+
 Contributing
 ============
 
