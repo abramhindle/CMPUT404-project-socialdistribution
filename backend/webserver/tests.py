@@ -630,7 +630,6 @@ class PostTestCase(APITestCase):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         
-        
         post_1 = Post.objects.create(
             author =author_1,
             created_at=current_date_string,
@@ -745,14 +744,18 @@ class PostTestCase(APITestCase):
             "content":"Some new content"
         }
         response = self.client.post(url,data=payload)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(response.data["title"], "Mark McGoey")
         self.assertEqual(response.data["description"], "new description")
         self.assertEqual(response.data["unlisted"], True)
         self.assertEqual(response.data["content"], "Some new content")
 
-
     def test_non_editable_fields(self):
-        author_1 = Author.objects.create() 
+        author_1 = Author.objects.create()  
+        author_1.set_password("pass123")
+        author_1.save()
+        request_payload = {"username": "author_1", "password": "pass123"}
+        response = self.client.post("/login/", data=request_payload, format="json")
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -768,18 +771,20 @@ class PostTestCase(APITestCase):
             visibility= "PUBLIC"
         )
         url = f'/api/authors/{author_1.id}/posts/{post_1.id}/'
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
+        
+        
         payload = {
             "source":"new source",
             "origin": "new origin",  
             "visibility":"FRIENDS"  
         }
-        self.client.post(url,data=payload)
-        response = self.client.get(url,format=json)
         
-        self.assertEqual(response.data["origin"], "origin")
-        self.assertEqual(response.data["visibility"], "PUBLIC")
-        self.assertEqual(response.data["source"], "source")
+       
+        response = self.client.post(url,data=payload)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        
+    
         
     
 
@@ -802,10 +807,10 @@ class PostTestCase(APITestCase):
         )
         url = f'/api/authors/{author_1.id}/posts/{post_1.id}/'
         self.client.force_authenticate(user=author_1)
-        self.assertEqual(Post.objects.filter(author=author_1.id).count(),1)
+        self.assertEqual(1, Post.objects.count())
         response = self.client.delete(url)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(Post.objects.filter(author=author_1.id).count(),0)
+        self.assertEqual(0, Post.objects.count())
     
     def test_cannot_delete_another_authors_post(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -826,10 +831,10 @@ class PostTestCase(APITestCase):
         )
         url = f'/api/authors/{author_1.id}/posts/{post_1.id}/'
         self.client.force_authenticate(user=author_2)
-        self.assertEqual(Post.objects.filter(author=author_1.id).count(),1)
+        self.assertEqual(1, Post.objects.count())
         response = self.client.delete(url)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-        self.assertEqual(Post.objects.filter(author=author_1.id).count(),1)
+        self.assertEqual(1, Post.objects.count())
 
     def test_cannot_edit_another_authors_post(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1090,6 +1095,9 @@ class AllPostTestCase(APITestCase):
         author_3 = Author.objects.create(username="author_3", display_name="author_3")
         author_4 = Author.objects.create(username="author_4", display_name="author_4")
         author_5 = Author.objects.create(username="author_5", display_name="author_5")
+        # creating two extra authors but not adding them as followers to ensure that a friend post is only sent to friends
+        Author.objects.create(username="author_6", display_name="author_6")
+        Author.objects.create(username="author_7", display_name="author_7")   
         Follow.objects.create(follower=author_2,followee=author_1)
         Follow.objects.create(follower=author_3,followee=author_1)
         Follow.objects.create(follower=author_4,followee=author_1)
@@ -1106,13 +1114,12 @@ class AllPostTestCase(APITestCase):
         self.client.force_authenticate(user=author_1)
         response = self.client.post(url,data=payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        inbox = Inbox.objects.first()
-        self.assertEqual(author_2, inbox.target_author)
-        self.assertEqual(4, Inbox.objects.count())
-        self.assertEqual(payload["title"], inbox.post.title)
-        self.assertEqual(payload["description"], inbox.post.description)
-        self.assertEqual(payload["visibility"], inbox.post.visibility)
-        self.assertEqual(payload["content_type"], inbox.post.content_type)
+        inbox = Inbox.objects.all()
+        self.assertEqual(4,Inbox.objects.count())
+        self.assertEqual(author_2, inbox[0].target_author)
+        self.assertEqual(author_3, inbox[1].target_author)
+        self.assertEqual(author_4, inbox[2].target_author)
+        self.assertEqual(author_5, inbox[3].target_author)
 
     def test_send_private_post_to_inbox(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1138,13 +1145,14 @@ class AllPostTestCase(APITestCase):
         self.client.force_authenticate(user=author_1)
         response = self.client.post(url,data=payload,format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        inbox = Inbox.objects.first()
-        self.assertEqual(author_2, inbox.target_author)
-        self.assertEqual(payload["title"],inbox.post.title)
-        self.assertEqual(payload["description"],inbox.post.description)
-        self.assertEqual(payload["unlisted"],inbox.post.unlisted)
-        self.assertEqual(payload["visibility"],inbox.post.visibility)
-        self.assertEqual(payload["content_type"],inbox.post.content_type)
+        inbox = Inbox.objects.all()
+        self.assertEqual(1,Inbox.objects.count())
+        self.assertEqual(author_2, inbox[0].target_author)
+        self.assertEqual(payload["title"],inbox[0].post.title)
+        self.assertEqual(payload["description"],inbox[0].post.description)
+        self.assertEqual(payload["unlisted"],inbox[0].post.unlisted)
+        self.assertEqual(payload["visibility"],inbox[0].post.visibility)
+        self.assertEqual(payload["content_type"],inbox[0].post.content_type)
 
     def test_cannot_create_new_posts_for_other_authors(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1241,6 +1249,67 @@ class AllPostTestCase(APITestCase):
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_public_post_sent_to_everyones_inbox(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        author_3 = Author.objects.create(username="author_3", display_name="author_3")
+        author_4 = Author.objects.create(username="author_4", display_name="author_4")
+        author_1.set_password("pass123")
+        author_1.save()
+        request_payload = {"username": "author_1", "password": "pass123"}
+        self.client.post("/login/", data=request_payload, format="json") 
+        payload = {
+            "title": "Mark McGoey",
+            "description": "new description",
+            "unlisted":True,
+            "content":"Some new content",
+            "visibility":"PUBLIC",
+            "content_type":"text/plain"
+        }
+        url = f'/api/authors/{author_1.id}/posts/'
+        self.client.force_authenticate(user=author_1)
+        response = self.client.post(url,data=payload,format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        inbox = Inbox.objects.all()
+        self.assertEqual(3, Inbox.objects.count())
+        self.assertEqual(author_2, inbox[0].target_author)
+        self.assertEqual(author_3, inbox[1].target_author)
+        self.assertEqual(author_4, inbox[2].target_author)
+        
+
+    def test_public_post_sent_to_friends_inbox(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_1.set_password("pass123")
+        author_1.save()
+        request_payload = {"username": "author_1", "password": "pass123"}
+        self.client.post("/login/", data=request_payload, format="json")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        author_3 = Author.objects.create(username="author_3", display_name="author_3")
+        author_4 = Author.objects.create(username="author_4", display_name="author_4")
+        author_5 = Author.objects.create(username="author_5", display_name="author_5")
+        # there's only 2 followers so the public post should be sent to these two followers plus the non-followers
+        Follow.objects.create(follower=author_2,followee=author_1)
+        Follow.objects.create(follower=author_3,followee=author_1)
+        payload = {
+            "title": "Mark McGoey",
+            "description": "new description",
+            "unlisted":True,
+            "content":"Some new content",
+            "visibility":"PUBLIC",
+            "content_type":"text/plain"
+        }
+        url = f'/api/authors/{author_1.id}/posts/'
+        self.client.force_authenticate(user=author_1)
+        response = self.client.post(url,data=payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        inbox = Inbox.objects.all()
+        self.assertEqual(4, Inbox.objects.count())
+        self.assertEqual(author_2, inbox[0].target_author)
+        self.assertEqual(author_3, inbox[1].target_author)
+        self.assertEqual(author_4, inbox[2].target_author)
+        self.assertEqual(author_5, inbox[3].target_author)
+        
 
 class InboxViewTestCase(APITestCase):
     def test_get_different_types_of_inbox_items(self):
