@@ -34,11 +34,10 @@ Pretty straightforward, contains the styles for a web component. Note the `css` 
 The template for a web component. Defines what the *shadowRoot* will actually look like in the browser. Use bindings like `${x => x.greeting}` to display data reactively (make sure the greeting is `@observable`!). Be sure to use directives like `repeat()` when displaying a list of components or HTMLElements. You can also use other web components in the template, make sure to import the **component** class, and not the **logic** class.
 
 ### index.ts
-Brings the template, styles, and logic together in one web component. This is the entry point for the web component, defines the fastDesignSystem, web component for the browser, and registers any additional fast-components.
-To use a custom component in another template, import the definition exported from this file.
+Brings the template, styles, and logic together in one web component. For webpack, this is the entry point for the web component. It defines the fastDesignSystem, web component for the browser, and registers any additional fast-components. To use a custom component in another template, import the definition exported from this file.
 
 ### Register the component, page, or library.
-In `src/appRegistry` add your component, along with the its definition, to the list of web components. This list is used to define web components for the browser, depending on the page (eventually, working on it).
+In index.ts, call defineComponent to define the web component for the browser.
 
 ## Creating data services:
 
