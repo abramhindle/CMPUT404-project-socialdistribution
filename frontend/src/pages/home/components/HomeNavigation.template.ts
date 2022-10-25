@@ -1,16 +1,20 @@
 import { html, when, repeat } from "@microsoft/fast-element";
 import { logoComponent } from "../../../components/logo";
-import { HomeNavigation } from "./HomeNavigation";
+import { LayoutHelpers } from "../../../libs/core/Helpers";
+import { LayoutType } from "../../../libs/core/PageModel";
+import { HomeNavigation, NavItem } from "./HomeNavigation";
 
 logoComponent;
 
 const navigationItemsTemplate = html<HomeNavigation>`
-    <div class="navigation-items">
-    ${repeat(x => x.navigationItems, html<string>`
-        <div class="navigation-item">
+    <div class="navigation-items ${x => x.layoutStyleClass}">
+    ${repeat(x => x.navigationItems, html<NavItem>`
+        <a class="navigation-item ${(x, c) => c.parent.layoutStyleClass}" href="${(x, c) => c.parent.getNavigationUrl(x)}">
             <img src="${(x, c) => c.parent.getNavigationIconUrl(x)}"/>
-            ${x => x}
-        </div>
+            ${when((x, c) => c.parent.layoutType == LayoutType.Desktop, html<string>`
+                ${x => x}
+            `)}
+        </a>
     `)}
     </div>
 `
@@ -23,14 +27,19 @@ const callToActionTemplate = html<HomeNavigation>`
 `;
 
 export const HomeNavigationTemplate = html<HomeNavigation>`
-    <header class="navigation-container">
-    <site-logo></site-logo>
-    ${when(x => x.isAuth, html<HomeNavigation>`
-        ${navigationItemsTemplate}
-        ${navProfileTemplate}
-    `)}
-    ${when(x => !x.isAuth, html<HomeNavigation>`
-        ${callToActionTemplate}
-    `)}
+    <header class="navigation-container ${x => x.layoutStyleClass}">
+        ${when(x => x.layoutType != LayoutType.Mobile, html<HomeNavigation>`
+            <site-logo
+                :layoutType=${x => x.layoutType}
+                :layoutStyleClass=${x => LayoutHelpers.getLayoutStyle(x.layoutType)}>
+            </site-logo>
+        `)}
+        ${when(x => x.user, html<HomeNavigation>`
+            ${navigationItemsTemplate}
+            ${navProfileTemplate}
+        `)}
+        ${when(x => !x.user, html<HomeNavigation>`
+            ${callToActionTemplate}
+        `)}
     </header>
 `;

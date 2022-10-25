@@ -1,25 +1,44 @@
 import { FASTElement, observable } from "@microsoft/fast-element";
+import { Author } from "../../../libs/api-service/SocialApiModel";
+import { LayoutType } from "../../../libs/core/PageModel";
 
-const NavItem = Object.freeze({
+export const NavItem = Object.freeze({
     Home: "Home",
     Inbox: "Inbox",
     Friends: "Friends"
 });
 
-type NavItem = typeof NavItem[keyof typeof NavItem];
+export type NavItem = keyof typeof NavItem;
 
 export class HomeNavigation extends FASTElement {
     @observable
-    public isAuth: boolean = false;
+    public user?: Author | null;
 
-    public readonly navigationItems = [
+    @observable
+    public layoutType: LayoutType = LayoutType.Desktop;
+
+    @observable
+    public layoutStyleClass: string = "";
+
+    layoutTypeChanged(old: any, newval: any) {
+        console.log(old, newval)
+    }
+
+    public readonly navigationItems: NavItem[] = [
         NavItem.Home,
         NavItem.Inbox,
         NavItem.Friends
     ];
 
-    public connectedCallback() {
-        super.connectedCallback();
+    public getNavigationUrl(navigationItem: NavItem): string {
+        switch (navigationItem) {
+            case NavItem.Inbox:
+                return "/inbox/";
+            case NavItem.Friends:
+                return "/friends/";
+            default:
+                return "/";
+        }
     }
 
     public getNavigationIconUrl(navigationItem: string) {

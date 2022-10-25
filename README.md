@@ -40,7 +40,8 @@ API Information
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
 | /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
 | /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
-
+| /api/authors/<author_id>/posts/               | Creates a new post for an author [A]| Retrieves recent posts from an author [A]| - | - |
+| /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | Retrieves an authors post [A] | - | Delete an authors post [A] |
 
 ### Notes
 - [A] specifies that the request must be authenticated
@@ -359,6 +360,148 @@ Notes:
 - `200 OK`
 - `401 Unauthorized`
 - `404 Not Found`
+
+
+### Retrieve a list of all the posts for an author
+#### Sample Usage
+Retrieve the list of posts for author id 5 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197422040-7f02808a-3dc8-4bd8-b441-b0d01b680d4d.png">
+
+#### Sample Response
+```
+[
+    {
+        "author": {
+            "url": "http://localhost:8000/api/authors/5/",
+            "id": 5,
+            "display_name": "myuser",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "created_at": "2022-10-22T05:06:49.477100Z",
+        "edited_at": "2022-10-22T23:27:41.589319Z",
+        "title": "my first post!",
+        "description": "Hello world",
+        "source": "",
+        "origin": "",
+        "unlisted": false,
+        "content_type": "text/plain",
+        "content": "change the content",
+        "visibility": "PUBLIC"
+    }
+
+]
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Create a new post
+#### Sample Usage
+Retrieve the list of posts for author id 5 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197423346-6aa79f0b-f4f0-4986-85c8-1e29b1467ef1.png">
+
+#### Sample Response
+```
+[
+   {
+    "title": "My first post",
+    "description": "My first post",
+    "unlisted": false,
+    "content": "some content",
+    "visibility": "PUBLIC",
+    "content_type": "text/plain"
+    }
+]
+```
+
+#### Possible Status Codes
+- `201 Created`
+- `400 Bad Request`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Retrieve an authors post
+#### Sample Usage
+Retrieve the post for author id 5 with post id 55 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197423796-b0b13176-5ce1-4baa-808e-5e489251e0d5.png">
+
+
+#### Sample Response
+```
+[
+   {
+    "author": {
+        "url": "http://127.0.0.1:8000/api/authors/5/",
+        "id": 5,
+        "display_name": "user123",
+        "profile_image": "",
+        "github_handle": "user"
+    },
+    "created_at": "2022-10-22T05:06:49.477100Z",
+    "edited_at": "",
+    "title": "new Title",
+    "description": "Hello world",
+    "source": "",
+    "origin": "",
+    "unlisted": false,
+    "content_type": "text/plain",
+    "content": "change the content",
+    "visibility": "PUBLIC"
+    }
+]
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `400 Bad Request`
+
+### Update an authors post
+#### Sample Usage
+Update the post for author id 5 with post id 55 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197424158-fd5211d4-79ee-4e1b-bb0c-b8d2585d28be.png">
+
+
+#### Sample Response
+```
+[
+  {
+    "title": "My new post",
+    "description": "My new post",
+    "unlisted": false,
+    "content": "some content"
+    }
+]
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `400 Bad Request`
+
+### Delete an authors post
+#### Sample Usage
+Delete the post for author id 5 with post id 55 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197424516-02e2fdd2-52d6-4910-a488-b1b05490566c.png">
+
+#### Sample Response
+```
+[
+    {
+        "message": "Object deleted!"
+    }
+]
+```
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `400 Bad Request`
 
 
 ## Pagination
