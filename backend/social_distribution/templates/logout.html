@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<title>14Degrees - Login</title>
+{% endblock %}
+
+{% block body %}
+  <signon-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}" signOnType="logout"></signon-page>
+  {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'signon.js' %}"></script>
+{% endblock %}
