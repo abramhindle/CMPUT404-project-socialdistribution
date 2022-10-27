@@ -4,4 +4,6 @@ export class SocialApiUrls {
     public static readonly LOGOUT = "/api/logout/";
 
     public static readonly AUTHORS = "/api/authors/";
+    public static readonly PUBLIC_POSTS = "/api/posts/";
+    public static readonly POSTS = "/posts/";
 }

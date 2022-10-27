@@ -1,6 +1,6 @@
 import { FASTElement, observable } from "@microsoft/fast-element";
-import { Author } from "../../../libs/api-service/SocialApiModel";
-import { LayoutType } from "../../../libs/core/PageModel";
+import { LayoutType } from "../../../../libs/core/PageModel";
+import { Author } from "../../../../libs/api-service/SocialApiModel";
 
 export const NavItem = Object.freeze({
     Home: "Home",
@@ -19,10 +19,6 @@ export class HomeNavigation extends FASTElement {
 
     @observable
     public layoutStyleClass: string = "";
-
-    layoutTypeChanged(old: any, newval: any) {
-        console.log(old, newval)
-    }
 
     public readonly navigationItems: NavItem[] = [
         NavItem.Home,
@@ -44,11 +40,11 @@ export class HomeNavigation extends FASTElement {
     public getNavigationIconUrl(navigationItem: string) {
         switch(navigationItem) {
             case(NavItem.Home):
-                return require('../../../assets/images/home.png').default
+                return require('../../../../assets/images/home.png').default
             case (NavItem.Inbox):
-                return require('../../../assets/images/inbox.png').default
+                return require('../../../../assets/images/inbox.png').default
             case (NavItem.Friends):
-                return require('../../../assets/images/friends.png').default
+                return require('../../../../assets/images/friends.png').default
         }
     }
 }

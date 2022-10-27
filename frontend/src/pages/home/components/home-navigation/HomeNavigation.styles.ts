@@ -1,21 +1,18 @@
 import { css } from "@microsoft/fast-element";
-import { LayoutStyleClass } from "../../../libs/core/PageModel";
-
-LayoutStyleClass
+import { LayoutStyleClass } from "../../../../libs/core/PageModel";
 
 export const HomeNavigationStyles = css`
     :host {
         width: 21.875%;
         height: 100%;
         z-index: 3;
-        position: relative;
+        position: fixed;
+        left: 0px;
     }
 
     :host(.${LayoutStyleClass.Mobile}) {
         width: 0;
         height: 0;
-        z-index: 3;
-        position: fixed;
     }
 
     .navigation-container {
@@ -71,6 +68,7 @@ export const HomeNavigationStyles = css`
         font-weight: lighter;
         justify-content: center;
         padding: 8px 0;
+        margin: 16px 0;
     }
 
     .navigation-item.${LayoutStyleClass.Tablet} {

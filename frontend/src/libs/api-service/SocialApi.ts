@@ -1,5 +1,5 @@
 import { SocialApiConstants } from "./SocialApiConstants";
-import { Author } from "./SocialApiModel";
+import { Author, PaginatedResponse } from "./SocialApiModel";
 import { SocialApiTransform } from "./SocialApiTransform";
 import { SocialApiUrls } from "./SocialApiUrls";
 
@@ -126,7 +126,85 @@ export namespace SocialApi {
             throw new Error(response.statusText)
         }
 
-        return SocialApiTransform.jsonDataAuthorTransform(text);
+        return SocialApiTransform.parseJsonAuthorData(text);
+    }
+
+    export async function createPost(): Promise<string> {
+        // Testing new posts
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+        headers.set("Content-Type", "application/json; charset=UTF-8");
+
+        const body: string = `{
+            "title": "My first post ${Math.random()}",
+            "description": "${Math.random()}",
+            "unlisted": false,
+            "content": "some content 1",
+            "visibility": "PUBLIC",
+            "content_type": "text/plain"
+        }`
+
+        const requestOptions = {
+            method: "POST",
+            credentials: credentialType,
+            headers: headers,
+            body: body
+        };
+
+        const response = await fetch(SocialApiUrls.AUTHORS + "1/posts/", requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return text;
+    }
+
+    export async function fetchPaginatedPublicPosts(page: number, size: number): Promise<PaginatedResponse | null> {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+
+        const url = new URL(SocialApiUrls.PUBLIC_POSTS, window.location.origin);
+        url.searchParams.append("page", page.toString())
+        url.searchParams.append("size", size.toString())
+
+        const requestOptions = {
+            method: "GET",
+            credentials: credentialType,
+            headers: headers
+        };
+
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return SocialApiTransform.parseJsonPaginatedData(text);
+    }
+
+    export async function fetchPaginatedPublicPostsNext(nextUrl: string): Promise<PaginatedResponse | null> {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+
+        const url = new URL(nextUrl);
+
+        const requestOptions = {
+            method: "GET",
+            credentials: credentialType,
+            headers: headers
+        };
+
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return SocialApiTransform.parseJsonPaginatedData(text);
     }
 }
 
