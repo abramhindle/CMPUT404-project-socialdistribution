@@ -12,7 +12,7 @@ class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     class Meta:
         model = Post
-        fields = ['author','created_at','edited_at','title','description','source','origin','unlisted','content_type','content','visibility']
+        fields = ['id','author','created_at','edited_at','title','description','source','origin','unlisted','content_type','content','visibility']
 
 class UpdatePostSerializer(serializers.ModelSerializer):
     class Meta:
