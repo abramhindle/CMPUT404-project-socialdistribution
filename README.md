@@ -26,6 +26,22 @@ pip install djangorestframework
 python manage.py runserver
 ```
 
+### How to Create Seed Data
+1. At first, you can create any set of data of your liking through the list API routes or though the frontend.
+2. Once you have inserted some meaningful data into your local database, you can dump the data into file fixtures. To do that make sure that you are in the Django project directory (`backend/`) and run the following commands -
+```
+python manage.py dumpdata webserver --indent 4 > mydata.json
+```
+This will create a file called `mydata.json` in your current working directory.
+
+3. If you want, you can push this dataset in the `webserver/fixtures` directory of our Github repository.
+4. To load this dataset to your local db at a later time, run the following commands -
+```
+python manage.py flush  # this will clear the current data in your db
+python manage.py loaddata mydata.json
+```
+Now, you're all set!
+
 API Information
 =================
 ## API Endpoints
