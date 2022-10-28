@@ -12,8 +12,7 @@ export class FeedPost extends FASTElement {
         }
 
         const url = new URL(
-            "/posts/", window.location.origin);
-        url.searchParams.append("id", this.post.id);
+            "/posts/" + this.post.author.id + "/" + this.post.id, window.location.origin);
         
         return url.toString();
     }

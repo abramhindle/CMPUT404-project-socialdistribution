@@ -7,9 +7,15 @@ export const SocialSearchStyles = css`
         border-radius: 20px;
         color: white;
         width: 100%;
-        height: 100%;
+        height: 5vh;
         display: flex;
         place-content: center;
         align-items: center;
+        text-align: center;
+    }
+
+    .search-icon {
+        height: 20px;
+        width: 20px;
     }
 `;
