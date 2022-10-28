@@ -215,8 +215,6 @@ class AllPosts(APIView, PaginationHandlerMixin):
 
 
 class AllPublicPostsView(APIView, PaginationHandlerMixin):
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
     pagination_class = BasicPagination
 
     def get_serializer(self, request, queryset):
