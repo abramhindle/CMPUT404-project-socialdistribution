@@ -12,8 +12,15 @@ export class EditPost extends Page {
 
   public form?: HTMLFormElement;
 
+  @observable
+  public loadedPostText: string = "";
+
   public constructor() {
     super();
+
+    if (this.profileId != this.userId) {
+      window.location.replace("/");
+    }
 
     const postId = this.getAttribute("postId");
     this.removeAttribute("postId");
@@ -41,6 +48,7 @@ export class EditPost extends Page {
       } else throw new Error("Null Post");
     } catch (e) {
       console.error(e);
+      this.loadedPostText = "Post not found."
     }
   }
 
@@ -51,22 +59,23 @@ export class EditPost extends Page {
       return;
     }
 
+    if (!this.userId) {
+      return;
+    }
+
     const formData = new FormData(this.form);
     try {
       formData.append("description", "My post description");
       formData.append("unlisted", "false");
       if (this.user) {
         if (this.postId) {
-          const responseData = await SocialApi.updatePost(this.postId, this.user.id, formData);
+          const responseData = await SocialApi.updatePost(this.postId, this.userId, formData);
           if (responseData) {
-            const url = new URL(
-              SocialApiUrls.AUTHORS + this.userId + SocialApiUrls.POSTS + responseData.id,
-              window.location.origin
-            );
+            const url = new URL("/view-post/" + this.profileId + "/" + this.postId, window.location.origin);
             window.location.replace(url);
-          } else throw new Error("Null post");
-        } else throw new Error("Null post id");
-      } else throw new Error("Null user");
+          }
+        }
+      }
     } catch (e) {
       console.error(e);
     }
@@ -77,13 +86,14 @@ export class EditPost extends Page {
       if (this.user) {
         if (this.postId) {
           const responseData = await SocialApi.deletePost(this.user.id, this.postId);
-          if (responseData && responseData[0]?.message === 'object deleted') {
-            window.location.replace(window.location.origin);
-          } else throw new Error("Failed to delete post");
+          console.log(responseData);
+          if (responseData && responseData.message == 'Object deleted!') {
+            window.location.replace("/");
+          }
         }
       }
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   }
 }

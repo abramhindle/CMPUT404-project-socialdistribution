@@ -161,9 +161,6 @@ export const ViewPostPageStyles = css`
     font-size: ${typeRampPlus1FontSize};
     padding: 0 16px;
     height: 5vh;
-    background-color: ${accentForegroundActive};
-    color: white;
-    border: 0;
     font-weight: bold;
 
     display: flex;
@@ -174,6 +171,8 @@ export const ViewPostPageStyles = css`
     background-color: white;
     border: 2px solid lightgrey;
     color: black;
+
+    width: 90%;
   }
 
   @media (max-width: 991px) {

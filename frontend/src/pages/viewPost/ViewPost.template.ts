@@ -11,6 +11,7 @@ export const ViewPostPageTemplate = html<ViewPost>`
         :user="${x => x.user}"
         :layoutType="${x => x.layoutType}"
         :layoutStyleClass="${x => LayoutHelpers.getLayoutStyle(x.layoutType)}">
+        ${when(x => x.post, html<ViewPost>`
         <div class="post-container">
             <div class="post-container1">
                 <img
@@ -26,9 +27,13 @@ export const ViewPostPageTemplate = html<ViewPost>`
                 </div>
             </div>
             ${when(x => x.userId == x.profileId, html<ViewPost>`
-                <a class="edit-post-button" href="/edit-post/${x => x.userId}/${x => x.profileId}">Edit Post</a>
+                <a class="edit-post-button" href="/edit-post/${x => x.userId}/${x => x.post?.id}">Edit Post</a>
             `)}
         </div>
+        `)}
+        ${when(x => !x.post, html<ViewPost>`
+            <h1>${x => x.loadedPostText}</h1>
+        `)}
     </page-layout>
 `;
 

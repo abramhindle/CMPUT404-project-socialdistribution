@@ -17,6 +17,10 @@ export const CreatePostPageStyles = css`
   //  width: 100vw;
   //}
 
+  button {
+    cursor: pointer;
+  }
+  
   .create-post-container {
     width: 100%;
     display: flex;

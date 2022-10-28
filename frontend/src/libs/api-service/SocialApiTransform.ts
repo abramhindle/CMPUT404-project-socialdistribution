@@ -38,6 +38,14 @@ export namespace SocialApiTransform {
     }
 
     export function authorDataTransform(authorData: any): Author | null {
+        if (!authorData) {
+            return null;
+        }
+        
+        if (!authorData.id || !authorData.display_name) {
+            return null;
+        } 
+
         const myAuthor = new Author(authorData.id, authorData.display_name);
         myAuthor.url = authorData.url;
         myAuthor.githubHandle = authorData.github_handle

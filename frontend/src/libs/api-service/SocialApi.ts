@@ -265,7 +265,7 @@ export namespace SocialApi {
     export async function deletePost(
         authorId: string,
         postId: string
-    ): Promise<Array<{ 'message': 'object deleted' }> | null> {
+    ): Promise<{ 'message': 'Object deleted!' } | null> {
         const credentialType: RequestCredentials = "include";
         const headers: HeadersInit = new Headers();
         headers.set("Authorization", authHeader());

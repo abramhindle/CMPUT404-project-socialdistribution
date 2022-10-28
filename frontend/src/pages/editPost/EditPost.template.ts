@@ -1,4 +1,4 @@
-import { html, ref } from "@microsoft/fast-element";
+import { html, ref, when } from "@microsoft/fast-element";
 import { layoutComponent } from "../../components/base-layout";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { EditPost } from "./EditPost";
@@ -11,6 +11,7 @@ export const EditPostPageTemplate = html<EditPost>`
     :user="${x => x.user}"
     :layoutType="${x => x.layoutType}"
     :layoutStyleClass="${x => LayoutHelpers.getLayoutStyle(x.layoutType)}">
+    ${when(x => x.post, html<EditPost>`
     <div class="edit-post-container">
         <div class="edit-post-banner">
             <h1 class="edit-post-text">Edit A Post</h1>
@@ -42,19 +43,19 @@ export const EditPostPageTemplate = html<EditPost>`
                     <option value="Public" name="visibility" selected="${x => {
     if (x.post?.visibility === "PUBLIC") return "selected"
   }}">Public
-                    </option>
-                    <option value="Private" selected="${x => {
+                                                          </option>
+                                                          <option value="Private" selected="${x => {
     if (x.post?.visibility === "PRIVATE") return "selected"
   }}">Private
-                    </option>
-                    <option value="Friends Only" selected="${x => {
+                                                          </option>
+                                                          <option value="Friends Only" selected="${x => {
     if (x.post?.visibility === "FRIENDS") return "selected"
   }}">Friends Only
                     </option>
                 </select>
             </div>
             <div class="edit-post-container3">
-                <button class="edit-post-button1 button" type="button" onclick="${(x) => x.deletePost}">
+                <button class="edit-post-button1 button" type="button" @click="${x => x.deletePost()}">
               <span class="edit-post-text05">
                 <span class="edit-post-text06">Delete</span>
                 <br/>
@@ -69,5 +70,9 @@ export const EditPostPageTemplate = html<EditPost>`
             </div>
         </form>
     </div>
+    `)}
+    ${when(x => !x.post, html<EditPost>`
+      <h1>${x => x.loadedPostText}</h1>
+    `)}
   </page-layout>
 `;

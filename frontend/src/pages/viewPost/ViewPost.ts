@@ -7,6 +7,9 @@ export class ViewPost extends Page {
   @observable
   public post?: Post;
 
+  @observable
+  public loadedPostText: string = "";
+
   public constructor() {
     super();
     const postId = this.getAttribute("postId");
@@ -29,9 +32,10 @@ export class ViewPost extends Page {
       const post = await SocialApi.fetchPost(postId, this.profileId);
       if (post) {
         this.post = post;
-      } else throw new Error("Null Post");
+      }
     } catch (e) {
       console.error(e);
+      this.loadedPostText = "Post not found.";
     }
   }
 }
