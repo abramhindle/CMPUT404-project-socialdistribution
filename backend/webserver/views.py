@@ -127,7 +127,9 @@ class PostView(APIView):
                         return Response({'message': 'You cannot edit this field'}, status=status.HTTP_400_BAD_REQUEST)
                 if serializer.is_valid():
                     serializer.save(edited_at=datetime.datetime.utcnow().replace(tzinfo=utc))
-                    return Response(serializer.data, status=status.HTTP_200_OK)
+                    data_dict = {"id":post.id}
+                    data_dict.update(serializer.data)
+                    return Response(data_dict, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'message': 'You cannot edit another authors post'}, status=status.HTTP_400_BAD_REQUEST) 
@@ -207,7 +209,9 @@ class AllPosts(APIView, PaginationHandlerMixin):
                                 
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                data_dict = {"id":new_post.id}
+                data_dict.update(serializer.data)
+                return Response(data_dict, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         else:
