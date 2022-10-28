@@ -11,3 +11,19 @@ export const LayoutStyleClass = Object.freeze({
     Tablet: "layout-tablet",
     Mobile: "layout-mobile"
 });
+
+export const FeedType = Object.freeze({
+    All: "All",
+    Stream: "Stream"
+} as const);
+
+export type FeedType = keyof typeof FeedType;
+
+export const FollowStatus = Object.freeze({
+    Unknown: "Unknown",
+    Following: "Following",
+    NotFollowing: "NotFollowing"
+} as const);
+
+export type FollowStatus = keyof typeof FollowStatus;
+

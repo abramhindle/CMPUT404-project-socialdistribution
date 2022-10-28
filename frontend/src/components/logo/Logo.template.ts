@@ -2,7 +2,7 @@ import { html, when } from "@microsoft/fast-element";
 import { LayoutType } from "../../libs/core/PageModel";
 import { Logo } from "./Logo";
 
-const siteName = "14Degrees";
+export const siteName = "14Degrees";
 LayoutType
 
 export const LogoTemplate = html<Logo>`

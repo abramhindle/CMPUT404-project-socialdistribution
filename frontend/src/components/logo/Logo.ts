@@ -10,8 +10,4 @@ export class Logo extends FASTElement {
 
     @observable
     public layoutStyleClass: string = "";
-
-    layoutTypeChanged(old: any, newval: any) {
-        console.log(old, newval)
-    }
 }

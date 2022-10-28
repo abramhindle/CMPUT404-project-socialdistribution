@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from .models import Author, Follow, FollowRequest, Inbox, Post
-from .serializers import (AcceptFollowRequestSerializer, 
+from .serializers import (AcceptOrDeclineFollowRequestSerializer, 
                           AuthorSerializer, 
                           AuthorRegistrationSerializer, 
                           FollowRequestSerializer, 
@@ -13,7 +13,8 @@ from .serializers import (AcceptFollowRequestSerializer,
                           PostSerializer, 
                           UpdatePostSerializer,  
                           SendPrivatePostSerializer,
-                          InboxSerializer)
+                          InboxSerializer,
+                          RemoveFollowerSerializer)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
@@ -215,8 +216,6 @@ class AllPosts(APIView, PaginationHandlerMixin):
 
 
 class AllPublicPostsView(APIView, PaginationHandlerMixin):
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
     pagination_class = BasicPagination
 
     def get_serializer(self, request, queryset):
@@ -246,6 +245,21 @@ class FollowRequestsView(APIView):
         serializer = FollowRequestSerializer(author.follow_requests_received.all(), many=True, context={'request': request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FollowRequestDetailView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def delete(self, request, author_id, foreign_author_id):
+        """Decline a follow request"""
+        serializer = AcceptOrDeclineFollowRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            # TODO: project part 2; foreign author id could be a remote one
+            follow_request = get_object_or_404(FollowRequest, sender=foreign_author_id, receiver=author_id)
+            follow_request.delete()
+            return Response({'message': 'Follow request declined'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FollowRequestProcessor(object):
@@ -327,7 +341,7 @@ class FollowersDetailView(APIView):
     def put(self, request, author_id, foreign_author_id):
         if author_id == foreign_author_id:
             return Response({'message': 'author cannot add themself as a follower'}, status=status.HTTP_400_BAD_REQUEST)
-        serializer = AcceptFollowRequestSerializer(data=request.data)
+        serializer = AcceptOrDeclineFollowRequestSerializer(data=request.data)
         if serializer.is_valid():
             # it is safe to assume that the followee will be someone from our server
             # because they are accepting the follow request
@@ -358,9 +372,13 @@ class FollowersDetailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, author_id, foreign_author_id):
-        follow = get_object_or_404(Follow, follower=foreign_author_id, followee=author_id)
-        follow.delete()
-        return Response({'message': 'follower removed'}, status=status.HTTP_200_OK)
+        serializer = RemoveFollowerSerializer(data=request.data)
+        if serializer.is_valid():
+            # TODO: for project part 2; follower could be a remote author;
+            follow = get_object_or_404(Follow, follower=foreign_author_id, followee=author_id)
+            follow.delete()
+            return Response({'message': 'follower removed'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class InboxView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]

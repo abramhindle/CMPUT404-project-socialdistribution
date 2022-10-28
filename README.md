@@ -25,6 +25,28 @@ pip install djangorestframework
 ```
 python manage.py runserver
 ```
+5. Load seed data (note you might need to clear your database first)
+```
+When asked for authentication enter any of the authors usernames with the password pass123
+python manage.py flush   (if your database is not empty)
+python manage.py loaddata fixtures/all_data.json
+```
+
+### How to Create Seed Data
+1. At first, you can create any set of data of your liking through the list API routes or though the frontend.
+2. Once you have inserted some meaningful data into your local database, you can dump the data into file fixtures. To do that make sure that you are in the Django project directory (`backend/`) and run the following commands -
+```
+python manage.py dumpdata webserver --indent 4 > mydata.json
+```
+This will create a file called `mydata.json` in your current working directory.
+
+3. If you want, you can push this dataset in the `webserver/fixtures` directory of our Github repository.
+4. To load this dataset to your local db at a later time, run the following commands -
+```
+python manage.py flush  # this will clear the current data in your db
+python manage.py loaddata mydata.json
+```
+Now, you're all set!
 
 API Information
 =================
@@ -38,6 +60,7 @@ API Information
 | /api/authors/<author_id>/                | Retrieves an author's profile [A] | Updates an author's profile [A] | - | - |
 | /api/authors/<author_id>/inbox/  [WIP]              | Creates a new inbox item for an author [A]  | Retrieve's an author's inbox [A] | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
+| /api/authors/<author_id>/follow-requests/<foreign_author_id>/                | - | - | - | Decline a follow request |
 | /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
 | /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
 | /api/authors/<author_id>/posts/               | Creates a new post for an author [A]| Retrieves recent posts from an author [A]| - | - |
@@ -248,9 +271,28 @@ Author with id 4 accepts a follow request of author with id 3 -
 - `404 Not Found`
 
 
+### Decline a follow request
+#### Sample Request
+<img width="1134" alt="image" src="https://user-images.githubusercontent.com/43586048/198464624-9e99bc8b-a30a-49a0-8030-b64a751c7f5d.png">
+
+#### Sample Response
+```
+{
+    "message": "Follow request declined"
+}
+```
+
+#### Possible Status Codes
+- `200 OK`: means follow request was declined
+- `400 Bad Request`
+- `401 Unauthorized`
+- `404 Not Found`: can be returned when a matching follow request does not exist
+
+
 ### Remove a follower
 #### Sample Request
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197364958-af8cb572-74ab-4c0a-9b61-dde0b778a181.png">
+<img width="1134" alt="image" src="https://user-images.githubusercontent.com/43586048/198466108-f7fde988-9542-4b25-82e7-bc4ac096f88d.png">
+
 
 #### Sample Response
 ```
@@ -261,6 +303,7 @@ Author with id 4 accepts a follow request of author with id 3 -
 
 #### Possible Status Codes
 - `200 OK`
+- `400 Bad Request`
 - `401 Unauthorized`
 - `404 Not Found`: this can be returned when a matching follower can't be found
 

@@ -45,7 +45,19 @@ export class Post {
 
     visibility?: string;
 
+    content?: string;
+
     constructor(id: string) {
         this.id = id;
     }
+}
+
+export class PaginatedResponse {
+    count?: number;
+
+    next?: string;
+
+    previous?: string;
+
+    results?: any[];
 }

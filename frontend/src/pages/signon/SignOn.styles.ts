@@ -94,4 +94,13 @@ export const SignOnPageStyles = css`
         color: white;
         background-color: ${neutralColor};
     }
+
+    .already {
+        margin-top: 16px;
+    }
+
+    a, a:hover, a:visited, a:active {
+        color: ${neutralFillStrongHover};
+        text-decoration: none;
+    }
 `;
