@@ -12,6 +12,7 @@ export const HomePageStyles = css`
         width: 90%;
         align-items: center;
         align-content: center;
+        padding-top: 24px;
     }
 
     .tab {
@@ -56,7 +57,6 @@ export const HomePageStyles = css`
     }
 
     a, a:hover, a:visited, a:active {
-        color: inherit;
         text-decoration: none;
     }
 `;

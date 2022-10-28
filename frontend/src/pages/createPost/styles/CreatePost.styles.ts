@@ -27,7 +27,6 @@ export const CreatePostPageStyles = css`
   }
   .create-post-banner {
     width: 100%;
-    height: 100%;
     display: flex;
     padding: var(--dl-space-space-threeunits);
     align-self: center;

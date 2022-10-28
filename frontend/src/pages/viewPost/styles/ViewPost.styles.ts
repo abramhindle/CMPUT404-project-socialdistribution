@@ -2,6 +2,7 @@ import {css} from "@microsoft/fast-element";
 import {ResetStyles} from "./reset.styles";
 import {DefaultStyles} from "./default.styles";
 import {GeneralStyles} from "./general.styles";
+import { accentForegroundActive, typeRampPlus1FontSize } from "@microsoft/fast-components";
 
 
 export const ViewPostPageStyles = css`
@@ -16,6 +17,7 @@ export const ViewPostPageStyles = css`
     min-height: 100vh;
     align-items: center;
     flex-direction: column;
+    background-color: white;
   }
 
   .post-container1 {
@@ -152,6 +154,26 @@ export const ViewPostPageStyles = css`
     border-top-right-radius: var(--dl-radius-radius-radius4);
     border-bottom-left-radius: var(--dl-radius-radius-radius4);
     border-bottom-right-radius: var(--dl-radius-radius-radius4);
+  }
+
+  .edit-post-button {
+    border-radius: 50px;
+    font-size: ${typeRampPlus1FontSize};
+    padding: 0 16px;
+    height: 5vh;
+    background-color: ${accentForegroundActive};
+    color: white;
+    border: 0;
+    font-weight: bold;
+
+    display: flex;
+    place-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    background-color: white;
+    border: 2px solid lightgrey;
+    color: black;
   }
 
   @media (max-width: 991px) {

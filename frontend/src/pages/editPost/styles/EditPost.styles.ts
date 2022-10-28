@@ -9,6 +9,10 @@ export const EditPostPageStyles = css`
   ${DefaultStyles}
   ${GeneralStyles}
 
+  button {
+    cursor: pointer;
+  }
+
   .edit-post-container {
     width: 100%;
     display: flex;
@@ -19,7 +23,6 @@ export const EditPostPageStyles = css`
   }
   .edit-post-banner {
     width: 100%;
-    height: 100%;
     display: flex;
     padding: var(--dl-space-space-threeunits);
     align-self: center;
@@ -50,7 +53,7 @@ export const EditPostPageStyles = css`
   }
   .edit-post-textarea {
     width: 100%;
-    height: 147px;
+    padding-bottom: 147px;
     align-self: center;
     margin-top: var(--dl-space-space-unit);
     border-width: 0px;

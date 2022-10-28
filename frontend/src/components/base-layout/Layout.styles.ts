@@ -29,7 +29,6 @@ export const LayoutStyles = css`
     }
 
     .main-feed {
-        padding-top: 24px;
         width: 72%;
         display: flex;
         flex-direction: column;

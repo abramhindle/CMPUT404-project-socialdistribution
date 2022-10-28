@@ -8,7 +8,7 @@ export class EditPost extends Page {
   @observable
   public post?: Post;
 
-  private postId: string | undefined;
+  private postId?: string;
 
   public form?: HTMLFormElement;
 
@@ -17,12 +17,11 @@ export class EditPost extends Page {
 
     const postId = this.getAttribute("postId");
     this.removeAttribute("postId");
-    const authorId = this.getAttribute("authorId");
-    this.removeAttribute("authorId");
-    if (authorId && postId) {
+    if (postId) {
       this.postId = postId;
-      this.getPost(authorId, postId);
-      // TODO: redirect to home if the post doesn't exist
+      this.getPost(postId);
+    } else {
+      window.location.replace("/");
     }
   }
 
@@ -30,9 +29,13 @@ export class EditPost extends Page {
     super.connectedCallback();
   }
 
-  private async getPost(authorId: string, postId: string) {
+  private async getPost(postId: string) {
+    if (!this.profileId) {
+      return;
+    }
+
     try {
-      const post = await SocialApi.fetchPost(postId, authorId);
+      const post = await SocialApi.fetchPost(postId, this.profileId);
       if (post) {
         this.post = post;
       } else throw new Error("Null Post");
@@ -57,7 +60,7 @@ export class EditPost extends Page {
           const responseData = await SocialApi.updatePost(this.postId, this.user.id, formData);
           if (responseData) {
             const url = new URL(
-              SocialApiUrls.AUTHORS + this.user.id + SocialApiUrls.POSTS + responseData.id,
+              SocialApiUrls.AUTHORS + this.userId + SocialApiUrls.POSTS + responseData.id,
               window.location.origin
             );
             window.location.replace(url);
