@@ -1,4 +1,7 @@
-import { provideFASTDesignSystem } from "@microsoft/fast-components";
+import { parseColorHexRGB } from "@microsoft/fast-colors";
+import { accentColor, baseHeightMultiplier, baseLayerLuminance, bodyFont, controlCornerRadius, fastTextField, neutralColor, provideFASTDesignSystem, SwatchRGB, textFieldStyles, typeRampBaseFontSize, typeRampPlus1FontSize, typeRampPlus2FontSize } from "@microsoft/fast-components";
+import { css } from "@microsoft/fast-element";
+import { Colors } from "../../libs/core/Colors";
 import { ComponentEntry, defineComponent } from "../AppRegistry";
 import { Profile } from "./Profile";
 import { ProfilePageStyles as styles } from "./Profile.styles";
@@ -16,4 +19,15 @@ export const profilePage = {
 defineComponent(new ComponentEntry(profilePage, Profile));
 
 provideFASTDesignSystem()
-      .register();
+      .register(
+        fastTextField({
+            prefix: "",
+            styles: (ctx, def) => css`
+                .root input {
+                    font-size: ${typeRampPlus2FontSize};
+                }
+
+                ${textFieldStyles(ctx, def)}
+            `
+        })
+      );

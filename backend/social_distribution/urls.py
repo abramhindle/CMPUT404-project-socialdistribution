@@ -22,9 +22,12 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html')),
+    path('profile/<str:profileId>', login_required(TemplateView.as_view(template_name='profile.html'), redirect_field_name=None)),
+    path('profile/<str:profileId>/followers/', login_required(TemplateView.as_view(template_name='followers.html'), redirect_field_name=None)),
     path('register/', auth_views.LoginView.as_view(redirect_authenticated_user=True, template_name='register.html')),
     path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True, template_name='login.html')),
     path('logout/', login_required(TemplateView.as_view(template_name='logout.html'), redirect_field_name=None)),
+    path('inbox/', login_required(TemplateView.as_view(template_name='inbox.html'), redirect_field_name=None)),
     path('api/', include('webserver.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

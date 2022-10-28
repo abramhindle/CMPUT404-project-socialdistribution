@@ -5,20 +5,13 @@ import { SocialApi } from "../../libs/api-service/SocialApi";
 import { PaginatedResponse, Post } from "../../libs/api-service/SocialApiModel";
 import { SocialApiTransform } from "../../libs/api-service/SocialApiTransform";
 import { FeedType } from "../../libs/core/PageModel";
-import { Page } from "../Page";
+import { PaginatedPage } from "../PaginatedPage";
 
 const PAGE_SIZE = 10;
 
-export class Home extends Page {
+export class Home extends PaginatedPage {
     @observable
     public visibilePosts: Post[] = [];
-
-    public loadMore?: HTMLElement;
-
-    private observer?: IntersectionObserver;
-
-    @observable
-    public paginatedResponse?: PaginatedResponse | null;
 
     @observable
     public feedType: FeedType = FeedType.All;
@@ -27,16 +20,7 @@ export class Home extends Page {
         super();
 
         this.addIcons();
-
-        this.observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    this.getPosts();
-                }
-            })
-        })
-
-        this.getPosts();
+        this.getResults();
     }
 
     public async changeFeed(feedType: FeedType) {
@@ -44,7 +28,7 @@ export class Home extends Page {
         this.visibilePosts.splice(0, this.visibilePosts.length);
         this.paginatedResponse = null;
         this.observer?.disconnect();
-        await this.getPosts();
+        await this.getResults();
     }
 
     public getFeedTypeStyles(feedType: FeedType) {
@@ -58,7 +42,7 @@ export class Home extends Page {
         library.add(faPencil);
     }
 
-    private async getPosts() {
+    protected async getResults() {
         try {
             let responseData: PaginatedResponse | null;
 

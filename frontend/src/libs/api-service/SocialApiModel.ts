@@ -5,6 +5,13 @@ export const ContentType = Object.freeze({
 
 export type ContentType = keyof typeof ContentType;
 
+export const ApiObjectType = Object.freeze({
+    follow: "follow",
+    post: "post"
+});
+
+export type ApiObjectType = keyof typeof ApiObjectType;
+
 export class Author {
     id: string;
     displayName: string;
@@ -52,6 +59,10 @@ export class Post {
     }
 }
 
+export class FollowRequest {
+    sender?: Author;
+}
+
 export class PaginatedResponse {
     count?: number;
 
@@ -60,4 +71,36 @@ export class PaginatedResponse {
     previous?: string;
 
     results?: any[];
+}
+
+export interface ApiObject {
+    type?: ApiObjectType;
+}
+
+export class FollowRequestBody implements ApiObject {
+    type: ApiObjectType = ApiObjectType.follow;
+
+    sender?: FollowInfo;
+
+    receiver?: FollowInfo;
+}
+
+export class FollowDecisionBody {
+    follow_request_sender?: FollowInfo
+}
+
+export class FollowRemovalBody {
+    follower?: FollowInfo;
+}
+
+
+export class FollowInfo {
+    url: string;
+
+    id: string;
+
+    constructor(url: string, id: string) {
+        this.url = url;
+        this.id = id;
+    }
 }

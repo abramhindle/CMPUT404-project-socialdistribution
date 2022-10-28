@@ -49,11 +49,11 @@ export const HomeNavigationTemplate = html<HomeNavigation>`
                 :layoutStyleClass=${x => LayoutHelpers.getLayoutStyle(x.layoutType)}>
             </site-logo>
         `)}
-        ${when(x => x.user, html<HomeNavigation>`
+        ${when(x => x.userId, html<HomeNavigation>`
             ${navigationItemsTemplate}
             ${navProfileTemplate}
         `)}
-        ${when(x => !x.user, html<HomeNavigation>`
+        ${when(x => !x.userId, html<HomeNavigation>`
             ${callToActionTemplate}
         `)}
     </header>

@@ -1,4 +1,4 @@
-import { Author, PaginatedResponse, Post } from "./SocialApiModel";
+import { Author, FollowRequest, PaginatedResponse, Post } from "./SocialApiModel";
 
 export namespace SocialApiTransform {
     export function parseJsonPaginatedData(jsonData: string): PaginatedResponse | null {
@@ -27,6 +27,16 @@ export namespace SocialApiTransform {
         return authorDataTransform(authorData);
     }
 
+    export function followRequestDataTransform(followRequestData: any): FollowRequest | null {
+        const myFollowRequest = new FollowRequest();
+        const sender = authorDataTransform(followRequestData.sender);
+        if (sender) {
+            myFollowRequest.sender = sender;
+        }
+
+        return myFollowRequest;
+    }
+
     export function authorDataTransform(authorData: any): Author | null {
         const myAuthor = new Author(authorData.id, authorData.display_name);
         myAuthor.url = authorData.url;
@@ -41,7 +51,7 @@ export namespace SocialApiTransform {
             return null;
         }
 
-        if (!postData.id || !postData.display_name) {
+        if (!postData.id) {
             return null;
         }
 
@@ -59,7 +69,7 @@ export namespace SocialApiTransform {
         myPost.unlisted = postData.unlisted;
         myPost.contentType = postData.content_type;
         myPost.content = postData.content;
-        myPost.published = postData.created_at;
+        myPost.published = new Date(postData.created_at);
         myPost.source = postData.source;
         myPost.origin = postData.origin;
         return myPost;

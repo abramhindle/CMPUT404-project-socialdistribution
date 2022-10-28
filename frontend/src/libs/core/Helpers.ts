@@ -1,4 +1,4 @@
-import { LayoutStyleClass, LayoutType } from "./PageModel";
+import { FollowStatus, LayoutStyleClass, LayoutType } from "./PageModel";
 
 export namespace LayoutHelpers {
     export function getLayoutStyle(layoutType: LayoutType) {
@@ -9,6 +9,19 @@ export namespace LayoutHelpers {
                 return LayoutStyleClass.Tablet
             default:
                 return LayoutStyleClass.Mobile
+        }
+    }
+
+    export function parseFollowStatus(followStatus: FollowStatus): string {
+        switch (followStatus) {
+            case FollowStatus.Following:
+                return "Following";
+            case FollowStatus.NotFollowing:
+                return "Follow";
+            case FollowStatus.Sent:
+                return "Sent";
+            default:
+                return "";
         }
     }
 }
