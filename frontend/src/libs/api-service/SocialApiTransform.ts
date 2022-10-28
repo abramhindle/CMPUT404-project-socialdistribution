@@ -41,7 +41,7 @@ export namespace SocialApiTransform {
             return null;
         }
 
-        if (!postData.id || !postData.display_name) {
+        if (!postData.id) {
             return null;
         }
 

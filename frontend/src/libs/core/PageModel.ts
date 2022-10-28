@@ -19,3 +19,11 @@ export const FeedType = Object.freeze({
 
 export type FeedType = keyof typeof FeedType;
 
+export const FollowStatus = Object.freeze({
+    Unknown: "Unknown",
+    Following: "Following",
+    NotFollowing: "NotFollowing"
+} as const);
+
+export type FollowStatus = keyof typeof FollowStatus;
+

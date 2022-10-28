@@ -4,7 +4,7 @@ import { SocialApiTransform } from "./SocialApiTransform";
 import { SocialApiUrls } from "./SocialApiUrls";
 
 export namespace SocialApi {
-    function serializeForm(formData: FormData) {
+    export function serializeForm(formData: FormData) {
         var obj: { [key: string]: any; } = {};
         formData.forEach((value: any, key: string, formData: FormData) => {
             obj[key] = value;
@@ -12,7 +12,7 @@ export namespace SocialApi {
         return obj;
     }
 
-    function authHeader(): string {
+    export function authHeader(): string {
         const authentication = localStorage.getItem(SocialApiConstants.AUTHENTICATION_STORAGE);
         if (!authentication) {
             return ""
@@ -201,6 +201,26 @@ export namespace SocialApi {
         }
 
         return SocialApiTransform.parseJsonPaginatedData(text);
+    }
+
+    export async function fetchAuthorized(url: URL, method: string): Promise<any> {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", SocialApi.authHeader());
+
+        const requestOptions = {
+            method: method,
+            credentials: credentialType,
+            headers: headers
+        };
+
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return JSON.parse(text);
     }
 }
 
