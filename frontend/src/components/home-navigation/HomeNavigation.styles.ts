@@ -1,6 +1,6 @@
 import { neutralColor, typeRampPlus1FontSize, typeRampPlus2FontSize } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
-import { LayoutStyleClass } from "../../../../libs/core/PageModel";
+import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const HomeNavigationStyles = css`
     :host {

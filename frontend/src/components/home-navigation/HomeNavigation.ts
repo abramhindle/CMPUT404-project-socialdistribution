@@ -1,7 +1,7 @@
 import { faHouse, faInbox, faUserGroup, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FASTElement, observable } from "@microsoft/fast-element";
-import { LayoutType } from "../../../../libs/core/PageModel";
-import { Author } from "../../../../libs/api-service/SocialApiModel";
+import { LayoutType } from "../../libs/core/PageModel";
+import { Author } from "../../libs/api-service/SocialApiModel";
 import { icon, library } from "@fortawesome/fontawesome-svg-core";
 
 export const NavItem = Object.freeze({
