@@ -1,4 +1,4 @@
-import { bodyFont, neutralLayer2, neutralLayer3, neutralStrokeRest, typeRampPlus1LineHeight } from "@microsoft/fast-components";
+import { bodyFont, neutralColor, neutralLayer2, neutralLayer3, neutralStrokeActive, typeRampPlus1FontSize } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
 import { LayoutStyleClass } from "../../libs/core/PageModel";
 
@@ -60,21 +60,41 @@ export const HomePageStyles = css`
         align-content: center;
     }
 
-    button {
-        cursor: pointer;
-    }
-
     .tab {
-        font-size: ${typeRampPlus1LineHeight}
+        font-size: ${typeRampPlus1FontSize};
         cursor: pointer;
         padding: 8px 12px;
         border-radius: 16px;
         border: 0;
         background-color: transparent;
+        margin-right: 16px;
     }
 
     .tab.tab-active {
         background-color: rgb(177, 167, 191);
+    }
+
+    .create-a-post {
+        margin-left: auto;
+        background-color: ${neutralColor};
+        border-radius: 16px;
+        padding: 8px 50px; 
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+    }
+
+    .create-a-post:hover {
+        background-color: ${neutralStrokeActive};
+        color: white;
+    }
+
+    .create-post-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 16px;
     }
 
     .psa-feed {
@@ -85,7 +105,30 @@ export const HomePageStyles = css`
         display: none;
     }
 
+    .psa-post-container {
+        display: flex;
+        place-content: center;
+        align-items: center;
+        padding-top: 16px;
+        width: 90%;
+        margin: auto;
+    }
+
+    .psa-header {
+        font-size: ${typeRampPlus1FontSize};
+        background-color: white;
+        border-radius: 20px 20px 0 0;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+        padding: 8px;
+        text-align: center;
+    }
+
     .post-container {
         width: 90%;
+    }
+
+    a, a:hover, a:visited, a:active {
+        color: inherit;
+        text-decoration: none;
     }
 `;

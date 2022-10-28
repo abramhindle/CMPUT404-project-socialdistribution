@@ -130,7 +130,7 @@ export namespace SocialApi {
     }
 
     export async function createPost(): Promise<string> {
-        // Testing new posts
+        // ONLY FOR TESTING NEW POSTS
         const credentialType: RequestCredentials = "include";
         const headers: HeadersInit = new Headers();
         headers.set("Authorization", authHeader());
@@ -160,37 +160,33 @@ export namespace SocialApi {
 
         return text;
     }
+    
+    export async function fetchPaginatedInbox(authorId: string, page: number, size: number) {
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.INBOX, window.location.origin);
+        url.searchParams.append("page", page.toString())
+        url.searchParams.append("size", size.toString())
+
+        return fetchPaginatedResponseInternal(url);
+    }
 
     export async function fetchPaginatedPublicPosts(page: number, size: number): Promise<PaginatedResponse | null> {
-        const credentialType: RequestCredentials = "include";
-        const headers: HeadersInit = new Headers();
-        headers.set("Authorization", authHeader());
-
         const url = new URL(SocialApiUrls.PUBLIC_POSTS, window.location.origin);
         url.searchParams.append("page", page.toString())
         url.searchParams.append("size", size.toString())
 
-        const requestOptions = {
-            method: "GET",
-            credentials: credentialType,
-            headers: headers
-        };
-
-        const response = await fetch(url, requestOptions);
-        const text = await response.text();
-        if (!response.ok) {
-            throw new Error(response.statusText)
-        }
-
-        return SocialApiTransform.parseJsonPaginatedData(text);
+        return fetchPaginatedResponseInternal(url);
     }
 
-    export async function fetchPaginatedPublicPostsNext(nextUrl: string): Promise<PaginatedResponse | null> {
+    export async function fetchPaginatedNext(nextUrl: string): Promise<PaginatedResponse | null> {
+        const url = new URL(nextUrl);
+
+        return fetchPaginatedResponseInternal(url);
+    }
+
+    async function fetchPaginatedResponseInternal(url: URL): Promise<PaginatedResponse | null> {
         const credentialType: RequestCredentials = "include";
         const headers: HeadersInit = new Headers();
         headers.set("Authorization", authHeader());
-
-        const url = new URL(nextUrl);
 
         const requestOptions = {
             method: "GET",

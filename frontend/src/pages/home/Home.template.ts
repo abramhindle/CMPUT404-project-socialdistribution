@@ -1,4 +1,5 @@
-import { html, ref, repeat } from "@microsoft/fast-element";
+import { icon } from "@fortawesome/fontawesome-svg-core";
+import { html, ref, repeat, when } from "@microsoft/fast-element";
 import { socialSearch } from "../../components/social-search";
 import { Post } from "../../libs/api-service/SocialApiModel";
 import { LayoutHelpers } from "../../libs/core/Helpers";
@@ -30,9 +31,15 @@ export const HomePageTemplate = html<Home>`
                 <button @click="${x => x.changeFeed(FeedType.All)}" class="tab ${x => x.getFeedTypeStyles(FeedType.All)}">
                     All Feed
                 </button>
-                <button @click="${x => x.changeFeed(FeedType.Stream)}" class="tab ${x => x.getFeedTypeStyles(FeedType.Stream)}">
-                    My Feed
-                </button>
+                ${when(x => x.user, html<Home>`
+                    <button @click="${x => x.changeFeed(FeedType.Stream)}" class="tab ${x => x.getFeedTypeStyles(FeedType.Stream)}">
+                        My Feed
+                    </button>
+                    <a href="/create-post/" class="create-a-post">
+                        <div class="create-post-icon" :innerHTML="${_ => icon({prefix: "fas", iconName: "pencil"}).html}"></div>
+                        Create a Post
+                    </a>
+                `)}
             </div>
             <div class="post-container">
                 ${repeat(x => x.visibilePosts, html<Post>`
@@ -45,6 +52,11 @@ export const HomePageTemplate = html<Home>`
             <div ${ref("loadMore")} class="loading"></div>
         </div>
         <div class="psa-feed ${x => LayoutHelpers.getLayoutStyle(x.layoutType)}">
+            <div class="psa-post-container">
+                <div class="psa-header">
+                    Public Service Announcements 
+                </div>
+            </div>
         </div>
     </main>
 `;

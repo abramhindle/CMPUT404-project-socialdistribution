@@ -1,3 +1,4 @@
+import { neutralColor, typeRampPlus1FontSize, typeRampPlus2FontSize } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
 import { LayoutStyleClass } from "../../../../libs/core/PageModel";
 
@@ -17,12 +18,11 @@ export const HomeNavigationStyles = css`
 
     .navigation-container {
         display: flex;
-        justify-content: flex-start;
+        place-content: center flex-start;
         align-items: center;
         flex-direction: column;
-        align-content: center;
-        padding: 6% 0;
-        height: 94%;
+        padding: 2vh 0px;
+        height: 96vh;
     }
 
     .navigation-container.${LayoutStyleClass.Mobile} {
@@ -61,6 +61,7 @@ export const HomeNavigationStyles = css`
     }
 
     .navigation-item {
+        color: black;
         display: flex;
         align-items: center;
         font-size: 28px;
@@ -80,24 +81,92 @@ export const HomeNavigationStyles = css`
         width: 100%;
     }
 
-    .navigation-item.${LayoutStyleClass.Mobile} img{
+    .navigation-item.${LayoutStyleClass.Mobile} .nav-icon{
         height: 30px;
         width: 30px;
     }
 
-    .navigation-item.${LayoutStyleClass.Tablet} img{
+    .navigation-item.${LayoutStyleClass.Mobile} .profile-nav-icon{
+        height: 30px;
+        width: 22px;
+    }
+
+    .navigation-item.${LayoutStyleClass.Tablet} .nav-icon{
         height: 50px;
         width: 50px;
     }
 
-    .navigation-item.${LayoutStyleClass.Desktop} img{
+    .navigation-item.${LayoutStyleClass.Desktop} .nav-icon{
         height: 50px;
         width: 50px;
         margin-right: 16px;
     }
 
+    .profile {
+        font-size: ${typeRampPlus2FontSize};
+        background-color: white;
+        border-radius: 50px;
+        padding: 12px 20px;
+        margin-top: auto;
+        color: black;
+    }
+
+    .profile:hover {
+        color: lightgrey;
+    }
+    
+    .call-to-action {
+        background-color: white;
+        border-radius: 20px;
+        font-size: ${typeRampPlus2FontSize};
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        padding: 12px;
+        margin-top: auto;
+        text-align: center;
+        max-width: 70%;
+    }
+
+    .call-to-action.${LayoutStyleClass.Mobile} {
+        flex-direction: row;
+        place-content: center;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .action-title {
+        margin-bottom: 8px;
+    }
+
+    .${LayoutStyleClass.Mobile} .action-title {
+        margin: 0;
+    }
+
+    .action-button {
+        width: 90%;
+        border-radius: 20px;
+        padding: 4px;
+        margin-bottom: 4px;
+    }
+
+    .${LayoutStyleClass.Mobile} .action-button {
+        margin: 0 8px;
+    }
+
+    .login {
+        border: 2px solid ${neutralColor};
+        color: ${neutralColor};
+    }
+
+    .register {
+        background-color: ${neutralColor};
+        color: white;
+    }
+
     a, a:hover, a:visited, a:active {
-        color: inherit;
         text-decoration: none;
     }
 `;

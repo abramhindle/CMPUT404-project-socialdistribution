@@ -1,11 +1,14 @@
+import { faHouse, faInbox, faUserGroup, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FASTElement, observable } from "@microsoft/fast-element";
 import { LayoutType } from "../../../../libs/core/PageModel";
 import { Author } from "../../../../libs/api-service/SocialApiModel";
+import { icon, library } from "@fortawesome/fontawesome-svg-core";
 
 export const NavItem = Object.freeze({
     Home: "Home",
     Inbox: "Inbox",
-    Friends: "Friends"
+    Friends: "Friends",
+    Profile: "Profile"
 });
 
 export type NavItem = keyof typeof NavItem;
@@ -26,6 +29,11 @@ export class HomeNavigation extends FASTElement {
         NavItem.Friends
     ];
 
+    constructor() {
+        super();
+        this.addIcons()
+    }
+
     public getNavigationUrl(navigationItem: NavItem): string {
         switch (navigationItem) {
             case NavItem.Inbox:
@@ -37,14 +45,20 @@ export class HomeNavigation extends FASTElement {
         }
     }
 
-    public getNavigationIconUrl(navigationItem: string) {
-        switch(navigationItem) {
-            case(NavItem.Home):
-                return require('../../../../assets/images/home.png').default
+    public getNavigationIcon(navigationItem: string) {
+        switch (navigationItem) {
+            case (NavItem.Home):
+                return icon({ prefix: "fas", iconName: "house" }).html
             case (NavItem.Inbox):
-                return require('../../../../assets/images/inbox.png').default
+                return icon({ prefix: "fas", iconName: "inbox" }).html
             case (NavItem.Friends):
-                return require('../../../../assets/images/friends.png').default
+                return icon({ prefix: "fas", iconName: "user-group" }).html
+            case (NavItem.Profile):
+                return icon({ prefix: "fas", iconName: "user" }).html
         }
+    }
+
+    private addIcons() {
+        library.add(faHouse, faInbox, faUserGroup, faUser);
     }
 }

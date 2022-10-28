@@ -1,3 +1,5 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { observable } from "@microsoft/fast-element";
 import { SocialApi } from "../../libs/api-service/SocialApi";
 import { PaginatedResponse, Post } from "../../libs/api-service/SocialApiModel";
@@ -24,6 +26,8 @@ export class Home extends Page {
     constructor() {
         super();
 
+        this.addIcons();
+
         this.observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -32,15 +36,15 @@ export class Home extends Page {
             })
         })
 
-        this.getPosts()
+        this.getPosts();
     }
 
-    public changeFeed(feedType: FeedType) {
+    public async changeFeed(feedType: FeedType) {
         this.feedType = feedType;
         this.visibilePosts.splice(0, this.visibilePosts.length);
         this.paginatedResponse = null;
         this.observer?.disconnect();
-        this.getPosts();
+        await this.getPosts();
     }
 
     public getFeedTypeStyles(feedType: FeedType) {
@@ -50,33 +54,49 @@ export class Home extends Page {
         return "";
     }
 
+    private addIcons() {
+        library.add(faPencil);
+    }
+
     private async getPosts() {
-        const homePage = this;
         try {
             let responseData: PaginatedResponse | null;
 
-            if (homePage.paginatedResponse?.next) {
-                responseData = await SocialApi.fetchPaginatedPublicPostsNext(homePage.paginatedResponse.next);
+            if (this.paginatedResponse?.next) {
+                responseData = await SocialApi.fetchPaginatedNext(this.paginatedResponse.next);
                 console.log(responseData)
                 if (responseData) {
-                    homePage.paginatedResponse = responseData;
-                    homePage.setVisiblePosts()
+                    this.paginatedResponse = responseData;
+                    this.setVisiblePosts()
                 }
-            } else if (!homePage.paginatedResponse) {
-                responseData = await SocialApi.fetchPaginatedPublicPosts(1, PAGE_SIZE);
+            } else if (!this.paginatedResponse) {
+                responseData = await this.getPostsFromFeedType();
                 console.log(responseData)
                 if (responseData) {
-                    homePage.paginatedResponse = responseData;
-                    homePage.setVisiblePosts()
+                    this.paginatedResponse = responseData;
+                    this.setVisiblePosts()
                     if (this.loadMore) {
                         this.observer?.observe(this.loadMore);
                     }
                 }
             } else {
-                responseData = homePage.paginatedResponse || null;
+                responseData = this.paginatedResponse || null;
             }
         } catch (e) {
             console.error("Public post fetch failed", e);
+        }
+    }
+
+    private async getPostsFromFeedType(): Promise<PaginatedResponse | null> {
+        switch (this.feedType) {
+            case FeedType.All:
+                return await SocialApi.fetchPaginatedPublicPosts(1, PAGE_SIZE);
+            case FeedType.Stream: {
+                if (!this.user?.id) {
+                    return null;
+                }
+                return await SocialApi.fetchPaginatedInbox(this.user?.id, 1, PAGE_SIZE);
+            }
         }
     }
 
@@ -86,9 +106,11 @@ export class Home extends Page {
         }
 
         for (var postData of this.paginatedResponse?.results) {
-            const post = SocialApiTransform.postDataTransform(postData);
-            if (post) {
-                this.visibilePosts.push(post);
+            if (!postData.type || postData.type == "post") {
+                const post = SocialApiTransform.postDataTransform(postData);
+                if (post) {
+                    this.visibilePosts.push(post);
+                }
             }
         }
     }

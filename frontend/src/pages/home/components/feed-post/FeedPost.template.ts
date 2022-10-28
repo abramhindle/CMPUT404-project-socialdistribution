@@ -6,7 +6,7 @@ export const FeedPostTemplate = html<FeedPost>`
         <article class="post">
             <h3>${x => x.post?.title}</h3>
             <h4>${x => x.post?.author?.displayName} | ${x => new Date(x.post?.published || new Date()).toLocaleDateString()}
-            <p>${x => x.post?.description}</p>
+            <p>${x => x.post?.description}...</p>
         </article>
     </a>
 `;
