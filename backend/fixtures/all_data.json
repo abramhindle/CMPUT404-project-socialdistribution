@@ -1,0 +1,303 @@
+[
+    {
+        "model":"webserver.Author",
+        "fields":{
+            "username":"cashJenkins",
+            "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
+            "id":1,
+            "created_at":"2022-06-23T03:25:09.184425Z",
+            "display_name": "cjenkins123",
+            "github_handle": "cashj45"
+        }
+
+    },
+    {
+        "model":"webserver.Author",
+        "fields":{
+            "username":"aEverett4632",
+            "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
+            "id":2,
+            "created_at":"2022-10-23T03:25:09.184425Z",
+            "display_name": "athena_everett",
+            "github_handle": "everettCodes123"
+        }
+        
+    },
+
+    {
+        "model":"webserver.Author",
+        "fields":{
+            "username":"urielShelton2341",
+            "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
+            "id":3,
+            "created_at":"2022-10-23T03:25:09.184425Z",
+            "display_name": "UltimateBeast123",
+            "github_handle": "ultimateBeast"
+        }
+
+    },
+    {
+        "model":"webserver.Author",
+        "fields":{
+            "username":"AlexanderStark",
+            "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
+            "id":4,
+            "created_at":"2022-10-23T03:25:09.184425Z",
+            "display_name": "brighthulk",
+            "github_handle": "alex_stark"
+        }
+        
+    },
+    {
+        "model":"webserver.Author",
+        "fields":{
+            "username":"shaunGood123",
+            "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
+            "id":5,
+            "created_at":"2022-10-23T03:25:09.184425Z",
+            "display_name": "fbi_surveillance_team",
+            "github_handle": "shaunGood123"
+        }
+
+    },
+    {
+        "model":"webserver.Follow",
+        "fields":{
+            "id":1,
+            "follower":1,
+            "followee":2
+        }
+       },
+       {
+        "model":"webserver.Follow",
+        "fields":{
+            "id":2,
+            "follower":2,
+            "followee":3
+        }
+       },
+       {
+        "model":"webserver.Follow",
+        "fields":{
+            "id":3,
+            "follower":3,
+            "followee":4
+        }
+       },
+       {
+        "model":"webserver.Follow",
+        "fields":{
+            "id":4,
+            "follower":4,
+            "followee":5
+        }
+       },
+       {
+        "model":"webserver.Follow",
+        "fields":{
+            "id":5,
+            "follower":5,
+            "followee":1
+        }
+       },
+      
+       {
+        "model":"webserver.FollowRequest",
+        "fields":{
+            "id":1,
+            "sender":2,
+            "receiver":1
+        }
+    },
+    {
+        "model":"webserver.FollowRequest",
+        "fields":{
+            "id":2,
+            "sender":3,
+            "receiver":2
+        }
+    },
+    {
+        "model":"webserver.FollowRequest",
+        "fields":{
+            "id":3,
+            "sender":4,
+            "receiver":3
+        }
+    },
+    {
+        "model":"webserver.FollowRequest",
+        "fields":{
+            "id":4,
+            "sender":5,
+            "receiver":4
+        }
+    },
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":1,
+            "author":1,
+            "title":"My first Post!",
+            "description":"Test out this new website with my first post",
+            "content":"This is my first post and I am very excited!",
+            "created_at":"2022-12-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+
+    
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":2,
+            "author":2,
+            "title":"Skiing!",
+            "description":"A post about how much I love revelstoke",
+            "content":"I went skiing to revelstoke and it was incredible!",
+            "created_at":"2022-10-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":3,
+            "author":3,
+            "title":"The new Macbook pro",
+            "description":"Just purchased the new macbook",
+            "content":"Just purchased the new macbook and it is incredible.",
+            "created_at":"2022-09-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    
+    
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":4,
+            "author":4,
+            "title":"Lunch",
+            "description":"Went out for lunch with my friend Alex Stark",
+            "content":"At earls with Alex Stark",
+            "created_at":"2022-08-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":5,
+            "author":5,
+            "title":"Apple products",
+            "description":"A post about the apple watch",
+            "content":"I just purchased an apple watch.",
+            "created_at":"2022-07-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":6,
+            "author":1,
+            "title":"Exam",
+            "description":"Finished my exam",
+            "content":"Just finished my exam and it was very hard",
+            "created_at":"2022-06-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":7,
+            "author":2,
+            "title":"Saw Shaun Good today",
+            "description":"Saw Shaun good at the grocery store",
+            "content":"Saw Shaun good for the first time in 10 years",
+            "created_at":"2022-05-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    
+
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":8,
+            "author":3,
+            "title":"Went to the movies",
+            "description":"Went to the movies with Athena Everett",
+            "content":"Athena and I watched the new spider man movie",
+            "created_at":"2022-04-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":9,
+            "author":4,
+            "title":"Finished my dergee!",
+            "description":"Graduated from university",
+            "content":"Just finished my last examine and have officialy graduated!",
+            "created_at":"2022-03-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    {
+        "model":"webserver.Post",
+        "fields":{
+            "id":10,
+            "author":5,
+            "title":"The new PS5",
+            "description":"Finally purchased the new ps5",
+            "content":"Went to EB games today and purcahsed a Ps5",
+            "created_at":"2022-02-23T03:25:09.184425Z",
+            "unlisted":false
+        }
+    },
+    {
+        "model":"webserver.Inbox",
+        "id":1,
+        "fields":{
+            "target_author":3,
+            "follow_request_received":3,
+            "created_at":"2022-12-23T03:25:09.184425Z"
+        }
+    },
+    {
+        "model":"webserver.Inbox",
+        "id":2,
+        "fields":{
+            "target_author":4,
+            "follow_request_received":4,
+            "created_at":"2022-11-23T03:25:09.184425Z"
+        }
+    },
+    
+    {
+        "model":"webserver.Inbox",
+        "id":4,
+        "fields":{
+            "target_author":1,
+            "post":1,
+            "created_at":"2022-12-23T03:25:09.184425Z"
+
+        }
+    },
+    {
+        "model":"webserver.Inbox",
+        "id":5,
+        "fields":{
+            "target_author":5,
+            "post":1,
+            "created_at":"2022-11-23T03:25:09.184425Z"
+        }
+    }
+
+]

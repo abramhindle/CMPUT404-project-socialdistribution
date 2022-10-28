@@ -25,6 +25,11 @@ pip install djangorestframework
 ```
 python manage.py runserver
 ```
+5. Load seed data (note you might need to clear your database first)
+```
+python manage.py flush   (if your database is not empty)
+python manage.py loaddata fixtures/all_data.json
+```
 
 ### How to Create Seed Data
 1. At first, you can create any set of data of your liking through the list API routes or though the frontend.
