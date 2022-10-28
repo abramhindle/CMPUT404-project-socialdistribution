@@ -46,6 +46,7 @@ const RegisterTemplate = html<SignOn>`
             <button id="submit">Sign Up</button>
         </div>
     </form>
+    <div class="already">Have an account? <a href="/login/">Log In!</a><div>
 `;
 
 const LoginTemplate = html<SignOn>`
@@ -60,6 +61,7 @@ const LoginTemplate = html<SignOn>`
             <button id="submit">Log In</button>
         </div>
     </form>
+    <div class="already">Dont have an account? <a href="/register/">Sign Up!</a><div>
 `;
 
 const LogoutTemplate = html<SignOn>`
