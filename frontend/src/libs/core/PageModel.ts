@@ -22,7 +22,8 @@ export type FeedType = keyof typeof FeedType;
 export const FollowStatus = Object.freeze({
     Unknown: "Unknown",
     Following: "Following",
-    NotFollowing: "NotFollowing"
+    NotFollowing: "NotFollowing",
+    Sent: "Sent"
 } as const);
 
 export type FollowStatus = keyof typeof FollowStatus;

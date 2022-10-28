@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<title>14Degrees - Home</title>
+{% endblock %}
+
+{% block body %}
+  <followers-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}" profileId="{{ profileId }}"></followers-page>
+  {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'followers.js' %}"></script>
+{% endblock %}

@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-  <profile-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}" ></profile-page>
+  <profile-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}" profileId="{{ profileId }}"></profile-page>
   {% endblock %}
 
 {% block scripts %}

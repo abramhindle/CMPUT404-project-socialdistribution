@@ -10,6 +10,8 @@ module.exports = function(env, { mode }) {
       home: ['./src/pages/home/index.ts'],
       profile: ['./src/pages/profile/index.ts'],
       signon: ['./src/pages/signon/index.ts'],
+      inbox: ['./src/pages/inbox/index.ts'],
+      followers: ['./src/pages/followers/index.ts'],
     },
     output: {
       filename: '[name].js',

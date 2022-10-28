@@ -1,4 +1,3 @@
-import { labToXYZ } from "@microsoft/fast-colors";
 import { html } from "@microsoft/fast-element";
 import { homeNavigation } from "../home-navigation";
 import { socialSearch } from "../social-search";
@@ -9,6 +8,7 @@ homeNavigation;
 
 const navigationTemplate = html<Layout>`
     <home-navigation
+        :userId="${x => x.userId}"
         :user="${x => x.user}"
         :layoutType="${x => x.layoutType}"
         :layoutStyleClass="${x => x.layoutStyleClass}"

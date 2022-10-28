@@ -66,18 +66,9 @@ export namespace SocialApi {
         const text = await response.text();
         const data = text && JSON.parse(text);
         if (!response.ok) {
-            const messages = [];
             if (data) {
-                if (data.username) {
-                    messages.push(...data.username);
-                }
-
-                if (data.password) {
-                    messages.push(data.password);
-                }
+                throw data.message;
             }
-
-            throw messages;
         }
 
         if (data) {
@@ -160,9 +151,23 @@ export namespace SocialApi {
 
         return text;
     }
+
+    export async function editProfile(userId: string, profileDataForm: FormData): Promise<Author | null> {
+        const url = new URL(SocialApiUrls.AUTHORS + userId + "/", window.location.origin)
+
+        return SocialApiTransform.authorDataTransform(await fetchAuthorized(url, "POST", JSON.stringify(serializeForm(profileDataForm))));
+    }
     
     export async function fetchPaginatedInbox(authorId: string, page: number, size: number) {
         const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.INBOX, window.location.origin);
+        url.searchParams.append("page", page.toString())
+        url.searchParams.append("size", size.toString())
+
+        return fetchPaginatedResponseInternal(url);
+    }
+
+    export async function fetchPaginatedFollowers(authorId: string, page: number, size: number) {
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.FOLLOWERS, window.location.origin)
         url.searchParams.append("page", page.toString())
         url.searchParams.append("size", size.toString())
 
@@ -203,15 +208,19 @@ export namespace SocialApi {
         return SocialApiTransform.parseJsonPaginatedData(text);
     }
 
-    export async function fetchAuthorized(url: URL, method: string): Promise<any> {
+    export async function fetchAuthorized(url: URL, method: string, body?: string): Promise<any> {
         const credentialType: RequestCredentials = "include";
         const headers: HeadersInit = new Headers();
         headers.set("Authorization", SocialApi.authHeader());
+        if (method !== "GET") {
+            headers.set("Content-Type", "application/json; charset=UTF-8");
+        }
 
         const requestOptions = {
             method: method,
             credentials: credentialType,
-            headers: headers
+            headers: headers,
+            body: body,
         };
 
         const response = await fetch(url, requestOptions);

@@ -1,6 +1,6 @@
 import { FASTElement, observable } from "@microsoft/fast-element";
-import { Post } from "../../../../libs/api-service/SocialApiModel";
-import { SocialApiUrls } from "../../../../libs/api-service/SocialApiUrls";
+import { Post } from "../../libs/api-service/SocialApiModel";
+import { SocialApiUrls } from "../../libs/api-service/SocialApiUrls";
 
 export class FeedPost extends FASTElement {
     @observable

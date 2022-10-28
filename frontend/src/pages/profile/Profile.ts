@@ -1,78 +1,86 @@
-import { SocialApi } from "../../libs/api-service/SocialApi";
-import { SocialApiFollowers } from "../../libs/api-service/SocialApiFollowers";
-import { Author } from "../../libs/api-service/SocialApiModel";
-import { FollowStatus } from "../../libs/core/PageModel";
-import { Page } from "../Page";
 import { observable } from "@microsoft/fast-element";
 import { SocialApi } from "../../libs/api-service/SocialApi";
+import { SocialApiFollowers } from "../../libs/api-service/SocialApiFollowers";
+import { FollowInfo, FollowRemovalBody, FollowRequestBody } from "../../libs/api-service/SocialApiModel";
+import { FollowStatus } from "../../libs/core/PageModel";
+import { Page } from "../Page";
 
 export class Profile extends Page {
-    public profile?: Author | null;
+    public form?: HTMLFormElement;
 
-    public followStatus: FollowStatus = FollowStatus.Unknown;
-
-    constructor() {
-        super();
-        const profileId = this.getAttribute("profileId");
-        this.removeAttribute("profileId");
-        if (profileId) {
-            this.resetProfile(profileId);
-        }
-    }
+    @observable
+    public modalStateStyle = "modal-close";
 
     public openEditModal() {
-
+        this.modalStateStyle = "modal-open"
     }
 
-    public followRequest() {
+    public closeEditModal() {
+        this.modalStateStyle = "modal-close"
+    }
+
+    public async editProfile(e: Event) {
+        e.preventDefault();
+
+        if (!this.form) {
+            return;
+        }
+        
+        if (!this.userId) {
+            return;
+        }
+
+        if (this.profileId != this.userId) {
+            return;
+        }
+
+        const formData = new FormData(this.form)
         try {
-            let responseData;
-            switch (this.followStatus) {
-                case FollowStatus.NotFollowing:
-                    responseData = await SocialApiFollowers.checkFollowing;
-            }
-            responseData = await SocialApiFollowers.;
-            if (responseData && responseData.username == formData.get("username") && responseData.display_name == formData.get("display_name")) {
-                window.location.replace("/login/");
+            const responseData = await SocialApi.editProfile(this.userId, formData);
+            if (responseData && responseData.id == this.userId) {
+                this.user = responseData;
+                if (this.profileId == this.userId) {
+                    this.profile = this.user;
+                }
+                this.closeEditModal();
             }
         } catch (e) {
-            this.pushErrorMessages(e as string[]);
+            console.warn(e)
         }
     }
 
-    public getFollowStatus(): string {
-        switch (this.followStatus) {
-            case FollowStatus.FollowRequest:
-                return "Follow Request...";
-            case FollowStatus.Following:
-                return "Following";
-            case FollowStatus.NotFollowing:
-                return "Follow";
-            default:
-                return "";
+    public async followRequest() {
+        if (!this.user?.url || !this.profile?.url) {
+            return;
         }
-    }
 
-    private async resetProfile(profileId: string | null) {
-        if (!profileId) {
+        if (!this.userId || !this.profileId) {
             return;
         }
 
         try {
-            this.user = await SocialApi.fetchAuthor(profileId);
-            if (this.user) {
-                try {
-                    const followStatus = await SocialApiFollowers.checkFollowing(profileId, this.user?.id);
-                    if (followStatus) {
-                        this.followStatus = FollowStatus.Following
-                    }
-                } catch (e) {
-                    // Catch check following errors, error means not following or unauth
-                    this.followStatus = FollowStatus.NotFollowing;
+            if (this.followStatus == FollowStatus.NotFollowing) {
+                const followRequest = new FollowRequestBody();
+                followRequest.sender = new FollowInfo(this.user.url, this.userId);
+                followRequest.receiver = new FollowInfo(this.profile.url, this.profileId);
+
+                const responseData = await SocialApiFollowers.sendFollowRequest(this.profileId, followRequest);
+                if (responseData) {
+                    // we know the request went through, they still have to accept it
+                    this.followStatus = FollowStatus.Sent
+                }
+            } else if(this.followStatus == FollowStatus.Following) {
+                const followRemoval = new FollowRemovalBody();
+                followRemoval.follower = new FollowInfo(this.user.url, this.userId);
+
+                const responseData = await SocialApiFollowers.removeFollowing(this.profileId, this.userId, followRemoval);
+                if (responseData) {
+                    this.followStatus = FollowStatus.NotFollowing
                 }
             }
         } catch (e) {
-            console.warn(e);
+            // Follow request or removal failed
+            console.warn(e)
         }
     }
 }
