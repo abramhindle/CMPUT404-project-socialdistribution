@@ -702,8 +702,14 @@ class FollowersDetailViewTestCase(APITestCase):
         self.assertEqual(1, Follow.objects.count())
 
         url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        payload = {
+            "follower": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}',
+                "id": author_2.id,
+            }
+        }
         self.client.force_authenticate(user=mock.Mock())
-        response = self.client.delete(url)
+        response = self.client.delete(url, data=payload, format="json")
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(0, Follow.objects.count())
     
@@ -712,8 +718,14 @@ class FollowersDetailViewTestCase(APITestCase):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
         author_2 = Author.objects.create(username="author_2", display_name="author_2")
         url = f'/api/authors/{author_1.id}/followers/{author_2.id}/'
+        payload = {
+            "follower": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}',
+                "id": author_2.id,
+            }
+        }
         self.client.force_authenticate(user=mock.Mock())
-        response = self.client.get(url)
+        response = self.client.delete(url, data=payload, format="json")
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
 
 class PostTestCase(APITestCase):
@@ -1471,3 +1483,40 @@ class AllPublicPostsTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(1, len(response.data))
         self.assertEqual("Post 2", response.data[0]["title"])
+
+
+class DeclineFollowRequestTestCase(APITestCase):
+    def test_successful_decline(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        FollowRequest.objects.create(sender=author_2, receiver=author_1)
+        self.assertEqual(1, FollowRequest.objects.count())
+        
+        url = f'/api/authors/{author_1.id}/follow-requests/{author_2.id}/'
+        payload = {
+            "follow_request_sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}',
+                "id": author_2.id,
+            }
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.delete(url, data=payload, format="json")
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(0, FollowRequest.objects.count())
+    
+    def test_follow_request_not_found(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        
+        url = f'/api/authors/{author_1.id}/follow-requests/{author_2.id}/'
+        payload = {
+            "follow_request_sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}',
+                "id": author_2.id,
+            }
+        }
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.delete(url, data=payload, format="json")
+        
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
