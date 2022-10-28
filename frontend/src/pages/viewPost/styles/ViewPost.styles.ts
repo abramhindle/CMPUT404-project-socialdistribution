@@ -40,7 +40,8 @@ export const ViewPostPageStyles = css`
   }
 
   .post-image {
-    width: 100px;
+    flex: 1 1 0;
+    max-width: 100px;
     object-fit: cover;
     margin-right: var(--dl-space-space-unit);
     border-radius: var(--dl-radius-radius-radius4);
@@ -51,7 +52,7 @@ export const ViewPostPageStyles = css`
   }
 
   .post-container2 {
-    flex: 0 0 auto;
+    flex: 3 1 0;
     width: 930px;
     height: 100%;
     display: flex;
@@ -74,7 +75,7 @@ export const ViewPostPageStyles = css`
     display: flex;
     position: absolute;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: flex-end;
   }
 
   .post-ul {

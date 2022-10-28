@@ -13,7 +13,7 @@ export const ViewPostPageTemplate = html<ViewPost>`
             <div class="post-container2">
                 <span class="post-text">${x => x.post?.content}</span>
                 <div class="post-container3">
-                    <span>${x => x.post?.author} | ${x => x.post?.published}</span>
+                    <span>${x => x.post?.author?.displayName} | ${x => new Date(x.post?.published || new Date()).toLocaleDateString()}</span>
                 </div>
             </div>
         </div>
