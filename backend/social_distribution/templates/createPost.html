@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<title>14Degrees - create post</title>
+{% endblock %}
+
+{% block body %}
+<create-post-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}"></create-post-page>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'createPost.js' %}"></script>
+{% endblock %}

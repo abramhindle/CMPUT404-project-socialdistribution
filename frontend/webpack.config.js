@@ -10,6 +10,9 @@ module.exports = function(env, { mode }) {
       home: ['./src/pages/home/index.ts'],
       profile: ['./src/pages/profile/index.ts'],
       signon: ['./src/pages/signon/index.ts'],
+      createPost: ['./src/pages/createPost/index.ts'],
+      editPost: ['./src/pages/editPost/index.ts'],
+      viewPost: ['./src/pages/viewPost/index.ts']
     },
     output: {
       filename: '[name].js',

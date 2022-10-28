@@ -1,7 +1,11 @@
 import { SocialApiConstants } from "./SocialApiConstants";
-import { Author, PaginatedResponse } from "./SocialApiModel";
-import { SocialApiTransform } from "./SocialApiTransform";
+import {Author, PaginatedResponse, Post} from "./SocialApiModel";
+import {SocialApiTransform} from "./SocialApiTransform";
 import { SocialApiUrls } from "./SocialApiUrls";
+
+
+export type PostVisibility = 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
+export type ContentTypes = 'text/plain';
 
 export namespace SocialApi {
     function serializeForm(formData: FormData) {
@@ -129,38 +133,6 @@ export namespace SocialApi {
         return SocialApiTransform.parseJsonAuthorData(text);
     }
 
-    export async function createPost(): Promise<string> {
-        // ONLY FOR TESTING NEW POSTS
-        const credentialType: RequestCredentials = "include";
-        const headers: HeadersInit = new Headers();
-        headers.set("Authorization", authHeader());
-        headers.set("Content-Type", "application/json; charset=UTF-8");
-
-        const body: string = `{
-            "title": "My first post ${Math.random()}",
-            "description": "${Math.random()}",
-            "unlisted": false,
-            "content": "some content 1",
-            "visibility": "PUBLIC",
-            "content_type": "text/plain"
-        }`
-
-        const requestOptions = {
-            method: "POST",
-            credentials: credentialType,
-            headers: headers,
-            body: body
-        };
-
-        const response = await fetch(SocialApiUrls.AUTHORS + "1/posts/", requestOptions);
-        const text = await response.text();
-        if (!response.ok) {
-            throw new Error(response.statusText)
-        }
-
-        return text;
-    }
-    
     export async function fetchPaginatedInbox(authorId: string, page: number, size: number) {
         const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.INBOX, window.location.origin);
         url.searchParams.append("page", page.toString())
@@ -202,5 +174,112 @@ export namespace SocialApi {
 
         return SocialApiTransform.parseJsonPaginatedData(text);
     }
+
+    export async function fetchPost(postId: string, authorId: string): Promise<Post | null> {
+      const credentialType: RequestCredentials = "include";
+      const headers: HeadersInit = new Headers();
+      headers.set("Authorization", authHeader());
+      headers.set("Content-Type", "application/json; charset=UTF-8");
+
+      const requestOptions = {
+        method: "GET",
+        credentials: credentialType,
+        headers: headers,
+      };
+
+      const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
+
+      const response = await fetch(url, requestOptions);
+      const text = await response.text();
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+
+      return SocialApiTransform.parseJsonPostData(text);
+    }
+
+    export async function updatePost(
+      postId: string,
+      authorId: string,
+      formData: FormData
+    ) {
+      const credentialType: RequestCredentials = "include";
+      const headers: HeadersInit = new Headers();
+      headers.set("Authorization", authHeader());
+      headers.set("Content-Type", "application/json; charset=UTF-8");
+
+      const body: string = JSON.stringify(serializeForm(formData));
+
+      const requestOptions = {
+        method: "POST",
+        credentials: credentialType,
+        headers,
+        body
+      };
+
+      const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId + '/', window.location.origin);
+      const response = await fetch(url, requestOptions);
+      const text = await response.text();
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+
+      return SocialApiTransform.parseJsonPostData(text);
+    }
+
+  export async function createPost(
+    authorId: string,
+    formData: FormData
+  ): Promise<Post | null> {
+    const credentialType: RequestCredentials = "include";
+    const headers: HeadersInit = new Headers();
+    headers.set("Authorization", authHeader());
+    headers.set("Content-Type", "application/json; charset=UTF-8");
+
+    const data = serializeForm(formData);
+
+    const body: string = JSON.stringify(data);
+
+    const requestOptions = {
+      method: "POST",
+      credentials: credentialType,
+      headers: headers,
+      body: body
+    };
+
+    const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS, window.location.origin);
+    const response = await fetch(url, requestOptions);
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(response.statusText)
+    }
+
+    return SocialApiTransform.parseJsonPostData(text);
+  }
+
+  export async function deletePost(
+    authorId: string,
+    postId: string
+  ): Promise<Array<{'message': 'object deleted'}> | null> {
+    const credentialType: RequestCredentials = "include";
+    const headers: HeadersInit = new Headers();
+    headers.set("Authorization", authHeader());
+    headers.set("Content-Type", "application/json; charset=UTF-8");
+
+    const requestOptions = {
+      method: 'DELETE',
+      credentials: credentialType,
+      headers
+    };
+
+    const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
+    const response = await fetch(url, requestOptions);
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(response.statusText)
+    }
+
+    return JSON.parse(text);
+  }
 }
 
