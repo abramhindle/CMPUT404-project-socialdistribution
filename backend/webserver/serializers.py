@@ -18,8 +18,8 @@ class UpdatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['title','description','unlisted','content']
-    
-    
+
+
 
 class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,7 +56,7 @@ class ActorSerializer(serializers.Serializer):
 class SendFollowRequestSerializer(serializers.Serializer):
     sender = ActorSerializer()
     receiver = ActorSerializer()
-    
+
 class SendPrivatePostSerializer(serializers.Serializer):
     receiver = ActorSerializer()
 
@@ -104,11 +104,11 @@ class InboxFollowRequestSerializer(FollowRequestSerializer):
 class InboxSerializer(serializers.ModelSerializer):
     post = PostSerializer(read_only=True)
     follow_request_received = InboxFollowRequestSerializer(read_only=True)
-    
+
     class Meta:
         model = Inbox
         fields = ['post', 'follow_request_received']
-    
+
     # https://www.django-rest-framework.org/api-guide/relations/#generic-relationships
     def to_representation(self, instance):
         data = super(InboxSerializer, self).to_representation(instance)

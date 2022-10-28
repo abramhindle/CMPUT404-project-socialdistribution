@@ -4,13 +4,12 @@ import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const ProfilePageStyles = css`
     .profile-background {
-        height: 20vh;
+        height: 17.5vh;
         width: 56.25%;
         position: absolute;
-        margin-top: -24px;
         background: linear-gradient(to bottom right, ${neutralColor}, ${accentColor});
         z-index: 0;
-        border-radius: 20px 0 0 0;
+        border-top-left-radius: 20px;
     }
 
     .profile-background.${LayoutStyleClass.Mobile} {
