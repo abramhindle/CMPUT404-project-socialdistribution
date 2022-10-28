@@ -134,5 +134,5 @@ setup.txt
 # node stuff
 /frontend/node_modules
 
-# mac stuff
+# macOS Files
 .DS_Store
