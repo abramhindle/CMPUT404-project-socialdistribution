@@ -3,17 +3,21 @@ import { FASTElement, observable } from "@microsoft/fast-element";
 import { LayoutType } from "../../libs/core/PageModel";
 import { Author } from "../../libs/api-service/SocialApiModel";
 import { icon, library } from "@fortawesome/fontawesome-svg-core";
+import { SocialApiUrls } from "../../libs/api-service/SocialApiUrls";
 
 export const NavItem = Object.freeze({
     Home: "Home",
     Inbox: "Inbox",
-    Friends: "Friends",
+    Followers: "Followers",
     Profile: "Profile"
 });
 
 export type NavItem = keyof typeof NavItem;
 
 export class HomeNavigation extends FASTElement {
+    @observable
+    public userId?: string;
+
     @observable
     public user?: Author | null;
 
@@ -26,7 +30,7 @@ export class HomeNavigation extends FASTElement {
     public readonly navigationItems: NavItem[] = [
         NavItem.Home,
         NavItem.Inbox,
-        NavItem.Friends
+        NavItem.Followers
     ];
 
     constructor() {
@@ -38,8 +42,10 @@ export class HomeNavigation extends FASTElement {
         switch (navigationItem) {
             case NavItem.Inbox:
                 return "/inbox/";
-            case NavItem.Friends:
-                return "/friends/";
+            case NavItem.Followers:
+                return "/profile/" + this.userId + SocialApiUrls.FOLLOWERS;
+            case NavItem.Profile:
+                return "/profile/" + this.userId;
             default:
                 return "/";
         }
@@ -51,7 +57,7 @@ export class HomeNavigation extends FASTElement {
                 return icon({ prefix: "fas", iconName: "house" }).html
             case (NavItem.Inbox):
                 return icon({ prefix: "fas", iconName: "inbox" }).html
-            case (NavItem.Friends):
+            case (NavItem.Followers):
                 return icon({ prefix: "fas", iconName: "user-group" }).html
             case (NavItem.Profile):
                 return icon({ prefix: "fas", iconName: "user" }).html

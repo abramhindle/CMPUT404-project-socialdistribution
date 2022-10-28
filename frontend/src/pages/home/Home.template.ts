@@ -4,8 +4,7 @@ import { socialSearch } from "../../components/social-search";
 import { Post } from "../../libs/api-service/SocialApiModel";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { FeedType } from "../../libs/core/PageModel";
-import { feedPost } from "./components/feed-post";
-import { homeNavigation } from "../../components/home-navigation";
+import { feedPost } from "../../components/feed-post";
 import { Home } from "./Home";
 import { layoutComponent } from "../../components/base-layout";
 
@@ -14,6 +13,7 @@ layoutComponent;
 
 export const HomePageTemplate = html<Home>`
     <page-layout
+        :userId="${x => x.userId}"
         :user="${x => x.user}"
         :layoutType="${x => x.layoutType}"
         :layoutStyleClass="${x => LayoutHelpers.getLayoutStyle(x.layoutType)}">

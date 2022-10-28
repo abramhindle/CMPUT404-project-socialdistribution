@@ -1,6 +1,6 @@
 import { controlCornerRadius } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
-import { LayoutStyleClass } from "../../../../libs/core/PageModel";
+import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 LayoutStyleClass
 

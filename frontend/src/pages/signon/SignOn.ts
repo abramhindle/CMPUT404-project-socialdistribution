@@ -33,7 +33,7 @@ export class SignOn extends Page {
             return;
         }
         
-        this.errorMessages.splice(0, this.errorMessages.length);
+        this.clearErrorMessages();
         const formData = new FormData(this.form)
         try {
             const responseData = await SocialApi.register(formData);
@@ -60,7 +60,7 @@ export class SignOn extends Page {
                 window.location.replace("/");
             }
         } catch (e) {
-            this.pushErrorMessages(e as string[]);
+            this.pushErrorMessages([e as string]);
         }
     }
 

@@ -1,6 +1,6 @@
 import { SocialApiConstants } from "./SocialApiConstants";
-import {Author, PaginatedResponse, Post} from "./SocialApiModel";
-import {SocialApiTransform} from "./SocialApiTransform";
+import { Author, PaginatedResponse, Post } from "./SocialApiModel";
+import { SocialApiTransform } from "./SocialApiTransform";
 import { SocialApiUrls } from "./SocialApiUrls";
 
 
@@ -8,7 +8,7 @@ export type PostVisibility = 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
 export type ContentTypes = 'text/plain';
 
 export namespace SocialApi {
-    function serializeForm(formData: FormData) {
+    export function serializeForm(formData: FormData) {
         var obj: { [key: string]: any; } = {};
         formData.forEach((value: any, key: string, formData: FormData) => {
             obj[key] = value;
@@ -16,7 +16,7 @@ export namespace SocialApi {
         return obj;
     }
 
-    function authHeader(): string {
+    export function authHeader(): string {
         const authentication = localStorage.getItem(SocialApiConstants.AUTHENTICATION_STORAGE);
         if (!authentication) {
             return ""
@@ -70,18 +70,9 @@ export namespace SocialApi {
         const text = await response.text();
         const data = text && JSON.parse(text);
         if (!response.ok) {
-            const messages = [];
             if (data) {
-                if (data.username) {
-                    messages.push(...data.username);
-                }
-
-                if (data.password) {
-                    messages.push(data.password);
-                }
+                throw data.message;
             }
-
-            throw messages;
         }
 
         if (data) {
@@ -133,8 +124,22 @@ export namespace SocialApi {
         return SocialApiTransform.parseJsonAuthorData(text);
     }
 
+    export async function editProfile(userId: string, profileDataForm: FormData): Promise<Author | null> {
+        const url = new URL(SocialApiUrls.AUTHORS + userId + "/", window.location.origin)
+
+        return SocialApiTransform.authorDataTransform(await fetchAuthorized(url, "POST", JSON.stringify(serializeForm(profileDataForm))));
+    }
+
     export async function fetchPaginatedInbox(authorId: string, page: number, size: number) {
         const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.INBOX, window.location.origin);
+        url.searchParams.append("page", page.toString())
+        url.searchParams.append("size", size.toString())
+
+        return fetchPaginatedResponseInternal(url);
+    }
+
+    export async function fetchPaginatedFollowers(authorId: string, page: number, size: number) {
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.FOLLOWERS, window.location.origin)
         url.searchParams.append("page", page.toString())
         url.searchParams.append("size", size.toString())
 
@@ -176,110 +181,134 @@ export namespace SocialApi {
     }
 
     export async function fetchPost(postId: string, authorId: string): Promise<Post | null> {
-      const credentialType: RequestCredentials = "include";
-      const headers: HeadersInit = new Headers();
-      headers.set("Authorization", authHeader());
-      headers.set("Content-Type", "application/json; charset=UTF-8");
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+        headers.set("Content-Type", "application/json; charset=UTF-8");
 
-      const requestOptions = {
-        method: "GET",
-        credentials: credentialType,
-        headers: headers,
-      };
+        const requestOptions = {
+            method: "GET",
+            credentials: credentialType,
+            headers: headers,
+        };
 
-      const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
 
-      const response = await fetch(url, requestOptions);
-      const text = await response.text();
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
 
-      return SocialApiTransform.parseJsonPostData(text);
+        return SocialApiTransform.parseJsonPostData(text);
     }
 
     export async function updatePost(
-      postId: string,
-      authorId: string,
-      formData: FormData
+        postId: string,
+        authorId: string,
+        formData: FormData
     ) {
-      const credentialType: RequestCredentials = "include";
-      const headers: HeadersInit = new Headers();
-      headers.set("Authorization", authHeader());
-      headers.set("Content-Type", "application/json; charset=UTF-8");
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+        headers.set("Content-Type", "application/json; charset=UTF-8");
 
-      const body: string = JSON.stringify(serializeForm(formData));
+        const body: string = JSON.stringify(serializeForm(formData));
 
-      const requestOptions = {
-        method: "POST",
-        credentials: credentialType,
-        headers,
-        body
-      };
+        const requestOptions = {
+            method: "POST",
+            credentials: credentialType,
+            headers,
+            body
+        };
 
-      const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId + '/', window.location.origin);
-      const response = await fetch(url, requestOptions);
-      const text = await response.text();
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId + '/', window.location.origin);
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
 
-      return SocialApiTransform.parseJsonPostData(text);
+        return SocialApiTransform.parseJsonPostData(text);
     }
 
-  export async function createPost(
-    authorId: string,
-    formData: FormData
-  ): Promise<Post | null> {
-    const credentialType: RequestCredentials = "include";
-    const headers: HeadersInit = new Headers();
-    headers.set("Authorization", authHeader());
-    headers.set("Content-Type", "application/json; charset=UTF-8");
+    export async function createPost(
+        authorId: string,
+        formData: FormData
+    ): Promise<Post | null> {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+        headers.set("Content-Type", "application/json; charset=UTF-8");
 
-    const data = serializeForm(formData);
+        const data = serializeForm(formData);
 
-    const body: string = JSON.stringify(data);
+        const body: string = JSON.stringify(data);
 
-    const requestOptions = {
-      method: "POST",
-      credentials: credentialType,
-      headers: headers,
-      body: body
-    };
+        const requestOptions = {
+            method: "POST",
+            credentials: credentialType,
+            headers: headers,
+            body: body
+        };
 
-    const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS, window.location.origin);
-    const response = await fetch(url, requestOptions);
-    const text = await response.text();
-    if (!response.ok) {
-      throw new Error(response.statusText)
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS, window.location.origin);
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return SocialApiTransform.parseJsonPostData(text);
     }
 
-    return SocialApiTransform.parseJsonPostData(text);
-  }
+    export async function deletePost(
+        authorId: string,
+        postId: string
+    ): Promise<Array<{ 'message': 'object deleted' }> | null> {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+        headers.set("Content-Type", "application/json; charset=UTF-8");
 
-  export async function deletePost(
-    authorId: string,
-    postId: string
-  ): Promise<Array<{'message': 'object deleted'}> | null> {
-    const credentialType: RequestCredentials = "include";
-    const headers: HeadersInit = new Headers();
-    headers.set("Authorization", authHeader());
-    headers.set("Content-Type", "application/json; charset=UTF-8");
+        const requestOptions = {
+            method: 'DELETE',
+            credentials: credentialType,
+            headers
+        };
 
-    const requestOptions = {
-      method: 'DELETE',
-      credentials: credentialType,
-      headers
-    };
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
 
-    const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
-    const response = await fetch(url, requestOptions);
-    const text = await response.text();
-    if (!response.ok) {
-      throw new Error(response.statusText)
+        return JSON.parse(text);
     }
+    
+    export async function fetchAuthorized(url: URL, method: string, body?: string): Promise<any> {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", SocialApi.authHeader());
+        if (method !== "GET") {
+            headers.set("Content-Type", "application/json; charset=UTF-8");
+        }
 
-    return JSON.parse(text);
-  }
+        const requestOptions = {
+            method: method,
+            credentials: credentialType,
+            headers: headers,
+            body: body,
+        };
+
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return JSON.parse(text);
+    }
 }
 

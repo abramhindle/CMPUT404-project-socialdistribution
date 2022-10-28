@@ -12,7 +12,9 @@ module.exports = function(env, { mode }) {
       signon: ['./src/pages/signon/index.ts'],
       createPost: ['./src/pages/createPost/index.ts'],
       editPost: ['./src/pages/editPost/index.ts'],
-      viewPost: ['./src/pages/viewPost/index.ts']
+      viewPost: ['./src/pages/viewPost/index.ts'],
+      inbox: ['./src/pages/inbox/index.ts'],
+      followers: ['./src/pages/followers/index.ts'],
     },
     output: {
       filename: '[name].js',

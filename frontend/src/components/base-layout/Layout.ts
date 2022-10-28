@@ -6,6 +6,9 @@ import { LayoutType } from "../../libs/core/PageModel";
 
 export class Layout extends FASTElement {
     @observable
+    public userId?: string;
+    
+    @observable
     public user?: Author | null;
 
     @observable
