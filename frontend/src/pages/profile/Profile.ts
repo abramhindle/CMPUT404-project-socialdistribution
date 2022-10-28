@@ -3,46 +3,33 @@ import { observable } from "@microsoft/fast-element";
 import { SocialApi } from "../../libs/api-service/SocialApi";
 
 export class Profile extends Page {
+
     @observable
-    public errorMessages: string[] = [];
-    public form?: HTMLFormElement;
-    const id = "123"
-    public async getInfo(e:Event){
+    public getID(){
+        const info = window.location.search
+        const urlP = new URLSearchParams(info)
+        const id = urlP.get("userID")
+        console.log(id)
+    }
+    
+    public  getInfo(){
+        const id = this.getID()
+        var name = ""
         try {
-            const responseData = await SocialApi.fetchAuthor(id);
-            if (responseData ) {
-                window.location.replace("/profile");
-            }
+            const responseData =  SocialApi.fetchAuthor("1")
+            responseData.then(
+                (data) =>  {
+                    const name = data?.displayName
+                    console.log( name)
+                    return name?.toString
+                }
+            )
+            
         } catch (e) {
             console.warn(e);
         }
+    
     }
-    
-    
-    public async submit(e: Event) {
-        e.preventDefault();
 
-        if (!this.form) {
-            return;
-        }
-        
-        this.errorMessages.splice(0, this.errorMessages.length);
-     
-        // const requestOptions = {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json; charset=UTF-8" },
-        //     body: JSON.stringify()
-        // };
-        // try {
-        //     const responseData = await ;
-        //     if (responseData && responseData.username == formData.get("username") && responseData.display_name == formData.get("display_name")) {
-        //         window.location.replace("/profile/");
-        //     }
-        // } catch (e) {
-        //     this.pushErrorMessages(e as string[]);
-        // }
-    }
-    private pushErrorMessages(messages: string[]) {
-        this.errorMessages?.push(...messages);
-    }
+
 }

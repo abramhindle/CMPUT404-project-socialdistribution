@@ -1,10 +1,19 @@
 import { css } from "@microsoft/fast-element";
 import { accentColor, bodyFont, controlCornerRadius, neutralColor, neutralFillStrongHover, typeRampPlus2FontSize } from "@microsoft/fast-components";
 export const ProfilePageStyles = css`
+
   
     :img {
-        border-radius: 50%;
+      
       }
+    .imgdiv {
+        display: flex;
+        flex-direction: column-reverse;
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+        margin:300px;
+        }
     .top{
         background: linear-gradient(to bottom right, ${neutralColor}, ${accentColor});
         top: 0;

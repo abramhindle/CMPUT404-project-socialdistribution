@@ -5,7 +5,8 @@ import { LayoutType } from "../../../libs/core/PageModel";
 export const NavItem = Object.freeze({
     Home: "Home",
     Inbox: "Inbox",
-    Friends: "Friends"
+    Friends: "Friends",
+    Profile: "Profile"
 });
 
 export type NavItem = keyof typeof NavItem;
@@ -27,7 +28,8 @@ export class HomeNavigation extends FASTElement {
     public readonly navigationItems: NavItem[] = [
         NavItem.Home,
         NavItem.Inbox,
-        NavItem.Friends
+        NavItem.Friends,
+        NavItem.Profile
     ];
 
     public getNavigationUrl(navigationItem: NavItem): string {
@@ -36,6 +38,8 @@ export class HomeNavigation extends FASTElement {
                 return "/inbox/";
             case NavItem.Friends:
                 return "/friends/";
+            case NavItem.Profile:
+                return "/profile/"
             default:
                 return "/";
         }
@@ -48,6 +52,8 @@ export class HomeNavigation extends FASTElement {
             case (NavItem.Inbox):
                 return require('../../../assets/images/inbox.png').default
             case (NavItem.Friends):
+                return require('../../../assets/images/friends.png').default
+            case (NavItem.Profile):
                 return require('../../../assets/images/friends.png').default
         }
     }
