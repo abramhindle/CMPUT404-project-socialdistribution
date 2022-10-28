@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<title>14Degrees - view post</title>
+{% endblock %}
+
+{% block body %}
+<view-post-page auth="{{ user.is_authenticated }}" userId="{{ user.id }}" postId="{{ postId }}"></view-post-page>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'viewPost.js' %}"></script>
+{% endblock %}

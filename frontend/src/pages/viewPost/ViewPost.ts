@@ -1,17 +1,35 @@
 import { Page } from "../Page";
-import {attr} from "@microsoft/fast-element";
+import {attr, observable} from "@microsoft/fast-element";
+import {SocialApi} from "../../libs/api-service/SocialApi";
+import {Post} from "../../libs/api-service/SocialApiModel";
 
 export class ViewPost extends Page {
+  @observable
+  public post?: Post;
 
-  @attr post_text: string = 'Example Post Text';
-  @attr post_author: string = 'Zebra Zigby';
-  @attr post_edit_date: string = '2022-10-13';
-  @attr post_image_url: string = 'https://play.teleporthq.io/static/svg/default-img.svg';
-  @attr comments: {display_name: string, content: string}[] = [
-    {display_name: 'Test Name', content: 'Comment content'}
-  ]
+  public constructor() {
+    super();
+    const postId = this.getAttribute("postId");
+    this.removeAttribute("postId");
+    const authorId = this.getAttribute("authorId");
+    this.removeAttribute("authorId");
+    if (authorId && postId) {
+      this.getPost(postId, authorId);
+    }
+  }
 
   public connectedCallback() {
     super.connectedCallback();
+  }
+
+  private async getPost(authorId: string, postId: string) {
+    try {
+      const post = await SocialApi.fetchPost(postId, authorId);
+      if (post) {
+        this.post = post;
+      } else throw new Error("Null Post");
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
