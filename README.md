@@ -25,6 +25,28 @@ pip install djangorestframework
 ```
 python manage.py runserver
 ```
+5. Load seed data (note you might need to clear your database first)
+```
+When asked for authentication enter any of the authors usernames with the password pass123
+python manage.py flush   (if your database is not empty)
+python manage.py loaddata fixtures/all_data.json
+```
+
+### How to Create Seed Data
+1. At first, you can create any set of data of your liking through the list API routes or though the frontend.
+2. Once you have inserted some meaningful data into your local database, you can dump the data into file fixtures. To do that make sure that you are in the Django project directory (`backend/`) and run the following commands -
+```
+python manage.py dumpdata webserver --indent 4 > mydata.json
+```
+This will create a file called `mydata.json` in your current working directory.
+
+3. If you want, you can push this dataset in the `webserver/fixtures` directory of our Github repository.
+4. To load this dataset to your local db at a later time, run the following commands -
+```
+python manage.py flush  # this will clear the current data in your db
+python manage.py loaddata mydata.json
+```
+Now, you're all set!
 
 API Information
 =================
@@ -38,9 +60,11 @@ API Information
 | /api/authors/<author_id>/                | Retrieves an author's profile [A] | Updates an author's profile [A] | - | - |
 | /api/authors/<author_id>/inbox/  [WIP]              | Creates a new inbox item for an author [A]  | Retrieve's an author's inbox [A] | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
+| /api/authors/<author_id>/follow-requests/<foreign_author_id>/                | - | - | - | Decline a follow request |
 | /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
 | /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
-
+| /api/authors/<author_id>/posts/               | Creates a new post for an author [A]| Retrieves recent posts from an author [A]| - | - |
+| /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | Retrieves an authors post [A] | - | Delete an authors post [A] |
 
 ### Notes
 - [A] specifies that the request must be authenticated
@@ -247,9 +271,28 @@ Author with id 4 accepts a follow request of author with id 3 -
 - `404 Not Found`
 
 
+### Decline a follow request
+#### Sample Request
+<img width="1134" alt="image" src="https://user-images.githubusercontent.com/43586048/198464624-9e99bc8b-a30a-49a0-8030-b64a751c7f5d.png">
+
+#### Sample Response
+```
+{
+    "message": "Follow request declined"
+}
+```
+
+#### Possible Status Codes
+- `200 OK`: means follow request was declined
+- `400 Bad Request`
+- `401 Unauthorized`
+- `404 Not Found`: can be returned when a matching follow request does not exist
+
+
 ### Remove a follower
 #### Sample Request
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197364958-af8cb572-74ab-4c0a-9b61-dde0b778a181.png">
+<img width="1134" alt="image" src="https://user-images.githubusercontent.com/43586048/198466108-f7fde988-9542-4b25-82e7-bc4ac096f88d.png">
+
 
 #### Sample Response
 ```
@@ -260,6 +303,7 @@ Author with id 4 accepts a follow request of author with id 3 -
 
 #### Possible Status Codes
 - `200 OK`
+- `400 Bad Request`
 - `401 Unauthorized`
 - `404 Not Found`: this can be returned when a matching follower can't be found
 
@@ -359,6 +403,211 @@ Notes:
 - `200 OK`
 - `401 Unauthorized`
 - `404 Not Found`
+
+
+### Retrieve a list of all the posts for an author
+#### Sample Usage
+Retrieve the list of posts for author id 5 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197422040-7f02808a-3dc8-4bd8-b441-b0d01b680d4d.png">
+
+#### Sample Response
+```
+[
+    {
+        "author": {
+            "url": "http://localhost:8000/api/authors/5/",
+            "id": 5,
+            "display_name": "myuser",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "created_at": "2022-10-22T05:06:49.477100Z",
+        "edited_at": "2022-10-22T23:27:41.589319Z",
+        "title": "my first post!",
+        "description": "Hello world",
+        "source": "",
+        "origin": "",
+        "unlisted": false,
+        "content_type": "text/plain",
+        "content": "change the content",
+        "visibility": "PUBLIC"
+    }
+
+]
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Create a new post
+#### Sample Usage
+Retrieve the list of posts for author id 5 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197423346-6aa79f0b-f4f0-4986-85c8-1e29b1467ef1.png">
+
+#### Sample Response
+```
+[
+   {
+    "title": "My first post",
+    "description": "My first post",
+    "unlisted": false,
+    "content": "some content",
+    "visibility": "PUBLIC",
+    "content_type": "text/plain"
+    }
+]
+```
+
+#### Possible Status Codes
+- `201 Created`
+- `400 Bad Request`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Retrieve an authors post
+#### Sample Usage
+Retrieve the post for author id 5 with post id 55 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197423796-b0b13176-5ce1-4baa-808e-5e489251e0d5.png">
+
+
+#### Sample Response
+```
+[
+   {
+    "author": {
+        "url": "http://127.0.0.1:8000/api/authors/5/",
+        "id": 5,
+        "display_name": "user123",
+        "profile_image": "",
+        "github_handle": "user"
+    },
+    "created_at": "2022-10-22T05:06:49.477100Z",
+    "edited_at": "",
+    "title": "new Title",
+    "description": "Hello world",
+    "source": "",
+    "origin": "",
+    "unlisted": false,
+    "content_type": "text/plain",
+    "content": "change the content",
+    "visibility": "PUBLIC"
+    }
+]
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `400 Bad Request`
+
+### Update an authors post
+#### Sample Usage
+Update the post for author id 5 with post id 55 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197424158-fd5211d4-79ee-4e1b-bb0c-b8d2585d28be.png">
+
+
+#### Sample Response
+```
+[
+  {
+    "title": "My new post",
+    "description": "My new post",
+    "unlisted": false,
+    "content": "some content"
+    }
+]
+```
+
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `400 Bad Request`
+
+### Delete an authors post
+#### Sample Usage
+Delete the post for author id 5 with post id 55 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197424516-02e2fdd2-52d6-4910-a488-b1b05490566c.png">
+
+#### Sample Response
+```
+[
+    {
+        "message": "Object deleted!"
+    }
+]
+```
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+- `400 Bad Request`
+
+
+## Pagination
+### Retrieve a paginated list of authors
+#### Sample Request
+![image](https://user-images.githubusercontent.com/43586048/197662427-57359a86-43d4-4b2b-a7ba-b37f3ede8be1.png)
+
+#### Sample Response
+```
+{
+    "count": 27,
+    "next": "http://localhost:8000/api/authors/?page=2&size=5",
+    "previous": null,
+    "results": [
+        {
+            "url": "http://localhost:8000/api/authors/1/",
+            "id": 1,
+            "display_name": "",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/2/",
+            "id": 2,
+            "display_name": "zarif",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/3/",
+            "id": 3,
+            "display_name": "author_0_handle",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/4/",
+            "id": 4,
+            "display_name": "author_1_handle",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        {
+            "url": "http://localhost:8000/api/authors/5/",
+            "id": 5,
+            "display_name": "author_2_handle",
+            "profile_image": "",
+            "github_handle": ""
+        }
+    ]
+}
+```
+
+#### Notes
+- Use the `page` query parameter to specify the page you would like to fetch. If you just specify the `page` query param without the `size`, a default size of 10 will be used
+- Use the `size` query parameter to specify the size of the page. You cannot use this on it's one (you also need to pass the `page` query parameter).
+- `count` specifies the total number of records available at this resource
+- Send requests to the urls specified in `next` and `prev` to use the pagination
+
+Planning & Design
+============
+- You can view the [ER model for our app here](https://github.com/zarifmahfuz/project-socialdistribution/blob/master/docs/ERModelv2.png).
+- You can view the Figma designs for our UI here.
 
 Contributing
 ============

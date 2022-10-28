@@ -12,7 +12,7 @@ class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     class Meta:
         model = Post
-        fields = ['author','created_at','edited_at','title','description','source','origin','unlisted','content_type','content','visibility']
+        fields = ['id','author','created_at','edited_at','title','description','source','origin','unlisted','content_type','content','visibility']
 
 class UpdatePostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,8 +73,13 @@ class FollowRequestSerializer(serializers.ModelSerializer):
         return data['sender']
 
 
-class AcceptFollowRequestSerializer(serializers.Serializer):
+class AcceptOrDeclineFollowRequestSerializer(serializers.Serializer):
     follow_request_sender = ActorSerializer()
+
+
+class RemoveFollowerSerializer(serializers.Serializer):
+    follower = ActorSerializer()
+
 
 class FollowerSerializer(serializers.ModelSerializer):
     follower = AuthorSerializer(read_only=True)

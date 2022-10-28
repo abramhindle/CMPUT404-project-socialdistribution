@@ -1,9 +1,15 @@
-import { html } from "@microsoft/fast-element";
+import { html, when } from "@microsoft/fast-element";
+import { LayoutType } from "../../libs/core/PageModel";
 import { Logo } from "./Logo";
 
-const siteName = "14Degrees";
+export const siteName = "14Degrees";
+LayoutType
 
 export const LogoTemplate = html<Logo>`
-    <img src="${x => x.logoUrl}"/>
-    ${siteName}
+    <span class="logo-container ${x => x.layoutStyleClass}">
+        <img src="${x => x.logoUrl}"/>
+        ${when(x => x.layoutType == LayoutType.Desktop, html`
+            ${siteName}
+        `)}
+    </span>
 `;

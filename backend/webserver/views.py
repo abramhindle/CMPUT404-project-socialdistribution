@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from .models import Author, Follow, FollowRequest, Inbox, Post
-from .serializers import (AcceptFollowRequestSerializer, 
+from .serializers import (AcceptOrDeclineFollowRequestSerializer, 
                           AuthorSerializer, 
                           AuthorRegistrationSerializer, 
                           FollowRequestSerializer, 
@@ -13,23 +13,35 @@ from .serializers import (AcceptFollowRequestSerializer,
                           PostSerializer, 
                           UpdatePostSerializer,  
                           SendPrivatePostSerializer,
-                          InboxSerializer)
+                          InboxSerializer,
+                          RemoveFollowerSerializer)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
 from django.utils.timezone import utc
 import datetime
+from .utils import BasicPagination, PaginationHandlerMixin
 
-class AuthorsView(APIView):
+class AuthorsView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = BasicPagination
+    
+    def get_serializer(self, request, queryset):
+        return AuthorSerializer(queryset, many=True, context={'request': request})
 
-    def get(self, request, *args, **kwargs):
-        authors = Author.objects.all()
-        serializer = AuthorSerializer(authors, many=True, context={'request': request})
+    def get(self, request):
+        authors = Author.objects.all().order_by("created_at")
+        page = self.paginate_queryset(authors)
+        if page is not None:
+            serializer = self.get_paginated_response(
+                self.get_serializer(request, page).data
+            )
+        else:
+            serializer = self.get_serializer(request, authors)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
 
 class AuthorDetailView(APIView):
     authentication_classes = [BasicAuthentication]
@@ -109,10 +121,12 @@ class PostView(APIView):
 
         if post.visibility == "PUBLIC":   
             if author.id == request.user.id:
-                post.edited_at = datetime.datetime.utcnow().replace(tzinfo=utc)
                 serializer = UpdatePostSerializer(instance=post,data=request.data,partial=True,context={'request': request})
+                for field in request.data:
+                    if field not in serializer.fields:
+                        return Response({'message': 'You cannot edit this field'}, status=status.HTTP_400_BAD_REQUEST)
                 if serializer.is_valid():
-                    serializer.save()
+                    serializer.save(edited_at=datetime.datetime.utcnow().replace(tzinfo=utc))
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -133,17 +147,28 @@ class PostView(APIView):
         return Response({'message': 'You can only delete public posts'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AllPosts(APIView):
+class AllPosts(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = BasicPagination
+
     def get_author(self,pk):
         author = get_object_or_404(Author,pk=pk)
         return author
+    
+    def get_serializer(self, request, queryset):
+        return PostSerializer(queryset, many=True, context={'request': request})
 
     def get(self, request,pk, *args, **kwargs):
         author = self.get_author(pk)
         posts = author.post_set.all().order_by("-created_at")
-        serializer = PostSerializer(posts, many=True, context={'request': request})
+        page = self.paginate_queryset(posts)
+        if page is not None:
+            serializer = self.get_paginated_response(
+                self.get_serializer(request, page).data
+            )
+        else:
+            serializer = self.get_serializer(request, posts)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     
@@ -161,10 +186,14 @@ class AllPosts(APIView):
                     content=serializer.data["content"],
                     visibility=serializer.data["visibility"]
                 )
-                if new_post.visibility == "FRIENDS" or new_post.visibility == "PUBLIC":
+                if new_post.visibility == "FRIENDS":
                     for follow in author.followed_by_authors.iterator():
                         with transaction.atomic():
                             Inbox.objects.create(target_author=follow.follower,post=new_post)
+                elif new_post.visibility == "PUBLIC":
+                    for author in Author.objects.exclude(username=author.username):
+                        with transaction.atomic():
+                            Inbox.objects.create(target_author=author,post=new_post)  
                 elif new_post.visibility == "PRIVATE":
                     private_post_serializer = SendPrivatePostSerializer(data=request.data)
                     if private_post_serializer.is_valid():
@@ -175,14 +204,34 @@ class AllPosts(APIView):
                             return Response({'message': f'receiver author with id {private_post_serializer.data["receiver"]["id"]} does not exist'}, status=status.HTTP_404_NOT_FOUND)
                         with transaction.atomic():
                             Inbox.objects.create(target_author=receiver, post=new_post)
-                        return Response({'message': 'OK'}, status=status.HTTP_201_CREATED) 
+                                
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         else:
             return Response({'message': 'You cannot create a post for another user'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class AllPublicPostsView(APIView, PaginationHandlerMixin):
+    pagination_class = BasicPagination
+
+    def get_serializer(self, request, queryset):
+        return PostSerializer(queryset, many=True, context={'request': request})
+
+    def get(self, request):
+        """Returns recent public posts"""
+        posts = Post.objects.filter(visibility="PUBLIC").order_by("-created_at")
+        page = self.paginate_queryset(posts)
+        if page is not None:
+            serializer = self.get_paginated_response(
+                self.get_serializer(request, page).data
+            )
+        else:
+            serializer = self.get_serializer(request, posts)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class FollowRequestsView(APIView):
@@ -196,6 +245,21 @@ class FollowRequestsView(APIView):
         serializer = FollowRequestSerializer(author.follow_requests_received.all(), many=True, context={'request': request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FollowRequestDetailView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def delete(self, request, author_id, foreign_author_id):
+        """Decline a follow request"""
+        serializer = AcceptOrDeclineFollowRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            # TODO: project part 2; foreign author id could be a remote one
+            follow_request = get_object_or_404(FollowRequest, sender=foreign_author_id, receiver=author_id)
+            follow_request.delete()
+            return Response({'message': 'Follow request declined'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FollowRequestProcessor(object):
@@ -277,7 +341,7 @@ class FollowersDetailView(APIView):
     def put(self, request, author_id, foreign_author_id):
         if author_id == foreign_author_id:
             return Response({'message': 'author cannot add themself as a follower'}, status=status.HTTP_400_BAD_REQUEST)
-        serializer = AcceptFollowRequestSerializer(data=request.data)
+        serializer = AcceptOrDeclineFollowRequestSerializer(data=request.data)
         if serializer.is_valid():
             # it is safe to assume that the followee will be someone from our server
             # because they are accepting the follow request
@@ -308,18 +372,33 @@ class FollowersDetailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, author_id, foreign_author_id):
-        follow = get_object_or_404(Follow, follower=foreign_author_id, followee=author_id)
-        follow.delete()
-        return Response({'message': 'follower removed'}, status=status.HTTP_200_OK)
+        serializer = RemoveFollowerSerializer(data=request.data)
+        if serializer.is_valid():
+            # TODO: for project part 2; follower could be a remote author;
+            follow = get_object_or_404(Follow, follower=foreign_author_id, followee=author_id)
+            follow.delete()
+            return Response({'message': 'follower removed'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class InboxView(APIView):
+class InboxView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = BasicPagination
+    
+    def get_serializer(self, request, queryset):
+        return InboxSerializer(queryset, many=True, context={'request': request})
 
     def get(self, request, author_id):
         """Returns the list of inbox items in the order of newest to oldest"""
         author = get_object_or_404(Author, pk=author_id)
-        serializer = InboxSerializer(author.inbox.all().order_by('-created_at'), many=True, context={'request': request})
+        queryset = author.inbox.order_by('-created_at').all()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_paginated_response(
+                self.get_serializer(request, page).data
+            )
+        else:
+            serializer = self.get_serializer(request, queryset)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, author_id):
