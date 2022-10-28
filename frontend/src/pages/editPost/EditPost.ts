@@ -5,9 +5,10 @@ import {observable} from "@microsoft/fast-element";
 import {Post} from "../../libs/api-service/SocialApiModel";
 
 export class EditPost extends Page {
-
   @observable
   public post?: Post;
+
+  private postId: string | undefined;
 
   public form?: HTMLFormElement;
 
@@ -19,7 +20,9 @@ export class EditPost extends Page {
     const authorId = this.getAttribute("authorId");
     this.removeAttribute("authorId");
     if (authorId && postId) {
-      this.getPost(postId, authorId);
+      this.postId = postId;
+      this.getPost(authorId, postId);
+      // TODO: redirect to home if the post doesn't exist
     }
   }
 
@@ -49,17 +52,33 @@ export class EditPost extends Page {
     try {
       formData.append("description", "My post description");
       formData.append("unlisted", "false");
-      formData.append("content_type", "text/plain");
       if (this.user) {
-        const responseData = await SocialApi.createPost(this.user.id, formData);
-        if (responseData) {
-          const url = new URL(
-            SocialApiUrls.AUTHORS + this.user.id + SocialApiUrls.POSTS + responseData.id,
-            window.location.origin
-          );
-          window.location.replace(url);
-        } else throw new Error("Null post");
+        if (this.postId) {
+          const responseData = await SocialApi.updatePost(this.postId, this.user.id, formData);
+          if (responseData) {
+            const url = new URL(
+              SocialApiUrls.AUTHORS + this.user.id + SocialApiUrls.POSTS + responseData.id,
+              window.location.origin
+            );
+            window.location.replace(url);
+          } else throw new Error("Null post");
+        } else throw new Error("Null post id");
       } else throw new Error("Null user");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  public async deletePost() {
+    try {
+      if (this.user) {
+        if (this.postId) {
+          const responseData = await SocialApi.deletePost(this.user.id, this.postId);
+          if (responseData && responseData[0]?.message === 'object deleted') {
+            window.location.replace(window.location.origin);
+          } else throw new Error("Failed to delete post");
+        }
+      }
     } catch (e) {
       console.error(e);
     }

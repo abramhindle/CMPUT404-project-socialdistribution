@@ -201,26 +201,14 @@ export namespace SocialApi {
     export async function updatePost(
       postId: string,
       authorId: string,
-      title: string,
-      description: string,
-      content: string,
-      visibility: PostVisibility,
-      content_type: "text/plain",
-      unlisted: false
+      formData: FormData
     ) {
       const credentialType: RequestCredentials = "include";
       const headers: HeadersInit = new Headers();
       headers.set("Authorization", authHeader());
       headers.set("Content-Type", "application/json; charset=UTF-8");
 
-      const body: string = JSON.stringify({
-        title,
-        description,
-        unlisted,
-        content,
-        visibility,
-        content_type
-      });
+      const body: string = JSON.stringify(serializeForm(formData));
 
       const requestOptions = {
         method: "POST",
@@ -229,7 +217,7 @@ export namespace SocialApi {
         body
       };
 
-      const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
+      const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId + '/', window.location.origin);
       const response = await fetch(url, requestOptions);
       const text = await response.text();
       if (!response.ok) {
@@ -267,6 +255,31 @@ export namespace SocialApi {
     }
 
     return SocialApiTransform.parseJsonPostData(text);
+  }
+
+  export async function deletePost(
+    authorId: string,
+    postId: string
+  ): Promise<Array<{'message': 'object deleted'}> | null> {
+    const credentialType: RequestCredentials = "include";
+    const headers: HeadersInit = new Headers();
+    headers.set("Authorization", authHeader());
+    headers.set("Content-Type", "application/json; charset=UTF-8");
+
+    const requestOptions = {
+      method: 'DELETE',
+      credentials: credentialType,
+      headers
+    };
+
+    const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
+    const response = await fetch(url, requestOptions);
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(response.statusText)
+    }
+
+    return JSON.parse(text);
   }
 }
 
