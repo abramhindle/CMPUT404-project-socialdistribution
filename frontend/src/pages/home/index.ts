@@ -22,10 +22,3 @@ defineComponent(new ComponentEntry(homePage, Home));
 provideFASTDesignSystem()
     .register();
 
-neutralColor.withDefault(SwatchRGB.from(parseColorHexRGB(Colors.NEUTRAL)!));
-accentColor.withDefault(SwatchRGB.from(parseColorHexRGB(Colors.ACCENT)!));
-controlCornerRadius.withDefault(2);
-typeRampBaseFontSize.withDefault('12px');
-baseLayerLuminance.withDefault(1.0);
-bodyFont.withDefault("Inter");
-

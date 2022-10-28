@@ -1,7 +1,10 @@
 import { FASTElement, observable } from "@microsoft/fast-element";
+import { layoutComponent } from "../components/base-layout";
 import { SocialApi } from "../libs/api-service/SocialApi";
 import { Author } from "../libs/api-service/SocialApiModel";
 import { LayoutType } from "../libs/core/PageModel";
+
+layoutComponent;
 
 export class Page extends FASTElement {
     @observable

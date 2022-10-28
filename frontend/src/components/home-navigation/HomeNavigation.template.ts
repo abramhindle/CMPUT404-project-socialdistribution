@@ -1,8 +1,8 @@
 import { html, when, repeat } from "@microsoft/fast-element";
-import { logoComponent } from "../../../../components/logo";
-import { siteName } from "../../../../components/logo/Logo.template";
-import { LayoutHelpers } from "../../../../libs/core/Helpers";
-import { LayoutType } from "../../../../libs/core/PageModel";
+import { logoComponent } from "../logo";
+import { siteName } from "../logo/Logo.template";
+import { LayoutHelpers } from "../../libs/core/Helpers";
+import { LayoutType } from "../../libs/core/PageModel";
 import { HomeNavigation, NavItem } from "./HomeNavigation";
 
 logoComponent;
