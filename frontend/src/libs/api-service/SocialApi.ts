@@ -188,6 +188,7 @@ export namespace SocialApi {
       };
 
       const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS + postId, window.location.origin);
+
       const response = await fetch(url, requestOptions);
       const text = await response.text();
       if (!response.ok) {

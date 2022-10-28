@@ -27,7 +27,7 @@ urlpatterns = [
     path('logout/', login_required(TemplateView.as_view(template_name='logout.html'), redirect_field_name=None)),
     path('create-post/', TemplateView.as_view(template_name='createPost.html')),
     path('edit-post/<int:authorId>/<int:postId>', TemplateView.as_view(template_name='editPost.html')),
-    path('view-post/<int:authorId>/<int:postId>', TemplateView.as_view(template_name='post.html')),
+    path('view-post/<int:authorId>/<int:postId>', TemplateView.as_view(template_name='viewPost.html')),
     path('api/', include('webserver.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

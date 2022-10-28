@@ -14,7 +14,7 @@ export class ViewPost extends Page {
     const authorId = this.getAttribute("authorId");
     this.removeAttribute("authorId");
     if (authorId && postId) {
-      this.getPost(postId, authorId);
+      this.getPost(authorId, postId);
     }
   }
 
