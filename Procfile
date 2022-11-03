@@ -1,0 +1,1 @@
+web: gunicorn --pythonpath backend social_distribution.wsgi
