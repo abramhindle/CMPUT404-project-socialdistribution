@@ -1,0 +1,8 @@
+{
+    "workspaces": [
+        "frontend"
+    ],
+    "scripts": {
+        "build": "cd frontend && webpack"
+    }
+}
