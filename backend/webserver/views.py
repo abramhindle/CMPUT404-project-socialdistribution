@@ -14,13 +14,15 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           UpdatePostSerializer,  
                           SendPrivatePostSerializer,
                           InboxSerializer,
-                          RemoveFollowerSerializer)
+                          RemoveFollowerSerializer,
+                          AddNodeSerializer,
+                          NodesListSerializer,)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
 from django.utils.timezone import utc
 import datetime
-from .utils import BasicPagination, PaginationHandlerMixin
+from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsRemotePostOnly
 
 class AuthorsView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
@@ -31,7 +33,7 @@ class AuthorsView(APIView, PaginationHandlerMixin):
         return AuthorSerializer(queryset, many=True, context={'request': request})
 
     def get(self, request):
-        authors = Author.objects.all().order_by("created_at")
+        authors = Author.objects.exclude(is_remote_user=True).exclude(is_admin=True).order_by("created_at")
         page = self.paginate_queryset(authors)
         if page is not None:
             serializer = self.get_paginated_response(
@@ -45,7 +47,7 @@ class AuthorsView(APIView, PaginationHandlerMixin):
 
 class AuthorDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
 
     def get_author(self,pk):
         author = get_object_or_404(Author,pk=pk)
@@ -96,7 +98,7 @@ class LogoutView(APIView):
 
 class PostView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
 
     def get_author(self,pk):
         author = get_object_or_404(Author,pk=pk)
@@ -151,7 +153,7 @@ class PostView(APIView):
 
 class AllPosts(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
     pagination_class = BasicPagination
 
     def get_author(self,pk):
@@ -218,7 +220,6 @@ class AllPosts(APIView, PaginationHandlerMixin):
             return Response({'message': 'You cannot create a post for another user'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class AllPublicPostsView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
 
@@ -253,7 +254,7 @@ class FollowRequestsView(APIView):
 
 class FollowRequestDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
     
     def delete(self, request, author_id, foreign_author_id):
         """Decline a follow request"""
@@ -331,7 +332,7 @@ class FollowersView(APIView):
 
 class FollowersDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
     
     def get(self, request, author_id, foreign_author_id):
         try:
@@ -386,7 +387,7 @@ class FollowersDetailView(APIView):
 
 class InboxView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemotePostOnly]
     pagination_class = BasicPagination
     
     def get_serializer(self, request, queryset):
@@ -412,3 +413,30 @@ class InboxView(APIView, PaginationHandlerMixin):
             return FollowRequestProcessor(request, author_id).get_response()
         else:
             return Response({'message': "unknown 'type'"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NodesView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    
+    def get(self, request):
+        queryset = Author.objects.filter(is_remote_user=True).all()
+        serializer = NodesListSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        serializer = AddNodeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NodeDetailView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    
+    def delete(self, request, node_id):
+        node = get_object_or_404(Author, pk=node_id)
+        node.delete()
+        return Response({'message': 'node deleted'}, status=status.HTTP_200_OK)

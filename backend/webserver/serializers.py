@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Author, Follow, FollowRequest, Inbox, Post
+from .models import Author, Follow, FollowRequest, Inbox, Post, Node
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -123,3 +123,39 @@ class InboxSerializer(serializers.ModelSerializer):
             raise Exception('Unexpected type of inbox item')
         data['type'] = type
         return data
+
+class AddNodeSerializer(serializers.ModelSerializer):
+    api_url = serializers.URLField()
+    password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
+
+    class Meta:
+        model = Author
+        fields = ['id', 'api_url', 'password', 'password2']
+        read_only_fields = ['id']
+
+    def save(self):
+        node_user = Author(
+            username=self.validated_data['api_url'], 
+            display_name=self.validated_data['api_url'],
+            is_remote_user=True,
+        )
+        password = self.validated_data['password']
+        password2 = self.validated_data['password2']
+        if password != password2:
+            raise serializers.ValidationError({'password': 'Passwords must match.'})
+        node_user.set_password(password)
+        node = Node(user=node_user, api_url=self.validated_data['api_url'])
+        node_user.save()
+        node.save()
+        return node_user
+
+class NodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Node
+        fields = ['api_url']
+
+class NodesListSerializer(serializers.ModelSerializer):
+    node = NodeSerializer()
+    class Meta:
+        model = Author
+        fields = ['id', 'node', 'password']

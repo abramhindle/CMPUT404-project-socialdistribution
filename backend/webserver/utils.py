@@ -1,5 +1,6 @@
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.utils.urls import replace_query_param
+from rest_framework import permissions
 
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'size'
@@ -39,3 +40,36 @@ class PaginationHandlerMixin(object):
     def get_paginated_response(self, data):
         assert self.paginator is not None
         return self.paginator.get_paginated_response(data)
+
+
+class IsRemotePostOnly(permissions.IsAuthenticated):
+    """
+        Local authors and admins are permitted for all requests
+        Remote requests are only permitted if they are POST requests
+    """
+    def has_permission(self, request, view):
+        permitted = super().has_permission(request, view)
+        if not permitted:
+            return False
+        if not request.user.is_remote_user:
+            return permitted
+        
+        if request.method == 'POST':
+            return True
+        return False
+
+class IsRemoteGetOnly(permissions.IsAuthenticated):
+    """
+        Local authors and admins are permitted for all requests
+        Remote requests are only permitted if they are GET requests
+    """
+    def has_permission(self, request, view):
+        permitted = super().has_permission(request, view)
+        if not permitted:
+            return False
+        if not request.user.is_remote_user:
+            return permitted
+        
+        if request.method == 'GET':
+            return True
+        return False

@@ -56,17 +56,18 @@ API Information
 | /api/login/                | Logs in an author | - | - | - |
 | /api/register/ | Registers a new author | - | - | - |
 | /api/logout/                | Logs out an author  | - | - | - |
-| /api/authors/                | Logs out an author [A] | - | - | - |
-| /api/authors/<author_id>/                | Retrieves an author's profile [A] | Updates an author's profile [A] | - | - |
-| /api/authors/<author_id>/inbox/  [WIP]              | Creates a new inbox item for an author [A]  | Retrieve's an author's inbox [A] | - | - |
+| /api/authors/                | - | **Retrieves the list of authors [A][R]** | - | - |
+| /api/authors/<author_id>/                | **Retrieves an author's profile [A][R]** | Updates an author's profile [A] | - | - |
+| /api/authors/<author_id>/inbox/  [WIP]              | **Creates a new inbox item for an author [A][R]**  | Retrieve's an author's inbox [A] | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
-| /api/authors/<author_id>/follow-requests/<foreign_author_id>/                | - | - | - | Decline a follow request |
-| /api/authors/<author_id>/followers/                | - | Retrives the list of followers for an author [A] | - | - |
+| /api/authors/<author_id>/follow-requests/<foreign_author_id>/                | - | - | - | Decline a follow request[A] |
+| /api/authors/<author_id>/followers/                | - | **Retrives the list of followers for an author [A][R]** | - | - |
 | /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
-| /api/authors/<author_id>/posts/               | Creates a new post for an author [A]| Retrieves recent posts from an author [A]| - | - |
-| /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | Retrieves an authors post [A] | - | Delete an authors post [A] |
+| /api/authors/<author_id>/posts/               | Creates a new post for an author [A] | **Retrieves recent posts from an author [A][R]** | - | - |
+| /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | **Retrieves an authors post [A][R]** | - | Delete an authors post [A] |
 
 ### Notes
+- [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
 - [A] specifies that the request must be authenticated
 - [WIP] specifies that some features of the endpoint is under development
 

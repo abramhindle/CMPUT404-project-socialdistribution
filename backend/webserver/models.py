@@ -34,13 +34,14 @@ class AuthorUserManager(BaseUserManager):
 
 
 class Author(AbstractBaseUser):
-    username = models.CharField(max_length=100, unique=True)
+    username = models.CharField(max_length=300, unique=True)
     display_name = models.CharField(max_length=200)
     profile_image = models.CharField(max_length=250, blank=True)
     github_handle = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(verbose_name="date created", auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    is_remote_user = models.BooleanField(default=False)
 
     objects = AuthorUserManager()
     
@@ -129,3 +130,9 @@ class Inbox(models.Model):
     comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
     like = models.ForeignKey(Like,on_delete=models.CASCADE,null=True)
     created_at = models.DateTimeField(verbose_name="date created",auto_now_add=True)
+
+
+class Node(models.Model):
+    user = models.OneToOneField(Author, on_delete=models.CASCADE)
+    api_url = models.URLField(max_length=300, unique=True)
+    # TODD: add fields that let us connect to remote nodes based on other groups' authentication schemes
