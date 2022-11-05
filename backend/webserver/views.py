@@ -218,7 +218,6 @@ class AllPosts(APIView, PaginationHandlerMixin):
             return Response({'message': 'You cannot create a post for another user'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class AllPublicPostsView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
 
@@ -412,3 +411,30 @@ class InboxView(APIView, PaginationHandlerMixin):
             return FollowRequestProcessor(request, author_id).get_response()
         else:
             return Response({'message': "unknown 'type'"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NodesView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    
+    def get(self, request):
+        queryset = Author.objects.filter(is_remote_user=True).all()
+        serializer = NodesListSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        serializer = AddNodeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NodeDetailView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    
+    def delete(self, request, node_id):
+        node = get_object_or_404(Author, pk=node_id)
+        node.delete()
+        return Response({'message': 'node deleted'}, status=status.HTTP_200_OK)

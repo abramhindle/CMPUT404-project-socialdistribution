@@ -1520,3 +1520,86 @@ class DeclineFollowRequestTestCase(APITestCase):
         response = self.client.delete(url, data=payload, format="json")
         
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+
+
+class NodesViewTestCase(APITestCase):
+    def test_add_node(self):
+        admin = Author.objects.create(username="admin", display_name="admin", is_admin=True)
+        self.assertEqual(1, Author.objects.count())
+        self.assertEqual(0, Node.objects.count())
+        url = '/api/nodes/'
+        payload = {
+            "api_url":  "https://social-distribution.herokuapp.com/api",
+            "password": "secure-password",
+            "password2": "secure-password",
+        }
+        self.client.force_authenticate(user=admin)
+        response = self.client.force_authenticate(user=admin)
+        response = self.client.post(url, data=payload, format="json")
+        
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(2, Author.objects.count())
+        self.assertEqual(1, Node.objects.count())
+        remote_user = Author.objects.last()
+        node = Node.objects.first()
+        self.assertEqual(True, remote_user.is_remote_user)
+        self.assertEqual("https://social-distribution.herokuapp.com/api", node.api_url)
+    
+    def test_only_admins_can_add_nodes(self):
+        non_admin = Author.objects.create(username="author_1", display_name="author_1")
+        url = '/api/nodes/'
+        payload = {
+            "api_url":  "https://social-distribution.herokuapp.com/api",
+            "password": "secure-password",
+            "password2": "secure-password",
+        }
+        self.client.force_authenticate(user=non_admin)
+        response = self.client.post(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+    
+    def test_get_nodes(self):
+        admin = Author.objects.create(username="admin", display_name="admin", is_admin=True)
+        node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
+                                            password="password1", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1)
+        node_user_2 = Author.objects.create(username="node_user_2", display_name="node_user_2", 
+                                            password="password2", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-2.herokuapp.com/api", user=node_user_2)
+        
+        url = '/api/nodes/'
+        self.client.force_authenticate(user=admin)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        
+        expected_output = [
+            {
+                "id": node_user_1.id,
+                "password": "password1",
+                "node": {
+                    "api_url": "https://social-distribution-1.herokuapp.com/api",
+                }
+            },
+            {
+                "id": node_user_2.id,
+                "password": "password2",
+                "node": {
+                    "api_url": "https://social-distribution-2.herokuapp.com/api",
+                }
+            }
+        ]
+        self.assertEqual(expected_output, response.data)
+
+class NodeModificationTestCase(APITestCase):
+    def test_remove_node(self):
+        admin = Author.objects.create(username="admin", display_name="admin", is_admin=True)
+        node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
+                                            password="password1", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1)
+        self.assertEqual(1, Node.objects.count())
+        
+        url = f'/api/nodes/{node_user_1.id}/'
+        self.client.force_authenticate(user=admin)
+        response = self.client.delete(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(0, Node.objects.count())
+

@@ -14,6 +14,8 @@ from .views import(
     PostView,
     AllPosts,
     AllPublicPostsView,
+    NodesView,
+    NodeDetailView,
 )
 
 # first argument, endpoint, second argument is the view that calling the url will send the request to
@@ -24,6 +26,8 @@ urlpatterns = [
     path('register/', AuthorRegistrationView.as_view()),
     path('login/', LoginView.as_view()),
     path('logout/', LogoutView.as_view()),
+    path('nodes/', NodesView.as_view()),
+    path('nodes/<str:node_id>/', NodeDetailView.as_view()),
     path('authors/<str:author_id>/follow-requests/', FollowRequestsView.as_view()),
     path('authors/<str:author_id>/follow-requests/<str:foreign_author_id>/', FollowRequestDetailView.as_view()),
     path('authors/<str:author_id>/followers/', FollowersView.as_view()),
