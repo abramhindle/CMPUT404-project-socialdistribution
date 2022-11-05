@@ -1,5 +1,5 @@
 from django.test import TestCase
-from webserver.models import Author, FollowRequest, Inbox, Follow, Post
+from webserver.models import Author, FollowRequest, Inbox, Follow, Post, Node
 from rest_framework.test import APITestCase
 from rest_framework import status
 from unittest import mock, skip
@@ -31,10 +31,6 @@ class FollowRequestTestCase(TestCase):
 
 
 class AuthorsViewTestCase(APITestCase):
-    def test_requests_require_authentication(self):
-        """TODO"""
-        pass
-
     def test_get(self):
         # create some authors
         Author.objects.create(username="author_1", display_name="author_1")
@@ -48,7 +44,7 @@ class AuthorsViewTestCase(APITestCase):
         self.assertEqual(len(response.data), 3)
         author_1 = response.data[0]
         self.assertEqual(author_1["display_name"], "author_1")
-
+    
     def test_get_does_not_return_admin_and_remote_users(self):
         Author.objects.create(username="admin", display_name="admin", is_admin=True)
         Author.objects.create(username="nodeA", display_name="nodeA", is_remote_user=True)
@@ -155,11 +151,6 @@ class PaginationTestCase(APITestCase):
 
 
 class AuthorDetailView(APITestCase):
-    def test_requests_require_authentication(self):
-        """TODO"""
-        pass
-        
-        
     def test_get(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
         url = f'/api/authors/{author_1.id}/'
@@ -181,7 +172,7 @@ class AuthorDetailView(APITestCase):
         """POST request works on all editable data fields"""
         author_1 = Author.objects.create()
         url = f'/api/authors/{author_1.id}/'
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         payload = {
             "display_name": "Mark McGoey",
             "profile_image": "No image",
@@ -198,7 +189,7 @@ class AuthorDetailView(APITestCase):
     def test_post_no_fields(self):
         author_1 = Author.objects.create()
         url = f'/api/authors/{author_1.id}/'
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         payload = {}
         response = self.client.post(url,data=payload)
         self.assertEqual(response.data["display_name"], "")
@@ -215,7 +206,7 @@ class AuthorDetailView(APITestCase):
             "display_name": "Mark McGoey",
             "github_handle": "mmcgoey"
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.post(url,data=payload)
         self.assertEqual(response.data["display_name"], "Mark McGoey")
         self.assertEqual(response.data["profile_image"], "")
@@ -233,7 +224,7 @@ class AuthorDetailView(APITestCase):
             "profile_image": "No image",
             "github_handle": "mmcgoey"
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=Author.objects.create())
         response = self.client.post(url,data=payload)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
@@ -246,7 +237,7 @@ class AuthorDetailView(APITestCase):
             "id":new_id,
             "url":new_url
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.post(url,data=payload)
         
         self.assertEqual(response.data["id"], author_1.id)
@@ -607,7 +598,7 @@ class FollowersDetailViewTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.put(url, data=payload, format="json")
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(1, Follow.objects.count())
@@ -630,7 +621,7 @@ class FollowersDetailViewTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.put(url, data=payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEqual(0, Follow.objects.count())
@@ -648,7 +639,7 @@ class FollowersDetailViewTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.put(url, data=payload, format="json")
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEqual(0, Follow.objects.count())
@@ -662,7 +653,7 @@ class FollowersDetailViewTestCase(APITestCase):
                 "id": author_1.id + 1,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.put(url, data=payload, format="json")
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
     
@@ -682,7 +673,7 @@ class FollowersDetailViewTestCase(APITestCase):
                 "id": author_1.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_2)
         response = self.client.put(url, data=payload, format="json")
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(2, Follow.objects.count())
@@ -721,7 +712,7 @@ class FollowersDetailViewTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.delete(url, data=payload, format="json")
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(0, Follow.objects.count())
@@ -737,7 +728,7 @@ class FollowersDetailViewTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.delete(url, data=payload, format="json")
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
 
@@ -837,7 +828,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        response = self.client.post("/login/", data=request_payload, format="json")
+        # response = self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -872,7 +864,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        response = self.client.post("/login/", data=request_payload, format="json")
+        # response = self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -910,7 +903,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -935,7 +929,8 @@ class PostTestCase(APITestCase):
         author_2.set_password("pass123")
         author_2.save()
         request_payload = {"username": "author_2", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_2)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -959,7 +954,8 @@ class PostTestCase(APITestCase):
         author_2.set_password("pass123")
         author_2.save()
         request_payload = {"username": "author_2", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_2)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -990,7 +986,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -1024,7 +1021,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -1056,7 +1054,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -1080,7 +1079,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -1104,7 +1104,8 @@ class PostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
         post_1 = Post.objects.create(
             author =author_1,
@@ -1207,7 +1208,8 @@ class AllPostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         author_2 = Author.objects.create(username="author_2", display_name="author_2")
         author_3 = Author.objects.create(username="author_3", display_name="author_3")
         author_4 = Author.objects.create(username="author_4", display_name="author_4")
@@ -1243,7 +1245,8 @@ class AllPostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         author_2 = Author.objects.create(username="author_2", display_name="author_2")
         payload = {
             "title": "Mark McGoey",
@@ -1277,7 +1280,8 @@ class AllPostTestCase(APITestCase):
         author_2.set_password("pass123")
         author_2.save()
         request_payload = {"username": "author_2", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json") 
+        # self.client.post("/login/", data=request_payload, format="json") 
+        self.client.force_authenticate(user=author_2)
         payload = {
             "title": "Mark McGoey",
             "description": "new description",
@@ -1297,7 +1301,8 @@ class AllPostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json") 
+        # self.client.post("/login/", data=request_payload, format="json") 
+        self.client.force_authenticate(user=author_1)
        
 
         payload = {
@@ -1317,7 +1322,8 @@ class AllPostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json") 
+        # self.client.post("/login/", data=request_payload, format="json") 
+        self.client.force_authenticate(user=author_1)
        
 
         payload = {
@@ -1340,7 +1346,8 @@ class AllPostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         
         payload = {
             "title": "Mark McGoey",
@@ -1375,7 +1382,8 @@ class AllPostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json") 
+        # self.client.post("/login/", data=request_payload, format="json") 
+        self.client.force_authenticate(user=author_1)
         payload = {
             "title": "Mark McGoey",
             "description": "new description",
@@ -1400,7 +1408,8 @@ class AllPostTestCase(APITestCase):
         author_1.set_password("pass123")
         author_1.save()
         request_payload = {"username": "author_1", "password": "pass123"}
-        self.client.post("/login/", data=request_payload, format="json")
+        # self.client.post("/login/", data=request_payload, format="json")
+        self.client.force_authenticate(user=author_1)
         author_2 = Author.objects.create(username="author_2", display_name="author_2")
         author_3 = Author.objects.create(username="author_3", display_name="author_3")
         author_4 = Author.objects.create(username="author_4", display_name="author_4")
@@ -1450,7 +1459,7 @@ class InboxViewTestCase(APITestCase):
         Inbox.objects.create(target_author=author_1, follow_request_received=fr)
         
         url = f'/api/authors/{author_1.id}/inbox/'
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.get(url)
         
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -1512,7 +1521,7 @@ class DeclineFollowRequestTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.delete(url, data=payload, format="json")
         
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -1529,7 +1538,7 @@ class DeclineFollowRequestTestCase(APITestCase):
                 "id": author_2.id,
             }
         }
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_1)
         response = self.client.delete(url, data=payload, format="json")
         
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
@@ -1616,3 +1625,106 @@ class NodeModificationTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(0, Node.objects.count())
 
+class CustomPermissionsTestCase(APITestCase):
+    def setUp(self):
+        self.remote_node = Author.objects.create(username="nodeA", display_name="nodeA", is_remote_user=True)
+        self.regular_author = Author.objects.create(username="regular_author", display_name="regular_author")
+
+    def test_allows_remote_get_requests(self):
+        """IsRemoteGetOnly allows remote GET requests"""
+        url = f'/api/authors/{self.regular_author.id}/'
+        self.client.force_authenticate(user=self.remote_node)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+    
+    def test_does_not_allow_remote_non_get_requests(self):
+        """IsRemoteGetOnly does not allow remote non-GET requests"""
+        url = f'/api/authors/{self.regular_author.id}/'
+        payload = {
+            "display_name": "New display name",
+            "profile_image": "No image",
+            "github_handle": "mmcgoey"
+        }
+        self.client.force_authenticate(user=self.remote_node)
+        response = self.client.post(url, data=payload)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+    
+    def test_IsRemoteGetOnly_allows_all_local_requests(self):
+        url = f'/api/authors/{self.regular_author.id}/'
+        payload = {
+            "display_name": "New display name",
+            "profile_image": "No image",
+            "github_handle": "mmcgoey"
+        }
+        self.client.force_authenticate(user=self.regular_author)
+        response = self.client.post(url, data=payload)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+    
+    def test_IsRemotePostOnly_allows_remote_post_requests(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+        payload = {
+            "type": "follow",
+            "sender": {
+                "url": f'http://127.0.0.1:5054/authors/{author_1.id}/',
+                "id": author_1.id,
+            },
+            "receiver": {
+                "url": f'http://127.0.0.1:5054/authors/{author_2.id}/',
+                "id": author_2.id,
+            }
+        }
+        url = f'/api/authors/{author_2.id}/inbox/'
+        self.client.force_authenticate(user=self.remote_node)
+        response = self.client.post(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+    
+    def test_IsRemotePostOnly_does_not_allow_remote_non_post_requests(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+
+        Follow.objects.create(follower=author_1, followee=author_2)
+        fr = FollowRequest.objects.create(sender=author_2, receiver=author_1)
+        
+        post = Post.objects.create(
+            author=author_2,
+            title="Post 1",
+            description="Sample description",
+            visibility="FRIENDS",
+            content_type="text/plain",
+            content="What's up people?"
+        )
+
+        # author_1 should see the new post from author_2 and the follow request from author_2
+        Inbox.objects.create(target_author=author_1, post=post)
+        Inbox.objects.create(target_author=author_1, follow_request_received=fr)
+        
+        url = f'/api/authors/{author_1.id}/inbox/'
+        self.client.force_authenticate(user=self.remote_node)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+    
+    def test_is_remote_post_only_allows_all_local_requests(self):
+        author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
+
+        Follow.objects.create(follower=author_1, followee=author_2)
+        fr = FollowRequest.objects.create(sender=author_2, receiver=author_1)
+        
+        post = Post.objects.create(
+            author=author_2,
+            title="Post 1",
+            description="Sample description",
+            visibility="FRIENDS",
+            content_type="text/plain",
+            content="What's up people?"
+        )
+
+        # author_1 should see the new post from author_2 and the follow request from author_2
+        Inbox.objects.create(target_author=author_1, post=post)
+        Inbox.objects.create(target_author=author_1, follow_request_received=fr)
+        
+        url = f'/api/authors/{author_1.id}/inbox/'
+        self.client.force_authenticate(user=author_1)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)

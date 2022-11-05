@@ -14,13 +14,15 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           UpdatePostSerializer,  
                           SendPrivatePostSerializer,
                           InboxSerializer,
-                          RemoveFollowerSerializer)
+                          RemoveFollowerSerializer,
+                          AddNodeSerializer,
+                          NodesListSerializer,)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
 from django.utils.timezone import utc
 import datetime
-from .utils import BasicPagination, PaginationHandlerMixin
+from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsRemotePostOnly
 
 class AuthorsView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
@@ -45,7 +47,7 @@ class AuthorsView(APIView, PaginationHandlerMixin):
 
 class AuthorDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
 
     def get_author(self,pk):
         author = get_object_or_404(Author,pk=pk)
@@ -96,7 +98,7 @@ class LogoutView(APIView):
 
 class PostView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
 
     def get_author(self,pk):
         author = get_object_or_404(Author,pk=pk)
@@ -151,7 +153,7 @@ class PostView(APIView):
 
 class AllPosts(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
     pagination_class = BasicPagination
 
     def get_author(self,pk):
@@ -252,7 +254,7 @@ class FollowRequestsView(APIView):
 
 class FollowRequestDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
     
     def delete(self, request, author_id, foreign_author_id):
         """Decline a follow request"""
@@ -330,7 +332,7 @@ class FollowersView(APIView):
 
 class FollowersDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemoteGetOnly]
     
     def get(self, request, author_id, foreign_author_id):
         try:
@@ -385,7 +387,7 @@ class FollowersDetailView(APIView):
 
 class InboxView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsRemotePostOnly]
     pagination_class = BasicPagination
     
     def get_serializer(self, request, queryset):
