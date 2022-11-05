@@ -609,6 +609,13 @@ Planning & Design
 - You can view the [ER model for our app here](https://github.com/zarifmahfuz/project-socialdistribution/blob/master/docs/ERModelv2.png).
 - You can view the Figma designs for our UI here.
 
+Deployment
+============
+If you are added as collaborator on the Heroku app for this project, you should be able to access it here - https://dashboard.heroku.com/apps/social-distribution-14degrees. You are able to do pretty much any administration work on the Heroku app once you're added as a collaborator. Some examples of what you can do -
+* You can manually deploy any branch on this repository from the [`Deploy` tab](https://dashboard.heroku.com/apps/social-distribution-14degrees/deploy/github)
+* You can ssh into the production container/dyno with the command `heroku ps:exec --dyno=web.1 --app social-distribution-14degrees`
+* You can ssh into a one-off (non-production) container/dyno with the command `heroku run bash -a social-distribution-14degrees`
+
 Contributing
 ============
 
