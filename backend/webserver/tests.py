@@ -49,6 +49,19 @@ class AuthorsViewTestCase(APITestCase):
         author_1 = response.data[0]
         self.assertEqual(author_1["display_name"], "author_1")
 
+    def test_get_does_not_return_admin_and_remote_users(self):
+        Author.objects.create(username="admin", display_name="admin", is_admin=True)
+        Author.objects.create(username="nodeA", display_name="nodeA", is_remote_user=True)
+        regular_author = Author.objects.create(username="regular_author", display_name="regular_author")
+        self.assertEqual(3, Author.objects.count())
+
+        url = "/api/authors/"
+        self.client.force_authenticate(user=mock.Mock())
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(1, len(response.data))
+        self.assertEqual(regular_author.id, response.data[0]["id"])
+
 
 class PaginationTestCase(APITestCase):
     def setUp(self):

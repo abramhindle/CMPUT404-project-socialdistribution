@@ -31,7 +31,7 @@ class AuthorsView(APIView, PaginationHandlerMixin):
         return AuthorSerializer(queryset, many=True, context={'request': request})
 
     def get(self, request):
-        authors = Author.objects.all().order_by("created_at")
+        authors = Author.objects.exclude(is_remote_user=True).exclude(is_admin=True).order_by("created_at")
         page = self.paginate_queryset(authors)
         if page is not None:
             serializer = self.get_paginated_response(
