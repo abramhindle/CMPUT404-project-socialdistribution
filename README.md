@@ -65,6 +65,7 @@ API Information
 | /api/authors/<author_id>/followers/<foreign_author_id>/                | - | Checks if foreign_author_id is a follower of author_id [A] | Accepts a follow request [A] | Removes a follower [A] |
 | /api/authors/<author_id>/posts/               | Creates a new post for an author [A] | **Retrieves recent posts from an author [A][R]** | - | - |
 | /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | **Retrieves an authors post [A][R]** | - | Delete an authors post [A] |
+| /api/nodes/             | Add a node [Admin only] | - | - | - |
 
 ### Notes
 - [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
@@ -604,6 +605,21 @@ Delete the post for author id 5 with post id 55 -
 - Use the `size` query parameter to specify the size of the page. You cannot use this on it's one (you also need to pass the `page` query parameter).
 - `count` specifies the total number of records available at this resource
 - Send requests to the urls specified in `next` and `prev` to use the pagination
+
+
+## Connecting to new nodes
+### Add a node to connect with
+#### Sample Request
+![image](https://user-images.githubusercontent.com/43586048/201425872-718980f5-f8a1-4a8d-8b07-ffdbf2e856bd.png)
+
+* `node_name`, `password`, `password2` are required authentication fields that will be used by external nodes to connect to us
+* `auth_username`, `auth_password` are required authentication fields that will be used by our node to connect to external nodes
+* `api_url` is base api url of the external node
+
+#### Sample Response
+![image](https://user-images.githubusercontent.com/43586048/201426000-1f0943cb-cba6-4fa8-8f31-81249a24ee46.png)
+
+* The external node will need to authenticate themselves with `username:node_name` and `password:password`
 
 Planning & Design
 ============

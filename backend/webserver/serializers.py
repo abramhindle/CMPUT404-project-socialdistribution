@@ -126,17 +126,20 @@ class InboxSerializer(serializers.ModelSerializer):
 
 class AddNodeSerializer(serializers.ModelSerializer):
     api_url = serializers.URLField()
+    node_name = serializers.CharField()
+    auth_username = serializers.CharField()
+    auth_password = serializers.CharField()
     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
     class Meta:
         model = Author
-        fields = ['id', 'api_url', 'password', 'password2']
+        fields = ['id', 'api_url', 'password', 'password2', 'auth_username', 'auth_password', 'node_name']
         read_only_fields = ['id']
 
     def save(self):
         node_user = Author(
-            username=self.validated_data['api_url'], 
-            display_name=self.validated_data['api_url'],
+            username=self.validated_data['node_name'], 
+            display_name=self.validated_data['node_name'],
             is_remote_user=True,
         )
         password = self.validated_data['password']
@@ -144,7 +147,8 @@ class AddNodeSerializer(serializers.ModelSerializer):
         if password != password2:
             raise serializers.ValidationError({'password': 'Passwords must match.'})
         node_user.set_password(password)
-        node = Node(user=node_user, api_url=self.validated_data['api_url'])
+        node = Node(user=node_user, api_url=self.validated_data['api_url'],
+                    auth_username=self.validated_data['auth_username'], auth_password=self.validated_data['auth_password'])
         node_user.save()
         node.save()
         return node_user
@@ -152,7 +156,7 @@ class AddNodeSerializer(serializers.ModelSerializer):
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Node
-        fields = ['api_url']
+        fields = ['api_url', 'auth_username', 'auth_password']
 
 class NodesListSerializer(serializers.ModelSerializer):
     node = NodeSerializer()

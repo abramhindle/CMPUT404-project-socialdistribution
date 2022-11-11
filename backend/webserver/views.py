@@ -2,7 +2,7 @@ from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
-from .models import Author, Follow, FollowRequest, Inbox, Post
+from .models import Author, Follow, FollowRequest, Inbox, Post, Node
 from .serializers import (AcceptOrDeclineFollowRequestSerializer, 
                           AuthorSerializer, 
                           AuthorRegistrationSerializer, 
@@ -22,7 +22,12 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
 from django.utils.timezone import utc
 import datetime
-from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsRemotePostOnly
+from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsRemotePostOnly, is_remote_request, join_urls
+from .api_client import http_request
+import logging
+
+logger = logging.getLogger(__name__)
+external_request_timeout = 5
 
 class AuthorsView(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
@@ -42,7 +47,31 @@ class AuthorsView(APIView, PaginationHandlerMixin):
         else:
             serializer = self.get_serializer(request, authors)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_data = serializer.data
+        if not is_remote_request(request):
+            # TODO: implement synchronicity between local and remote pagination
+            external_authors = []
+            for node in Node.objects.all():
+                # assumes that /authors route applies to all nodes
+                url = join_urls(node.api_url, "authors")
+                try:
+                    response = http_request(method="GET", url=url, timeout=external_request_timeout,
+                                            auth=(node.auth_username, node.auth_password))
+                    if response == None:
+                        continue
+                except Exception as e:
+                    logger.error("api_client.http_request came across an unexpected error: {}".format(e))
+                    continue
+                # TODO: convert response to AuthorSerializer format
+                external_authors.extend(response)
+            
+            # serializer.data does not seem to be mutable, so we have to do this (for now...)
+            if "results" in serializer.data:
+                response_data["results"].extend(external_authors)
+            else:
+                response_data.extend(external_authors)
+
+        return Response(data=response_data, status=status.HTTP_200_OK)
 
 
 class AuthorDetailView(APIView):
