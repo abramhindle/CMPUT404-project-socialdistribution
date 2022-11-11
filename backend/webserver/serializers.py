@@ -49,7 +49,7 @@ class AuthorRegistrationSerializer(serializers.ModelSerializer):
 
 
 class ActorSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+    id = serializers.UUIDField()
     url = serializers.URLField()
 
 

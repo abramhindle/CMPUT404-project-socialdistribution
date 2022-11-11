@@ -5,6 +5,7 @@ from rest_framework import status
 from unittest import mock, skip
 import datetime
 import json
+import uuid
 from django.utils.timezone import utc
 
 
@@ -56,7 +57,7 @@ class AuthorsViewTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(1, len(response.data))
-        self.assertEqual(regular_author.id, response.data[0]["id"])
+        self.assertEqual(str(regular_author.id), response.data[0]["id"])
 
 
 class PaginationTestCase(APITestCase):
@@ -161,7 +162,7 @@ class AuthorDetailView(APITestCase):
     
     def test_get_404(self):
         """If an author requested does not exist, should return 404"""
-        fake_id = 500124540593854
+        fake_id = uuid.uuid4()
         url = f'/api/authors/{fake_id}/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
@@ -217,7 +218,7 @@ class AuthorDetailView(APITestCase):
     
     def test_post_404(self):
         """If an author to be updated does not exist, should return 404"""
-        fake_id = 500124540593854
+        fake_id = uuid.uuid4()
         url = f'/api/authors/{fake_id}/'
         payload = {
             "display_name": "Mark McGoey",
@@ -231,7 +232,7 @@ class AuthorDetailView(APITestCase):
     def test_post_non_editable_fields(self):
         author_1 = Author.objects.create()
         url = f'/api/authors/{author_1.id}/'
-        new_id = 500124540593854
+        new_id = uuid.uuid4()
         new_url = f'/api/authors/{new_id}/'
         payload = {
             "id":new_id,
@@ -240,7 +241,7 @@ class AuthorDetailView(APITestCase):
         self.client.force_authenticate(user=author_1)
         response = self.client.post(url,data=payload)
         
-        self.assertEqual(response.data["id"], author_1.id)
+        self.assertEqual(response.data["id"], str(author_1.id))
         self.assertEqual(response.data["url"],'http://testserver'+url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -398,7 +399,7 @@ class FollowRequestProcessorTestCase(APITestCase):
         response = self.client.post(url, data=payload, format="json")
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(2, FollowRequest.objects.count())
-        fr = FollowRequest.objects.last()
+        fr = FollowRequest.objects.get(sender=author_2, receiver=author_1)
         self.assertEqual(author_2, fr.sender)
         self.assertEqual(author_1, fr.receiver)
 
@@ -526,9 +527,9 @@ class FollowRequestsTestCase(APITestCase):
             self.assertTrue(field in fr2)
 
         self.assertTrue(fr1['url'].startswith('http'))
-        self.assertTrue(fr1['url'].endswith('/authors/2/'))
-        self.assertEqual(author_2.id, fr1['id'])
-        self.assertEqual(author_3.id, fr2['id'])
+        self.assertTrue(fr1['url'].endswith(f'/authors/{author_2.id}/'))
+        self.assertEqual(str(author_2.id), fr1['id'])
+        self.assertEqual(str(author_3.id), fr2['id'])
 
     def test_author_has_no_follow_requests(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -541,7 +542,7 @@ class FollowRequestsTestCase(APITestCase):
 
     def test_author_does_not_exist(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
-        url = f'/api/authors/{author_1.id + 1}/follow-requests/'
+        url = f'/api/authors/{uuid.uuid4()}/follow-requests/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url)
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
@@ -569,9 +570,9 @@ class FollowersViewTestCase(APITestCase):
             self.assertTrue(field in f2)
 
         self.assertTrue(f1['url'].startswith('http'))
-        self.assertTrue(f1['url'].endswith('/authors/2/'))
-        self.assertEqual(author_2.id, f1['id'])
-        self.assertEqual(author_3.id, f2['id'])
+        self.assertTrue(f1['url'].endswith(f'/authors/{author_2.id}/'))
+        self.assertEqual(str(author_2.id), f1['id'])
+        self.assertEqual(str(author_3.id), f2['id'])
     
     def test_author_has_no_followers(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -646,11 +647,12 @@ class FollowersDetailViewTestCase(APITestCase):
     
     def test_author_does_not_exist(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
-        url = f'/api/authors/{author_1.id}/followers/{author_1.id + 1}/'
+        non_existent_author_id = str(uuid.uuid4())
+        url = f'/api/authors/{author_1.id}/followers/{non_existent_author_id}/'
         payload = {
             "follow_request_sender": {
-                "url": f'http://127.0.0.1:5054/authors/{author_1.id + 1}',
-                "id": author_1.id + 1,
+                "url": f'http://127.0.0.1:5054/authors/{non_existent_author_id}',
+                "id": non_existent_author_id,
             }
         }
         self.client.force_authenticate(user=author_1)
@@ -755,7 +757,7 @@ class PostTestCase(APITestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         test_author = response.data["author"]
-        self.assertEqual(test_author["id"], author_1.id)
+        self.assertEqual(test_author["id"], str(author_1.id))
         self.assertNotEqual(response.data["created_at"], None)
         self.assertEqual(response.data["title"], "Test Post")
         self.assertEqual(response.data["description"], "Testing post")
@@ -814,7 +816,7 @@ class PostTestCase(APITestCase):
 
     def test_get_404(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
-        fake_post_id = 590385093845945
+        fake_post_id = uuid.uuid4()
         url = f'/api/authors/{author_1.id}/posts/{fake_post_id}/'
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
@@ -1562,7 +1564,7 @@ class NodesViewTestCase(APITestCase):
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(2, Author.objects.count())
         self.assertEqual(1, Node.objects.count())
-        remote_user = Author.objects.last()
+        remote_user = Author.objects.order_by("created_at").last()
         node = Node.objects.first()
         self.assertEqual(True, remote_user.is_remote_user)
         self.assertEqual("https://social-distribution.herokuapp.com/api", node.api_url)
@@ -1595,14 +1597,14 @@ class NodesViewTestCase(APITestCase):
         
         expected_output = [
             {
-                "id": node_user_1.id,
+                "id": str(node_user_1.id),
                 "password": "password1",
                 "node": {
                     "api_url": "https://social-distribution-1.herokuapp.com/api",
                 }
             },
             {
-                "id": node_user_2.id,
+                "id": str(node_user_2.id),
                 "password": "password2",
                 "node": {
                     "api_url": "https://social-distribution-2.herokuapp.com/api",
