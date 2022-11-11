@@ -1619,6 +1619,7 @@ class NodesViewTestCase(APITestCase):
         url = '/api/nodes/'
         payload = {
             "api_url":  "https://social-distribution.herokuapp.com/api",
+            "node_name": "social-distribution",
             "password": "secure-password",
             "password2": "secure-password",
             "auth_username": "team14",
@@ -1634,6 +1635,7 @@ class NodesViewTestCase(APITestCase):
         remote_user = Author.objects.order_by("created_at").last()
         node = Node.objects.first()
         self.assertEqual(True, remote_user.is_remote_user)
+        self.assertEqual("social-distribution", remote_user.username)
         self.assertEqual("https://social-distribution.herokuapp.com/api", node.api_url)
     
     def test_only_admins_can_add_nodes(self):
