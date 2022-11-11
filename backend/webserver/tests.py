@@ -73,7 +73,7 @@ class AuthorsViewTestCase(APITestCase):
             url="https://social-distribution-1.herokuapp.com/api/authors",
             json=[{
                 "url": "https://social-distribution-1.herokuapp.com/api/authors/1/",
-                "id": 1,
+                "id": str(uuid.uuid4()),
                 "display_name": "casey",
                 "profile_image": "",
                 "github_handle": "",
