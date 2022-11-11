@@ -1,8 +1,8 @@
-from email.policy import default
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+import uuid
 
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None):
@@ -34,6 +34,7 @@ class AuthorUserManager(BaseUserManager):
 
 
 class Author(AbstractBaseUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=300, unique=True)
     display_name = models.CharField(max_length=200)
     profile_image = models.CharField(max_length=250, blank=True)
@@ -68,6 +69,7 @@ class Author(AbstractBaseUser):
 
 
 class FollowRequest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sender =  models.ForeignKey(Author, related_name='follow_requests_sent', on_delete=models.CASCADE)
     receiver =  models.ForeignKey(Author, related_name='follow_requests_received', on_delete=models.CASCADE)
     
@@ -75,6 +77,7 @@ class FollowRequest(models.Model):
         unique_together = ['sender', 'receiver']
 
 class Follow(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     follower = models.ForeignKey(Author, related_name='following_authors', on_delete=models.CASCADE)
     followee = models.ForeignKey(Author, related_name='followed_by_authors', on_delete=models.CASCADE)
     
@@ -82,7 +85,7 @@ class Follow(models.Model):
         unique_together = ['follower', 'followee']
 
 class Post(models.Model):
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     created_at = models.DateTimeField(verbose_name="date created",auto_now_add=True)
     edited_at = models.DateTimeField("date edited",null=True)
@@ -106,6 +109,7 @@ class Post(models.Model):
     content = models.TextField(blank=True)
 
 class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     post = models.ForeignKey(Post,on_delete=models.CASCADE)
     content = models.TextField()
@@ -119,11 +123,13 @@ class Comment(models.Model):
 
 
 class Like(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     post = models.ForeignKey(Post,on_delete=models.CASCADE,null=True)
     comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
 
 class Inbox(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     target_author = models.ForeignKey(Author,related_name='inbox',on_delete=models.CASCADE)
     follow_request_received = models.ForeignKey(FollowRequest, on_delete=models.CASCADE, null=True)
     post = models.ForeignKey(Post,on_delete=models.CASCADE,null=True)
