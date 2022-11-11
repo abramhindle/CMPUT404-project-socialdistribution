@@ -1,2 +1,2 @@
-release: cd backend && python manage.py migrate && python manage.py loaddata prod_seed.json
+release: cd backend && python manage.py migrate
 web: gunicorn --pythonpath backend social_distribution.wsgi
