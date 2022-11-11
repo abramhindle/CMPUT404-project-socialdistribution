@@ -141,4 +141,6 @@ class Inbox(models.Model):
 class Node(models.Model):
     user = models.OneToOneField(Author, on_delete=models.CASCADE)
     api_url = models.URLField(max_length=300, unique=True)
+    auth_username = models.CharField(max_length=300)
+    auth_password = models.CharField(max_length=300)
     # TODD: add fields that let us connect to remote nodes based on other groups' authentication schemes
