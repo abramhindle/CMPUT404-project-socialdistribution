@@ -146,4 +146,33 @@ LOGIN_REDIRECT_URL = "/"
 
 LOGIN_URL = "/login/"
 
+LOGGING = {
+    'version': 1,                       # the dictConfig format version
+    'disable_existing_loggers': False,  # retain the default loggers
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'webserver.log',
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'webserver': {
+            'level': 'DEBUG',
+            'handlers': ['file'],
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '{name} {levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+}
+
 django_on_heroku.settings(locals())
