@@ -7,6 +7,7 @@ import datetime
 import json
 import uuid
 from django.utils.timezone import utc
+import responses    # https://pypi.org/project/responses/#basics
 
 
 class AuthorTestCase(TestCase):
@@ -58,6 +59,70 @@ class AuthorsViewTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(1, len(response.data))
         self.assertEqual(str(regular_author.id), response.data[0]["id"])
+
+    @responses.activate
+    def test_get_fetches_remote_authors(self):
+        node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
+                                            password="password-team11", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
+                            auth_username="team14", auth_password="password-team14")
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        
+        external_api_response = responses.Response(
+            method="GET",
+            url="https://social-distribution-1.herokuapp.com/api/authors",
+            json=[{
+                "url": "https://social-distribution-1.herokuapp.com/api/authors/1/",
+                "id": 1,
+                "display_name": "casey",
+                "profile_image": "",
+                "github_handle": "",
+            }],
+            status=200,
+        )
+        responses.add(external_api_response)
+        
+        self.client.force_authenticate(user=local_author)
+        url = "/api/authors/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(2, len(response.data))
+        author_1 = response.data[0]
+        author_2 = response.data[1]
+        self.assertEqual("local_author", author_1["display_name"])
+        self.assertEqual("casey", author_2["display_name"])
+    
+    @responses.activate
+    def test_get_can_combine_remote_data_with_local_pagination(self):
+        node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
+                                            password="password-team11", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
+                            auth_username="team14", auth_password="password-team14")
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        
+        external_api_response = responses.Response(
+            method="GET",
+            url="https://social-distribution-1.herokuapp.com/api/authors",
+            json=[{
+                "url": "https://social-distribution-1.herokuapp.com/api/authors/1/",
+                "id": 1,
+                "display_name": "casey",
+                "profile_image": "",
+                "github_handle": "",
+            }],
+            status=200,
+        )
+        responses.add(external_api_response)
+
+        self.client.force_authenticate(user=local_author)
+        url = "/api/authors/?page=1"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(2, len(response.data["results"]))
+        author_1 = response.data["results"][0]
+        author_2 = response.data["results"][1]
+        self.assertEqual("local_author", author_1["display_name"])
+        self.assertEqual("casey", author_2["display_name"])
 
 
 class PaginationTestCase(APITestCase):
@@ -1556,6 +1621,8 @@ class NodesViewTestCase(APITestCase):
             "api_url":  "https://social-distribution.herokuapp.com/api",
             "password": "secure-password",
             "password2": "secure-password",
+            "auth_username": "team14",
+            "auth_password": "password-team14",
         }
         self.client.force_authenticate(user=admin)
         response = self.client.force_authenticate(user=admin)
@@ -1585,10 +1652,12 @@ class NodesViewTestCase(APITestCase):
         admin = Author.objects.create(username="admin", display_name="admin", is_admin=True)
         node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
                                             password="password1", is_remote_user=True)
-        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1)
+        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
+                            auth_username="team14", auth_password="password-team14")
         node_user_2 = Author.objects.create(username="node_user_2", display_name="node_user_2", 
                                             password="password2", is_remote_user=True)
-        Node.objects.create(api_url="https://social-distribution-2.herokuapp.com/api", user=node_user_2)
+        Node.objects.create(api_url="https://social-distribution-2.herokuapp.com/api", user=node_user_2,
+                            auth_username="team14-2", auth_password="password-team14-2")
         
         url = '/api/nodes/'
         self.client.force_authenticate(user=admin)
@@ -1601,6 +1670,8 @@ class NodesViewTestCase(APITestCase):
                 "password": "password1",
                 "node": {
                     "api_url": "https://social-distribution-1.herokuapp.com/api",
+                    "auth_username": "team14",
+                    "auth_password": "password-team14",
                 }
             },
             {
@@ -1608,6 +1679,8 @@ class NodesViewTestCase(APITestCase):
                 "password": "password2",
                 "node": {
                     "api_url": "https://social-distribution-2.herokuapp.com/api",
+                    "auth_username": "team14-2",
+                    "auth_password": "password-team14-2",
                 }
             }
         ]
