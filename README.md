@@ -57,7 +57,7 @@ API Information
 | /api/register/ | Registers a new author | - | - | - |
 | /api/logout/                | Logs out an author  | - | - | - |
 | /api/authors/                | - | **Retrieves the list of authors [A][R]** | - | - |
-| /api/authors/<author_id>/                | **Retrieves an author's profile [A][R]** | Updates an author's profile [A] | - | - |
+| /api/authors/<author_id>/                | Updates an author's profile [A] | **Retrieves an author's profile [A][R]** | - | - |
 | /api/authors/<author_id>/inbox/  [WIP]              | **Creates a new inbox item for an author [A][R]**  | Retrieve's an author's inbox [A] | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
 | /api/authors/<author_id>/follow-requests/<foreign_author_id>/                | - | - | - | Decline a follow request[A] |
