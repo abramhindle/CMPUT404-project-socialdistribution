@@ -143,20 +143,22 @@ None
 #### Sample Response
 ```
 [
+    
     {
-        "url": "http://localhost:8000/api/authors/1/",
-        "id": 1,
+        "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+        "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
         "display_name": "myuser",
         "profile_image": "",
         "github_handle": ""
     },
     {
-        "url": "http://localhost:8000/api/authors/2/",
-        "id": 2,
+        "url": "http://127.0.0.1:8000/api/authors/255c89fd-1b47-4f42-8a1b-5c574c6117f3/",
+        "id": "255c89fd-1b47-4f42-8a1b-5c574c6117f3",
         "display_name": "author_1",
         "profile_image": "",
         "github_handle": ""
     }
+
 ]
 ```
 
@@ -166,14 +168,14 @@ None
 
 ### Retrieve an author's profile
 #### Sample Request
-<img width="1130" alt="image" src="https://user-images.githubusercontent.com/43586048/197076848-3d9de2cf-4e7b-4df8-9b69-db1ba8cd222b.png">
+<img width="1130" alt="image" src="https://user-images.githubusercontent.com/77307203/201427306-fb7a6317-e637-4842-aa0f-a1c84b448700.png">
 
 #### Sample Response
 ```
 {
-    "url": "http://localhost:8000/api/authors/4/",
-    "id": 4,
-    "display_name": "good_author",
+    "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+    "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
+    "display_name": "myuser",
     "profile_image": "",
     "github_handle": ""
 }
@@ -187,13 +189,13 @@ None
 
 ### Update an author's profile
 #### Sample Request
-<img width="1130" alt="image" src="https://user-images.githubusercontent.com/43586048/197077303-4be4bd9a-a978-4e8f-a751-5ce297868b43.png">
+<img width="1130" alt="image" src="https://user-images.githubusercontent.com/77307203/201429443-026c2974-c330-4a39-8fcc-0c299e809d15.png">
 
 #### Sample Response
 ```
 {
-    "url": "http://localhost:8000/api/authors/4/",
-    "id": 4,
+    "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+    "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
     "display_name": "noob_author",
     "profile_image": "",
     "github_handle": ""
@@ -207,7 +209,7 @@ None
 
 ### Send a follow request
 #### Sample Request
-<img width="1130" alt="image" src="https://user-images.githubusercontent.com/43586048/197077735-cf2ece3b-eb75-491c-b118-37279b37ff53.png">
+<img width="1130" alt="image" src="https://user-images.githubusercontent.com/77307203/201431979-ef4c8fda-f667-479a-9beb-c9f7eb0ae2df.png">
 
 **Note**: You may wonder why the author `url`s are needed with the request payload. This is needed for project part 2 to differentiate between a local author and a remote one. If an author is a remote one, we will forward the follow request to it's matching remote server.
 
@@ -227,21 +229,21 @@ None
 
 ### Retrieve the list of follow requests for an author
 #### Sample Request
-<img width="1130" alt="image" src="https://user-images.githubusercontent.com/43586048/197078292-978c3672-fee6-419a-ab48-f48604a6bea4.png">
+<img width="1130" alt="image" src="https://user-images.githubusercontent.com/77307203/201432901-9aca2c78-8476-4ab4-928b-02e068c2a3c2.png">
 
 #### Sample Response
 ```
 [
     {
-        "url": "http://localhost:8000/api/authors/3/",
-        "id": 3,
-        "display_name": "myuser",
+        "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+        "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
+        "display_name": "noob_author",
         "profile_image": "",
         "github_handle": ""
     },
     {
-        "url": "http://localhost:8000/api/authors/5/",
-        "id": 5,
+        "url": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/",
+        "id": "edcfedc2-0c39-40e9-94de-7d234ebf408e",
         "display_name": "author_Z",
         "profile_image": "",
         "github_handle": ""
@@ -256,8 +258,8 @@ None
 
 ### Accept a follow request
 #### Sample Request
-Author with id 4 accepts a follow request of author with id 3 -
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197364676-4013d4c9-e3d2-4532-b5d4-98fee42112dd.png">
+Author with id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 accepts a follow request of author with id 6e3c2a39-8fef-4efb-bb98-0826a7f15f39 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201437124-7a4517cf-4874-4411-945d-c6c2a62c625b.png">
 
 #### Sample Response
 ```
@@ -275,7 +277,7 @@ Author with id 4 accepts a follow request of author with id 3 -
 
 ### Decline a follow request
 #### Sample Request
-<img width="1134" alt="image" src="https://user-images.githubusercontent.com/43586048/198464624-9e99bc8b-a30a-49a0-8030-b64a751c7f5d.png">
+<img width="1134" alt="image" src="https://user-images.githubusercontent.com/77307203/201437722-642ee340-3ea1-429e-a842-dc8d49148347.png">
 
 #### Sample Response
 ```
@@ -293,7 +295,7 @@ Author with id 4 accepts a follow request of author with id 3 -
 
 ### Remove a follower
 #### Sample Request
-<img width="1134" alt="image" src="https://user-images.githubusercontent.com/43586048/198466108-f7fde988-9542-4b25-82e7-bc4ac096f88d.png">
+<img width="1134" alt="image" src="https://user-images.githubusercontent.com/77307203/201438215-811e72f8-89ee-4565-961d-beff14421448.png">
 
 
 #### Sample Response
@@ -311,12 +313,12 @@ Author with id 4 accepts a follow request of author with id 3 -
 
 ### Check if an author is following some other author
 #### Sample Usage
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197365074-6dee55b0-600c-46c1-a3c7-291ae3e07779.png">
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201438520-d2b1eddd-6123-4d35-b5af-061985e7d734.png">
 
 #### Sample Response
 ```
 {
-    "message": "3 is not a follower of 4"
+    "message": "edcfedc2-0c39-40e9-94de-7d234ebf408e is not a follower of 255c89fd-1b47-4f42-8a1b-5c574c6117f3"
 }
 ```
 
@@ -329,23 +331,16 @@ Author with id 4 accepts a follow request of author with id 3 -
 
 ### Retrieve a list of all the followers for an author
 #### Sample Usage
-Retrieve the list of followers for author_id 4 -
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/43586048/197365185-7183f1f8-755f-4739-8440-5f0a495e6f7a.png">
+Retrieve the list of followers for author_id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201439314-4f66c384-da9d-40b2-8af1-43ac7e62e080.png">
 
 #### Sample Response
 ```
 [
     {
-        "url": "http://localhost:8000/api/authors/3/",
-        "id": 3,
-        "display_name": "myuser",
-        "profile_image": "",
-        "github_handle": ""
-    },
-    {
-        "url": "http://localhost:8000/api/authors/5/",
-        "id": 5,
-        "display_name": "author_Z",
+        "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+        "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
+        "display_name": "noob_author",
         "profile_image": "",
         "github_handle": ""
     }
@@ -359,16 +354,16 @@ Retrieve the list of followers for author_id 4 -
 
 ### Retrieve an author's inbox
 #### Sample Usage
-Retrieve the inbox of author with id 3 -
-![image](https://user-images.githubusercontent.com/43586048/197410090-66eba6cd-74ed-48d5-a41d-83e2c0569c50.png)
+Retrieve the inbox of author with id  255c89fd-1b47-4f42-8a1b-5c574c6117f3-
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201439818-92d90dd9-266e-43aa-b67b-bad649000fd2.png">
 
 #### Sample Response
 ```
 [
     {
         "sender": {
-            "url": "http://localhost:8000/api/authors/4/",
-            "id": 4,
+            "url": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/",
+            "id": "edcfedc2-0c39-40e9-94de-7d234ebf408e",
             "display_name": "noob_author",
             "profile_image": "",
             "github_handle": ""
@@ -377,8 +372,8 @@ Retrieve the inbox of author with id 3 -
     },
     {
         "author": {
-            "url": "http://localhost:8000/api/authors/4/",
-            "id": 4,
+            "url": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/",,
+            "id": "edcfedc2-0c39-40e9-94de-7d234ebf408e",
             "display_name": "noob_author",
             "profile_image": "",
             "github_handle": ""
@@ -409,16 +404,16 @@ Notes:
 
 ### Retrieve a list of all the posts for an author
 #### Sample Usage
-Retrieve the list of posts for author id 5 -
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197422040-7f02808a-3dc8-4bd8-b441-b0d01b680d4d.png">
+Retrieve the list of posts for author id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201440910-ed6fcf78-5b3c-4fc9-b216-39ced68b6f6e.png">
 
 #### Sample Response
 ```
 [
     {
         "author": {
-            "url": "http://localhost:8000/api/authors/5/",
-            "id": 5,
+            "url": "http://localhost:8000/api/authors/255c89fd-1b47-4f42-8a1b-5c574c6117f3/",
+            "id": 255c89fd-1b47-4f42-8a1b-5c574c6117f3,
             "display_name": "myuser",
             "profile_image": "",
             "github_handle": ""
@@ -445,13 +440,14 @@ Retrieve the list of posts for author id 5 -
 
 ### Create a new post
 #### Sample Usage
-Retrieve the list of posts for author id 5 -
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197423346-6aa79f0b-f4f0-4986-85c8-1e29b1467ef1.png">
+Author with id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 creates a new post-
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201441059-e6ca2998-031a-4fb6-97bf-299b31745511.png">
 
 #### Sample Response
 ```
 [
    {
+    "id": "824fbe15-4e6b-42b0-8bce-eadfc2914f26",
     "title": "My first post",
     "description": "My first post",
     "unlisted": false,
@@ -470,30 +466,31 @@ Retrieve the list of posts for author id 5 -
 
 ### Retrieve an authors post
 #### Sample Usage
-Retrieve the post for author id 5 with post id 55 -
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197423796-b0b13176-5ce1-4baa-808e-5e489251e0d5.png">
+Retrieve the post for author id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 with post id 824fbe15-4e6b-42b0-8bce-eadfc2914f26 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201441409-01220585-0f22-4c9a-be57-83f8194a4e5c.png">
 
 
 #### Sample Response
 ```
 [
-   {
+  {
+    "id": "824fbe15-4e6b-42b0-8bce-eadfc2914f26",
     "author": {
-        "url": "http://127.0.0.1:8000/api/authors/5/",
-        "id": 5,
-        "display_name": "user123",
+        "url": "http://127.0.0.1:8000/api/authors/255c89fd-1b47-4f42-8a1b-5c574c6117f3/",
+        "id": "255c89fd-1b47-4f42-8a1b-5c574c6117f3",
+        "display_name": "author_1",
         "profile_image": "",
-        "github_handle": "user"
+        "github_handle": ""
     },
-    "created_at": "2022-10-22T05:06:49.477100Z",
-    "edited_at": "",
-    "title": "new Title",
-    "description": "Hello world",
+    "created_at": "2022-11-11T22:39:45.407227Z",
+    "edited_at": null,
+    "title": "My first post",
+    "description": "My first post",
     "source": "",
     "origin": "",
     "unlisted": false,
     "content_type": "text/plain",
-    "content": "change the content",
+    "content": "some content",
     "visibility": "PUBLIC"
     }
 ]
@@ -507,18 +504,19 @@ Retrieve the post for author id 5 with post id 55 -
 
 ### Update an authors post
 #### Sample Usage
-Update the post for author id 5 with post id 55 -
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197424158-fd5211d4-79ee-4e1b-bb0c-b8d2585d28be.png">
+Update the post for author id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 with post id 824fbe15-4e6b-42b0-8bce-eadfc2914f26 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201441897-53e8146c-39c9-40ad-82ef-61f25f7516aa.png">
 
 
 #### Sample Response
 ```
 [
   {
-    "title": "My new post",
-    "description": "My new post",
+    "id": "824fbe15-4e6b-42b0-8bce-eadfc2914f26",
+    "title": "update my post title",
+    "description": "update my post description",
     "unlisted": false,
-    "content": "some content"
+    "content": "some updated content"
     }
 ]
 ```
@@ -531,8 +529,8 @@ Update the post for author id 5 with post id 55 -
 
 ### Delete an authors post
 #### Sample Usage
-Delete the post for author id 5 with post id 55 -
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/197424516-02e2fdd2-52d6-4910-a488-b1b05490566c.png">
+Delete the post for author id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 with post id  824fbe15-4e6b-42b0-8bce-eadfc2914f26-
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201442124-fed4ffca-d28e-42f8-9c08-5f0be03a7b9e.png">
 
 #### Sample Response
 ```
@@ -548,7 +546,6 @@ Delete the post for author id 5 with post id 55 -
 - `404 Not Found`
 - `400 Bad Request`
 
-
 ## Pagination
 ### Retrieve a paginated list of authors
 #### Sample Request
@@ -562,36 +559,36 @@ Delete the post for author id 5 with post id 55 -
     "previous": null,
     "results": [
         {
-            "url": "http://localhost:8000/api/authors/1/",
-            "id": 1,
+            "url": "http://localhost:8000/api/authors6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+            "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
             "display_name": "",
             "profile_image": "",
             "github_handle": ""
         },
         {
-            "url": "http://localhost:8000/api/authors/2/",
-            "id": 2,
+            "url": "http://localhost:8000/api/authors/255c89fd-1b47-4f42-8a1b-5c574c6117f3/",
+            "id": "255c89fd-1b47-4f42-8a1b-5c574c6117f3",
             "display_name": "zarif",
             "profile_image": "",
             "github_handle": ""
         },
         {
-            "url": "http://localhost:8000/api/authors/3/",
-            "id": 3,
+            "url": "http://localhost:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/",
+            "id": "edcfedc2-0c39-40e9-94de-7d234ebf408e",
             "display_name": "author_0_handle",
             "profile_image": "",
             "github_handle": ""
         },
         {
-            "url": "http://localhost:8000/api/authors/4/",
-            "id": 4,
+            "url": "http://localhost:8000/api/authors/442352d0-f10a-4ac9-a42b-55c2f41179b3/",
+            "id": "442352d0-f10a-4ac9-a42b-55c2f41179b3",
             "display_name": "author_1_handle",
             "profile_image": "",
             "github_handle": ""
         },
         {
-            "url": "http://localhost:8000/api/authors/5/",
-            "id": 5,
+            "url": "http://localhost:8000/api/authors/e6573c76-6916-45c9-af94-0d8130b8ec1f/",
+            "id": e6573c76-6916-45c9-af94-0d8130b8ec1f,
             "display_name": "author_2_handle",
             "profile_image": "",
             "github_handle": ""
