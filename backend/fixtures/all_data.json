@@ -4,7 +4,6 @@
         "fields":{
             "username":"cashJenkins",
             "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
-            "id":1,
             "created_at":"2022-06-23T03:25:09.184425Z",
             "display_name": "cjenkins123",
             "github_handle": "cashj45"
@@ -16,7 +15,6 @@
         "fields":{
             "username":"aEverett4632",
             "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
-            "id":2,
             "created_at":"2022-10-23T03:25:09.184425Z",
             "display_name": "athena_everett",
             "github_handle": "everettCodes123"
@@ -29,7 +27,6 @@
         "fields":{
             "username":"urielShelton2341",
             "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
-            "id":3,
             "created_at":"2022-10-23T03:25:09.184425Z",
             "display_name": "UltimateBeast123",
             "github_handle": "ultimateBeast"
@@ -41,7 +38,6 @@
         "fields":{
             "username":"AlexanderStark",
             "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
-            "id":4,
             "created_at":"2022-10-23T03:25:09.184425Z",
             "display_name": "brighthulk",
             "github_handle": "alex_stark"
@@ -53,7 +49,6 @@
         "fields":{
             "username":"shaunGood123",
             "password":"pbkdf2_sha256$390000$0u4wfnCWepIMvbqGyk8yVt$aKUAEXXtYKEJBd1qfcooW1neqXW2oonIKnrK685bJV8=",
-            "id":5,
             "created_at":"2022-10-23T03:25:09.184425Z",
             "display_name": "fbi_surveillance_team",
             "github_handle": "shaunGood123"
@@ -63,7 +58,6 @@
     {
         "model":"webserver.Follow",
         "fields":{
-            "id":1,
             "follower":1,
             "followee":2
         }
