@@ -66,7 +66,8 @@ API Information
 | /api/authors/<author_id>/posts/               | Creates a new post for an author [A] | **Retrieves recent posts from an author [A][R]** | - | - |
 | /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | **Retrieves an authors post [A][R]** | - | Delete an authors post [A] |
 | /api/nodes/             | Add a node [Admin only] | - | - | - |
-
+| /api/authors/<author_id>/posts/<post_id>/likes                | - | **Retrieves a list of likes on an authors post [A][R]** | - | - |
+| /api/authors/<author_id>/liked                | - | **Retrieves a list of likes from an author on public posts [A][R]** | - | - |
 ### Notes
 - [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
 - [A] specifies that the request must be authenticated
@@ -427,7 +428,8 @@ Retrieve the list of posts for author id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 -
         "unlisted": false,
         "content_type": "text/plain",
         "content": "change the content",
-        "visibility": "PUBLIC"
+        "visibility": "PUBLIC",
+        "likes_count": 2
     }
 
 ]
@@ -491,7 +493,8 @@ Retrieve the post for author id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 with post i
     "unlisted": false,
     "content_type": "text/plain",
     "content": "some content",
-    "visibility": "PUBLIC"
+    "visibility": "PUBLIC",
+    "likes_count": 0
     }
 ]
 ```
@@ -545,6 +548,83 @@ Delete the post for author id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 with post id 
 - `401 Unauthorized`
 - `404 Not Found`
 - `400 Bad Request`
+
+### Retrieve a list of likes on an authors post
+#### Sample Usage
+Retreive a list of likes on author with id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 post with post id 9b050b09-97d1-44b7-89ec-d2ed2c23cde1 -
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201504699-434390ce-e11f-42b4-a138-a641b9f2e132.png">
+
+#### Sample Response
+```
+[
+    {
+        "author": {
+            "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+            "id": 6e3c2a39-8fef-4efb-bb98-0826a7f15f39,
+            "display_name": "cjenkins123",
+            "profile_image": "",
+            "github_handle": "cashj45"
+        },
+        "post": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
+    },
+    {
+        "author": {
+            "url": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/",
+            "id": edcfedc2-0c39-40e9-94de-7d234ebf408e,
+            "display_name": "UltimateBeast123",
+            "profile_image": "",
+            "github_handle": "ultimateBeast"
+        },
+        "post": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
+    }    
+]
+```
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Retrieve a list of likes made by an author on public posts
+#### Sample Usage
+Retreive a list of likes on public posts origninating from author with id 6e3c2a39-8fef-4efb-bb98-0826a7f15f39-
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201505044-7aeee91a-1bdc-42f6-84ee-c3c7c515fcde.png">
+
+#### Sample Response
+```
+[
+   {
+    "author": {
+        "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
+        "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
+        "display_name": "noob_author",
+        "profile_image": "",
+        "github_handle": ""
+        },
+        post": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
+    }
+] 
+```
+#### Possible Status Codes
+- `200 OK`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Like an authors post
+#### Sample Usage
+Author with id 442352d0-f10a-4ac9-a42b-55c2f41179b3 likes post 9b050b09-97d1-44b7-89ec-d2ed2c23cde1 made by author with id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 
+<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201505623-aead299a-3766-4b66-bea4-f7a363d06f35.png">
+
+#### Sample Response
+```
+{
+    "message": "OK"
+}
+```
+#### Possible Status Codes
+- `201 Created`
+- `400 Bad Request`
+- `401 Unauthorized`
+- `404 Not Found`
 
 ## Pagination
 ### Retrieve a paginated list of authors
