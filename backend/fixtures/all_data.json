@@ -63,7 +63,6 @@
     {
         "model":"webserver.Follow",
         "fields":{
-            "id":1,
             "follower":1,
             "followee":2
         }
