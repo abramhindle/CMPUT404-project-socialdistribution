@@ -67,7 +67,7 @@ API Information
 | /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | **Retrieves an authors post [A][R]** | - | Delete an authors post [A] |
 | /api/nodes/             | Add a node [Admin only] | - | - | - |
 | /api/authors/<author_id>/posts/<post_id>/likes                | - | **Retrieves a list of likes on an authors post [A][R]** | - | - |
-| /api/authors/<author_id>/liked                | - | **Retrieves a list of likes from an author on public posts [A][R]** | - | - |
+| /api/authors/<author_id>/liked                | - | **Retrieves a list of public things liked by an author [A][R]** | - | - |
 ### Notes
 - [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
 - [A] specifies that the request must be authenticated
@@ -600,7 +600,7 @@ Retreive a list of likes on public posts origninating from author with id 6e3c2a
         "profile_image": "",
         "github_handle": ""
         },
-        post": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
+        "post": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
     }
 ] 
 ```
