@@ -77,5 +77,6 @@ class IsRemoteGetOnly(permissions.IsAuthenticated):
 def is_remote_request(request):
     return request.user.is_remote_user
 
-def join_urls(*urls):
-    return '/'.join([url.strip('/') for url in urls])
+def join_urls(*urls, ends_with_slash=False):
+    url = '/'.join([url.strip('/') for url in urls])
+    return url + "/" if ends_with_slash else url

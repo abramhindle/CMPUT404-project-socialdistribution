@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from urllib.parse import urljoin
 from rest_framework.views import APIView
-from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like
+from .models import Author, Follow, FollowRequest, Inbox, Post, Node, RemoteAuthor, RemotePost, Like
 from .serializers import (AcceptOrDeclineFollowRequestSerializer, 
                           AuthorSerializer, 
                           AuthorRegistrationSerializer, 
@@ -18,6 +18,7 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           RemoveFollowerSerializer,
                           AddNodeSerializer,
                           NodesListSerializer,
+                          SendPostInboxSerializer,
                           SendLikeSerializer,
                           PostLikeSerializer,)
 from rest_framework.response import Response
@@ -55,18 +56,15 @@ class AuthorsView(APIView, PaginationHandlerMixin):
             # TODO: implement synchronicity between local and remote pagination
             external_authors = []
             for node in Node.objects.all():
-                # assumes that /authors route applies to all nodes
-                url = join_urls(node.api_url, "authors")
                 try:
-                    response = http_request(method="GET", url=url, timeout=external_request_timeout,
-                                            auth=(node.auth_username, node.auth_password))
+                    response, _ = http_request(method="GET", url=node.get_authors_url(), node=node,
+                                               timeout=external_request_timeout)
                     if response == None:
                         continue
                 except Exception as e:
                     logger.error("api_client.http_request came across an unexpected error: {}".format(e))
                     continue
-                # TODO: convert response to AuthorSerializer format
-                external_authors.extend(response)
+                external_authors.extend(node.get_converter().convert_authors(response))
             
             # serializer.data does not seem to be mutable, so we have to do this (for now...)
             if "results" in serializer.data:
@@ -81,25 +79,31 @@ class AuthorDetailView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsRemoteGetOnly]
 
-    def get_author(self,pk):
-        author = get_object_or_404(Author,pk=pk)
-        return author
-
-    
-    def get(self, request, pk, *args, **kwargs):
-        author = self.get_author(pk)
+    def get(self, request, pk):
+        try:
+            author = Author.objects.get(pk=pk)
+        except Author.DoesNotExist:
+            if not is_remote_request(request):
+                # this is a local request and the requested author could exist on other nodes
+                for node in Node.objects.all():
+                    url = join_urls(node.get_authors_url(), pk)
+                    res, _ = http_request("GET", url=url, node=node, expected_status=200,
+                                        timeout=external_request_timeout)
+                    if res is not None:
+                        return Response(node.get_converter().convert_author(res), status=status.HTTP_200_OK)
+            return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            
         serializer = AuthorSerializer(author, context={'request': request})
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    
     def post(self, request, pk, *args, **kwargs):
-        author = self.get_author(pk)
+        author = get_object_or_404(Author,pk=pk)
         serializer = AuthorSerializer(instance=author, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AuthorRegistrationView(APIView):
     def post(self, request):
@@ -222,27 +226,33 @@ class AllPosts(APIView, PaginationHandlerMixin):
                     content=serializer.data["content"],
                     visibility=serializer.data["visibility"]
                 )
+                
                 if new_post.visibility == "FRIENDS":
-                    for follow in author.followed_by_authors.iterator():
-                        with transaction.atomic():
-                            Inbox.objects.create(target_author=follow.follower,post=new_post)
+                    new_post.send_to_followers()
                 elif new_post.visibility == "PUBLIC":
-                    for author in Author.objects.exclude(username=author.username):
-                        with transaction.atomic():
-                            Inbox.objects.create(target_author=author,post=new_post)  
+                    new_post.send_to_all_authors()
                 elif new_post.visibility == "PRIVATE":
                     private_post_serializer = SendPrivatePostSerializer(data=request.data)
                     if private_post_serializer.is_valid():
-                        
+                        # TODO: handle the case where receiver is a remote author
                         try:
-                            receiver =  Author.objects.get(pk=private_post_serializer.data['receiver']['id'])    
+                            receiver =  Author.objects.get(pk=private_post_serializer.data['receiver']['id'])
+                            Inbox.objects.create(target_author=receiver, post=new_post)  
                         except Author.DoesNotExist:
-                            return Response({'message': f'receiver author with id {private_post_serializer.data["receiver"]["id"]} does not exist'}, status=status.HTTP_404_NOT_FOUND)
-                        with transaction.atomic():
-                            Inbox.objects.create(target_author=receiver, post=new_post)
-                                
+                            try:
+                                node = Node.objects.get_node_with_url(
+                                    private_post_serializer.data["receiver"]["url"]
+                                )
+                                url = join_urls(node.get_authors_url(), private_post_serializer.data["receiver"]["id"], 
+                                                "inbox", ends_with_slash=True)
+                                new_post.update_author_inbox_over_http(url, node, request.data["receiver"])
+                            except Node.DoesNotExist:
+                                return Response({
+                                    'message': f'receiver author with id {private_post_serializer.data["receiver"]["id"]} does not exist'
+                                    }, status=status.HTTP_404_NOT_FOUND)
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
                 data_dict = {"id":new_post.id}
                 data_dict.update(serializer.data)
                 return Response(data_dict, status=status.HTTP_201_CREATED)
@@ -320,10 +330,14 @@ class FollowRequestDetailView(APIView):
         """Decline a follow request"""
         serializer = AcceptOrDeclineFollowRequestSerializer(data=request.data)
         if serializer.is_valid():
-            # TODO: project part 2; foreign author id could be a remote one
-            follow_request = get_object_or_404(FollowRequest, sender=foreign_author_id, receiver=author_id)
-            follow_request.delete()
-            return Response({'message': 'Follow request declined'}, status=status.HTTP_200_OK)
+            queryset = FollowRequest.objects.filter(sender=foreign_author_id, receiver=author_id)\
+                .union(FollowRequest.objects.filter(remote_sender=foreign_author_id, receiver=author_id))
+            if len(queryset) > 0:
+                follow_request = queryset[0]
+                follow_request.delete()
+                return Response({'message': 'Follow request declined'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Follow request not found'}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -340,33 +354,66 @@ class FollowRequestProcessor(object):
                 return Response(
                     {'message': 'author cannot send follow request to themself'}, status=status.HTTP_400_BAD_REQUEST
                 )
-            
-            # TODO: for project part 2; use the 'url's to determine if a given author is a remote one or a local one
-            # if the <host> section of a url is not our host, it's a remote author
-            # assume that both the sender and the receiver are local authors for now
+
             try:
-                # TODO: for project part 2; if the receiver is a remote author, we need to send a POST request
-                # to the inbox of the remote author; of course we also won't create a local follow request object
                 receiver = Author.objects.get(pk=author_id)
             except Author.DoesNotExist:
-                return Response({'message': f'author_id {author_id} does not exist'}, status=status.HTTP_404_NOT_FOUND)
+                # receiver could be a remote author
+                try:
+                    node = Node.objects.get_node_with_url(serializer.data["receiver"]["url"])
+                    node_converter = node.get_converter()
+                    
+                    # check if the sender already follows the receiver
+                    url = join_urls(serializer.data["receiver"]["url"], "followers", serializer.data["sender"]["id"])
+
+                    res, _ = http_request("GET", url, expected_status=node_converter.expected_status_code("check_for_follower"), 
+                                          node=node)
+                    if res is not None:
+                        return Response(
+                            {'message': 'sender already follows receiver'}, status=status.HTTP_400_BAD_REQUEST
+                        )
+
+                    # send a post request to the receiver's inbox
+                    url = join_urls(serializer.data["receiver"]["url"], "inbox", ends_with_slash=True)
+                    res, res_status = http_request("POST", url, node=node,
+                                                   expected_status=node_converter.expected_status_code("send_follow_request"), 
+                                                   json=node_converter.send_follow_request(request.data))
+                    if res is None:
+                        return Response("Failed to send remote follow request due to remote node failure", status=res_status)
+                    return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
+
+                except Node.DoesNotExist:
+                    return Response({'message': f'receiver with id {author_id} does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
             try:
-                # TODO: for project part 2; if the sender is a remote author, we might need to add another field
-                # to the inbox entity 'remote_follow_request_sender_url' to store a local representation of that follow
-                # request or find some other solution that works
                 sender = Author.objects.get(pk=serializer.data['sender']['id'])
             except Author.DoesNotExist:
-                return Response({'message': f'sender author with id {serializer.data["sender"]["id"]} does not exist'}, 
-                                status=status.HTTP_404_NOT_FOUND)
+                # sender could be remote author
+                try:
+                    node = Node.objects.get_node_with_url(serializer.data["sender"]["url"])
+                    node_converter = node.get_converter()
+                    # get_or_create returns (object, created)
+                    sender = RemoteAuthor.objects.get_or_create(
+                        id=node_converter.remote_follow_request_sender_id(serializer.data), node=node)[0]
+
+                except Node.DoesNotExist:
+                    return Response({'message': f'sender author with id {serializer.data["sender"]["id"]} does not exist'}, 
+                                    status=status.HTTP_404_NOT_FOUND)
             
-            follow = Follow.objects.filter(follower=sender, followee=receiver)
+            if isinstance(sender, Author):
+                follow = Follow.objects.filter(follower=sender, followee=receiver)
+            else:
+                follow = Follow.objects.filter(remote_follower=sender, followee=receiver)
             if follow.count() > 0:
                 return Response({'message': 'sender already follows the receiver'}, status=status.HTTP_400_BAD_REQUEST)
 
             try:
                 # https://docs.djangoproject.com/en/4.1/topics/db/transactions/#controlling-transactions-explicitly
                 with transaction.atomic():
-                    follow_request = FollowRequest.objects.create(sender=sender, receiver=receiver)
+                    if isinstance(sender, Author):
+                        follow_request = FollowRequest.objects.create(sender=sender, receiver=receiver)
+                    else:
+                        follow_request = FollowRequest.objects.create(remote_sender=sender, receiver=receiver)
                     # update the inbox of the receiver
                     Inbox.objects.create(target_author=receiver, follow_request_received=follow_request)
 
@@ -376,6 +423,38 @@ class FollowRequestProcessor(object):
                 return Response({'message': 'this follow request already exists'}, status=status.HTTP_409_CONFLICT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get_response(self):
+        return self.response
+
+
+class RemotePostProcessor(object):
+    def __init__(self, request, author_id):
+        self.request = request
+        self.author_id = author_id
+        self.response = self.update_inbox_with_post(request, author_id)
+    
+    def update_inbox_with_post(self, request, author_id):
+        target_author = get_object_or_404(Author, pk=author_id)
+        if "post" not in request.data:
+            return Response({'message': "'post' field is missing in the request payload"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        serializer = SendPostInboxSerializer(data=request.data["post"])
+        if serializer.is_valid():
+            try:
+                node = Node.objects.get_node_with_url(serializer.data["author"]["url"])
+                remote_author = RemoteAuthor.objects.get_or_create(
+                    id=serializer.data["author"]["id"], node=node)[0]
+                remote_post = RemotePost.objects.get_or_create(
+                    id=serializer.data["id"], author=remote_author)[0]
+                
+                # using get_or_create here because other groups might abuse this api endpoint and
+                # try to create redundant inbox items
+                Inbox.objects.get_or_create(target_author=target_author, remote_post=remote_post)
+                return Response({'message': 'inbox updated'}, status=status.HTTP_201_CREATED)
+            except Node.DoesNotExist:
+                return Response({'message': 'unidentifiable node'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     def get_response(self):
         return self.response
 
@@ -439,13 +518,13 @@ class FollowersDetailView(APIView):
     permission_classes = [IsRemoteGetOnly]
     
     def get(self, request, author_id, foreign_author_id):
-        try:
-            follow = Follow.objects.get(follower=foreign_author_id, followee=author_id)
-            # TODO: return the serialized follow
+        queryset = Follow.objects\
+            .filter(follower=foreign_author_id, followee=author_id)\
+            .union(Follow.objects.filter(remote_follower=foreign_author_id, followee=author_id))
+        if len(queryset) > 0:
             return Response({'message': 'follower indeed'}, status=status.HTTP_200_OK)
-        except Follow.DoesNotExist:
-            return Response({'message': f'{foreign_author_id} is not a follower of {author_id}'}, 
-                            status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': f'{foreign_author_id} is not a follower of {author_id}'}, 
+                        status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, author_id, foreign_author_id):
         if author_id == foreign_author_id:
@@ -456,14 +535,16 @@ class FollowersDetailView(APIView):
             # because they are accepting the follow request
             followee = get_object_or_404(Author, pk=author_id)
             
-            # TODO: for project part 2; check the 'url' of the follow_request_sender
-            # if it's not someone from our server we probably need to save the follower in a different field
-            # such as 'remote_follower_url' or find some other solution that works
-            
-            # assume that foreign_author_id is someone from our server for now
-            follower = get_object_or_404(Author, pk=foreign_author_id)
+            # foreign_author_id could be a local or a remote author
             try:
-                follow_request = FollowRequest.objects.get(sender=follower, receiver=followee)
+                follower = Author.objects.get(pk=foreign_author_id)
+            except Author.DoesNotExist:
+                follower = get_object_or_404(RemoteAuthor, pk=foreign_author_id)
+            try:
+                if isinstance(follower, Author):
+                    follow_request = FollowRequest.objects.get(sender=follower, receiver=followee)
+                else:
+                    follow_request = FollowRequest.objects.get(remote_sender=follower, receiver=followee)
             except FollowRequest.DoesNotExist:
                 error_message = 'matching follow request does not exist; you need to create a follow request before '\
                     'you can accept one'
@@ -471,10 +552,12 @@ class FollowersDetailView(APIView):
             
             try:
                 with transaction.atomic():
-                    follow_request_accepted = Follow.objects.create(follower=follower, followee=followee)
+                    if isinstance(follower, Author):
+                        Follow.objects.create(follower=follower, followee=followee)
+                    else:
+                        Follow.objects.create(remote_follower=follower, followee=followee)
                     follow_request.delete()
-                
-                # TODO: return the serialized follow_request_accepted as response
+
                 return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return Response({'message': 'follower already exists'}, status=status.HTTP_409_CONFLICT)
@@ -483,10 +566,15 @@ class FollowersDetailView(APIView):
     def delete(self, request, author_id, foreign_author_id):
         serializer = RemoveFollowerSerializer(data=request.data)
         if serializer.is_valid():
-            # TODO: for project part 2; follower could be a remote author;
-            follow = get_object_or_404(Follow, follower=foreign_author_id, followee=author_id)
-            follow.delete()
-            return Response({'message': 'follower removed'}, status=status.HTTP_200_OK)
+            queryset = Follow.objects\
+                .filter(follower=foreign_author_id, followee=author_id)\
+                .union(Follow.objects.filter(remote_follower=foreign_author_id, followee=author_id))
+            if len(queryset) > 0:
+                follow = queryset[0]
+                follow.delete()
+                return Response({'message': 'follower removed'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'follower does not exist'}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class InboxView(APIView, PaginationHandlerMixin):
@@ -518,6 +606,8 @@ class InboxView(APIView, PaginationHandlerMixin):
             return Response({'message': 'must specify the type of inbox'}, status=status.HTTP_400_BAD_REQUEST)
         if request.data['type'] == 'follow':
             return FollowRequestProcessor(request, author_id).get_response()
+        elif request.data['type'] == 'post':
+            return RemotePostProcessor(request, author_id).get_response()
         elif request.data['type'] == 'like':
             return LikePostProcessor(request,author_id).get_response()
         else:

@@ -1,12 +1,45 @@
 from rest_framework import serializers
-from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like
-
+from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like, RemoteAuthor, RemotePost
+from .api_client import http_request
+from .utils import join_urls
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Author
         fields = ['url', 'id', 'display_name', 'profile_image', 'github_handle']
 
+
+class RemoteAuthorSerializer(serializers.Serializer):
+    class Meta:
+        model = RemoteAuthor
+    
+    def to_representation(self, instance):
+        node = instance.node
+        res, _ = http_request("GET", instance.get_absolute_url(), expected_status=200, node=node)
+        if res is None:
+            return None
+        return node.get_converter().convert_author(res)
+
+
+class RemotePostSerializer(serializers.Serializer):
+    class Meta:
+        model = RemotePost
+    
+    def to_representation(self, instance):
+        node = instance.author.node
+        # e.g. http://127.0.0.1:5454/authors/241/posts/123
+        # assumes that this route will return ALL posts for the author no matter it's visibility
+        # TODO: confirm this assumption when connecting with other groups
+        url = join_urls(instance.author.get_absolute_url(), "posts")
+        res, _ = http_request("GET", url, expected_status=200, node=node)
+        if res is None:
+            return None
+        # response should be a list of dictionaries
+        if isinstance(res, list):
+            for post in res:
+                if str(instance.id) in post.get("id", ""):
+                    return node.get_converter().convert_post(post)
+        return None
 
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
@@ -68,20 +101,28 @@ class PostActorSerializer(serializers.Serializer):
 class SendPrivatePostSerializer(serializers.Serializer):
     receiver = ActorSerializer()
 
+
+class SendPostInboxSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    author = ActorSerializer()
+
 class SendLikeSerializer(serializers.Serializer):
     author = ActorSerializer()
     post = PostActorSerializer()
 
 class FollowRequestSerializer(serializers.ModelSerializer):
     sender = AuthorSerializer(read_only=True)
+    remote_sender = RemoteAuthorSerializer(read_only=True)
 
     class Meta:
         model = FollowRequest
-        fields = ['sender']
+        fields = ['sender', 'remote_sender']
 
     # reduces one layer of nesting i.e. removes the 'sender' key and just returns the value instead
     def to_representation(self, instance):
         data = super(FollowRequestSerializer, self).to_representation(instance)
+        if instance.remote_sender:
+            data['sender'] = data['remote_sender']
         return data['sender']
 
 class PostLikeSerializer(serializers.ModelSerializer):
@@ -100,14 +141,17 @@ class RemoveFollowerSerializer(serializers.Serializer):
 
 class FollowerSerializer(serializers.ModelSerializer):
     follower = AuthorSerializer(read_only=True)
+    remote_follower = RemoteAuthorSerializer(read_only=True)
 
     class Meta:
         model = Follow
-        fields = ['follower']
+        fields = ['follower', 'remote_follower']
 
     # reduces one layer of nesting i.e. removes the 'follower' key and just returns the value instead
     def to_representation(self, instance):
         data = super(FollowerSerializer, self).to_representation(instance)
+        if instance.remote_follower:
+            data['follower'] = data['remote_follower']
         return data['follower']
 
 
@@ -121,10 +165,11 @@ class InboxFollowRequestSerializer(FollowRequestSerializer):
 class InboxSerializer(serializers.ModelSerializer):
     post = PostSerializer(read_only=True)
     follow_request_received = InboxFollowRequestSerializer(read_only=True)
+    remote_post = RemotePostSerializer(read_only=True)
     like = PostLikeSerializer(read_only=True)
     class Meta:
         model = Inbox
-        fields = ['post', 'follow_request_received','like']
+        fields = ['post', 'follow_request_received', 'remote_post','like']
 
     # https://www.django-rest-framework.org/api-guide/relations/#generic-relationships
     def to_representation(self, instance):
@@ -136,6 +181,9 @@ class InboxSerializer(serializers.ModelSerializer):
         elif instance.follow_request_received:
             type = 'follow'
             data = data['follow_request_received']
+        elif instance.remote_post:
+            type = 'post'
+            data = data['remote_post']
         elif instance.like:
             type = 'like'
             data = data['like']
@@ -147,13 +195,14 @@ class InboxSerializer(serializers.ModelSerializer):
 class AddNodeSerializer(serializers.ModelSerializer):
     api_url = serializers.URLField()
     node_name = serializers.CharField()
+    team = serializers.ChoiceField(choices=Node.TEAM_CHOICES)
     auth_username = serializers.CharField()
     auth_password = serializers.CharField()
     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
     class Meta:
         model = Author
-        fields = ['id', 'api_url', 'password', 'password2', 'auth_username', 'auth_password', 'node_name']
+        fields = ['id', 'api_url', 'password', 'password2', 'auth_username', 'auth_password', 'node_name', 'team']
         read_only_fields = ['id']
 
     def save(self):
@@ -168,7 +217,9 @@ class AddNodeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'password': 'Passwords must match.'})
         node_user.set_password(password)
         node = Node(user=node_user, api_url=self.validated_data['api_url'],
-                    auth_username=self.validated_data['auth_username'], auth_password=self.validated_data['auth_password'])
+                    auth_username=self.validated_data['auth_username'], 
+                    auth_password=self.validated_data['auth_password'],
+                    team=self.validated_data['team'])
         node_user.save()
         node.save()
         return node_user
@@ -176,7 +227,7 @@ class AddNodeSerializer(serializers.ModelSerializer):
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Node
-        fields = ['api_url', 'auth_username', 'auth_password']
+        fields = ['api_url', 'team', 'auth_username', 'auth_password']
 
 class NodesListSerializer(serializers.ModelSerializer):
     node = NodeSerializer()
