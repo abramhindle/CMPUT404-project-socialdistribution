@@ -3,6 +3,10 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 import uuid
+from .utils import join_urls
+from .converters import Converter, Team11Converter
+from urllib.parse import urlparse
+from .api_client import http_request
 
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None):
@@ -68,21 +72,75 @@ class Author(AbstractBaseUser):
         return self.is_admin
 
 
+
+class NodeManager(models.Manager):
+    # raises Node.DoesNotExist if no matching node is found
+    def get_node_with_url(self, url):
+        hostname = urlparse(url).hostname
+        return self.get_queryset().get(api_url__contains=hostname)
+
+
+class Node(models.Model):
+    user = models.OneToOneField(Author, on_delete=models.CASCADE)
+    api_url = models.URLField(max_length=300, unique=True)
+    auth_username = models.CharField(max_length=300)
+    auth_password = models.CharField(max_length=300)
+    objects = NodeManager()
+    # each new team will need to have a new converter
+    TEAM_CHOICES = [
+        (11, 11),
+        (14, 14),
+    ]
+    team = models.IntegerField(choices=TEAM_CHOICES, default=14)
+    
+    def get_converter(self):
+        if self.team == 14:
+            return Converter()
+        elif self.team == 11:
+            return Team11Converter()
+        raise Exception("No converter for team {}".format(self.team))
+    
+    def get_authors_url(self):
+        # assumes that /authors route applies to all nodes
+        return join_urls(self.api_url, "authors")
+
+
+class RemoteAuthor(models.Model):
+    id = models.UUIDField(primary_key=True)
+    node = models.ForeignKey(Node, on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        return join_urls(self.node.api_url, "authors", str(self.id))
+    
+    def get_inbox_url(self):
+        return join_urls(self.get_absolute_url(), "inbox", ends_with_slash=True)
+
+
+class RemotePost(models.Model):
+    id = models.UUIDField(primary_key=True)
+    author = models.ForeignKey(RemoteAuthor, on_delete=models.CASCADE)
+    
+    def get_absolute_url(self):
+        return join_urls(self.author.get_absolute_url(), "posts", str(self.id))
+
+
 class FollowRequest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sender =  models.ForeignKey(Author, related_name='follow_requests_sent', on_delete=models.CASCADE)
+    sender =  models.ForeignKey(Author, related_name='follow_requests_sent', on_delete=models.CASCADE, null=True)
     receiver =  models.ForeignKey(Author, related_name='follow_requests_received', on_delete=models.CASCADE)
+    remote_sender = models.ForeignKey(RemoteAuthor, on_delete=models.CASCADE, null=True)
     
     class Meta:
-        unique_together = ['sender', 'receiver']
+        unique_together = [['sender', 'receiver'], ['remote_sender', 'receiver']]
 
 class Follow(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    follower = models.ForeignKey(Author, related_name='following_authors', on_delete=models.CASCADE)
+    follower = models.ForeignKey(Author, related_name='following_authors', on_delete=models.CASCADE, null=True)
     followee = models.ForeignKey(Author, related_name='followed_by_authors', on_delete=models.CASCADE)
+    remote_follower = models.ForeignKey(RemoteAuthor, on_delete=models.CASCADE, null=True)
     
     class Meta:
-        unique_together = ['follower', 'followee']
+        unique_together = [['follower', 'followee'], ['remote_follower', 'followee']]
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -107,6 +165,50 @@ class Post(models.Model):
     ]
     content_type = models.CharField(max_length=200,choices=CONTENT_TYPE_CHOICES,default="text/plain")
     content = models.TextField(blank=True)
+    
+    # TODO: how much work will it take to make all of the following POST requests async?
+    # TODO: might need to add some retry logic for inbox updates over http
+    
+    def update_author_inbox_over_http(self, url, node, author):
+        node_converter = node.get_converter()
+        return http_request("POST", url=url, node=node, 
+                            expected_status=node_converter.expected_status_code("send_post_inbox"),
+                            json=node_converter.send_post_inbox(author, self.id), timeout=3)
+
+    # returns True only if all requests were successful
+    def send_to_followers(self):
+        success = True
+        for follow in self.author.followed_by_authors.iterator():
+            if follow.remote_follower:
+                node = follow.remote_follower.node
+                res, _ = self.update_author_inbox_over_http(url=follow.remote_follower.get_inbox_url(),
+                                                            node=node, author=follow.remote_follower)
+                if res is None:
+                    success = False
+            else:
+                Inbox.objects.create(target_author=follow.follower, post=self)
+        return success
+    
+    # returns True only if all requests were successful
+    def send_to_all_authors(self):
+        success = True
+        for author in Author.objects.exclude(id=self.author.id).iterator():
+            Inbox.objects.create(target_author=author, post=self)
+        # fetch all authors on all nodes and update their inboxes
+        for node in Node.objects.all():
+            node_converter = node.get_converter()
+            res, _ = http_request("GET", node.get_authors_url(), node=node)
+            if res is None:
+                success = False
+                continue
+            authors = node_converter.convert_authors(res)
+            for author in authors:
+                url = join_urls(author["url"], "inbox", ends_with_slash=True)
+                res, _ = self.update_author_inbox_over_http(url=url, node=node, author=author)
+                if res is None:
+                    success = False
+        return success
+
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -136,11 +238,4 @@ class Inbox(models.Model):
     comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
     like = models.ForeignKey(Like,on_delete=models.CASCADE,null=True)
     created_at = models.DateTimeField(verbose_name="date created",auto_now_add=True)
-
-
-class Node(models.Model):
-    user = models.OneToOneField(Author, on_delete=models.CASCADE)
-    api_url = models.URLField(max_length=300, unique=True)
-    auth_username = models.CharField(max_length=300)
-    auth_password = models.CharField(max_length=300)
-    # TODD: add fields that let us connect to remote nodes based on other groups' authentication schemes
+    remote_post = models.ForeignKey(RemotePost, on_delete=models.CASCADE, null=True)
