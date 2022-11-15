@@ -27,6 +27,7 @@ python manage.py runserver
 
 ### If you want to loead some seed data
 When asked for authentication enter any of the authors usernames with the password pass123
+```
 python manage.py flush   (if your database is not empty)
 python manage.py loaddata fixtures/all_data.json
 ```
