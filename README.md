@@ -18,15 +18,14 @@ source env/bin/activate  # On Windows use `env\Scripts\activate`
 ```
 3. Install dependencies
 ```
-pip install django
-pip install djangorestframework
+pip install -r requirements.txt
 ```
 4. Run the webserver
 ```
 python manage.py runserver
 ```
-5. Load seed data (note you might need to clear your database first)
-```
+
+### If you want to loead some seed data
 When asked for authentication enter any of the authors usernames with the password pass123
 python manage.py flush   (if your database is not empty)
 python manage.py loaddata fixtures/all_data.json
