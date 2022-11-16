@@ -1,4 +1,5 @@
 import webserver.models as models
+from .utils import join_urls
 
 class Converter(object):
     def __init__(self) -> None:
@@ -7,10 +8,16 @@ class Converter(object):
             "send_follow_request": 201,
             "send_post_inbox": 201,
         }
+    
+    def url_to_send_follow_request_at(self, author_url):
+        return join_urls(author_url, "inbox", ends_with_slash=True)
 
     # returns the request payload required for sending a follow request
     def send_follow_request(self, request_data):
         return request_data
+    
+    def skip_follow_check_before_sending_follow_request(self):
+        return False
     
     # returns the request payload required for sending a post inbox
     def send_post_inbox(self, remote_author, post_id):
@@ -59,6 +66,17 @@ class Converter(object):
     # converts a remote post's response to the format specified by PostSerializer
     def convert_post(self, data: dict):
         return data
+    
+    def convert_posts(self, data):
+        if isinstance(data, list):
+            return [self.convert_post(post) for post in data]
+        else:
+            # data must be in paginated form
+            if "results" in data:
+                for i in range(len(data["results"])):
+                    data["results"][i] = self.convert_post(data["results"][i])
+                return data
+        return None
 
 
 class Team11Converter(Converter):
@@ -73,3 +91,11 @@ class Team11Converter(Converter):
     
     def convert_post(self, data: dict):
         raise NotImplementedError  # TODO
+
+
+class Team10Converter(Converter):
+    def skip_follow_check_before_sending_follow_request(self):
+        return True
+
+    def url_to_send_follow_request_at(self, author_url):
+        return join_urls(author_url, "followers", ends_with_slash=True)

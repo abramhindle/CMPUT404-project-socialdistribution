@@ -4,7 +4,7 @@ from django.contrib.auth.models import (
 )
 import uuid
 from .utils import join_urls
-from .converters import Converter, Team11Converter
+from .converters import Converter, Team10Converter, Team11Converter
 from urllib.parse import urlparse
 from .api_client import http_request
 
@@ -88,6 +88,7 @@ class Node(models.Model):
     objects = NodeManager()
     # each new team will need to have a new converter
     TEAM_CHOICES = [
+        (10, 10),
         (11, 11),
         (14, 14),
     ]
@@ -98,6 +99,8 @@ class Node(models.Model):
             return Converter()
         elif self.team == 11:
             return Team11Converter()
+        elif self.team == 10:
+            return Team10Converter()
         raise Exception("No converter for team {}".format(self.team))
     
     def get_authors_url(self):
@@ -105,9 +108,28 @@ class Node(models.Model):
         return join_urls(self.api_url, "authors")
 
 
+class RemoteAuthorManager(models.Manager):
+    # returns a RemoteAuthor object if it exists, otherwise None
+    def attempt_find(self, author_id):
+        try:
+            author = self.get_queryset().get(id=author_id)
+            return author
+        except RemoteAuthor.DoesNotExist:
+            for node in Node.objects.all():
+                url = join_urls(node.get_authors_url(), author_id)
+                res, _ = http_request("GET", url=url, node=node, expected_status=200)
+                if res is not None:
+                    author = node.get_converter().convert_author(res)
+                    # cache the author id to save some network requests the next time
+                    author = RemoteAuthor.objects.create(id=author["id"], node=node)
+                    return author
+        return None
+    
+
 class RemoteAuthor(models.Model):
     id = models.UUIDField(primary_key=True)
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
+    objects = RemoteAuthorManager()
 
     def get_absolute_url(self):
         return join_urls(self.node.api_url, "authors", str(self.id))
