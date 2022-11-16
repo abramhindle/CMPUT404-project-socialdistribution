@@ -56,6 +56,7 @@ API Information
 | /api/login/                | Logs in an author | - | - | - |
 | /api/register/ | Registers a new author | - | - | - |
 | /api/logout/                | Logs out an author  | - | - | - |
+| /api/posts/                | - | Retrieves the list of public posts on the server (open to everyone) | - | - |
 | /api/authors/                | - | **Retrieves the list of authors [A][R]** | - | - |
 | /api/authors/<author_id>/                | Updates an author's profile [A] | **Retrieves an author's profile [A][R]** | - | - |
 | /api/authors/<author_id>/inbox/  [WIP]              | **Creates a new inbox item for an author [A][R]**  | Retrieve's an author's inbox [A] | - | - |
