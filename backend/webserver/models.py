@@ -105,9 +105,28 @@ class Node(models.Model):
         return join_urls(self.api_url, "authors")
 
 
+class RemoteAuthorManager(models.Manager):
+    # returns a RemoteAuthor object if it exists, otherwise None
+    def attempt_find(self, author_id):
+        try:
+            author = self.get_queryset().get(id=author_id)
+            return author
+        except RemoteAuthor.DoesNotExist:
+            for node in Node.objects.all():
+                url = join_urls(node.get_authors_url(), author_id)
+                res, _ = http_request("GET", url=url, node=node, expected_status=200)
+                if res is not None:
+                    author = node.get_converter().convert_author(res)
+                    # cache the author id to save some network requests the next time
+                    author = RemoteAuthor.objects.create(id=author["id"], node=node)
+                    return author
+        return None
+    
+
 class RemoteAuthor(models.Model):
     id = models.UUIDField(primary_key=True)
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
+    objects = RemoteAuthorManager()
 
     def get_absolute_url(self):
         return join_urls(self.node.api_url, "authors", str(self.id))

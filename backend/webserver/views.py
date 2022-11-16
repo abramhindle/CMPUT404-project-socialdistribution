@@ -143,8 +143,22 @@ class PostView(APIView):
         post = get_object_or_404(Post,id=post_id,author=author_id)
         return post
     
-    def get(self,request,pk,post_id, *args, **kwargs):
-        author =self.get_author(pk)
+    def get(self, request, pk, post_id):
+        try:
+            author = Author.objects.get(pk=pk)
+        except Author.DoesNotExist:
+            if is_remote_request(request):
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            # this could be a remote author and the author_id could be stored in the remote_authors table already
+            author = RemoteAuthor.objects.attempt_find(author_id=pk)
+            if not author:
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            post_url = join_urls(author.get_absolute_url(), "posts", post_id)
+            res, _ = http_request("GET", url=post_url, node=author.node, expected_status=200)
+            if res is None:
+                return Response({'message': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(author.node.get_converter().convert_post(res), status=status.HTTP_200_OK)
+
         post = self.get_post(post_id,author.id)
         if post.visibility == "PUBLIC":
             serializer = PostSerializer(post, context={'request': request})
