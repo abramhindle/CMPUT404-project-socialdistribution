@@ -67,8 +67,8 @@ API Information
 | /api/authors/<author_id>/posts/               | Creates a new post for an author [A] | **Retrieves recent posts from an author [A][R]** | - | - |
 | /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | **Retrieves an authors post [A][R]** | - | Delete an authors post [A] |
 | /api/nodes/             | Add a node [Admin only] | - | - | - |
-| /api/authors/<author_id>/posts/<post_id>/likes                | - | **Retrieves a list of likes on an authors post [A][R]** | - | - |
-| /api/authors/<author_id>/liked                | - | **Retrieves a list of public things liked by an author [A][R]** | - | - |
+| /api/authors/<author_id>/posts/<post_id>/likes                | - | Retrieves a list of likes on an authors post [A] | - | - |
+| /api/authors/<author_id>/liked                | - | Retrieves a list of public things liked by an author [A] | - | - |
 ### Notes
 - [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
 - [A] specifies that the request must be authenticated
