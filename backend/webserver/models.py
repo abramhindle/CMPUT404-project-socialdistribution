@@ -4,7 +4,7 @@ from django.contrib.auth.models import (
 )
 import uuid
 from .utils import join_urls
-from .converters import Converter, Team11Converter
+from .converters import Converter, Team10Converter, Team11Converter
 from urllib.parse import urlparse
 from .api_client import http_request
 
@@ -88,6 +88,7 @@ class Node(models.Model):
     objects = NodeManager()
     # each new team will need to have a new converter
     TEAM_CHOICES = [
+        (10, 10),
         (11, 11),
         (14, 14),
     ]
@@ -98,6 +99,8 @@ class Node(models.Model):
             return Converter()
         elif self.team == 11:
             return Team11Converter()
+        elif self.team == 10:
+            return Team10Converter()
         raise Exception("No converter for team {}".format(self.team))
     
     def get_authors_url(self):

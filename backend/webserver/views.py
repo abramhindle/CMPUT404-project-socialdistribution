@@ -390,19 +390,20 @@ class FollowRequestProcessor(object):
                 try:
                     node = Node.objects.get_node_with_url(serializer.data["receiver"]["url"])
                     node_converter = node.get_converter()
-                    
-                    # check if the sender already follows the receiver
-                    url = join_urls(serializer.data["receiver"]["url"], "followers", serializer.data["sender"]["id"])
 
-                    res, _ = http_request("GET", url, expected_status=node_converter.expected_status_code("check_for_follower"), 
-                                          node=node)
-                    if res is not None:
-                        return Response(
-                            {'message': 'sender already follows receiver'}, status=status.HTTP_400_BAD_REQUEST
-                        )
+                    if not node_converter.skip_follow_check_before_sending_follow_request():
+                        # check if the sender already follows the receiver
+                        url = join_urls(serializer.data["receiver"]["url"], "followers", serializer.data["sender"]["id"])
+
+                        res, _ = http_request("GET", url, expected_status=node_converter.expected_status_code("check_for_follower"), 
+                                            node=node)
+                        if res is not None:
+                            return Response(
+                                {'message': 'sender already follows receiver'}, status=status.HTTP_400_BAD_REQUEST
+                            )
 
                     # send a post request to the receiver's inbox
-                    url = join_urls(serializer.data["receiver"]["url"], "inbox", ends_with_slash=True)
+                    url = node_converter.url_to_send_follow_request_at(serializer.data["receiver"]["url"])
                     res, res_status = http_request("POST", url, node=node,
                                                    expected_status=node_converter.expected_status_code("send_follow_request"), 
                                                    json=node_converter.send_follow_request(request.data))
