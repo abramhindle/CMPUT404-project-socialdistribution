@@ -59,6 +59,17 @@ class Converter(object):
     # converts a remote post's response to the format specified by PostSerializer
     def convert_post(self, data: dict):
         return data
+    
+    def convert_posts(self, data):
+        if isinstance(data, list):
+            return [self.convert_post(post) for post in data]
+        else:
+            # data must be in paginated form
+            if "results" in data:
+                for i in range(len(data["results"])):
+                    data["results"][i] = self.convert_post(data["results"][i])
+                return data
+        return None
 
 
 class Team11Converter(Converter):

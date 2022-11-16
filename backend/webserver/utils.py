@@ -36,6 +36,14 @@ class PaginationHandlerMixin(object):
         if self.paginator is None or self.request.query_params.get(self.paginator.page_query_param, None) is None:
             return None
         return self.paginator.paginate_queryset(queryset, self.request, view=self)
+    
+    def get_pagination_string(self):
+        s = ""
+        if self.request.query_params.get(self.paginator.page_query_param, None) is not None:
+            s += f"/?page={self.request.query_params.get(self.paginator.page_query_param)}"
+            if self.request.query_params.get(self.paginator.page_size_query_param, None) is not None:
+                s += f"&size={self.request.query_params.get(self.paginator.page_size_query_param)}"
+        return s
 
     def get_paginated_response(self, data):
         assert self.paginator is not None

@@ -213,8 +213,22 @@ class AllPosts(APIView, PaginationHandlerMixin):
     def get_serializer(self, request, queryset):
         return PostSerializer(queryset, many=True, context={'request': request})
 
-    def get(self, request,pk, *args, **kwargs):
-        author = self.get_author(pk)
+    def get(self, request, pk):
+        try:
+            author = Author.objects.get(pk=pk)
+        except Author.DoesNotExist:
+            if is_remote_request(request):
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            # the author could exist on a remote node
+            author = RemoteAuthor.objects.attempt_find(author_id=pk)
+            if not author:
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            posts_url = join_urls(author.get_absolute_url(), "posts", self.get_pagination_string())
+            res, _ = http_request("GET", url=posts_url, node=author.node, expected_status=200)
+            if res is None:
+                return Response({'message': 'Posts not found on remote node'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(author.node.get_converter().convert_posts(res), status=status.HTTP_200_OK)
+
         posts = author.post_set.all().order_by("-created_at")
         page = self.paginate_queryset(posts)
         if page is not None:

@@ -1166,10 +1166,6 @@ class PostTestCase(APITestCase):
        
         response = self.client.post(url,data=payload)
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-        
-    
-        
-    
 
     def test_delete(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1286,8 +1282,6 @@ class PostTestCase(APITestCase):
         self.assertNotEqual(post_1.description, payload["description"])
         self.assertNotEqual(post_1.unlisted, payload["unlisted"])
         self.assertNotEqual(post_1.content, payload["content"])
-        
-        
     
     def test_cannot_edit_friend_only_post(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
@@ -1507,6 +1501,114 @@ class AllPostTestCase(APITestCase):
         self.assertEqual(post_3["description"], "Testing post 3")
         self.assertEqual(post_2["description"], "Testing post 2")
         self.assertEqual(post_1["description"], "Testing post 1")
+    
+    @responses.activate
+    def test_get_remote_posts_from_team14_author(self):
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
+        node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
+                                   auth_username="team14", auth_password="password-team14", team=14)
+        remote_author_id = uuid.uuid4()
+        remote_post_id = uuid.uuid4()
+        
+        remote_author_json = {
+            "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+            "id": f"{remote_author_id}",
+            "display_name": "Jake",
+            "profile_image": "",
+            "github_handle": ""
+        }
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+            json=remote_author_json,
+            status=200,
+        )
+        remote_posts_json = [
+            {
+                "id": f"{remote_post_id}",
+                "author": remote_author_json,
+                "created_at": "2022-10-22T05:06:49.477100Z",
+                "edited_at": "2022-10-22T23:27:41.589319Z",
+                "title": "my first post!",
+                "description": "Hello world",
+                "source": "",
+                "origin": "",
+                "unlisted": False,
+                "content_type": "text/plain",
+                "content": "change the content",
+                "visibility": "PUBLIC"
+            }
+        ]
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/posts/",
+            json=remote_posts_json,
+            status=200,
+        )
+        
+        url = f'/api/authors/{remote_author_id}/posts/'
+        self.client.force_authenticate(user=local_author)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(remote_posts_json, response.data)
+    
+    @responses.activate
+    def test_get_paginated_remote_posts_from_team14_author(self):
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
+        node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
+                                   auth_username="team14", auth_password="password-team14", team=14)
+        remote_author_id = uuid.uuid4()
+        remote_post_id = uuid.uuid4()
+        
+        remote_author_json = {
+            "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+            "id": f"{remote_author_id}",
+            "display_name": "Jake",
+            "profile_image": "",
+            "github_handle": ""
+        }
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+            json=remote_author_json,
+            status=200,
+        )
+        remote_posts_json = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": f"{remote_post_id}",
+                    "author": remote_author_json,
+                    "created_at": "2022-10-22T05:06:49.477100Z",
+                    "edited_at": "2022-10-22T23:27:41.589319Z",
+                    "title": "my first post!",
+                    "description": "Hello world",
+                    "source": "",
+                    "origin": "",
+                    "unlisted": False,
+                    "content_type": "text/plain",
+                    "content": "change the content",
+                    "visibility": "PUBLIC"
+                }
+            ]
+        }
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/posts/?page=1&size=10",
+            json=remote_posts_json,
+            status=200,
+        )
+        
+        url = f"/api/authors/{remote_author_id}/posts/?page=1&size=10"
+        self.client.force_authenticate(user=local_author)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(remote_posts_json, response.data)
+        
  
     def test_send_friend_post_to_inbox(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
