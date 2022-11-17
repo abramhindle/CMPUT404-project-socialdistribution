@@ -629,7 +629,8 @@ Author with id 442352d0-f10a-4ac9-a42b-55c2f41179b3 likes post 9b050b09-97d1-44b
 
 ### Send a post to an author's inbox
 #### Sample Usage
-![image](https://user-images.githubusercontent.com/43586048/201575428-8eb9b4c9-9526-4bcf-81ca-2c97631ca7ef.png)
+<img width="1128" alt="image" src="https://user-images.githubusercontent.com/43586048/202331501-bd40933e-2624-4774-954d-ccece26fae43.png">
+
 
 #### Sample Response
 Same as updating other types of inboxes.
