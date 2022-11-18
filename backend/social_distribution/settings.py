@@ -156,11 +156,16 @@ LOGGING = {
             'level': 'DEBUG',
             'formatter': 'verbose',
         },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+        }
     },
     'loggers': {
         'webserver': {
             'level': 'DEBUG',
-            'handlers': ['file'],
+            'handlers': ['console'],
         },
     },
     'formatters': {
@@ -175,4 +180,4 @@ LOGGING = {
     },
 }
 
-django_on_heroku.settings(locals(), logging=False)
+django_on_heroku.settings(locals())
