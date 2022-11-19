@@ -55,8 +55,9 @@ class PostTestCase(TestCase):
                 "post": {
                     "id": f"{post.id}",
                     "author": {
-                        "id": f"{remote_author.id}",
-                        "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}",
+                        "id": f"{local_author.id}",
+                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
+                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
                     }
                 }
             })],
@@ -70,8 +71,9 @@ class PostTestCase(TestCase):
                 "post": {
                     "id": f"{post.id}",
                     "author": {
-                        "id": f"{remote_author_2.id}",
-                        "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_2.id}",
+                        "id": f"{local_author.id}",
+                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
+                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
                     }
                 }
             })],
@@ -119,8 +121,9 @@ class PostTestCase(TestCase):
                 "post": {
                     "id": f"{post.id}",
                     "author": {
-                        "id": f"{remote_author_id}",
-                        "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+                        "id": f"{local_author.id}",
+                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
+                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
                     }
                 }
             })],

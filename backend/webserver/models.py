@@ -195,11 +195,11 @@ class Post(models.Model):
     # TODO: how much work will it take to make all of the following POST requests async?
     # TODO: might need to add some retry logic for inbox updates over http
     
-    def update_author_inbox_over_http(self, url, node, author):
+    def update_author_inbox_over_http(self, url, node):
         node_converter = node.get_converter()
         return http_request("POST", url=url, node=node, 
                             expected_status=node_converter.expected_status_code("send_post_inbox"),
-                            json=node_converter.send_post_inbox(author, self.id), timeout=3)
+                            json=node_converter.send_post_inbox(self.author, self.id), timeout=3)
 
     # returns True only if all requests were successful
     def send_to_followers(self):
@@ -215,8 +215,7 @@ class Post(models.Model):
                     future_to_url[executor.submit(
                         self.update_author_inbox_over_http, 
                         url=url,
-                        node=node,
-                        author=follow.remote_follower
+                        node=node
                     )] = url
                 else:
                     Inbox.objects.create(target_author=follow.follower, post=self)
@@ -251,7 +250,7 @@ class Post(models.Model):
                     url = join_urls(author["url"], "inbox", ends_with_slash=True)
                     future_to_url[executor.submit(
                         self.update_author_inbox_over_http,
-                        url=url, node=node, author=author
+                        url=url, node=node
                     )] = url
 
                 for future in concurrent.futures.as_completed(future_to_url):

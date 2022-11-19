@@ -1,5 +1,8 @@
 import webserver.models as models
 from .utils import join_urls
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Converter(object):
     def __init__(self) -> None:
@@ -20,23 +23,20 @@ class Converter(object):
         return False
     
     # returns the request payload required for sending a post inbox
-    def send_post_inbox(self, remote_author, post_id):
+    # both post_author and post_id are going to refer to local objects
+    def send_post_inbox(self, post_author, post_id):
         payload = {
             "type": "post",
             "post": {
                 "id": f"{post_id}",
+                "author": {
+                    "id": f"{post_author.id}",
+                    # TODO - do not hardcode the host
+                    # Our system should be smart enough to determine our own host dynamically
+                    "url": f"http://127.0.0.1:8000/authors/{post_author.id}/",
+                }
             }
         }
-        if isinstance(remote_author, models.RemoteAuthor):
-            payload["post"]["author"] = {
-                "id": f"{remote_author.id}",
-                "url": f"{remote_author.get_absolute_url()}",
-            }
-        elif isinstance(remote_author, dict):
-            payload["post"]["author"] = {
-                "id": remote_author["id"],
-                "url": remote_author["url"]
-            }
         return payload
     
     def remote_follow_request_sender_id(self, serialized_data):
