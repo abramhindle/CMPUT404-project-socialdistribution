@@ -130,6 +130,13 @@ class PostLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ['author','post']
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Mark: I am doing this so that I can display the post like this 
+        # "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+        data['post'] = join_urls(data['author']['url'], "posts", str(data['post']), ends_with_slash=True)
+        return data
 
 class AcceptOrDeclineFollowRequestSerializer(serializers.Serializer):
     follow_request_sender = ActorSerializer()
