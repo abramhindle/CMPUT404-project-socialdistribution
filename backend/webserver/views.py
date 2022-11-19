@@ -315,11 +315,7 @@ class AuthorLikedView(APIView):
     def get(self,requst,pk):
         author = get_object_or_404(Author,pk=pk)
         likes = Like.objects.filter(post__visibility="PUBLIC").filter(author=author)
-        serializer = PostLikeSerializer(likes, many=True, context={'request': requst})
-        # I am doing this so that I can display the post like this "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-        for data in serializer.data: 
-            data['post'] = urljoin(data['author']['url'],  f"posts/{data['post']}/")
-            
+        serializer = PostLikeSerializer(likes, many=True, context={'request': requst}) 
         return Response(serializer.data, status=status.HTTP_200_OK)
         
 
@@ -331,10 +327,6 @@ class PostLikesView(APIView):
         post = get_object_or_404(Post,id=post_id,author=author.id)
         likes = Like.objects.filter(post=post.id)
         serializer = PostLikeSerializer(likes, many=True, context={'request': requst})
-        # I am doing this so that I can display the post like this "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-        for data in serializer.data: 
-            data['post'] = urljoin(data['author']['url'],  f"posts/{data['post']}/")
-            
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class FollowRequestsView(APIView):
@@ -625,9 +617,6 @@ class InboxView(APIView, PaginationHandlerMixin):
             )
         else:
             serializer = self.get_serializer(request, queryset)
-        for data in serializer.data:
-            if data['type'] == "like":
-                data['post'] = urljoin(data['author']['url'],  f"posts/{data['post']}/")
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, author_id):

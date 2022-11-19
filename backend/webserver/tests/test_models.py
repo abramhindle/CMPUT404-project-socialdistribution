@@ -3,6 +3,8 @@ from webserver.models import Author, Node, Post, RemoteAuthor, Follow
 from responses import matchers
 import responses
 import uuid
+from asgiref.sync import sync_to_async
+from aioresponses import aioresponses   # https://pypi.org/project/aioresponses/
 
 class NodeTestCase(TestCase):
     def test_get_node_with_url(self):
@@ -24,16 +26,18 @@ class NodeTestCase(TestCase):
 
 
 class PostTestCase(TestCase):
-    @responses.activate
-    def test_send_post_to_remote_followers_in_team14(self):
-        local_author = Author.objects.create(username="local_author", display_name="local_author")
-        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
-        node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
-                                   auth_username="team14", auth_password="password-team14", team=14)
-        remote_author = RemoteAuthor.objects.create(id=uuid.uuid4(), node=node)
-        Follow.objects.create(remote_follower=remote_author, followee=local_author)
-        
-        post = Post.objects.create(
+    @aioresponses()
+    async def test_send_post_to_remote_followers_in_team14(self, mocked):
+        local_author = await sync_to_async(Author.objects.create)(username="local_author", display_name="local_author")
+        node_user = await sync_to_async(Author.objects.create)(username="node_user", display_name="node_user", is_remote_user=True)
+        node = await sync_to_async(Node.objects.create)(
+            api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
+            auth_username="team14", auth_password="password-team14", team=14
+        )
+        remote_author = await sync_to_async(RemoteAuthor.objects.create)(id=uuid.uuid4(), node=node)
+        await sync_to_async(Follow.objects.create)(remote_follower=remote_author, followee=local_author)
+
+        post = await sync_to_async(Post.objects.create)(
             author=local_author,
             title="Test Post",
             description="Testing post",
@@ -42,11 +46,10 @@ class PostTestCase(TestCase):
             unlisted=False,
             visibility = "FRIENDS"
         )
-        
-        responses.add(
-            responses.POST,
+
+        mocked.post(
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}/inbox/",
-            match=[matchers.json_params_matcher({
+            payload={
                 "type": "post",
                 "post": {
                     "id": f"{post.id}",
@@ -55,21 +58,26 @@ class PostTestCase(TestCase):
                         "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}",
                     }
                 }
-            })],
+            },
             status=201,
         )
-        success = post.send_to_followers()
-        self.assertTrue(success)
+        update_reqs = await sync_to_async(post.send_to_followers)()
+        req = update_reqs[0]
+        res, status = await req
+        self.assertEqual(201, status)
     
     @responses.activate
-    def test_send_post_to_all_remote_authors_on_team14_node(self):
-        local_author = Author.objects.create(username="local_author", display_name="local_author")
-        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
-        node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
-                                   auth_username="team14", auth_password="password-team14", team=14)
+    @aioresponses()
+    async def test_send_post_to_all_remote_authors_on_team14_node(self, mocked):
+        local_author = await sync_to_async(Author.objects.create)(username="local_author", display_name="local_author")
+        node_user = await sync_to_async(Author.objects.create)(username="node_user", display_name="node_user", is_remote_user=True)
+        node = await sync_to_async(Node.objects.create)(
+            api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
+            auth_username="team14", auth_password="password-team14", team=14
+        )
         remote_author_id = uuid.uuid4()
 
-        post = Post.objects.create(
+        post = await sync_to_async(Post.objects.create)(
             author=local_author,
             title="Test Post",
             description="Testing post",
@@ -92,10 +100,9 @@ class PostTestCase(TestCase):
             json=[remote_author_json],
             status=200,
         )
-        responses.add(
-            responses.POST,
+        mocked.post(
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/inbox/",
-            match=[matchers.json_params_matcher({
+            payload={
                 "type": "post",
                 "post": {
                     "id": f"{post.id}",
@@ -104,8 +111,10 @@ class PostTestCase(TestCase):
                         "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
                     }
                 }
-            })],
+            },
             status=201,
         )
-        sucess = post.send_to_all_authors()
-        self.assertTrue(sucess)
+        update_reqs = await sync_to_async(post.send_to_all_authors)()
+        req = update_reqs[0]
+        res, status = await req
+        self.assertEqual(201, status)
