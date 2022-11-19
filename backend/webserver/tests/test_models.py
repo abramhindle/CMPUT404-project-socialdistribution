@@ -26,18 +26,18 @@ class NodeTestCase(TestCase):
 
 
 class PostTestCase(TestCase):
-    @aioresponses()
-    async def test_send_post_to_remote_followers_in_team14(self, mocked):
-        local_author = await sync_to_async(Author.objects.create)(username="local_author", display_name="local_author")
-        node_user = await sync_to_async(Author.objects.create)(username="node_user", display_name="node_user", is_remote_user=True)
-        node = await sync_to_async(Node.objects.create)(
-            api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
-            auth_username="team14", auth_password="password-team14", team=14
-        )
-        remote_author = await sync_to_async(RemoteAuthor.objects.create)(id=uuid.uuid4(), node=node)
-        await sync_to_async(Follow.objects.create)(remote_follower=remote_author, followee=local_author)
-
-        post = await sync_to_async(Post.objects.create)(
+    @responses.activate
+    def test_send_post_to_multiple_remote_followers_in_team14(self):
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
+        node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
+                                   auth_username="team14", auth_password="password-team14", team=14)
+        remote_author = RemoteAuthor.objects.create(id=uuid.uuid4(), node=node)
+        remote_author_2 = RemoteAuthor.objects.create(id=uuid.uuid4(), node=node)
+        Follow.objects.create(remote_follower=remote_author, followee=local_author)
+        Follow.objects.create(remote_follower=remote_author_2, followee=local_author)
+        
+        post = Post.objects.create(
             author=local_author,
             title="Test Post",
             description="Testing post",
@@ -46,38 +46,51 @@ class PostTestCase(TestCase):
             unlisted=False,
             visibility = "FRIENDS"
         )
-
-        mocked.post(
+        
+        responses.add(
+            responses.POST,
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}/inbox/",
-            payload={
+            match=[matchers.json_params_matcher({
                 "type": "post",
                 "post": {
                     "id": f"{post.id}",
                     "author": {
-                        "id": f"{remote_author.id}",
-                        "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}",
+                        "id": f"{local_author.id}",
+                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
+                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
                     }
                 }
-            },
+            })],
             status=201,
         )
-        update_reqs = await sync_to_async(post.send_to_followers)()
-        req = update_reqs[0]
-        res, status = await req
-        self.assertEqual(201, status)
+        responses.add(
+            responses.POST,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_2.id}/inbox/",
+            match=[matchers.json_params_matcher({
+                "type": "post",
+                "post": {
+                    "id": f"{post.id}",
+                    "author": {
+                        "id": f"{local_author.id}",
+                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
+                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
+                    }
+                }
+            })],
+            status=201,
+        )
+        success = post.send_to_followers()
+        self.assertTrue(success)
     
     @responses.activate
-    @aioresponses()
-    async def test_send_post_to_all_remote_authors_on_team14_node(self, mocked):
-        local_author = await sync_to_async(Author.objects.create)(username="local_author", display_name="local_author")
-        node_user = await sync_to_async(Author.objects.create)(username="node_user", display_name="node_user", is_remote_user=True)
-        node = await sync_to_async(Node.objects.create)(
-            api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
-            auth_username="team14", auth_password="password-team14", team=14
-        )
+    def test_send_post_to_all_remote_authors_on_team14_node(self):
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
+        node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
+                                   auth_username="team14", auth_password="password-team14", team=14)
         remote_author_id = uuid.uuid4()
 
-        post = await sync_to_async(Post.objects.create)(
+        post = Post.objects.create(
             author=local_author,
             title="Test Post",
             description="Testing post",
@@ -100,21 +113,21 @@ class PostTestCase(TestCase):
             json=[remote_author_json],
             status=200,
         )
-        mocked.post(
+        responses.add(
+            responses.POST,
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/inbox/",
-            payload={
+            match=[matchers.json_params_matcher({
                 "type": "post",
                 "post": {
                     "id": f"{post.id}",
                     "author": {
-                        "id": f"{remote_author_id}",
-                        "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+                        "id": f"{local_author.id}",
+                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
+                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
                     }
                 }
-            },
+            })],
             status=201,
         )
-        update_reqs = await sync_to_async(post.send_to_all_authors)()
-        req = update_reqs[0]
-        res, status = await req
-        self.assertEqual(201, status)
+        sucess = post.send_to_all_authors()
+        self.assertTrue(sucess)

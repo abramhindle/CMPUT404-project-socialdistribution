@@ -7,6 +7,10 @@ from .utils import join_urls
 from .converters import Converter, Team10Converter, Team11Converter
 from urllib.parse import urlparse
 from .api_client import http_request, async_http_request
+import concurrent.futures
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None):
@@ -188,44 +192,77 @@ class Post(models.Model):
     content_type = models.CharField(max_length=200,choices=CONTENT_TYPE_CHOICES,default="text/plain")
     content = models.TextField(blank=True)
 
+    # TODO: how much work will it take to make all of the following POST requests async?
     # TODO: might need to add some retry logic for inbox updates over http
     
-    def update_author_inbox_over_http(self, url, node, author):
+    def update_author_inbox_over_http(self, url, node):
         node_converter = node.get_converter()
-        return async_http_request("POST", url=url, node=node,
-                                  expected_status=node_converter.expected_status_code("send_post_inbox"),
-                                  json=node_converter.send_post_inbox(author, self.id))
+        return http_request("POST", url=url, node=node, 
+                            expected_status=node_converter.expected_status_code("send_post_inbox"),
+                            json=node_converter.send_post_inbox(self.author, self.id), timeout=3)
 
+    # returns True only if all requests were successful
     def send_to_followers(self):
-        update_reqs = []
-        for follow in self.author.followed_by_authors.iterator():
-            if follow.remote_follower:
-                node = follow.remote_follower.node
-                update_reqs.append(
-                    self.update_author_inbox_over_http(url=follow.remote_follower.get_inbox_url(),
-                                                       node=node, author=follow.remote_follower)
-                )
-            else:
-                Inbox.objects.create(target_author=follow.follower, post=self)
-        return update_reqs
+        success = True
+        followers = self.author.followed_by_authors.all()
+        max_threads = min(10, len(followers))       # spawn at most 10 threads
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
+            future_to_url = {}
+            for follow in followers:
+                if follow.remote_follower:
+                    node = follow.remote_follower.node
+                    url = follow.remote_follower.get_inbox_url()
+                    future_to_url[executor.submit(
+                        self.update_author_inbox_over_http, 
+                        url=url,
+                        node=node
+                    )] = url
+                else:
+                    Inbox.objects.create(target_author=follow.follower, post=self)
+            for future in concurrent.futures.as_completed(future_to_url):
+                url = future_to_url[future]
+                try:
+                    res, _ = future.result()
+                    if res is None:
+                        success = False
+                except Exception as exc:
+                    logger.error('%r generated an exception: %s' % (url, exc))
+                    success = False
+        return success
     
+    # returns True only if all requests were successful
     def send_to_all_authors(self):
+        success = True
         for author in Author.objects.exclude(id=self.author.id).iterator():
             Inbox.objects.create(target_author=author, post=self)
         # fetch all authors on all nodes and update their inboxes
-        update_reqs = []
         for node in Node.objects.all():
             node_converter = node.get_converter()
             res, _ = http_request("GET", node.get_authors_url(), node=node)
             if res is None:
+                success = False
                 continue
             authors = node_converter.convert_authors(res)
-            for author in authors:
-                url = join_urls(author["url"], "inbox", ends_with_slash=True)
-                update_reqs.append(
-                    self.update_author_inbox_over_http(url=url, node=node, author=author)
-                )
-        return update_reqs
+            max_threads = min(10, len(authors))       # spawn at most 10 threads
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
+                future_to_url = {}
+                for author in authors:
+                    url = join_urls(author["url"], "inbox", ends_with_slash=True)
+                    future_to_url[executor.submit(
+                        self.update_author_inbox_over_http,
+                        url=url, node=node
+                    )] = url
+
+                for future in concurrent.futures.as_completed(future_to_url):
+                    url = future_to_url[future]
+                    try:
+                        res, _ = future.result()
+                        if res is None:
+                            success = False
+                    except Exception as exc:
+                        logger.error('%r generated an exception: %s' % (url, exc))
+                        success = False
+        return success
 
 
 class Comment(models.Model):
