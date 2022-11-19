@@ -7,6 +7,10 @@ from .utils import join_urls
 from .converters import Converter, Team10Converter, Team11Converter
 from urllib.parse import urlparse
 from .api_client import http_request, async_http_request
+import concurrent.futures
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None):
@@ -200,15 +204,31 @@ class Post(models.Model):
     # returns True only if all requests were successful
     def send_to_followers(self):
         success = True
-        for follow in self.author.followed_by_authors.iterator():
-            if follow.remote_follower:
-                node = follow.remote_follower.node
-                res, _ = self.update_author_inbox_over_http(url=follow.remote_follower.get_inbox_url(),
-                                                            node=node, author=follow.remote_follower)
-                if res is None:
+        followers = self.author.followed_by_authors.all()
+        max_threads = min(10, len(followers))       # spawn at most 10 threads
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
+            future_to_url = {}
+            for follow in followers:
+                if follow.remote_follower:
+                    node = follow.remote_follower.node
+                    url = follow.remote_follower.get_inbox_url()
+                    future_to_url[executor.submit(
+                        self.update_author_inbox_over_http, 
+                        url=url,
+                        node=node,
+                        author=follow.remote_follower
+                    )] = url
+                else:
+                    Inbox.objects.create(target_author=follow.follower, post=self)
+            for future in concurrent.futures.as_completed(future_to_url):
+                url = future_to_url[future]
+                try:
+                    res, _ = future.result()
+                    if res is None:
+                        success = False
+                except Exception as exc:
+                    logger.error('%r generated an exception: %s' % (url, exc))
                     success = False
-            else:
-                Inbox.objects.create(target_author=follow.follower, post=self)
         return success
     
     # returns True only if all requests were successful
@@ -224,11 +244,25 @@ class Post(models.Model):
                 success = False
                 continue
             authors = node_converter.convert_authors(res)
-            for author in authors:
-                url = join_urls(author["url"], "inbox", ends_with_slash=True)
-                res, _ = self.update_author_inbox_over_http(url=url, node=node, author=author)
-                if res is None:
-                    success = False
+            max_threads = min(10, len(authors))       # spawn at most 10 threads
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
+                future_to_url = {}
+                for author in authors:
+                    url = join_urls(author["url"], "inbox", ends_with_slash=True)
+                    future_to_url[executor.submit(
+                        self.update_author_inbox_over_http,
+                        url=url, node=node, author=author
+                    )] = url
+
+                for future in concurrent.futures.as_completed(future_to_url):
+                    url = future_to_url[future]
+                    try:
+                        res, _ = future.result()
+                        if res is None:
+                            success = False
+                    except Exception as exc:
+                        logger.error('%r generated an exception: %s' % (url, exc))
+                        success = False
         return success
 
 

@@ -27,13 +27,15 @@ class NodeTestCase(TestCase):
 
 class PostTestCase(TestCase):
     @responses.activate
-    def test_send_post_to_remote_followers_in_team14(self):
+    def test_send_post_to_multiple_remote_followers_in_team14(self):
         local_author = Author.objects.create(username="local_author", display_name="local_author")
         node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
         node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
                                    auth_username="team14", auth_password="password-team14", team=14)
         remote_author = RemoteAuthor.objects.create(id=uuid.uuid4(), node=node)
+        remote_author_2 = RemoteAuthor.objects.create(id=uuid.uuid4(), node=node)
         Follow.objects.create(remote_follower=remote_author, followee=local_author)
+        Follow.objects.create(remote_follower=remote_author_2, followee=local_author)
         
         post = Post.objects.create(
             author=local_author,
@@ -55,6 +57,21 @@ class PostTestCase(TestCase):
                     "author": {
                         "id": f"{remote_author.id}",
                         "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}",
+                    }
+                }
+            })],
+            status=201,
+        )
+        responses.add(
+            responses.POST,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_2.id}/inbox/",
+            match=[matchers.json_params_matcher({
+                "type": "post",
+                "post": {
+                    "id": f"{post.id}",
+                    "author": {
+                        "id": f"{remote_author_2.id}",
+                        "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_2.id}",
                     }
                 }
             })],
