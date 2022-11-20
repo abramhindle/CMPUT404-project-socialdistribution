@@ -205,7 +205,7 @@ class Post(models.Model):
         node_converter = node.get_converter()
         return http_request("POST", url=url, node=node, 
                             expected_status=node_converter.expected_status_code("send_post_inbox"),
-                            json=node_converter.send_post_inbox(self.author, self.id, request), timeout=3)
+                            json=node_converter.send_post_inbox(self, request), timeout=3)
 
     # returns True only if all requests were successful
     def send_to_followers(self, request):
