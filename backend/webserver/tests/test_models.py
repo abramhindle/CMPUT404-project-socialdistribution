@@ -5,6 +5,7 @@ import responses
 import uuid
 from asgiref.sync import sync_to_async
 from aioresponses import aioresponses   # https://pypi.org/project/aioresponses/
+from unittest.mock import MagicMock
 
 class NodeTestCase(TestCase):
     def test_get_node_with_url(self):
@@ -56,8 +57,7 @@ class PostTestCase(TestCase):
                     "id": f"{post.id}",
                     "author": {
                         "id": f"{local_author.id}",
-                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
-                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
+                        "url": f"http://testserver/api/authors/{local_author.id}/",
                     }
                 }
             })],
@@ -72,14 +72,16 @@ class PostTestCase(TestCase):
                     "id": f"{post.id}",
                     "author": {
                         "id": f"{local_author.id}",
-                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
-                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
+                        "url": f"http://testserver/api/authors/{local_author.id}/",
                     }
                 }
             })],
             status=201,
         )
-        success = post.send_to_followers()
+        mock_request = MagicMock()
+        mock_request.build_absolute_uri.return_value = f"http://testserver/api/authors/{local_author.id}/"
+        success = post.send_to_followers(mock_request)
+        mock_request.build_absolute_uri.assert_called_with(f"/api/authors/{local_author.id}/")
         self.assertTrue(success)
     
     @responses.activate
@@ -122,12 +124,14 @@ class PostTestCase(TestCase):
                     "id": f"{post.id}",
                     "author": {
                         "id": f"{local_author.id}",
-                        # TODO: This should be f"http://testserver/api/authors/{local_author.id}/"
-                        "url": f"http://127.0.0.1:8000/authors/{local_author.id}/",
+                        "url": f"http://testserver/api/authors/{local_author.id}/"
                     }
                 }
             })],
             status=201,
         )
-        sucess = post.send_to_all_authors()
+        mock_request = MagicMock()
+        mock_request.build_absolute_uri.return_value = f"http://testserver/api/authors/{local_author.id}/"
+        sucess = post.send_to_all_authors(mock_request)
+        mock_request.build_absolute_uri.assert_called_with(f"/api/authors/{local_author.id}/")
         self.assertTrue(sucess)

@@ -1,6 +1,7 @@
 import webserver.models as models
 from .utils import join_urls
 import logging
+from django.http.request import HttpRequest
 
 logger = logging.getLogger(__name__)
 
@@ -23,17 +24,15 @@ class Converter(object):
         return False
     
     # returns the request payload required for sending a post inbox
-    # both post_author and post_id are going to refer to local objects
-    def send_post_inbox(self, post_author, post_id):
+    # the passed post is a local post
+    def send_post_inbox(self, post, request: HttpRequest):
         payload = {
             "type": "post",
             "post": {
-                "id": f"{post_id}",
+                "id": f"{post.id}",
                 "author": {
-                    "id": f"{post_author.id}",
-                    # TODO - do not hardcode the host
-                    # Our system should be smart enough to determine our own host dynamically
-                    "url": f"http://127.0.0.1:8000/authors/{post_author.id}/",
+                    "id": f"{post.author.id}",
+                    "url": post.author.get_url(request),
                 }
             }
         }
@@ -83,7 +82,7 @@ class Team11Converter(Converter):
     def send_follow_request(self, request_data):
         raise NotImplementedError   # TODO
     
-    def send_post_inbox(self, remote_author, post_id):
+    def send_post_inbox(self, post, request: HttpRequest)
         raise NotImplementedError   # TODO
     
     def convert_author(self, data: dict):
