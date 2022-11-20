@@ -2071,6 +2071,87 @@ class AllPublicPostsTestCase(APITestCase):
         self.assertEqual(1, len(response.data))
         self.assertEqual("Post 2", response.data[0]["title"])
 
+    @responses.activate
+    def test_get_retrives_public_posts_from_remote_nodes(self):
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
+                            auth_username="team14", auth_password="password-team14", team=14)
+        node_user_2 = Author.objects.create(username="node_user_2", display_name="node_user_2", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-2.herokuapp.com/api", user=node_user_2,
+                            auth_username="team14", auth_password="password-team14", team=14)
+        remote_author_id_1 = uuid.uuid4()
+        remote_author_id_2 = uuid.uuid4()
+        
+        post = Post.objects.create(
+            author=local_author,
+            title="Test Post",
+            description="Testing post",
+            source="source",
+            origin="origin",
+            unlisted=False,
+            visibility = "PUBLIC"
+        )
+        remote_post_1_json = {
+            "author": {
+                "id": f"{remote_author_id_1}",
+                "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id_1}/",
+                "display_name": "myuser",
+                "profile_image": "",
+                "github_handle": ""
+            },
+            "created_at": "2022-10-22T05:06:49.477100Z",
+            "edited_at": "2022-10-22T23:27:41.589319Z",
+            "title": "My first post!",
+            "description": "Hello world",
+            "source": "",
+            "origin": "",
+            "unlisted": False,
+            "content_type": "text/plain",
+            "content": "change the content",
+            "visibility": "PUBLIC",
+        }
+        remote_post_2_json = {
+            "author": {
+                "id": f"{remote_author_id_2}",
+                "url": f"https://social-distribution-2.herokuapp.com/api/authors/{remote_author_id_2}/",
+                "display_name": "myuser2",
+                "profile_image": "",
+                "github_handle": ""
+            },
+            "created_at": "2022-10-22T05:06:49.477100Z",
+            "edited_at": "2022-10-22T23:27:41.589319Z",
+            "title": "my second post!",
+            "description": "Goodnight world",
+            "source": "",
+            "origin": "",
+            "unlisted": False,
+            "content_type": "text/plain",
+            "content": "change the content",
+            "visibility": "PUBLIC",
+        }
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-1.herokuapp.com/api/posts/",
+            json=[remote_post_1_json],
+            status=200,
+        )
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-2.herokuapp.com/api/posts/",
+            json=[remote_post_2_json],
+            status=200,
+        )
+        
+        self.client.force_authenticate(user=local_author)
+        url = f'/api/posts/'
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(3, len(response.data))
+        self.assertEqual("Test Post", response.data[0]["title"])
+        self.assertEqual("My first post!", response.data[1]["title"])
+        self.assertEqual("my second post!", response.data[2]["title"])
+
 
 class DeclineFollowRequestTestCase(APITestCase):
     def test_successful_decline(self):
