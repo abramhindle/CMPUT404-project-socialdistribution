@@ -82,7 +82,7 @@ class Team11Converter(Converter):
     def send_follow_request(self, request_data):
         raise NotImplementedError   # TODO
     
-    def send_post_inbox(self, post, request: HttpRequest)
+    def send_post_inbox(self, post, request: HttpRequest):
         raise NotImplementedError   # TODO
     
     def convert_author(self, data: dict):
