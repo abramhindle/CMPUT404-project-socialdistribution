@@ -37,6 +37,9 @@ class Converter(object):
             }
         }
         return payload
+
+    def public_posts_url(self, api_url):
+        return join_urls(api_url, "posts", ends_with_slash=True)
     
     def remote_follow_request_sender_id(self, serialized_data):
         id = serialized_data["sender"]["id"]
@@ -85,6 +88,9 @@ class Team11Converter(Converter):
     def send_post_inbox(self, post, request: HttpRequest):
         raise NotImplementedError   # TODO
     
+    def public_posts_url(self, api_url):
+        return None
+    
     def convert_author(self, data: dict):
         raise NotImplementedError   # TODO
     
@@ -98,3 +104,6 @@ class Team10Converter(Converter):
 
     def url_to_send_follow_request_at(self, author_url):
         return join_urls(author_url, "followers", ends_with_slash=True)
+    
+    def public_posts_url(self, api_url):
+        return join_urls(api_url, "posts/public", ends_with_slash=True)

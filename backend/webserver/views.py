@@ -29,6 +29,7 @@ import datetime
 from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsRemotePostOnly, is_remote_request, join_urls
 from .api_client import http_request
 import logging
+import concurrent.futures
 
 logger = logging.getLogger(__name__)
 external_request_timeout = 5
@@ -295,6 +296,29 @@ class AllPublicPostsView(APIView, PaginationHandlerMixin):
 
     def get_serializer(self, request, queryset):
         return PostSerializer(queryset, many=True, context={'request': request})
+    
+    def get_external_posts(self):
+        external_posts = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            future_to_url = {}
+            for node in Node.objects.all():
+                node_converter = node.get_converter()
+                url = node_converter.public_posts_url(node.api_url)
+                if url is None:
+                    continue
+                future_to_url[executor.submit(
+                    http_request, "GET", url=url, node=node, expected_status=200,
+                )] = url
+            for future in concurrent.futures.as_completed(future_to_url):
+                url = future_to_url[future]
+                try:
+                    res, _ = future.result()
+                    if res is None:
+                        continue
+                    external_posts.extend(node_converter.convert_posts(res))
+                except Exception as exc:
+                    logger.error(f"{url} generated an exception: {exc}")
+        return external_posts
 
     def get(self, request):
         """Returns recent public posts"""
@@ -306,7 +330,16 @@ class AllPublicPostsView(APIView, PaginationHandlerMixin):
             )
         else:
             serializer = self.get_serializer(request, posts)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        response_data = serializer.data
+        if not is_remote_request(request):
+            external_posts = self.get_external_posts()
+            if "results" in serializer.data:
+                response_data["results"].extend(external_posts)
+            else:
+                response_data.extend(external_posts)
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class AuthorLikedView(APIView):
