@@ -14,6 +14,9 @@ import django_on_heroku
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,20 +81,34 @@ WSGI_APPLICATION = 'social_distribution.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3")
-    }
-}
 
 
 MAX_CONN_AGE = 600
 
+
 if "DATABASE_URL" in os.environ:
-    DATABASES['default'] = dj_database_url.config(
+    DATABASE = dj_database_url.config(
         conn_max_age=MAX_CONN_AGE, ssl_require=True
     )
+elif "LOCAL_POSTGRESQL" in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'social_distribution_14',
+            'USER': 'team_14',
+            'PASSWORD': 'team14',
+            'HOST': 'localhost',
+            'PORT': '5432'
+        }
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3")
+        }
+    }
+
 
 
 # Password validation
