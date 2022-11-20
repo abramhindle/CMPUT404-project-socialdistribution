@@ -256,9 +256,9 @@ class AllPosts(APIView, PaginationHandlerMixin):
                 )
                 
                 if new_post.visibility == "FRIENDS":
-                    new_post.send_to_followers()
+                    new_post.send_to_followers(request)
                 elif new_post.visibility == "PUBLIC":
-                    new_post.send_to_all_authors()
+                    new_post.send_to_all_authors(request)
                 elif new_post.visibility == "PRIVATE":
                     private_post_serializer = SendPrivatePostSerializer(data=request.data)
                     if private_post_serializer.is_valid():

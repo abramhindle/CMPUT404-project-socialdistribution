@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 from .api_client import http_request, async_http_request
 import concurrent.futures
 import logging
+from django.http.request import HttpRequest
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +76,11 @@ class Author(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
-
+    
+    # dynamically determines the author's full url
+    # e.g. http://socialdistribution.com/api/authors/1234/
+    def get_url(self, request: HttpRequest):
+        return request.build_absolute_uri(reverse('author-detail', args=(self.id,)))
 
 
 class NodeManager(models.Manager):
@@ -195,14 +201,14 @@ class Post(models.Model):
     # TODO: how much work will it take to make all of the following POST requests async?
     # TODO: might need to add some retry logic for inbox updates over http
     
-    def update_author_inbox_over_http(self, url, node):
+    def update_author_inbox_over_http(self, url, node, request):
         node_converter = node.get_converter()
         return http_request("POST", url=url, node=node, 
                             expected_status=node_converter.expected_status_code("send_post_inbox"),
-                            json=node_converter.send_post_inbox(self.author, self.id), timeout=3)
+                            json=node_converter.send_post_inbox(self.author, self.id, request), timeout=3)
 
     # returns True only if all requests were successful
-    def send_to_followers(self):
+    def send_to_followers(self, request):
         success = True
         followers = self.author.followed_by_authors.all()
         max_threads = min(10, len(followers))       # spawn at most 10 threads
@@ -215,7 +221,8 @@ class Post(models.Model):
                     future_to_url[executor.submit(
                         self.update_author_inbox_over_http, 
                         url=url,
-                        node=node
+                        node=node,
+                        request=request
                     )] = url
                 else:
                     Inbox.objects.create(target_author=follow.follower, post=self)
@@ -231,7 +238,7 @@ class Post(models.Model):
         return success
     
     # returns True only if all requests were successful
-    def send_to_all_authors(self):
+    def send_to_all_authors(self, request):
         success = True
         for author in Author.objects.exclude(id=self.author.id).iterator():
             Inbox.objects.create(target_author=author, post=self)
@@ -250,7 +257,7 @@ class Post(models.Model):
                     url = join_urls(author["url"], "inbox", ends_with_slash=True)
                     future_to_url[executor.submit(
                         self.update_author_inbox_over_http,
-                        url=url, node=node
+                        url=url, node=node, request=request
                     )] = url
 
                 for future in concurrent.futures.as_completed(future_to_url):
