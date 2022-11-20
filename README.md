@@ -9,6 +9,15 @@ Make a distributed social network!
 
 Setup
 =================
+## Database
+1. Have PostgreSQL server installed on your machine
+2. Enter the PSQL console with `sudo -u postgres psql`
+3. In the opened PSQL console run the following commands
+```sql
+CREATE DATABASE social_distribution_14;
+CREATE USER team_14 WITH PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE social_distribution_14 TO team_14;
+```
 ## Backend
 1. Move into the backend directory of the repository: `cd backend`
 2. Create an start a virtual environment:
