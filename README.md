@@ -32,19 +32,19 @@ source env/bin/activate  # On Windows use `env\Scripts\activate`
 ```
 pip install -r requirements.txt
 ```
-4. Run the webserver
-```
-python manage.py runserver
-```
+4. `cd backend && python manage.py migrate`
 
-### If you want to loead some seed data
+5. Run the webserver `python manage.py runserver`
+  - You should be able to run the server on a **non-default port** by running something like `python manage.py runserver 5900`
+
+### If you want to load some seed data
 When asked for authentication enter any of the authors usernames with the password pass123
 ```
 python manage.py flush   (if your database is not empty)
 python manage.py loaddata fixtures/all_data.json
 ```
 
-### How to Create Seed Data
+## How to Create Seed Data
 1. At first, you can create any set of data of your liking through the list API routes or though the frontend.
 2. Once you have inserted some meaningful data into your local database, you can dump the data into file fixtures. To do that make sure that you are in the Django project directory (`backend/`) and run the following commands -
 ```
@@ -715,7 +715,7 @@ Same as updating other types of inboxes.
 ## Connecting to new nodes
 ### Add a node to connect with
 #### Sample Request
-![image](https://user-images.githubusercontent.com/43586048/201425872-718980f5-f8a1-4a8d-8b07-ffdbf2e856bd.png)
+<img width="1126" alt="image" src="https://user-images.githubusercontent.com/43586048/202946372-67256269-0012-45a5-8576-04fc7a49d2c8.png">
 
 * `node_name`, `password`, `password2` are required authentication fields that will be used by external nodes to connect to us
 * `auth_username`, `auth_password` are required authentication fields that will be used by our node to connect to external nodes
