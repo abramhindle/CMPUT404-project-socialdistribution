@@ -1,0 +1,18 @@
+[
+{
+    "model": "webserver.author",
+    "pk": "400461d5-86b7-42f4-9451-7afee0d7b2e3",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$IpF5sWMuWAe2gcUDusdY4N$vXg5lMxHvp0sT+JBShjTGDw93tAMRkcMXr/EQ2H8Y78=",
+        "last_login": null,
+        "username": "admin",
+        "display_name": "",
+        "profile_image": "",
+        "github_handle": "",
+        "created_at": "2022-11-21T02:21:50.236Z",
+        "is_active": true,
+        "is_admin": true,
+        "is_remote_user": false
+    }
+}
+]
