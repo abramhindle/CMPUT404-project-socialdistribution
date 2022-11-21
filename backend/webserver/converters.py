@@ -97,13 +97,94 @@ class Team11Converter(Converter):
     def convert_post(self, data: dict):
         raise NotImplementedError  # TODO
 
-
 class Team10Converter(Converter):
+    
     def skip_follow_check_before_sending_follow_request(self):
         return True
 
     def url_to_send_follow_request_at(self, author_url):
         return join_urls(author_url, "followers", ends_with_slash=True)
     
-    def public_posts_url(self, api_url):
-        return join_urls(api_url, "posts/public", ends_with_slash=True)
+    def send_follow_request(self, request_data):
+        converted_data = {
+            "actor": request_data["sender"]["url"]
+        }
+        return converted_data
+    
+    def expected_status_code(self, use_case_name):
+        if use_case_name == "send_follow_request":
+            return 200
+        return self.expected_status_codes.get(use_case_name, 200)
+    
+    def send_post_inbox(self, post,request: HttpRequest):
+        my_url = post.author.get_url(request)
+        parsed_uri = urlparse(my_url)
+        host = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+        converted_data = {
+            "author":{
+                "id": f"{post.author.id}",
+                "host":host,
+                "url": post.author.get_url(request),
+                "displayName": f"{post.author.display_name}",
+                "github": f"{post.author.github_handle}",
+                "profileImage":f"{post.author.profile_image}"
+            },
+            "title": post.title,
+            "description": post.description,
+            "visibility": post.visibility.lower(),
+            "source": post.source,
+            "origin": post.origin,
+            "categories": ["post"],
+            "contentType": post.content_type,
+            "unlisted": post.unlisted,
+            "count": "0",
+            "comments":"",
+            "published": f"{post.created_at}"
+        }
+        return converted_data
+        
+    def convert_author(self, data: dict):
+
+        converted_data ={
+            "url": data["url"],
+            "id": data["id"],
+            "display_name": data["displayName"],
+            "profile_image": data["profileImage"],
+            "github_handle": data["github"],
+        }
+        return converted_data
+    
+    def convert_authors(self, data):
+        if "items" in data:
+            return [self.convert_author(author) for author in data["items"]]
+        return None
+    
+        
+    def convert_post(self, data: dict):
+        converted_data = {
+            "id": data["id"],
+            "author":{
+                "url": data["author"]["url"],
+                "id": data["author"]["id"],
+                "display_name": data["author"]["displayName"],
+                "profile_image": data["author"]["profileImage"],
+                "github_handle": data["author"]["github"]
+            },
+            "created_at": data["published"],
+            "edited_at": None,
+            "title": data["title"],
+            "description": data["description"],
+            "visibility": data["visibility"].upper(),
+            "source": data["source"],
+            "origin":data["origin"],
+            "unlisted":data["unlisted"],
+            "content_type": data["contentType"],
+            "content": None,
+            "likes_count": 0
+        }
+        return converted_data
+    
+    def convert_posts(self,data):
+        if "items" in data:
+            return [self.convert_post(post) for post in data["items"]]
+        return None
