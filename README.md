@@ -19,7 +19,7 @@ If you would like to use a local Postgres DB instead of the default SQLite DB yo
     CREATE USER team_14 WITH PASSWORD 'team14';
     ALTER USER team_14 WITH SUPERUSER;
     ```
-4. Run migrations/seed as usual
+4. You also need to set an environment variable to use Postgres - `export LOCAL_POSTGRESQL=true`
 
 ## Backend
 1. Move into the backend directory of the repository: `cd backend`
