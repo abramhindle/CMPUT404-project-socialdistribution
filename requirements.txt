@@ -24,3 +24,4 @@ types-toml==0.10.8
 urllib3==1.26.12
 whitenoise==6.2.0
 yarl==1.8.1
+python-dotenv~=0.21.0

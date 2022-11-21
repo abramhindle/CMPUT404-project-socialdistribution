@@ -136,3 +136,5 @@ setup.txt
 
 # macOS Files
 .DS_Store
+/.idea/
+/backend/node_modules/.yarn-integrity

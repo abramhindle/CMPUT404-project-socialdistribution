@@ -9,6 +9,18 @@ Make a distributed social network!
 
 Setup
 =================
+## Database
+If you would like to use a local Postgres DB instead of the default SQLite DB you need to do the following:
+1. Have PostgreSQL server installed on your local machine
+2. Enter into the PSQL console with `sudo -u postgres psql`
+3. In the opened PSQL console run the following commands
+    ```sql
+    CREATE DATABASE social_distribution_14;
+    CREATE USER team_14 WITH PASSWORD 'team14';
+    ALTER USER team_14 WITH SUPERUSER;
+    ```
+4. Run migrations/seed as usual
+
 ## Backend
 1. Move into the backend directory of the repository: `cd backend`
 2. Create an start a virtual environment:
