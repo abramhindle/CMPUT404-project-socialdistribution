@@ -5,8 +5,8 @@ Hello! This is an onboarding document that demonstrates how to locally test your
 
 ## Local Setup
 1. At first, run the [database setup instructions (optional)](https://github.com/zarifmahfuz/project-socialdistribution#database) and the [backend setup instructions](https://github.com/zarifmahfuz/project-socialdistribution#backend). Do not seed any data into the database yet (see next steps).
-2. Then, run the [frontend setup instructions](https://github.com/zarifmahfuz/project-socialdistribution/tree/master/frontend#running-the-front-end).
-3. `cd backend && python manage.py loaddata local_seed`
+2. `cd backend && python manage.py loaddata local_seed`
+3. Then, run the [frontend setup instructions](https://github.com/zarifmahfuz/project-socialdistribution/tree/master/frontend#running-the-front-end).
 4. Now, add your (local) node into our local node by making a local API request [as shown here](https://github.com/zarifmahfuz/project-socialdistribution#add-a-node-to-connect-with).
   * Use `username:admin` and `password:local-admin-password` for authorization
   * The request url is going to be something like `http://127.0.0.1:8000/api/nodes/` if you are running our server on port `8000`.
