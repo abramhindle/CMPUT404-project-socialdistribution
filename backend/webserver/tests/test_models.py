@@ -89,7 +89,7 @@ class PostTestCase(TestCase):
         local_author = Author.objects.create(username="local_author", display_name="local_author")
         node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
         node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
-                                   auth_username="team14", auth_password="password-team14", team=10)
+                                   auth_username="team10", auth_password="password-team10", team=10)
         remote_author = RemoteAuthor.objects.create(id=uuid.uuid4(), node=node)
         remote_author_2 = RemoteAuthor.objects.create(id=uuid.uuid4(), node=node)
         Follow.objects.create(remote_follower=remote_author, followee=local_author)
@@ -110,53 +110,59 @@ class PostTestCase(TestCase):
             responses.POST,
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}/inbox/",
             match=[matchers.json_params_matcher({
-                "author":{
-                    "url": f"http://testserver/api/authors/{local_author.id}/",
+                "author": {
+                    "type": "author",
                     "id": f"{local_author.id}",
-                    "host":"http://testserver/",
+                    "url": f"http://testserver/api/authors/{local_author.id}/",
+                    "host": "http://testserver/",
                     "displayName": "local_author",
                     "profileImage": "",
                     "github": ""
                 },
+                "type": "post",
+                "id": f"{post.id}",
+                "url": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/",
                 "title": post.title,
                 "description": post.description,
                 "visibility": post.visibility.lower(),
                 "source": post.source,
                 "origin": post.origin,
-                "categories": ["post"],
                 "contentType": post.content_type,
                 "unlisted": post.unlisted,
-                "count": "0",
-                "comments":"",
+                "count": 0,
+                "comments": "www.default.com",
                 "published": f"{post.created_at}"
             })],
-            status=201,
+            status=200,
         )
         responses.add(
             responses.POST,
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_2.id}/inbox/",
             match=[matchers.json_params_matcher({
-                "author":{
-                    "url": f"http://testserver/api/authors/{local_author.id}/",
+                "author": {
+                    "type": "author",
                     "id": f"{local_author.id}",
-                    "host":"http://testserver/",
+                    "url": f"http://testserver/api/authors/{local_author.id}/",
+                    "host": "http://testserver/",
                     "displayName": "local_author",
                     "profileImage": "",
                     "github": ""
                 },
+                "type": "post",
+                "id": f"{post.id}",
+                "url": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/",
                 "title": post.title,
                 "description": post.description,
                 "visibility": post.visibility.lower(),
                 "source": post.source,
                 "origin": post.origin,
-                "categories": ["post"],
                 "contentType": post.content_type,
                 "unlisted": post.unlisted,
-                "count": "0",
-                "comments":"",
+                "count": 0,
+                "comments": "www.default.com",
                 "published": f"{post.created_at}"
             })],
-            status=201,
+            status=200,
         )
         mock_request = MagicMock()
         mock_request.build_absolute_uri.return_value = f"http://testserver/api/authors/{local_author.id}/"
@@ -254,27 +260,30 @@ class PostTestCase(TestCase):
             responses.POST,
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/inbox/",
             match=[matchers.json_params_matcher({
-                "author":{
-                    "url": f"http://testserver/api/authors/{local_author.id}/",
+                "author": {
+                    "type": "author",
                     "id": f"{local_author.id}",
-                    "host":"http://testserver/",
+                    "url": f"http://testserver/api/authors/{local_author.id}/",
+                    "host": "http://testserver/",
                     "displayName": "local_author",
                     "profileImage": "",
                     "github": ""
                 },
+                "type": "post",
+                "id": f"{post.id}",
+                "url": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/",
                 "title": post.title,
                 "description": post.description,
                 "visibility": post.visibility.lower(),
                 "source": post.source,
                 "origin": post.origin,
-                "categories": ["post"],
                 "contentType": post.content_type,
                 "unlisted": post.unlisted,
-                "count": "0",
-                "comments":"",
-                "published": f"{post.created_at}"     
+                "count": 0,
+                "comments": "www.default.com",
+                "published": f"{post.created_at}"  
             })],
-            status=201,
+            status=200,
         )
         
         mock_request = MagicMock()

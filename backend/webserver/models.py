@@ -270,6 +270,9 @@ class Post(models.Model):
                         logger.error('%r generated an exception: %s' % (url, exc))
                         success = False
         return success
+    
+    def get_url(self, request):
+        return join_urls(self.author.get_url(request), "posts", str(self.id), ends_with_slash=True)
 
 
 class Comment(models.Model):

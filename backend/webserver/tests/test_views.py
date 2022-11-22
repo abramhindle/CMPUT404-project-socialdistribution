@@ -78,7 +78,7 @@ class AuthorsViewTestCase(APITestCase):
         node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
                                             password="password-team10", is_remote_user=True)
         Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
-                            auth_username="team10", auth_password="password-team10",team=10)
+                            auth_username="team10", auth_password="password-team10", team=10)
         local_author = Author.objects.create(username="local_author", display_name="local_author")
         
         external_api_response = responses.Response(
@@ -86,8 +86,9 @@ class AuthorsViewTestCase(APITestCase):
             url="https://social-distribution-1.herokuapp.com/api/authors",
             json={
                 "type":"string",
-                "items":[
-                    {   "type":"string",
+                "items": [
+                    {   
+                        "type":"string",
                         "url": "https://social-distribution-1.herokuapp.com/api/authors/1/",
                         "host":"string",
                         "id": str(uuid.uuid4()),
@@ -308,6 +309,7 @@ class AuthorDetailView(APITestCase):
             "github_handle": ""
         }
         self.assertEqual(remote_author_converted, response.data)
+
     def test_get_404(self):
         """If an author requested does not exist, should return 404"""
         fake_id = uuid.uuid4()
@@ -714,7 +716,7 @@ class FollowRequestProcessorTestCase(APITestCase):
             ],
             status=200,
         )
-        local_payload ={
+        local_payload = {
             "type":"follow",
             "sender":{
                 "url":f'http://127.0.0.1:5054/authors/{local_author.id}/',
@@ -729,44 +731,9 @@ class FollowRequestProcessorTestCase(APITestCase):
         url = f'/api/authors/{remote_author_id}/inbox/'
         self.client.force_authenticate(user=local_author)
         response = self.client.post(url, data=local_payload, format="json")
-        # The reason the status code is 200 instead of 201 is because team 10 defined their response status code to be 200
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         # shouldn't create a local FR object for a remote receiver
         self.assertEqual(0, FollowRequest.objects.count())
-
-    def test_sender_is_remote_author(self):
-        local_author = Author.objects.create(username="local_author", display_name="local_author")
-        node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
-                                            password="password1", is_remote_user=True)
-        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
-                            auth_username="team14", auth_password="password-team14", team=14)
-        remote_author_id = uuid.uuid4()
-        payload = {
-            "type": "follow",
-            "sender": {
-                "url": f'https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/',
-                "id": str(remote_author_id),
-            },
-            "receiver": {
-                "url": f'http://127.0.0.1:5054/authors/{local_author.id}/',
-                "id": str(local_author.id),
-            }
-        }
-        self.assertEqual(0, FollowRequest.objects.count())
-        self.assertEqual(0, Inbox.objects.count())
-        
-        url = f'/api/authors/{local_author.id}/inbox/'
-        self.client.force_authenticate(user=local_author)
-        response = self.client.post(url, data=payload, format="json")
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-        self.assertEqual(1, FollowRequest.objects.count())
-        self.assertEqual(1, Inbox.objects.count())
-        fr = FollowRequest.objects.first()
-        self.assertEqual(remote_author_id, fr.remote_sender.id)
-        self.assertEqual(local_author, fr.receiver)
-        inbox = Inbox.objects.first()
-        self.assertEqual(fr, inbox.follow_request_received)
-        self.assertEqual(local_author, inbox.target_author)
 
     def test_sender_is_remote_author(self):
         local_author = Author.objects.create(username="local_author", display_name="local_author")
@@ -1238,7 +1205,7 @@ class PostTestCase(APITestCase):
         remote_post_id = uuid.uuid4()
         
         remote_author_json = {
-            "type":"author",
+            "type": "author",
             "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
             "id": f"{remote_author_id}",
             "host": "string",
@@ -1303,6 +1270,7 @@ class PostTestCase(APITestCase):
             "likes_count": 0
         }
         self.assertEqual(converted_remote_post, response.data)
+
     def test_cannot_get_private_post(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -1833,10 +1801,10 @@ class AllPostTestCase(APITestCase):
             "host": "string",
             "displayName": "Jake",
             "profileImage": "",
-            "github": "",    
+            "github": "",
         }
         
-        local_author_json = {
+        converted_remote_author_json = {
             "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
             "id": f"{remote_author_id}",
             "display_name": "Jake",
@@ -1881,7 +1849,7 @@ class AllPostTestCase(APITestCase):
         converted_remote_posts_json = [
             {   
                 "id": f"{remote_post_id}",
-                "author": local_author_json,
+                "author": converted_remote_author_json,
                 "created_at": "2019-08-24T14:15:22Z",
                 "edited_at": None,
                 "title": "my first post!",
@@ -1892,7 +1860,7 @@ class AllPostTestCase(APITestCase):
                 "content_type": "text/markdown",
                 "content": None,
                 "visibility": "PUBLIC",
-                "likes_count":0
+                "likes_count": 0
             }
         ]
         
@@ -1901,6 +1869,7 @@ class AllPostTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(converted_remote_posts_json, response.data)
+
     @responses.activate
     def test_get_paginated_remote_posts_from_team14_author(self):
         local_author = Author.objects.create(username="local_author", display_name="local_author")
@@ -2320,7 +2289,7 @@ class InboxViewTestCase(APITestCase):
             "profileImage": "",
             "github": ""
         }
-        local_author_json = {
+        converted_remote_author_json = {
            "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
             "id": f"{remote_author_id}",
             "display_name": "Jake",
@@ -2342,12 +2311,12 @@ class InboxViewTestCase(APITestCase):
         expected_output = [
             {
                 "type": "follow",
-                "sender": local_author_json
+                "sender": converted_remote_author_json
             }
         ]
-        
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(expected_output, response.data)
+
     @responses.activate
     def test_get_remote_post_from_team14(self):
         local_author = Author.objects.create(username="local_author", display_name="local_author")

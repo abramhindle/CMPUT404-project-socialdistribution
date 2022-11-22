@@ -1,6 +1,7 @@
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.utils.urls import replace_query_param
 from rest_framework import permissions
+from urllib.parse import urlparse
 
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'size'
@@ -88,3 +89,7 @@ def is_remote_request(request):
 def join_urls(*urls, ends_with_slash=False):
     url = '/'.join([url.strip('/') for url in urls])
     return url + "/" if ends_with_slash else url
+
+def get_host_from_absolute_url(url):
+    parsed_url = urlparse(url)
+    return f"{parsed_url.scheme}://{parsed_url.hostname}/"
