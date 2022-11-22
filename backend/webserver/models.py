@@ -217,7 +217,7 @@ class Post(models.Model):
             for follow in followers:
                 if follow.remote_follower:
                     node = follow.remote_follower.node
-                    url = follow.remote_follower.get_inbox_url()
+                    url = node.get_converter().url_to_send_post_inbox_at(follow.remote_follower.get_absolute_url())
                     future_to_url[executor.submit(
                         self.update_author_inbox_over_http, 
                         url=url,
@@ -254,7 +254,7 @@ class Post(models.Model):
             with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
                 future_to_url = {}
                 for author in authors:
-                    url = join_urls(author["url"], "inbox", ends_with_slash=True)
+                    url = node_converter.url_to_send_post_inbox_at(author["url"])
                     future_to_url[executor.submit(
                         self.update_author_inbox_over_http,
                         url=url, node=node, request=request

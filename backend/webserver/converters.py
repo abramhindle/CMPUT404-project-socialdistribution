@@ -15,6 +15,9 @@ class Converter(object):
     
     def url_to_send_follow_request_at(self, author_url):
         return join_urls(author_url, "inbox", ends_with_slash=True)
+    
+    def url_to_send_post_inbox_at(self, author_url):
+        return join_urls(author_url, "inbox", ends_with_slash=True)
 
     # returns the request payload required for sending a follow request
     def send_follow_request(self, request_data):
@@ -108,6 +111,9 @@ class Team10Converter(Converter):
 
     def url_to_send_follow_request_at(self, author_url):
         return join_urls(author_url, "followers", ends_with_slash=True)
+    
+    def url_to_send_post_inbox_at(self, author_url):
+        return join_urls(author_url, "inbox")
     
     def public_posts_url(self, api_url):
         return join_urls(api_url, "posts/public", ends_with_slash=True)

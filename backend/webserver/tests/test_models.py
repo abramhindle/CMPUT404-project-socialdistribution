@@ -108,7 +108,7 @@ class PostTestCase(TestCase):
         
         responses.add(
             responses.POST,
-            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}/inbox/",
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}/inbox",
             match=[matchers.json_params_matcher({
                 "author": {
                     "type": "author",
@@ -137,7 +137,7 @@ class PostTestCase(TestCase):
         )
         responses.add(
             responses.POST,
-            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_2.id}/inbox/",
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_2.id}/inbox",
             match=[matchers.json_params_matcher({
                 "author": {
                     "type": "author",
@@ -258,7 +258,7 @@ class PostTestCase(TestCase):
         )
         responses.add(
             responses.POST,
-            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/inbox/",
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/inbox",
             match=[matchers.json_params_matcher({
                 "author": {
                     "type": "author",
