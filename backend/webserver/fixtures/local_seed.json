@@ -14,5 +14,32 @@
         "is_admin": true,
         "is_remote_user": false
     }
+},
+{
+    "model": "webserver.author",
+    "pk": "d47edd99-e0e9-4e0e-8613-e170becdce41",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$RxzXpeBw3oihIaYYBkARWc$rTAc3daQwAWvVSNwNamIpkS9uLppBkgcsQHKhDfghhw=",
+        "last_login": null,
+        "username": "local_default",
+        "display_name": "local_default",
+        "profile_image": "",
+        "github_handle": "",
+        "created_at": "2022-11-22T05:03:57.110Z",
+        "is_active": true,
+        "is_admin": false,
+        "is_remote_user": true
+    }
+},
+{
+    "model": "webserver.node",
+    "pk": 1,
+    "fields": {
+        "user": "d47edd99-e0e9-4e0e-8613-e170becdce41",
+        "api_url": "http://127.0.0.1:8080/",
+        "auth_username": "team14_local",
+        "auth_password": "team14_local",
+        "team": 10
+    }
 }
 ]
