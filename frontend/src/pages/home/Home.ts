@@ -57,10 +57,14 @@ export class Home extends PaginatedPage {
                 responseData = await this.getPostsFromFeedType();
                 console.log(responseData)
                 if (responseData) {
-                    this.paginatedResponse = responseData;
-                    this.setVisiblePosts()
-                    if (this.loadMore) {
-                        this.observer?.observe(this.loadMore);
+                    if (this.feedType == FeedType.All) {
+                        this.setVisiblePosts(responseData);
+                    } else {
+                        this.paginatedResponse = responseData;
+                        this.setVisiblePosts()
+                        if (this.loadMore) {
+                            this.observer?.observe(this.loadMore);
+                        }
                     }
                 }
             } else {
@@ -74,7 +78,7 @@ export class Home extends PaginatedPage {
     private async getPostsFromFeedType(): Promise<PaginatedResponse | null> {
         switch (this.feedType) {
             case FeedType.All:
-                return await SocialApi.fetchPaginatedPublicPosts(1, PAGE_SIZE);
+                return await SocialApi.fetchPublicPosts();
             case FeedType.Stream: {
                 if (!this.user?.id) {
                     return null;
@@ -84,12 +88,13 @@ export class Home extends PaginatedPage {
         }
     }
 
-    private setVisiblePosts() {
-        if (!this.paginatedResponse?.results) {
+    private setVisiblePosts(response?: any) {
+        const results = this.paginatedResponse?.results || response
+        if (!results) {
             return;
         }
 
-        for (var postData of this.paginatedResponse?.results) {
+        for (var postData of response) {
             if (!postData.type || postData.type == "post") {
                 const post = SocialApiTransform.postDataTransform(postData);
                 if (post) {
