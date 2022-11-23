@@ -214,8 +214,8 @@ class Team16Converter(Converter):
     
     def send_follow_request(self, request_data):
         return {
-            "id": request_data["sender"]["id"].strip("/") if request_data["sender"]["id"].endswith("/") \
-                else request_data["sender"]["id"],
+            "id": request_data["sender"]["url"].strip("/") if request_data["sender"]["url"].endswith("/") \
+                else request_data["sender"]["url"],
             "type": "follow"
         }
 

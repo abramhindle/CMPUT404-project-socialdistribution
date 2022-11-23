@@ -96,4 +96,7 @@ def get_host_from_absolute_url(url):
 
 def get_author_id_from_url(url):
     id_section = url.split("authors")[1]
-    return id_section.split("/")[0].strip("/")
+    return id_section.split("/")[1].strip("/")
+    
+    
+    
