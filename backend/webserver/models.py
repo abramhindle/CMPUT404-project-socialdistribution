@@ -4,7 +4,7 @@ from django.contrib.auth.models import (
 )
 import uuid
 from .utils import join_urls
-from .converters import Converter, Team10Converter, Team11Converter
+from .converters import Converter, Team10Converter, Team11Converter, Team16Converter
 from urllib.parse import urlparse
 from .api_client import http_request, async_http_request
 import concurrent.futures
@@ -112,6 +112,8 @@ class Node(models.Model):
             return Team11Converter()
         elif self.team == 10:
             return Team10Converter()
+        elif self.team == 16:
+            return Team16Converter()
         raise Exception("No converter for team {}".format(self.team))
     
     def get_authors_url(self):
