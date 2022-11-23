@@ -101,6 +101,7 @@ class Node(models.Model):
         (10, 10),
         (11, 11),
         (14, 14),
+        (16, 16),
     ]
     team = models.IntegerField(choices=TEAM_CHOICES, default=14)
     
