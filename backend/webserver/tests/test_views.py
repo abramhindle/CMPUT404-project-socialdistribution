@@ -1044,43 +1044,7 @@ class FollowersViewTestCase(APITestCase):
         self.assertEqual("Jake", response.data[0]['display_name'])
         self.assertEqual("author_2", response.data[1]['display_name'])
 
-    @responses.activate
-    def test_author_has_a_combination_of_local_and_remote_followers_team10(self):
-        local_author = Author.objects.create(username="local_author", display_name="local_author")
-        local_author_2 = Author.objects.create(username="author_2", display_name="author_2")
-        node_user = Author.objects.create(username="node_user", display_name="node_user", is_remote_user=True)
-        node = Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user,
-                                   auth_username="team10", auth_password="password-team10", team=10)
-        remote_author_id = uuid.uuid4()
-        remote_author = RemoteAuthor.objects.create(id=remote_author_id, node=node)
-        Follow.objects.create(followee=local_author, remote_follower=remote_author)
-        Follow.objects.create(followee=local_author, follower=local_author_2)
-
-        remote_author_json = {
-            "type":"author",
-            "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author.id}/",
-            "id": f"{remote_author.id}",
-            "host":"host",
-            "displayName": "Jake",
-            "profileImage": "",
-            "github": ""
-        }
-        
-        responses.add(
-            responses.GET,
-            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
-            json=remote_author_json,
-            status=200,
-        )
-        
-        url = f'/api/authors/{local_author.id}/followers/'
-        self.client.force_authenticate(user=local_author)
-        response = self.client.get(url)
-
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(2, len(response.data))
-        self.assertEqual("Jake", response.data[0]['display_name'])
-        self.assertEqual("author_2", response.data[1]['display_name'])
+    
 
     @responses.activate
     def test_author_has_a_combination_of_local_and_remote_followers_team16(self):
@@ -2719,7 +2683,7 @@ class InboxViewTestCase(APITestCase):
         ]
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(expected_output, response.data)
-        
+
     @responses.activate
     def test_get_remote_post_from_team14(self):
         local_author = Author.objects.create(username="local_author", display_name="local_author")
