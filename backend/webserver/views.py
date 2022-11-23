@@ -432,8 +432,6 @@ class FollowRequestProcessor(object):
                     res, res_status = http_request("POST", url, node=node,
                                                    expected_status=node_converter.expected_status_code("send_follow_request"), 
                                                    json=node_converter.send_follow_request(request.data))
-                    if res_status == 201 and node_converter.expected_status_code("send_follow_request") == 200:
-                        return Response({'message': f'receiver with id {author_id} does not exist'}, status=status.HTTP_404_NOT_FOUND)
                     if res is None:
                         return Response("Failed to send remote follow request due to remote node failure", status=res_status)
                     return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
