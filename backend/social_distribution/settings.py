@@ -87,12 +87,10 @@ MAX_CONN_AGE = 600
 
 
 if "DATABASE_URL" in os.environ:
-    print("here?")
     DATABASE = dj_database_url.config(
         conn_max_age=MAX_CONN_AGE, ssl_require=True
     )
 elif "LOCAL_POSTGRESQL" in os.environ:
-    print("enter?")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -100,7 +98,7 @@ elif "LOCAL_POSTGRESQL" in os.environ:
             'USER': 'team_14',
             'PASSWORD': 'team14',
             'HOST': 'localhost',
-            'PORT': '5433'
+            'PORT': '5432'
         }
     }
 else:
