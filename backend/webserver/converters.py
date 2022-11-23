@@ -125,12 +125,7 @@ class Team10Converter(Converter):
         return converted_data
     
     def send_post_inbox(self, post, request: HttpRequest):
-        
         host = get_host_from_absolute_url(post.author.get_url(request))
-        if post.source == "":
-            post.source = "www.default.com"
-        if post.origin == "":
-            post.origin = "www.default.com"
         converted_data = {
             "author":{
                 "type": "author",
@@ -147,8 +142,8 @@ class Team10Converter(Converter):
             "title": post.title,
             "description": post.description,
             "visibility": post.visibility.lower(),
-            "source": post.source,
-            "origin": post.origin,
+            "source": "www.default.com" if post.source == "" else post.source,
+            "origin": "www.default.com" if post.origin == "" else post.origin,
             "contentType": post.content_type,
             "unlisted": post.unlisted,
             "count": 0,                         # TODO: update once we support comments
