@@ -68,6 +68,7 @@ export const LayoutStyles = css`
         margin-top: 16px;
         flex-direction: column;
         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+        z-index: -2;
     }
 
     .psa-header {

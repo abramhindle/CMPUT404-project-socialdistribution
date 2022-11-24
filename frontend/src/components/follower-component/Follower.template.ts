@@ -5,11 +5,11 @@ import { Follower } from "./Follower";
 
 export const FollowerTemplate = html<Follower>`
     ${when(x => !x.isDeleted, html<Follower>`
-        <div class="follower">
+        <div class="follower ${x => x.layoutStyleClass}">
             <h3><a href="${x => "/profile/" + x.profile?.id}">${x => x.profile?.displayName}</a></h3>
             ${when(x => x.user?.id != x.profile?.id, html<Follower>`
                 ${when(x => x.request, html<Follower>`
-                    <div>
+                    <div class="follow-decision">
                         <button class="accept" @click=${(x, c) => x.acceptRequest()}>
                             Accept Request
                         </button>

@@ -1,5 +1,6 @@
 import { accentForegroundRest, typeRampPlus1FontSize } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
+import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const FollowerStyles = css`
     .follower {
@@ -9,8 +10,20 @@ export const FollowerStyles = css`
         filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.25));
         padding: 8px;
         display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .follower.${LayoutStyleClass.Desktop} {
         justify-content: space-between;
         align-items: center;
+        flex-direction: row;
+    }
+
+    .follow-decision {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
     }
 
     button {

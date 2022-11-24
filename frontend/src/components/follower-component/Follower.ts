@@ -11,6 +11,9 @@ export class Follower extends FASTElement {
     public user?: Author;
 
     @observable
+    public layoutStyleClass: string = "";
+
+    @observable
     public followStatus: FollowStatus = FollowStatus.Unknown;
 
     @observable
@@ -22,6 +25,7 @@ export class Follower extends FASTElement {
 
     constructor() {
         super();
+        console.log(this.layoutStyleClass)
     }
 
     userChanged(oldValue: Author, newVal: Author) {

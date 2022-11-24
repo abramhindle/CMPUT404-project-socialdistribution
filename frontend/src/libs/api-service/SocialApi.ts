@@ -124,6 +124,26 @@ export namespace SocialApi {
         return SocialApiTransform.parseJsonAuthorData(text);
     }
 
+    export async function fetchAuthors(): Promise<any[] | null> {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+
+        const requestOptions = {
+            method: "GET",
+            credentials: credentialType,
+            headers: headers
+        };
+
+        const response = await fetch(SocialApiUrls.AUTHORS, requestOptions);
+        const json = await response.json();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return json;
+    }
+
     export async function editProfile(userId: string, profileDataForm: FormData): Promise<Author | null> {
         const url = new URL(SocialApiUrls.AUTHORS + userId + "/", window.location.origin)
 
