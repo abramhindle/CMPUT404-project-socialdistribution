@@ -1,7 +1,9 @@
 import { Page } from "../Page";
-import { attr, observable } from "@microsoft/fast-element";
+import { observable } from "@microsoft/fast-element";
 import { SocialApi } from "../../libs/api-service/SocialApi";
 import { Post } from "../../libs/api-service/SocialApiModel";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 
 export class ViewPost extends Page {
   @observable
@@ -17,10 +19,16 @@ export class ViewPost extends Page {
     if (postId) {
       this.getPost(postId);
     }
+
+    this.addIcons();
   }
 
   public connectedCallback() {
     super.connectedCallback();
+  }
+
+  private addIcons() {
+    library.add(faThumbsUp);
   }
 
   private async getPost(postId: string) {
@@ -36,6 +44,30 @@ export class ViewPost extends Page {
     } catch (e) {
       console.error(e);
       this.loadedPostText = "Post not found.";
+    }
+  }
+
+  public async likePost() {
+    if (!this.post || !this.post.author || !this.post.author.url) {
+      console.error("Post must have an author with an author url");
+      return;
+    }
+
+    if (!this.user || !this.user.url) {
+      console.error("Current user must have a url");
+      return;
+    }
+
+    try {
+      const res = await SocialApi.likePost(
+        this.post.id,
+        this.user.id,
+        this.user.url,
+        this.post.author.id,
+        this.post.author.url
+      );
+    } catch (e) {
+      console.error(e);
     }
   }
 }

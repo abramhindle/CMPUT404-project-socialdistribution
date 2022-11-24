@@ -304,7 +304,7 @@ export namespace SocialApi {
 
         return JSON.parse(text);
     }
-    
+
     export async function fetchAuthorized(url: URL, method: string, body?: string): Promise<any> {
         const credentialType: RequestCredentials = "include";
         const headers: HeadersInit = new Headers();
@@ -327,6 +327,50 @@ export namespace SocialApi {
         }
 
         return JSON.parse(text);
+    }
+
+    export async function likePost(
+      postId: string,
+      likeAuthorId: string,
+      likeAuthorUrl: string,
+      postAuthorId: string,
+      postAuthorUrl: string
+    ) {
+        const body = JSON.stringify({
+            type: 'like',
+            author: {
+                id: likeAuthorId,
+                url: likeAuthorUrl
+            },
+            post: {
+                id: postId,
+                author: {
+                    id: postAuthorId,
+                    url: postAuthorUrl
+                }
+            }
+        });
+
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+        headers.set("Content-Type", "application/json; charset=UTF-8");
+
+        const requestOptions = {
+            method: "POST",
+            credentials: credentialType,
+            headers: headers,
+            body: body
+        };
+
+        const url = new URL(SocialApiUrls.AUTHORS + postAuthorId + SocialApiUrls.INBOX, window.location.origin);
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return text;
     }
 }
 

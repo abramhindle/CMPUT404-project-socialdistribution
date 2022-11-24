@@ -1,3 +1,4 @@
+import { icon } from "@fortawesome/fontawesome-svg-core";
 import { html, when } from "@microsoft/fast-element";
 import { layoutComponent } from "../../components/base-layout";
 import { LayoutHelpers } from "../../libs/core/Helpers";
@@ -23,6 +24,7 @@ export const ViewPostPageTemplate = html<ViewPost>`
                     <span class="post-text">${x => x.post?.content}</span>
                     <div class="post-container3">
                         <span>${x => x.post?.author?.displayName} | ${x => new Date(x.post?.published || new Date()).toLocaleDateString()}</span>
+                        <div class="like-post-icon" @click="${x => x.likePost()}" :innerHTML="${_ => icon({prefix: 'fas', iconName: "thumbs-up"}).html}"></div>
                     </div>
                 </div>
             </div>

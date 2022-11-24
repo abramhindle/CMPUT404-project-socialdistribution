@@ -79,6 +79,12 @@ export const ViewPostPageStyles = css`
     align-items: center;
     justify-content: flex-end;
   }
+  
+  .like-post-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+  }
 
   .post-ul {
     width: 80%;
