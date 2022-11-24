@@ -26,7 +26,8 @@ export const InboxPageTemplate = html<Inbox>`
                     <follower-component
                         :profile=${x => x.sender}
                         :user=${(_, c) => c.parent.user}
-                        :request=${_ => true}>
+                        :request=${_ => true}
+                        :layoutStyleClass=${(x, c) => LayoutHelpers.getLayoutStyle(c.parent.layoutType)}>
                     </follower-component>
                 `)}
             `)}

@@ -1,4 +1,4 @@
-import { html } from "@microsoft/fast-element";
+import { html, when } from "@microsoft/fast-element";
 import { homeNavigation } from "../home-navigation";
 import { socialSearch } from "../social-search";
 import { Layout } from "./Layout";
@@ -23,8 +23,14 @@ export const LayoutTemplate = html<Layout>`
             <slot></slot>
         </div>
         <div class="psa-feed ${x => x.layoutStyleClass}">
-            <social-search>
+            ${when(x => x.user, html<Layout>`
+            <social-search
+                :userId="${x => x.userId}"
+                :user="${x => x.user}"
+                :layoutType="${x => x.layoutType}"
+                :layoutStyleClass="${x => x.layoutStyleClass}">
             </social-search>
+            `)}
             <div class="psa-post-container">
                 <div class="psa-header">
                     Public Service Announcements 

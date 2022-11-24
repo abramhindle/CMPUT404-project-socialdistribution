@@ -6,7 +6,7 @@ import { Followers } from "./Followers";
 
 followerComponent;
 
-export const ProfilePageTemplate = html<Followers>`
+export const FollowerPageTemplate = html<Followers>`
     <page-layout
         :userId="${x => x.userId}"
         :user="${x => x.user}"
@@ -17,7 +17,8 @@ export const ProfilePageTemplate = html<Followers>`
         ${repeat(x => x.followers, html<Author>`
             <follower-component
                 :profile=${x => x}
-                :user=${(x, c) => c.parent.user}>
+                :user=${(x, c) => c.parent.user}
+                :layoutStyleClass="${(x, c) => LayoutHelpers.getLayoutStyle(c.parent.layoutType)}">
             </follower-component>
         `)}
         </div>
