@@ -94,7 +94,7 @@ export class Home extends PaginatedPage {
             return;
         }
 
-        for (var postData of response) {
+        for (var postData of results) {
             if (!postData.type || postData.type == "post") {
                 const post = SocialApiTransform.postDataTransform(postData);
                 if (post) {
