@@ -72,7 +72,7 @@ class Converter(object):
     def convert_post(self, data: dict):
         return data
     
-    def convert_posts(self, data):
+    def convert_posts(self, data, from_public_posts_url=False):
         if isinstance(data, list):
             return [self.convert_post(post) for post in data]
         else:
@@ -192,7 +192,9 @@ class Team10Converter(Converter):
         }
         return converted_data
 
-    def convert_posts(self,data):
+    def convert_posts(self, data, from_public_posts_url=False):
+        if from_public_posts_url:
+            return [self.convert_post(post) for post in data]
         if "items" in data:
             return [self.convert_post(post) for post in data["items"]]
         return None
@@ -278,7 +280,7 @@ class Team16Converter(Converter):
             "likes_count": 0
         }
 
-    def convert_posts(self,data):
+    def convert_posts(self,data, from_public_posts_url=False):
         if "items" in data:
             return [self.convert_post(post) for post in data["items"]]
         return None
