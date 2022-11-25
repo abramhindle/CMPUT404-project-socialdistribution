@@ -51,7 +51,7 @@ export const LikesModalComponentStyles = css`
     margin-right: 0px;
   }
 
-  .likes-container1 {
+  .likes-container {
     gap: var(--dl-space-space-unit);
     flex: 0 0 auto;
     width: 100%;
@@ -70,7 +70,7 @@ export const LikesModalComponentStyles = css`
     border-bottom-right-radius: var(--dl-radius-radius-radius4);
   }
 
-  .likes-text1 {
+  .likes-text {
     margin-top: var(--dl-space-space-halfunit);
     margin-left: var(--dl-space-space-unit);
     margin-bottom: var(--dl-space-space-halfunit);

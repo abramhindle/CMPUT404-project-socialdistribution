@@ -3,7 +3,9 @@ import { html, when } from "@microsoft/fast-element";
 import { layoutComponent } from "../../components/base-layout";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { ViewPost } from "./ViewPost";
+import {likesModalComponent} from "../../components/likesModal";
 
+likesModalComponent;
 layoutComponent;
 
 export const ViewPostPageTemplate = html<ViewPost>`
@@ -25,6 +27,12 @@ export const ViewPostPageTemplate = html<ViewPost>`
                     <div class="post-container3">
                         <span>${x => x.post?.author?.displayName} | ${x => new Date(x.post?.published || new Date()).toLocaleDateString()}</span>
                         <div class="like-post-icon" @click="${x => x.likePost()}" :innerHTML="${_ => icon({prefix: 'fas', iconName: "thumbs-up"}).html}"></div>
+                        <div>
+                            <fast-dialog model="true" hidden="false">
+                                <likesModalComponent></likesModalComponent>
+                            </fast-dialog>
+                            See Likes
+                        </div>
                     </div>
                 </div>
             </div>
