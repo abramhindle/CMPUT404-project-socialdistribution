@@ -233,6 +233,7 @@ class Team16Converter(Converter):
                     "github": post.author.github_handle,
                     "profileImage": post.author.profile_image
                 },
+                "id": post.get_url(request),
                 "type": "post",
                 "title": post.title,
                 "source": post.source,

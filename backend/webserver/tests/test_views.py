@@ -385,6 +385,7 @@ class AuthorDetailView(APITestCase):
             "github_handle": ""
         }
         self.assertEqual(remote_author_converted, response.data)
+
     def test_get_404(self):
         """If an author requested does not exist, should return 404"""
         fake_id = uuid.uuid4()
@@ -2189,6 +2190,7 @@ class AllPostTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(converted_remote_posts_json, response.data)
+
     @responses.activate
     def test_get_paginated_remote_posts_from_team14_author(self):
         local_author = Author.objects.create(username="local_author", display_name="local_author")

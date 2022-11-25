@@ -208,6 +208,7 @@ class PostTestCase(TestCase):
                         "profileImage": "",
                         "github": ""
                     },
+                    "id": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/",
                     "type": "post",
                     "title": post.title,
                     "description": post.description,
@@ -237,6 +238,7 @@ class PostTestCase(TestCase):
                         "profileImage": "",
                         "github": ""
                     },
+                    "id": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/",
                     "type": "post",
                     "title": post.title,
                     "description": post.description,
@@ -429,6 +431,7 @@ class PostTestCase(TestCase):
                         "profileImage": "",
                         "github": ""
                     },
+                    "id": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/",
                     "type": "post",
                     "title": post.title,
                     "description": post.description,
