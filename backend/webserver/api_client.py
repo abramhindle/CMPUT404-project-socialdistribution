@@ -9,7 +9,7 @@ def http_request(method, url, node, expected_status=requests.codes.ok, timeout=5
     kwargs.pop("auth", None)
     try:
         r = requests.request(method, url, timeout=timeout, auth=(node.auth_username, node.auth_password), **kwargs)
-        if r.status_code != expected_status:
+        if expected_status in range(200, 300) and r.status_code not in range(200, 300):
             logger.error(f"{method} request to {url} failed due to unexpected status code {r.status_code}")
             return None, r.status_code
         # assumes that all requests will return json responses
