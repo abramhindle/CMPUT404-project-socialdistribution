@@ -3002,6 +3002,7 @@ class NodesViewTestCase(APITestCase):
                 }
             }
         ]
+        expected_output = sorted(expected_output, key=lambda d: d["id"])
         self.assertEqual(expected_output, response.data)
 
 class NodeModificationTestCase(APITestCase):
