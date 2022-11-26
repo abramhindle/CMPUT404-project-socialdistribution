@@ -577,6 +577,8 @@ class FollowersDetailView(APIView):
             .union(Follow.objects.filter(remote_follower=foreign_author_id, followee=author_id))
         if len(queryset) > 0:
             return Response({'message': 'follower indeed'}, status=status.HTTP_200_OK)
+        # BUG TODO: author_id could be a remote author! In that case, we need to forward this request to all the
+        # nodes we are connected to.
         return Response({'message': f'{foreign_author_id} is not a follower of {author_id}'}, 
                         status=status.HTTP_404_NOT_FOUND)
 
