@@ -84,6 +84,9 @@ class IsRemoteGetOnly(permissions.IsAuthenticated):
         return False
 
 def is_remote_request(request):
+    if not request.user.is_authenticated:
+        # if the user is not authenticated, then it cannot be specifically a remote request
+        return False
     return request.user.is_remote_user
 
 def join_urls(*urls, ends_with_slash=False):
@@ -93,3 +96,7 @@ def join_urls(*urls, ends_with_slash=False):
 def get_host_from_absolute_url(url):
     parsed_url = urlparse(url)
     return f"{parsed_url.scheme}://{parsed_url.hostname}/"
+
+def get_author_id_from_url(url):
+    id_section = url.split("authors")[1]
+    return id_section.split("/")[1].strip("/")

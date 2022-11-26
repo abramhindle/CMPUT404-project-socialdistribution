@@ -1,5 +1,5 @@
 import webserver.models as models
-from .utils import join_urls, get_host_from_absolute_url
+from .utils import join_urls, get_host_from_absolute_url, get_author_id_from_url
 import logging
 from django.http.request import HttpRequest
 
@@ -72,7 +72,7 @@ class Converter(object):
     def convert_post(self, data: dict):
         return data
     
-    def convert_posts(self, data):
+    def convert_posts(self, data, from_public_posts_url=False):
         if isinstance(data, list):
             return [self.convert_post(post) for post in data]
         else:
@@ -192,7 +192,95 @@ class Team10Converter(Converter):
         }
         return converted_data
 
-    def convert_posts(self,data):
+    def convert_posts(self, data, from_public_posts_url=False):
+        if from_public_posts_url:
+            return [self.convert_post(post) for post in data]
+        if "items" in data:
+            return [self.convert_post(post) for post in data["items"]]
+        return None
+
+
+class Team16Converter(Converter):
+    def __init__(self):
+        super().__init__()
+
+    # NOTE: url to retrieve a singular author cannot end with a slash!
+    # NOTE: url to retrieve a singular post cannot end with a slash!
+    
+    def public_posts_url(self, api_url):
+        return None
+    
+    # TODO: team 16 does support this
+    def skip_follow_check_before_sending_follow_request(self):
+        return True
+    
+    def send_follow_request(self, request_data):
+        return {
+            "id": request_data["sender"]["url"].strip("/") if request_data["sender"]["url"].endswith("/") \
+                else request_data["sender"]["url"],
+            "type": "follow"
+        }
+
+    def send_post_inbox(self, post, request: HttpRequest):
+        host = get_host_from_absolute_url(post.author.get_url(request))
+        return {
+            "type": "post",
+            "data": {
+                "author": {
+                    "type": "author",
+                    "id": post.author.get_url(request),
+                    "url": post.author.get_url(request),
+                    "host": host,
+                    "displayName": post.author.display_name,
+                    "github": post.author.github_handle,
+                    "profileImage": post.author.profile_image
+                },
+                "id": post.get_url(request),
+                "type": "post",
+                "title": post.title,
+                "source": post.source,
+                "origin": post.origin,
+                "description": post.description,
+                "contentType": post.content_type,
+                "content": post.content,
+                "published": f"{post.created_at}",
+                "visibility": post.visibility,
+                "unlisted": post.unlisted,
+            }
+        }
+
+    def convert_author(self, data: dict):
+        return {
+            "url": data["url"],
+            "id": get_author_id_from_url(data["id"]),
+            "display_name": data["displayName"],
+            "profile_image": data["profileImage"],
+            "github_handle": data["github"],
+        }
+
+    def convert_authors(self, data):
+        if "items" in data:
+            return [self.convert_author(author) for author in data["items"]]
+        return None
+
+    def convert_post(self, data: dict):
+        return {
+            "id": data["id"],
+            "author": self.convert_author(data["author"]),
+            "created_at": data["published"],
+            "edited_at": None,
+            "title": data["title"],
+            "description": data["description"],
+            "visibility": data["visibility"],
+            "source": data["source"],
+            "origin": data["origin"],
+            "unlisted":data["unlisted"],
+            "content_type": data["contentType"],
+            "content": data["content"],
+            "likes_count": 0
+        }
+
+    def convert_posts(self,data, from_public_posts_url=False):
         if "items" in data:
             return [self.convert_post(post) for post in data["items"]]
         return None

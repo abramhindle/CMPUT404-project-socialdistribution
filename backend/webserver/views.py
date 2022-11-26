@@ -308,14 +308,14 @@ class AllPublicPostsView(APIView, PaginationHandlerMixin):
                     continue
                 future_to_url[executor.submit(
                     http_request, "GET", url=url, node=node, expected_status=200,
-                )] = url
+                )] = (url, node_converter)
             for future in concurrent.futures.as_completed(future_to_url):
-                url = future_to_url[future]
+                url, node_converter = future_to_url[future]
                 try:
                     res, _ = future.result()
                     if res is None:
                         continue
-                    external_posts.extend(node_converter.convert_posts(res))
+                    external_posts.extend(node_converter.convert_posts(res, from_public_posts_url=True))
                 except Exception as exc:
                     logger.error(f"{url} generated an exception: {exc}")
         return external_posts
