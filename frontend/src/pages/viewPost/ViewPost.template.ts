@@ -27,12 +27,18 @@ export const ViewPostPageTemplate = html<ViewPost>`
                     <div class="post-container3">
                         <span>${x => x.post?.author?.displayName} | ${x => new Date(x.post?.published || new Date()).toLocaleDateString()}</span>
                         <div class="like-post-icon" @click="${x => x.likePost()}" :innerHTML="${_ => icon({prefix: 'fas', iconName: "thumbs-up"}).html}"></div>
-                        <div>
-                            <fast-dialog model="true" hidden="false">
-                                <likesModalComponent></likesModalComponent>
-                            </fast-dialog>
+                        <div @click="${x => x.toggleModal()}">
                             See Likes
                         </div>
+                        ${when (x => x.viewLikes, html`
+                            <fast-dialog modal="true">
+                                <likes-modal 
+                                    :userId="${x => x.userId}"
+                                    :postId="${x => x.postId}"
+                                    :parent="${x => x}"
+                                ></likes-modal>
+                            </fast-dialog>
+                        `)}
                     </div>
                 </div>
             </div>

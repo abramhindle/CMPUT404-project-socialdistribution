@@ -1,6 +1,7 @@
 import {attr, FASTElement, observable} from "@microsoft/fast-element";
 import {SocialApi} from "../../libs/api-service/SocialApi";
 import {Author, Post} from "../../libs/api-service/SocialApiModel";
+import {Page} from "../../pages/Page";
 
 type Like = {
   author: {
@@ -17,37 +18,42 @@ export class LikesModal extends FASTElement {
   @attr greeting: string = 'Likes Modal';
 
   @observable
-  public post?: Post;
+  public postId?: string;
 
   @observable
-  public user?: Author;
+  public userId?: string;
 
   @observable
-  public likes: Like[]
+  public likes: Like[] = [];
 
-  public constructor(props) {
+  @observable
+  public parent: any
+
+  public constructor() {
     super();
-    this.getLikes();
   }
 
 
   public connectedCallback() {
     super.connectedCallback();
+    console.log("Connected Callback", this.parent, this.postId, this.userId);
+    this.getLikes(<string>this.postId, <string>this.userId);
   }
 
-  public async getLikes() {
-    if (!this.post || !this.post.id) {
+  public async getLikes(postId: string, userId: string) {
+    console.log("Info:", postId, userId);
+    if (!postId) {
       console.error("Post must have an id");
       return;
     }
 
-    if (!this.user || !this.user.id) {
+    if (!userId) {
       console.error("User must have an id");
       return;
     }
 
     try {
-      this.likes = await SocialApi.getPostLikes(this.post.id, this.user.id);
+      this.likes = await SocialApi.getPostLikes(postId, userId);
     } catch (e) {
       console.error(e);
     }

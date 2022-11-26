@@ -12,11 +12,18 @@ export class ViewPost extends Page {
   @observable
   public loadedPostText: string = "";
 
+  @observable
+  public viewLikes: Boolean = false;
+
+  @observable
+  public postId?: string;
+
   public constructor() {
     super();
     const postId = this.getAttribute("postId");
     this.removeAttribute("postId");
     if (postId) {
+      this.postId = postId;
       this.getPost(postId);
     }
 
@@ -45,6 +52,8 @@ export class ViewPost extends Page {
       console.error(e);
       this.loadedPostText = "Post not found.";
     }
+
+    console.log("loaded", this.post?.id, this.user)
   }
 
   public async likePost() {
@@ -69,5 +78,10 @@ export class ViewPost extends Page {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  public async toggleModal() {
+    console.log("Modal toggled, new value:", !this.viewLikes);
+    this.viewLikes = !this.viewLikes
   }
 }
