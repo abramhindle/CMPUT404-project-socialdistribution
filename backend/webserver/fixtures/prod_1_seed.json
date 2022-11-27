@@ -17,6 +17,22 @@
 },
 {
     "model": "webserver.author",
+    "pk": "58edac43-30c2-411e-87d5-ecf3f27a2a12",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$5g2rDaHQQ35laqHmWH45Lg$zkLTvbJSeDOZzxAFarbpU0UN+v55aQ/3UlnAtmlawUU=",
+        "last_login": null,
+        "username": "team11",
+        "display_name": "team11",
+        "profile_image": "",
+        "github_handle": "",
+        "created_at": "2022-11-27T22:48:12.125Z",
+        "is_active": true,
+        "is_admin": false,
+        "is_remote_user": true
+    }
+},
+{
+    "model": "webserver.author",
     "pk": "6667e232-2b87-4793-9dba-62c77f68b016",
     "fields": {
         "password": "pbkdf2_sha256$390000$VFhNfdhjSXGhf63cQcH4UB$91HvPr1uSdmew/QUvKS7jtJXHmPyCE8KM1Q5KLUg7lM=",
@@ -94,6 +110,17 @@
         "auth_username": "one4one6",
         "auth_password": "one4one6",
         "team": 16
+    }
+},
+{
+    "model": "webserver.node",
+    "pk": 4,
+    "fields": {
+        "user": "58edac43-30c2-411e-87d5-ecf3f27a2a12",
+        "api_url": "https://cmsjmnet.herokuapp.com/",
+        "auth_username": "team14",
+        "auth_password": "team14",
+        "team": 11
     }
 }
 ]
