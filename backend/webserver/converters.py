@@ -2,6 +2,7 @@ import webserver.models as models
 from .utils import join_urls, get_host_from_absolute_url, get_author_id_from_url
 import logging
 from django.http.request import HttpRequest
+import webserver.api_client as api_client
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class Converter(object):
         return join_urls(author_url, "inbox", ends_with_slash=True)
 
     # returns the request payload required for sending a follow request
-    def send_follow_request(self, request_data):
+    def send_follow_request(self, request_data, request: HttpRequest):
         return request_data
     
     def skip_follow_check_before_sending_follow_request(self):
@@ -85,20 +86,100 @@ class Converter(object):
 
 
 class Team11Converter(Converter):
-    def send_follow_request(self, request_data):
-        raise NotImplementedError   # TODO
+    def skip_follow_check_before_sending_follow_request(self):
+        return True
+
+    def send_follow_request(self, request_data, request: HttpRequest):
+        actor = models.Author.objects.get(id=request_data["sender"]["id"])
+        host = get_host_from_absolute_url(actor.get_url(request))
+        res, _ = api_client.http_request(
+            "GET", request_data["receiver"]["url"], node=models.Node.objects.get(team=11),
+        )
+        return {
+            "type": "inbox",
+            "author": request_data["receiver"]["url"],
+            "items": [{
+                "type": "follow",
+                "actor": {
+                    "type": "author",
+                    "id": request_data["sender"]["url"],
+                    "url": request_data["sender"]["url"],
+                    "host": host,
+                    "displayName": actor.display_name,
+                    "github": actor.github_handle,
+                    "profileImage": actor.profile_image
+                },
+                "object": res
+            }]
+        }
     
     def send_post_inbox(self, post, request: HttpRequest):
-        raise NotImplementedError   # TODO
+        host = get_host_from_absolute_url(post.author.get_url(request))
+        return {
+            "type": "inbox",
+            "author": post.author.get_url(request),
+            "items": [{
+                "type": "post",
+                "id": post.get_url(request),
+                "source": "www.default.com" if post.source == "" else post.source,
+                "origin": "www.default.com" if post.source == "" else post.source,
+                "description": post.description,
+                "contentType": post.content_type,
+                "content": post.content,
+                "comments": join_urls(post.get_url(request), "comments"),
+                "published": f"{post.created_at}",
+                "visibility": post.visibility,
+                "unlisted": post.unlisted,
+                "categories": [],
+                "author": {
+                    "type": "author",
+                    "id": post.author.get_url(request),
+                    "host": host,
+                    "displayName": post.author.display_name,
+                    "url": post.author.get_url(request),
+                    "github": post.author.github_handle,
+                    "profileImage": post.author.profile_image
+                }
+            }]
+        }
     
     def public_posts_url(self, api_url):
-        return None
+        return join_urls(api_url, "authors/all/posts")
     
     def convert_author(self, data: dict):
-        raise NotImplementedError   # TODO
+        return {
+            "url": data["url"],
+            "id": data["id"],
+            "display_name": data["displayName"],
+            "profile_image": data["profileImage"],
+            "github_handle": data["github"],
+        }
     
     def convert_post(self, data: dict):
-        raise NotImplementedError  # TODO
+        return {
+            "id": data["id"],
+            "author": self.convert_author(data["author"]),
+            "created_at": data["published"],
+            "edited_at": None,
+            "title": data.get("title", data.get("description", "")),
+            "description": data["description"],
+            "visibility": data["visibility"],
+            "source": data["source"],
+            "origin": data["origin"],
+            "unlisted": data["unlisted"],
+            "content_type": data["contentType"],
+            "content": data["content"],
+            "likes_count": 0
+        }
+
+    def convert_posts(self, data, from_public_posts_url=False):
+        if isinstance(data, list):
+            return [self.convert_post(post) for post in data]
+        else:
+            # data must be in paginated form
+            if "results" in data:
+                return [self.convert_post(post) for post in data["results"]]
+        return None
 
 class Team10Converter(Converter):
     def __init__(self):
@@ -118,7 +199,7 @@ class Team10Converter(Converter):
     def public_posts_url(self, api_url):
         return join_urls(api_url, "posts/public", ends_with_slash=True)
     
-    def send_follow_request(self, request_data):
+    def send_follow_request(self, request_data, request: HttpRequest):
         converted_data = {
             "actor": request_data["sender"]["url"]
         }
@@ -214,7 +295,7 @@ class Team16Converter(Converter):
     def skip_follow_check_before_sending_follow_request(self):
         return True
     
-    def send_follow_request(self, request_data):
+    def send_follow_request(self, request_data, request: HttpRequest):
         return {
             "id": request_data["sender"]["url"].strip("/") if request_data["sender"]["url"].endswith("/") \
                 else request_data["sender"]["url"],
