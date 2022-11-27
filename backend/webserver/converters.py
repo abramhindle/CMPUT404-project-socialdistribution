@@ -1,8 +1,9 @@
 import webserver.models as models
-from .utils import join_urls, get_host_from_absolute_url, get_author_id_from_url
+from .utils import join_urls, get_host_from_absolute_url, get_author_id_from_url, get_post_id_from_url
 import logging
 from django.http.request import HttpRequest
 import webserver.api_client as api_client
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,7 @@ class Team11Converter(Converter):
             "type": "inbox",
             "author": request_data["receiver"]["url"],
             "items": [{
-                "type": "follow",
+                "type": "Follow",
                 "actor": {
                     "type": "author",
                     "id": request_data["sender"]["url"],
@@ -112,7 +113,7 @@ class Team11Converter(Converter):
                 "object": res
             }]
         }
-        logger.info(f"Team 11's send follow request payload: {payload}")
+        logger.info(f"Team 11's send follow request payload: {json.dumps(payload, indent=4)}")
         return payload
     
     def send_post_inbox(self, post, request: HttpRequest):
@@ -151,7 +152,7 @@ class Team11Converter(Converter):
     def convert_author(self, data: dict):
         return {
             "url": data["url"],
-            "id": data["id"],
+            "id":  get_author_id_from_url(data["id"]),
             "display_name": data["displayName"],
             "profile_image": data["profileImage"],
             "github_handle": data["github"],
@@ -159,7 +160,7 @@ class Team11Converter(Converter):
     
     def convert_post(self, data: dict):
         return {
-            "id": data["id"],
+            "id": get_post_id_from_url(data["id"]),
             "author": self.convert_author(data["author"]),
             "created_at": data["published"],
             "edited_at": None,

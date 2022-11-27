@@ -44,7 +44,7 @@ class AuthorsViewTestCase(APITestCase):
     @responses.activate
     def test_get_fetches_remote_authors_for_team14(self):
         node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
-                                            password="password-team11", is_remote_user=True)
+                                            password="password-team14", is_remote_user=True)
         Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
                             auth_username="team14", auth_password="password-team14")
         local_author = Author.objects.create(username="local_author", display_name="local_author")
@@ -154,7 +154,7 @@ class AuthorsViewTestCase(APITestCase):
     @responses.activate
     def test_get_can_combine_remote_data_with_local_pagination(self):
         node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
-                                            password="password-team11", is_remote_user=True)
+                                            password="password-team14", is_remote_user=True)
         Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
                             auth_username="team14", auth_password="password-team14")
         local_author = Author.objects.create(username="local_author", display_name="local_author")
@@ -813,7 +813,7 @@ class FollowRequestProcessorTestCase(APITestCase):
             "type": "inbox",
             "author": f'https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/',
             "items": [{
-                "type": "follow",
+                "type": "Follow",
                 "actor": {
                     "type": "author",
                     "id": f"http://testserver.com/api/authors/{local_author.id}/",
