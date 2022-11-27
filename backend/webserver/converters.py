@@ -95,7 +95,7 @@ class Team11Converter(Converter):
         res, _ = api_client.http_request(
             "GET", request_data["receiver"]["url"], node=models.Node.objects.get(team=11),
         )
-        return {
+        payload = {
             "type": "inbox",
             "author": request_data["receiver"]["url"],
             "items": [{
@@ -112,6 +112,8 @@ class Team11Converter(Converter):
                 "object": res
             }]
         }
+        logger.info(f"Team 11's send follow request payload: {payload}")
+        return payload
     
     def send_post_inbox(self, post, request: HttpRequest):
         host = get_host_from_absolute_url(post.author.get_url(request))
