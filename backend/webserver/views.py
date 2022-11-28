@@ -164,6 +164,13 @@ class PostView(APIView):
         if post.visibility == "PUBLIC":
             serializer = PostSerializer(post, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
+        elif post.visibility == "FRIENDS":
+            if post.author.id == request.user.id:
+                serializer = PostSerializer(post, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            elif Follow.objects.filter(follower=request.user.id,followee=post.author.id).count()> 0:
+                serializer = PostSerializer(post, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK) 
         else:
             return Response({'message': 'requested post is not public'}, status=status.HTTP_400_BAD_REQUEST)
             
