@@ -3,7 +3,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 import uuid
-from .utils import join_urls
+from .utils import join_urls, format_uuid_without_dashes
 from .converters import Converter, Team10Converter, Team11Converter, Team16Converter
 from urllib.parse import urlparse
 from .api_client import http_request, async_http_request
@@ -129,6 +129,8 @@ class RemoteAuthorManager(models.Manager):
             return author
         except RemoteAuthor.DoesNotExist:
             for node in Node.objects.all():
+                if node.team == 11:
+                    author_id = format_uuid_without_dashes(author_id)
                 url = join_urls(node.get_authors_url(), author_id)
                 res, _ = http_request("GET", url=url, node=node, expected_status=200)
                 if res is not None:
@@ -145,6 +147,8 @@ class RemoteAuthor(models.Model):
     objects = RemoteAuthorManager()
 
     def get_absolute_url(self):
+        if self.node.team == 11:
+            return join_urls(self.node.api_url, "authors", format_uuid_without_dashes(self.id))
         return join_urls(self.node.api_url, "authors", str(self.id))
     
     def get_inbox_url(self):
@@ -154,8 +158,10 @@ class RemoteAuthor(models.Model):
 class RemotePost(models.Model):
     id = models.UUIDField(primary_key=True)
     author = models.ForeignKey(RemoteAuthor, on_delete=models.CASCADE)
-    
+
     def get_absolute_url(self):
+        if self.author.node.team == 11:
+            return join_urls(self.author.get_absolute_url(), "posts", format_uuid_without_dashes(self.id))
         return join_urls(self.author.get_absolute_url(), "posts", str(self.id))
 
 
