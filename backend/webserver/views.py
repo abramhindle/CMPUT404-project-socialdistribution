@@ -20,7 +20,8 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           NodesListSerializer,
                           SendPostInboxSerializer,
                           SendLikeSerializer,
-                          PostLikeSerializer,)
+                          PostLikeSerializer,
+                          CreateImagePostSerializer)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
@@ -30,6 +31,9 @@ from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsR
 from .api_client import http_request
 import logging
 import concurrent.futures
+from .custom_renderers import PNGRenderer, JPEGRenderer
+import base64
+
 
 logger = logging.getLogger(__name__)
 external_request_timeout = 5
@@ -168,11 +172,11 @@ class PostView(APIView):
             if post.author.id == request.user.id:
                 serializer = PostSerializer(post, context={'request': request})
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            elif Follow.objects.filter(follower=request.user.id,followee=post.author.id).count()> 0:
+            elif Follow.objects.filter(follower=request.user.id,followee=post.author.id).count() > 0:
                 serializer = PostSerializer(post, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_200_OK) 
-        else:
-            return Response({'message': 'requested post is not public'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'message': 'you are not authorized to view this post'}, status=status.HTTP_400_BAD_REQUEST)
             
 
     def post(self, request, pk,post_id, *args, **kwargs):
@@ -207,6 +211,32 @@ class PostView(APIView):
             else:
                 return Response({'message': 'You cannot delete another authors post'}, status=status.HTTP_400_BAD_REQUEST) 
         return Response({'message': 'You can only delete public posts'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ImagePostView(APIView):
+    authentication_classes = [BasicAuthentication]
+    # permission_classes = [IsRemoteGetOnly]
+    renderer_classes = [PNGRenderer, JPEGRenderer]
+    
+    def get(self, request, author_id, post_id):
+        try:
+            post = Post.objects.get(id=post_id, author_id=author_id)
+            if 'image' not in post.content_type:
+                return Response({'message': 'Post is not an image post'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Known issue: Remote followers cannot view friends-only image posts because this is an architectural limitation
+            # that is caused by a BS project specification (polling based system vs webhooks)
+            unauthorized = post.visibility != 'PUBLIC' and post.author.id != request.user.id\
+                and Follow.objects.filter(follower=request.user.id, followee=post.author.id).count() == 0
+            if unauthorized:
+                return Response({'message': 'You are not authorized to view this post'}, status=status.HTTP_400_BAD_REQUEST)
+
+            response_content_type = post.content_type.split(';')[0]
+            image = base64.b64decode(post.content.strip("b'").strip("'"))
+            return Response(image, content_type=response_content_type, status=status.HTTP_200_OK)
+        except Post.DoesNotExist:
+            # TODO: might exist remotely
+            return Response({'message': 'Image post not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AllPosts(APIView, PaginationHandlerMixin):
@@ -256,7 +286,7 @@ class AllPosts(APIView, PaginationHandlerMixin):
         if 'base64' in request.data['content_type']:
             serializer = CreateImagePostSerializer(data=request.data)
         else:
-        serializer = CreatePostSerializer(data=request.data)
+            serializer = CreatePostSerializer(data=request.data)
     
         if author.id == request.user.id:
             if serializer.is_valid():

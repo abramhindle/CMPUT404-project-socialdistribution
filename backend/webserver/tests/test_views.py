@@ -1607,9 +1607,9 @@ class PostTestCase(APITestCase):
         
     def test_cannot_get_friends_post(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
-        
-        
+
         post_1 = Post.objects.create(
             author =author_1,
             created_at=current_date_string,
@@ -1624,7 +1624,7 @@ class PostTestCase(APITestCase):
         )
 
         url = f'/api/authors/{author_1.id}/posts/{post_1.id}/'
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_2)
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)   
 
