@@ -27,7 +27,13 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
 from django.utils.timezone import utc
 import datetime
-from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsRemotePostOnly, is_remote_request, join_urls
+from .utils import (BasicPagination, 
+                    PaginationHandlerMixin, 
+                    IsRemoteGetOnly, 
+                    IsRemotePostOnly, 
+                    is_remote_request, 
+                    join_urls,
+                    format_uuid_without_dashes,)
 from .api_client import http_request
 import logging
 import concurrent.futures
@@ -92,6 +98,8 @@ class AuthorDetailView(APIView):
                 # this is a local request and the requested author could exist on other nodes
                 for node in Node.objects.all():
                     url = join_urls(node.get_authors_url(), pk)
+                    if node.team == 11:
+                        url = join_urls(node.get_authors_url(), format_uuid_without_dashes(pk))
                     res, _ = http_request("GET", url=url, node=node, expected_status=200,
                                         timeout=external_request_timeout)
                     if res is not None:

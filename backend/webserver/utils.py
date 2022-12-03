@@ -2,6 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.utils.urls import replace_query_param
 from rest_framework import permissions
 from urllib.parse import urlparse
+import uuid
 
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'size'
@@ -106,3 +107,11 @@ def get_post_id_from_url(url):
         return url
     id_section = url.split("posts")[1]
     return id_section.split("/")[1].strip("/")
+
+def format_uuid_without_dashes(id: uuid.UUID):
+    if isinstance(id, str):
+        return id.replace("-", "")
+    try:
+        return id.hex
+    except Exception:
+        return id

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from drf_base64.fields import Base64ImageField
 from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like, RemoteAuthor, RemotePost
 from .api_client import http_request
-from .utils import join_urls
+from .utils import join_urls, format_uuid_without_dashes
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -35,11 +35,14 @@ class RemotePostSerializer(serializers.Serializer):
         res, _ = http_request("GET", url, expected_status=200, node=node)
         if res is None:
             return None
-        # response should be a list of dictionaries
-        if isinstance(res, list):
-            for post in res:
+        converted_posts = node.get_converter().convert_posts(res)
+        for post in converted_posts:
+            if node.team == 11:
+                if (format_uuid_without_dashes(instance.id) in post.get("id", "")):
+                    return post
+            else:
                 if str(instance.id) in post.get("id", ""):
-                    return node.get_converter().convert_post(post)
+                    return post
         return None
 
 class PostSerializer(serializers.ModelSerializer):
