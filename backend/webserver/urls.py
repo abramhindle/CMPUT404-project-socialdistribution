@@ -17,7 +17,8 @@ from .views import(
     NodesView,
     NodeDetailView,
     PostLikesView,
-    AuthorLikedView
+    AuthorLikedView,
+    ImagePostView,
 )
 
 # first argument, endpoint, second argument is the view that calling the url will send the request to
@@ -37,6 +38,7 @@ urlpatterns = [
     path('authors/<str:author_id>/inbox/', InboxView.as_view()),
     path('authors/<str:pk>/posts/<str:post_id>/',PostView.as_view()),
     path('authors/<str:pk>/posts/',AllPosts.as_view()),
+    path('authors/<str:author_id>/posts/<str:post_id>/image/', ImagePostView.as_view()),
     path('posts/', AllPublicPostsView.as_view()),
     path('authors/<str:pk>/posts/<str:post_id>/likes/',PostLikesView.as_view()),
     path('authors/<str:pk>/liked/',AuthorLikedView.as_view()),
