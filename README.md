@@ -81,6 +81,8 @@ API Information
 | /api/nodes/             | Add a node [Admin only] | - | - | - |
 | /api/authors/<author_id>/posts/<post_id>/likes                | - | Retrieves a list of likes on an authors post [A] | - | - |
 | /api/authors/<author_id>/liked                | - | Retrieves a list of public things liked by an author [A] | - | - |
+| /api/authors/<author_id>/posts/<post_id>/image/                | - | **Retrieves an image** | - | - |
+
 ### Notes
 - [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
 - [A] specifies that the request must be authenticated
@@ -653,6 +655,48 @@ Same as updating other types of inboxes.
 - `401 Unauthorized`
 - `404 Not Found`
 
+### Create an Image Post
+Understand how image posts are meant to be used from [this eclass forum post](https://eclass.srv.ualberta.ca/mod/forum/discuss.php?d=2136532).
+
+#### Sample Usage
+<img width="1012" alt="image" src="https://user-images.githubusercontent.com/43586048/205419794-fa9a5831-6657-4d22-8a35-f1d637218318.png">
+
+* Uses the regular post creation route
+* Required payload fields -
+  * `content_type`: specify either "image/jpeg;base64" or "image/png;base64"
+  * `image`: enter the base64 encoded image string
+* Optional payload fields (just here to satisfy requirements) -
+  * `unlisted`: default value is `true` so that image posts do not show up on the feed by themselves (if they did, then the base64 encoded strings would show up in the `content` field of the post). 
+  * `visibility`: image posts are "PUBLIC" by default so that they are globally accessible by their url. I would keep the visibility to public for all image posts so that remote nodes can also fetch them to render images in their corresponding markdown.
+
+#### Sample Response
+```
+{
+    "id": "f5a85964-3dc8-4d30-84da-17bac1f7f5fe",
+    "url": "http://127.0.0.1:8014/api/authors/c134c50a-76d7-498e-b55e-b7cff72936db/posts/f5a85964-3dc8-4d30-84da-17bac1f7f5fe/image/"
+}
+```
+
+You will be able to access the image at the url specified -
+<img width="1428" alt="image" src="https://user-images.githubusercontent.com/43586048/205419946-adbf139e-7ed1-4c14-8662-600cda52a7b5.png">
+
+**You can use the provided url to set the value of the `src` attribute of an `<img>` tag to embed an image within a post.**
+
+#### Potential Status Codes
+Same as a regular post creation.
+
+### Retrieve an image
+#### Sample Request
+Send a GET request to a url such as `http://127.0.0.1:8014/api/authors/c134c50a-76d7-498e-b55e-b7cff72936db/posts/f5a85964-3dc8-4d30-84da-17bac1f7f5fe/image/`
+* The `post_id` provided has to be the ID of the image post
+
+#### Sample Response
+<img width="1010" alt="image" src="https://user-images.githubusercontent.com/43586048/205420797-e51d2414-1678-4e31-b07f-855b212a3761.png">
+
+#### Potential Status Codes
+- `200 OK`
+- `404 Not Found`
+- `400 Bad Request` - this can be returned if you are unauthorized to view the image
 
 ## Pagination
 ### Retrieve a paginated list of authors
