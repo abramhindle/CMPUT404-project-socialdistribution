@@ -237,7 +237,7 @@ class AllPosts(APIView, PaginationHandlerMixin):
                 return Response({'message': 'Posts not found on remote node'}, status=status.HTTP_404_NOT_FOUND)
             return Response(author.node.get_converter().convert_posts(res), status=status.HTTP_200_OK)
 
-        posts = author.post_set.all().order_by("-created_at")
+        posts = author.post_set.exclude(unlisted=True).all().order_by("-created_at")
         page = self.paginate_queryset(posts)
         if page is not None:
             serializer = self.get_paginated_response(
@@ -248,20 +248,19 @@ class AllPosts(APIView, PaginationHandlerMixin):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     
-    def post(self, request, pk, *args, **kwargs):
-        author = self.get_author(pk)
+    def post(self, request, pk):
+        author = get_object_or_404(Author, pk=pk)
+
+        if 'content_type' not in request.data:
+            return Response({'message': 'must specify content_type'}, status=status.HTTP_400_BAD_REQUEST)
+        if 'base64' in request.data['content_type']:
+            serializer = CreateImagePostSerializer(data=request.data)
+        else:
         serializer = CreatePostSerializer(data=request.data)
+    
         if author.id == request.user.id:
             if serializer.is_valid():
-                new_post = Post.objects.create(
-                    author=author,
-                    title=serializer.data["title"],
-                    description=serializer.data["description"],
-                    unlisted=serializer.data["unlisted"],
-                    content_type=serializer.data["content_type"],
-                    content=serializer.data["content"],
-                    visibility=serializer.data["visibility"]
-                )
+                new_post = serializer.save(author=author)
                 
                 if new_post.visibility == "FRIENDS":
                     new_post.send_to_followers(request)
@@ -289,9 +288,14 @@ class AllPosts(APIView, PaginationHandlerMixin):
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                data_dict = {"id":new_post.id}
-                data_dict.update(serializer.data)
-                return Response(data_dict, status=status.HTTP_201_CREATED)
+                response_dict = {"id": new_post.id}
+
+                if "image" in new_post.content_type:
+                    response_dict["url"] = new_post.get_image_url(request)
+                else:
+                    response_dict.update(serializer.data)
+
+                return Response(response_dict, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         else:
@@ -329,7 +333,7 @@ class AllPublicPostsView(APIView, PaginationHandlerMixin):
 
     def get(self, request):
         """Returns recent public posts"""
-        posts = Post.objects.filter(visibility="PUBLIC").order_by("-created_at")
+        posts = Post.objects.exclude(unlisted=True).filter(visibility="PUBLIC").order_by("-created_at")
         page = self.paginate_queryset(posts)
         if page is not None:
             serializer = self.get_paginated_response(

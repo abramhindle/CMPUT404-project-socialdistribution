@@ -182,11 +182,11 @@ class Post(models.Model):
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     created_at = models.DateTimeField(verbose_name="date created",auto_now_add=True)
     edited_at = models.DateTimeField("date edited",null=True)
-    title = models.CharField(max_length=300)
-    description = models.TextField(blank=True)
+    title = models.CharField(max_length=300, default='')
+    description = models.TextField(blank=True, default='')
     source = models.CharField(max_length=200,default='')
     origin = models.CharField(max_length=200,default='')
-    unlisted = models.BooleanField(default=False) 
+    unlisted = models.BooleanField(default=False)
 
     VISIBILITY_CHOICES = [
         ("PUBLIC","Public"),
@@ -194,12 +194,17 @@ class Post(models.Model):
         ("PRIVATE","Private")
     ]
     visibility = models.CharField(max_length=200,choices=VISIBILITY_CHOICES,default="PUBLIC")
+    IMAGE_TYPE_CHOICES = [
+        ("image/png;base64", "PNG image"),
+        ("image/jpeg;base64", "JPEG image")
+    ]
     CONTENT_TYPE_CHOICES = [
         ("text/plain","Plain text"),
-        ("text/markdown","Markdown text")
-    ]
+        ("text/markdown","Markdown text"),
+    ] + IMAGE_TYPE_CHOICES
     content_type = models.CharField(max_length=200,choices=CONTENT_TYPE_CHOICES,default="text/plain")
-    content = models.TextField(blank=True)
+    content = models.TextField(blank=True, default='')
+    image = models.ImageField(null=True, blank=True)
 
     # TODO: how much work will it take to make all of the following POST requests async?
     # TODO: might need to add some retry logic for inbox updates over http
@@ -276,6 +281,9 @@ class Post(models.Model):
     
     def get_url(self, request):
         return join_urls(self.author.get_url(request), "posts", str(self.id), ends_with_slash=True)
+    
+    def get_image_url(self, request):
+        return join_urls(self.get_url(request), "image", ends_with_slash=True)
 
 
 class Comment(models.Model):

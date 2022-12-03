@@ -84,6 +84,9 @@ class Converter(object):
                     data["results"][i] = self.convert_post(data["results"][i])
                 return data
         return None
+    
+    def supports_image_fetch(self):
+        return True
 
 
 class Team11Converter(Converter):
@@ -183,6 +186,9 @@ class Team11Converter(Converter):
             if "results" in data:
                 return [self.convert_post(post) for post in data["results"]]
         return None
+    
+    def supports_image_fetch(self):
+        return False
 
 class Team10Converter(Converter):
     def __init__(self):
@@ -282,6 +288,9 @@ class Team10Converter(Converter):
         if "items" in data:
             return [self.convert_post(post) for post in data["items"]]
         return None
+    
+    def supports_image_fetch(self):
+        return False
 
 
 class Team16Converter(Converter):
@@ -368,3 +377,6 @@ class Team16Converter(Converter):
         if "items" in data:
             return [self.convert_post(post) for post in data["items"]]
         return None
+    
+    def supports_image_fetch(self):
+        return False
