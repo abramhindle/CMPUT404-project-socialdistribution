@@ -33,7 +33,7 @@ export const ViewPostPageTemplate = html<ViewPost>`
                         ${when (x => x.viewLikes, html`
                             <fast-dialog modal="true">
                                 <likes-modal 
-                                    :userId="${x => x.userId}"
+                                    :postAuthorId="${x => x.post?.author.id}"
                                     :postId="${x => x.postId}"
                                     :parent="${x => x}"
                                 ></likes-modal>

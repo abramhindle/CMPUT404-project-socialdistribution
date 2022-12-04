@@ -21,7 +21,7 @@ export class LikesModal extends FASTElement {
   public postId?: string;
 
   @observable
-  public userId?: string;
+  public postAuthorId?: string;
 
   @observable
   public likes: Like[] = [];
@@ -36,24 +36,24 @@ export class LikesModal extends FASTElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    console.log("Connected Callback", this.parent, this.postId, this.userId);
-    this.getLikes(<string>this.postId, <string>this.userId);
+    console.log("Connected Callback", this.parent, this.postId, this.postAuthorId);
+    this.getLikes(<string>this.postId, <string>this.postAuthorId);
   }
 
-  public async getLikes(postId: string, userId: string) {
-    console.log("Info:", postId, userId);
+  public async getLikes(postId: string, postAuthorId: string) {
+    console.log("Info:", postId, postAuthorId);
     if (!postId) {
       console.error("Post must have an id");
       return;
     }
 
-    if (!userId) {
+    if (!postAuthorId) {
       console.error("User must have an id");
       return;
     }
 
     try {
-      this.likes = await SocialApi.getPostLikes(postId, userId);
+      this.likes = await SocialApi.getPostLikes(postId, postAuthorId);
     } catch (e) {
       console.error(e);
     }
