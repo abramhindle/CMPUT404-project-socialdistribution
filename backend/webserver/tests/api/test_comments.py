@@ -220,6 +220,114 @@ class CommentsTestCase(APITestCase):
     
     def test_comments_are_not_returned_with_friends_posts(self):
         pass
-    
+
     def test_comments_are_returned_with_friends_posts_if_request_user_is_the_post_author(self):
         pass
+    
+    @responses.activate
+    def test_get_comments_on_local_post(self):
+        author_1 = create_local_author()
+        author_2 = create_local_author(username="author_2", display_name="author_2")
+        node = create_remote_node(team=14)
+        remote_author_id = uuid.uuid4()
+        remote_author = RemoteAuthor.objects.create(id=remote_author_id, node=node)
+        post = create_local_post(author_1)
+        comment_1 = post.comment_set.create(author=author_2, comment="Awesome post!")
+        comment_2 = post.comment_set.create(remote_author=remote_author, comment="Great post man!")
+        
+        remote_author_json = {
+            "id": f"{remote_author_id}",
+            "url": remote_author.get_absolute_url(),
+            "display_name": "Jake",
+            "profile_image": "",
+            "github_handle": "",
+        }
+        responses.add(
+            responses.GET,
+            remote_author.get_absolute_url(),
+            json=remote_author_json,
+            status=200,
+        )
+        
+        url = f'/api/authors/{author_1.id}/posts/{post.id}/comments/'
+        self.client.force_authenticate(user=author_1)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        
+        converted_remote_author_json = remote_author_json
+        expected_response = [
+            {
+                "comment": "Great post man!",
+                "content_type": "text/plain",
+                "created_at": comment_2.created_at.isoformat().replace("+00:00", "Z"),
+                "id": f"http://testserver/api/authors/{author_1.id}/posts/{post.id}/comments/{comment_2.id}/",
+                "author": converted_remote_author_json,
+            },
+            {
+                "comment": "Awesome post!",
+                "content_type": "text/plain",
+                "created_at": comment_1.created_at.isoformat().replace("+00:00", "Z"),
+                "id": f"http://testserver/api/authors/{author_1.id}/posts/{post.id}/comments/{comment_1.id}/",
+                "author": {
+                    "id": f"{author_2.id}",
+                    "url": f"http://testserver/api/authors/{author_2.id}/",
+                    "display_name": "author_2",
+                    "profile_image": "",
+                    "github_handle": "",
+                }
+            }
+        ]
+        self.assertEqual(expected_response, response.data)
+    
+    @responses.activate
+    def test_get_comments_on_remote_post_from_team14(self):
+        local_author = create_local_author()
+        node = create_remote_node(team=14)
+        remote_author_id = uuid.uuid4()
+        remote_author = RemoteAuthor.objects.create(id=remote_author_id, node=node)
+        remote_post_id = uuid.uuid4()
+        remote_author_2_id = uuid.uuid4()
+        remote_author_3_id = uuid.uuid4()
+        
+        remote_comments_json = [
+            {
+                "comment": "Great post man!",
+                "content_type": "text/plain",
+                "created_at": "2020-04-01T00:00:00Z",
+                "id": f"http://testserver/api/authors/{remote_author_id}/posts/{remote_post_id}/comments/1/",
+                "author": {
+                    "id": f"{remote_author_2_id}",
+                    "url": f"http://testserver/api/authors/{remote_author_2_id}/",
+                    "display_name": "author_2",
+                    "profile_image": "",
+                    "github_handle": "",
+                },
+            },
+            {
+                "comment": "Awesome post!",
+                "content_type": "text/plain",
+                "created_at": "2020-04-02T00:00:00Z",
+                "id": f"http://testserver/api/authors/{remote_author_id}/posts/{remote_post_id}/comments/2/",
+                "author": {
+                    "id": f"{remote_author_3_id}",
+                    "url": f"http://testserver/api/authors/{remote_author_3_id}/",
+                    "display_name": "author_3",
+                    "profile_image": "",
+                    "github_handle": "",
+                }
+            }
+        ]
+        responses.add(
+            responses.GET,
+            join_urls(node.api_url, f"authors/{remote_author_id}/posts/{remote_post_id}/comments", ends_with_slash=True),
+            json=remote_comments_json,
+            status=200,
+        )
+        
+        url = f'/api/authors/{remote_author_id}/posts/{remote_post_id}/comments/'
+        self.client.force_authenticate(user=local_author)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        
+        converted_remote_comments_json = remote_comments_json
+        self.assertEqual(converted_remote_comments_json, response.data)
