@@ -1,5 +1,11 @@
 import webserver.models as models
-from .utils import join_urls, get_host_from_absolute_url, get_author_id_from_url, get_post_id_from_url
+from .utils import (
+    join_urls, 
+    get_host_from_absolute_url, 
+    get_author_id_from_url, 
+    get_post_id_from_url,
+    format_uuid_without_dashes
+)
 import logging
 from django.http.request import HttpRequest
 import webserver.api_client as api_client
@@ -23,6 +29,9 @@ class Converter(object):
     
     def url_to_send_comment_at(self, author_url, post_id=None):
         return join_urls(author_url, "inbox", ends_with_slash=True)
+    
+    def url_to_get_comments_at(self, author_url, post_id):
+        return join_urls(author_url, "posts", post_id, "comments", ends_with_slash=True)
 
     # returns the request payload required for sending a follow request
     def send_follow_request(self, request_data, request: HttpRequest):
@@ -91,6 +100,18 @@ class Converter(object):
                 return data
         return None
     
+    def convert_comment(self, data: dict):
+        return data
+
+    def convert_comments(self, data: list):
+        if isinstance(data, list):
+            return [self.convert_comment(comment) for comment in data]
+        else:
+            # data must be in paginated form
+            if "results" in data:
+                return [self.convert_comment(comment) for comment in data["results"]]
+        return None
+    
     def supports_image_fetch(self):
         return True
 
@@ -102,6 +123,9 @@ class Team11Converter(Converter):
     # TODO: Update this when they support comments
     def url_to_send_comment_at(self, author_url, post_id=None):
         return None
+    
+    def url_to_get_comments_at(self, author_url, post_id):
+        return join_urls(author_url, "posts", format_uuid_without_dashes(post_id), "comments")
 
     def send_follow_request(self, request_data, request: HttpRequest):
         actor = models.Author.objects.get(id=request_data["sender"]["id"])

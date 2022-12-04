@@ -22,7 +22,8 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           SendLikeSerializer,
                           PostLikeSerializer,
                           CreateImagePostSerializer,
-                          SendCommentInboxSerializer)
+                          SendCommentInboxSerializer,
+                          CommentSerializer,)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
@@ -661,6 +662,34 @@ class CommentOnPostProcessor(object):
     
     def get_response(self):
         return self.response
+
+
+class CommentsView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, author_id, post_id):
+        try:
+            author = Author.objects.get(pk=author_id)
+            post = get_object_or_404(Post, pk=post_id, author=author)
+            if post.visibility != "PUBLIC" and request.user.id != author.id:
+                return Response({'message': 'You are not authorized to view comments of this post'}, status=status.HTTP_403_FORBIDDEN)
+            serializer = CommentSerializer(post.comment_set.order_by("-created_at").all(), many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Author.DoesNotExist:
+            if is_remote_request(request):
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            # Frontend could be trying to fetch comments of a remote post
+            remote_author = RemoteAuthor.objects.attempt_find(author_id)
+            if remote_author is None:
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            node = remote_author.node
+            node_converter = node.get_converter()
+            url = node_converter.url_to_get_comments_at(remote_author.get_absolute_url(), post_id)
+            res, status_code = http_request("GET", url, node=node)
+            if res is None:
+                return Response({'message': 'Failed to get comments from remote post'}, status=status_code)
+            return Response(node_converter.convert_comments(res), status=status.HTTP_200_OK)
 
 
 class FollowersView(APIView):
