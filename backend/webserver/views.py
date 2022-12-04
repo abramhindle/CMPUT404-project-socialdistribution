@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from urllib.parse import urljoin
 from rest_framework.views import APIView
-from .models import Author, Follow, FollowRequest, Inbox, Post, Node, RemoteAuthor, RemotePost, Like
+from .models import Author, Follow, FollowRequest, Inbox, Post, Node, RemoteAuthor, RemotePost, Like, Comment
 from .serializers import (AcceptOrDeclineFollowRequestSerializer, 
                           AuthorSerializer, 
                           AuthorRegistrationSerializer, 
@@ -21,7 +21,8 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           SendPostInboxSerializer,
                           SendLikeSerializer,
                           PostLikeSerializer,
-                          CreateImagePostSerializer)
+                          CreateImagePostSerializer,
+                          SendCommentInboxSerializer)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
@@ -606,6 +607,62 @@ class LikePostProcessor(object):
         return self.response
 
 
+class CommentOnPostProcessor(object):
+    def __init__(self, request, author_id):
+        self.request = request
+        self.author_id = author_id
+        self.response = self.send_comment(request, author_id)
+    
+    def send_comment(self, request, author_id):
+        serializer = SendCommentInboxSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                author = Author.objects.get(pk=author_id)
+                post = get_object_or_404(Post, pk=serializer.data['post']['id'], author=author)
+
+                try:
+                    actor = Author.objects.get(id=serializer.data['author']['id'])
+                    comment = Comment.objects.create(
+                        author=actor, post=post, comment=serializer.data['comment'], content_type=serializer.data['content_type'])
+                    
+                except Author.DoesNotExist:
+                    # remote author could be sending a comment to a local author
+                    try:
+                        node = Node.objects.get_node_with_url(serializer.data["author"]["url"])
+                        actor = RemoteAuthor.objects.get_or_create(id=serializer.data['author']['id'],
+                                                                   node=node)[0]
+                        comment = Comment.objects.create(
+                            remote_author=actor, post=post, comment=serializer.data['comment'], content_type=serializer.data['content_type'])
+                    except Node.DoesNotExist:
+                        return Response({'message': 'unidentifiable node'}, status=status.HTTP_400_BAD_REQUEST)
+                # send the comment to the post author's inbox
+                Inbox.objects.create(target_author=author, comment=comment)
+                return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
+            except Author.DoesNotExist:
+                if is_remote_request(request):
+                    return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+                # Our frontend could be sending a comment on a post from a remote author
+                # Can we find a remote author with the given author_id?
+                remote_author = RemoteAuthor.objects.attempt_find(author_id)
+                if remote_author is None:
+                    return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+                node = remote_author.node
+                node_converter = node.get_converter()
+                url = node_converter.url_to_send_comment_at(remote_author.get_absolute_url(), serializer.data['post']['id'])
+                if url is None:
+                    return Response({'message': 'Remote entity does not support comments'}, status=status.HTTP_400_BAD_REQUEST)
+                # send the comment to the remote author's inbox
+                res, status_code = http_request("POST", url, node=node, 
+                                                json=node_converter.send_comment_inbox(request))
+                if res is None:
+                    return Response({'message': 'Failed to send comment to remote post'}, status=status_code)
+                return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get_response(self):
+        return self.response
+
+
 class FollowersView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -712,6 +769,8 @@ class InboxView(APIView, PaginationHandlerMixin):
             return RemotePostProcessor(request, author_id).get_response()
         elif request.data['type'] == 'like':
             return LikePostProcessor(request,author_id).get_response()
+        elif request.data['type'] == 'comment':
+            return CommentOnPostProcessor(request, author_id).get_response()
         else:
             return Response({'message': "unknown 'type'"}, status=status.HTTP_400_BAD_REQUEST)
 

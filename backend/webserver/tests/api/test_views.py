@@ -1635,8 +1635,6 @@ class PostTestCase(APITestCase):
         self.client.force_authenticate(user=mock.Mock())
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
-
 
     def test_edit_posts(self):
         """POST request works on all editable data fields"""

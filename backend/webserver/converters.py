@@ -20,6 +20,9 @@ class Converter(object):
     
     def url_to_send_post_inbox_at(self, author_url):
         return join_urls(author_url, "inbox", ends_with_slash=True)
+    
+    def url_to_send_comment_at(self, author_url, post_id=None):
+        return join_urls(author_url, "inbox", ends_with_slash=True)
 
     # returns the request payload required for sending a follow request
     def send_follow_request(self, request_data, request: HttpRequest):
@@ -27,6 +30,9 @@ class Converter(object):
     
     def skip_follow_check_before_sending_follow_request(self):
         return False
+    
+    def send_comment_inbox(self, request: HttpRequest):
+        return request.data
     
     # returns the request payload required for sending a post inbox
     # the passed post is a local post
@@ -92,6 +98,10 @@ class Converter(object):
 class Team11Converter(Converter):
     def skip_follow_check_before_sending_follow_request(self):
         return True
+    
+    # TODO: Update this when they support comments
+    def url_to_send_comment_at(self, author_url, post_id=None):
+        return None
 
     def send_follow_request(self, request_data, request: HttpRequest):
         actor = models.Author.objects.get(id=request_data["sender"]["id"])
@@ -205,6 +215,10 @@ class Team10Converter(Converter):
     def url_to_send_post_inbox_at(self, author_url):
         return join_urls(author_url, "inbox")
     
+    # TODO: Update this when they support comments
+    def url_to_send_comment_at(self, author_url, post_id=None):
+        return None
+    
     def public_posts_url(self, api_url):
         return join_urls(api_url, "posts/public", ends_with_slash=True)
     
@@ -306,6 +320,10 @@ class Team16Converter(Converter):
     # TODO: team 16 does support this
     def skip_follow_check_before_sending_follow_request(self):
         return True
+    
+    # TODO: Update this when they support comments
+    def url_to_send_comment_at(self, author_url, post_id=None):
+        return None
     
     def send_follow_request(self, request_data, request: HttpRequest):
         return {

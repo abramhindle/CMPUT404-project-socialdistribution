@@ -698,6 +698,105 @@ Send a GET request to a url such as `http://127.0.0.1:8014/api/authors/c134c50a-
 - `404 Not Found`
 - `400 Bad Request` - this can be returned if you are unauthorized to view the image
 
+
+### Create a comment
+#### Sample Request
+![image](https://user-images.githubusercontent.com/43586048/205478141-6d824847-795b-4d0d-a1de-c5a50b153a3b.png)
+
+* Use the inbox route of the post's author to create a comment
+* The top-level `author` field represents the author who is making the comment
+* The nested `author` field represents the author of the post
+* `content_type` is optional and has a default value of "text/plain"
+
+#### Sample Response
+```json
+{
+    "message": "OK"
+}
+```
+
+#### Potential Status Codes
+- `201 Created`
+- `400 Bad Request`
+- `404 Not Found`
+
+Additionally, here's how the comment inbox would look like if you send a GET request to the author's inbox -
+```json
+[
+    {
+        "author": {
+            "url": "http://127.0.0.1:8014/api/authors/ee87c0c2-2eda-4071-859e-8aeff3638231/",
+            "id": "ee87c0c2-2eda-4071-859e-8aeff3638231",
+            "display_name": "hugh",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "comment": "Awesome post!",
+        "content_type": "text/plain",
+        "created_at": "2022-12-04T06:38:13.906331Z",
+        "id": "http://127.0.0.1:8014/api/authors/30558702-f634-4b24-bfa6-4bd25ab441c5/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/comments/afd4bd59-188a-4100-9599-37b26f5e50c8/",
+        "type": "comment"
+    }
+]
+```
+
+
+### View comments
+Comments will be associated with their corresponding posts in the following format -
+```json
+[
+    {
+        "id": "595b9f1f-0053-4f44-ad88-aac59f2a6da2",
+        "author": {
+            "url": "http://127.0.0.1:8014/api/authors/30558702-f634-4b24-bfa6-4bd25ab441c5/",
+            "id": "30558702-f634-4b24-bfa6-4bd25ab441c5",
+            "display_name": "cashJenkins",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "created_at": "2022-12-04T06:33:41.909944Z",
+        "edited_at": null,
+        "title": "Test post",
+        "description": "Test description",
+        "source": "",
+        "origin": "",
+        "unlisted": false,
+        "content_type": "text/plain",
+        "content": "Test content",
+        "visibility": "PUBLIC",
+        "likes_count": 0,
+        "count": 1,
+        "comments": "http://127.0.0.1:8014/api/authors/30558702-f634-4b24-bfa6-4bd25ab441c5/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/comments",
+        "comments_src": {
+            "type": "comments",
+            "page": 1,
+            "size": 1,
+            "comments": [
+                {
+                    "author": {
+                        "url": "http://127.0.0.1:8014/api/authors/ee87c0c2-2eda-4071-859e-8aeff3638231/",
+                        "id": "ee87c0c2-2eda-4071-859e-8aeff3638231",
+                        "display_name": "hugh",
+                        "profile_image": "",
+                        "github_handle": ""
+                    },
+                    "comment": "Awesome post!",
+                    "content_type": "text/plain",
+                    "created_at": "2022-12-04T06:38:13.906331Z",
+                    "id": "http://127.0.0.1:8014/api/authors/30558702-f634-4b24-bfa6-4bd25ab441c5/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/comments/afd4bd59-188a-4100-9599-37b26f5e50c8/"
+                }
+            ]
+        }
+    }
+]
+```
+
+* Notice the newly added fields that are related to comments - `count`, `comments`, `comments_src`
+* At most 5 comments will be returned with a post (ordered by most recent comments first)
+* Keep in mind that comments will not be returned with all posts
+  * Comments will always be returned with public posts
+  * If the post is not public, comments will only be returned if the request is made by the author of the post
+
 ## Pagination
 ### Retrieve a paginated list of authors
 #### Sample Request

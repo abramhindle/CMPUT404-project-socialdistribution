@@ -294,9 +294,10 @@ class Post(models.Model):
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    author = models.ForeignKey(Author,on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
+    remote_author = models.ForeignKey(RemoteAuthor, on_delete=models.CASCADE, null=True)
     post = models.ForeignKey(Post,on_delete=models.CASCADE)
-    content = models.TextField()
+    comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     CONTENT_TYPE_CHOICES = [
@@ -304,6 +305,11 @@ class Comment(models.Model):
         ("text/markdown","Markdown text")
     ]
     content_type = models.CharField(max_length=200,choices=CONTENT_TYPE_CHOICES,default="text/plain")
+    
+    def get_url(self, request: HttpRequest):
+        if request is None:
+            return str(self.id)
+        return join_urls(self.post.get_url(request), "comments", str(self.id), ends_with_slash=True)
 
 
 class Like(models.Model):
