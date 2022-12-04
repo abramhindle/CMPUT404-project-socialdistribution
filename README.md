@@ -81,7 +81,8 @@ API Information
 | /api/nodes/             | Add a node [Admin only] | - | - | - |
 | /api/authors/<author_id>/posts/<post_id>/likes                | - | Retrieves a list of likes on an authors post [A] | - | - |
 | /api/authors/<author_id>/liked                | - | Retrieves a list of public things liked by an author [A] | - | - |
-| /api/authors/<author_id>/posts/<post_id>/image/                | - | **Retrieves an image** | - | - |
+| /api/authors/<author_id>/posts/<post_id>/image/                | - | **Retrieves an image [R]** | - | - |
+| /api/authors/<author_id>/posts/<post_id>/comments/                | - | **Retrieves the comments for a post [A][R]** | - | - |
 
 ### Notes
 - [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
@@ -742,7 +743,36 @@ Additionally, here's how the comment inbox would look like if you send a GET req
 
 
 ### View comments
-Comments will be associated with their corresponding posts in the following format -
+#### Sample Request
+If the post is not PUBLIC, only the post's author can fetch comments from this route.
+<img width="1010" alt="image" src="https://user-images.githubusercontent.com/43586048/205511911-5612cfe5-fe27-4940-85d1-3486162183f8.png">
+
+#### Sample Response
+```json
+[
+    {
+        "author": {
+            "url": "http://127.0.0.1:8014/api/authors/ee87c0c2-2eda-4071-859e-8aeff3638231/",
+            "id": "ee87c0c2-2eda-4071-859e-8aeff3638231",
+            "display_name": "hugh",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "comment": "Awesome post!",
+        "content_type": "text/plain",
+        "created_at": "2022-12-04T06:38:13.906331Z",
+        "id": "http://127.0.0.1:8014/api/authors/30558702-f634-4b24-bfa6-4bd25ab441c5/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/comments/afd4bd59-188a-4100-9599-37b26f5e50c8/"
+    }
+]
+```
+
+#### Potential Status Codes
+- `200 Ok`
+- `401 Unauthorized`
+- `403 Forbidden` - this returned when you are authenticated but not allowed to get comments from this post
+- `404 Not Found`
+
+Comments will also be associated with their corresponding posts in the following format -
 ```json
 [
     {
