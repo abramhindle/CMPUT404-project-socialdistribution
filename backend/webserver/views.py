@@ -20,16 +20,26 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           NodesListSerializer,
                           SendPostInboxSerializer,
                           SendLikeSerializer,
-                          PostLikeSerializer,)
+                          PostLikeSerializer,
+                          CreateImagePostSerializer)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
 from django.utils.timezone import utc
 import datetime
-from .utils import BasicPagination, PaginationHandlerMixin, IsRemoteGetOnly, IsRemotePostOnly, is_remote_request, join_urls
+from .utils import (BasicPagination, 
+                    PaginationHandlerMixin, 
+                    IsRemoteGetOnly, 
+                    IsRemotePostOnly, 
+                    is_remote_request, 
+                    join_urls,
+                    format_uuid_without_dashes,)
 from .api_client import http_request
 import logging
 import concurrent.futures
+from .custom_renderers import PNGRenderer, JPEGRenderer
+import base64
+
 
 logger = logging.getLogger(__name__)
 external_request_timeout = 5
@@ -88,6 +98,8 @@ class AuthorDetailView(APIView):
                 # this is a local request and the requested author could exist on other nodes
                 for node in Node.objects.all():
                     url = join_urls(node.get_authors_url(), pk)
+                    if node.team == 11:
+                        url = join_urls(node.get_authors_url(), format_uuid_without_dashes(pk))
                     res, _ = http_request("GET", url=url, node=node, expected_status=200,
                                         timeout=external_request_timeout)
                     if res is not None:
@@ -164,8 +176,15 @@ class PostView(APIView):
         if post.visibility == "PUBLIC":
             serializer = PostSerializer(post, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'requested post is not public'}, status=status.HTTP_400_BAD_REQUEST)
+        elif post.visibility == "FRIENDS":
+            if post.author.id == request.user.id:
+                serializer = PostSerializer(post, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            elif Follow.objects.filter(follower=request.user.id,followee=post.author.id).count() > 0:
+                serializer = PostSerializer(post, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'message': 'you are not authorized to view this post'}, status=status.HTTP_400_BAD_REQUEST)
             
 
     def post(self, request, pk,post_id, *args, **kwargs):
@@ -202,6 +221,32 @@ class PostView(APIView):
         return Response({'message': 'You can only delete public posts'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ImagePostView(APIView):
+    authentication_classes = [BasicAuthentication]
+    # permission_classes = [IsRemoteGetOnly]
+    renderer_classes = [PNGRenderer, JPEGRenderer]
+    
+    def get(self, request, author_id, post_id):
+        try:
+            post = Post.objects.get(id=post_id, author_id=author_id)
+            if 'image' not in post.content_type:
+                return Response({'message': 'Post is not an image post'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Known issue: Remote followers cannot view friends-only image posts because this is an architectural limitation
+            # that is caused by a BS project specification (polling based system vs webhooks)
+            unauthorized = post.visibility != 'PUBLIC' and post.author.id != request.user.id\
+                and Follow.objects.filter(follower=request.user.id, followee=post.author.id).count() == 0
+            if unauthorized:
+                return Response({'message': 'You are not authorized to view this post'}, status=status.HTTP_400_BAD_REQUEST)
+
+            response_content_type = post.content_type.split(';')[0]
+            image = base64.b64decode(post.content.strip("b'").strip("'"))
+            return Response(image, content_type=response_content_type, status=status.HTTP_200_OK)
+        except Post.DoesNotExist:
+            # TODO: might exist remotely
+            return Response({'message': 'Image post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 class AllPosts(APIView, PaginationHandlerMixin):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsRemoteGetOnly]
@@ -230,7 +275,7 @@ class AllPosts(APIView, PaginationHandlerMixin):
                 return Response({'message': 'Posts not found on remote node'}, status=status.HTTP_404_NOT_FOUND)
             return Response(author.node.get_converter().convert_posts(res), status=status.HTTP_200_OK)
 
-        posts = author.post_set.all().order_by("-created_at")
+        posts = author.post_set.exclude(unlisted=True).all().order_by("-created_at")
         page = self.paginate_queryset(posts)
         if page is not None:
             serializer = self.get_paginated_response(
@@ -241,20 +286,19 @@ class AllPosts(APIView, PaginationHandlerMixin):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     
-    def post(self, request, pk, *args, **kwargs):
-        author = self.get_author(pk)
-        serializer = CreatePostSerializer(data=request.data)
+    def post(self, request, pk):
+        author = get_object_or_404(Author, pk=pk)
+
+        if 'content_type' not in request.data:
+            return Response({'message': 'must specify content_type'}, status=status.HTTP_400_BAD_REQUEST)
+        if 'base64' in request.data['content_type']:
+            serializer = CreateImagePostSerializer(data=request.data)
+        else:
+            serializer = CreatePostSerializer(data=request.data)
+    
         if author.id == request.user.id:
             if serializer.is_valid():
-                new_post = Post.objects.create(
-                    author=author,
-                    title=serializer.data["title"],
-                    description=serializer.data["description"],
-                    unlisted=serializer.data["unlisted"],
-                    content_type=serializer.data["content_type"],
-                    content=serializer.data["content"],
-                    visibility=serializer.data["visibility"]
-                )
+                new_post = serializer.save(author=author)
                 
                 if new_post.visibility == "FRIENDS":
                     new_post.send_to_followers(request)
@@ -282,9 +326,14 @@ class AllPosts(APIView, PaginationHandlerMixin):
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                data_dict = {"id":new_post.id}
-                data_dict.update(serializer.data)
-                return Response(data_dict, status=status.HTTP_201_CREATED)
+                response_dict = {"id": new_post.id}
+
+                if "image" in new_post.content_type:
+                    response_dict["url"] = new_post.get_image_url(request)
+                else:
+                    response_dict.update(serializer.data)
+
+                return Response(response_dict, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         else:
@@ -322,7 +371,7 @@ class AllPublicPostsView(APIView, PaginationHandlerMixin):
 
     def get(self, request):
         """Returns recent public posts"""
-        posts = Post.objects.filter(visibility="PUBLIC").order_by("-created_at")
+        posts = Post.objects.exclude(unlisted=True).filter(visibility="PUBLIC").order_by("-created_at")
         page = self.paginate_queryset(posts)
         if page is not None:
             serializer = self.get_paginated_response(
@@ -431,7 +480,7 @@ class FollowRequestProcessor(object):
                     url = node_converter.url_to_send_follow_request_at(serializer.data["receiver"]["url"])
                     res, res_status = http_request("POST", url, node=node,
                                                    expected_status=node_converter.expected_status_code("send_follow_request"), 
-                                                   json=node_converter.send_follow_request(request.data))
+                                                   json=node_converter.send_follow_request(request.data, request))
                     if res is None:
                         return Response("Failed to send remote follow request due to remote node failure", status=res_status)
                     return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
@@ -577,6 +626,8 @@ class FollowersDetailView(APIView):
             .union(Follow.objects.filter(remote_follower=foreign_author_id, followee=author_id))
         if len(queryset) > 0:
             return Response({'message': 'follower indeed'}, status=status.HTTP_200_OK)
+        # BUG TODO: author_id could be a remote author! In that case, we need to forward this request to all the
+        # nodes we are connected to.
         return Response({'message': f'{foreign_author_id} is not a follower of {author_id}'}, 
                         status=status.HTTP_404_NOT_FOUND)
 

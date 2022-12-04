@@ -44,7 +44,7 @@ class AuthorsViewTestCase(APITestCase):
     @responses.activate
     def test_get_fetches_remote_authors_for_team14(self):
         node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
-                                            password="password-team11", is_remote_user=True)
+                                            password="password-team14", is_remote_user=True)
         Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
                             auth_username="team14", auth_password="password-team14")
         local_author = Author.objects.create(username="local_author", display_name="local_author")
@@ -154,7 +154,7 @@ class AuthorsViewTestCase(APITestCase):
     @responses.activate
     def test_get_can_combine_remote_data_with_local_pagination(self):
         node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
-                                            password="password-team11", is_remote_user=True)
+                                            password="password-team14", is_remote_user=True)
         Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
                             auth_username="team14", auth_password="password-team14")
         local_author = Author.objects.create(username="local_author", display_name="local_author")
@@ -757,6 +757,81 @@ class FollowRequestProcessorTestCase(APITestCase):
             f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/inbox/",
             match=[
                 matchers.json_params_matcher(payload),  # team 14's follow request payload
+            ],
+            status=201,
+        )
+        
+        url = f'/api/authors/{remote_author_id}/inbox/'
+        self.client.force_authenticate(user=local_author)
+        response = self.client.post(url, data=payload, format="json")
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        # shouldn't create a local FR object for a remote receiver
+        self.assertEqual(0, FollowRequest.objects.count())
+    
+    @responses.activate
+    def test_receiver_is_remote_author_for_team11(self):
+        local_author = Author.objects.create(username="local_author", display_name="local_author")
+        node_user_1 = Author.objects.create(username="node_user_1", display_name="node_user_1", 
+                                            password="password1", is_remote_user=True)
+        Node.objects.create(api_url="https://social-distribution-1.herokuapp.com/api", user=node_user_1,
+                            auth_username="team11", auth_password="password-team11", team=11)
+        remote_author_id = uuid.uuid4()
+        payload = {
+            "type": "follow",
+            "sender": {
+                "url": f'http://testserver.com/api/authors/{local_author.id}/',
+                "id": str(local_author.id),
+            },
+            "receiver": {
+                "url": f'https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/',
+                "id": str(remote_author_id),
+            }
+        }
+        
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/followers/{local_author.id}",
+            status=404, # local author does not follow remote author yet
+        )
+        remote_author_json = {
+            "type": "author",
+            "id": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+            "host": "https://social-distribution-1.herokuapp.com/api",
+            "displayName": "test_user",
+            "url": f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}",
+            "github": "",
+            "profileImage": "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+        }
+        responses.add(
+            responses.GET,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/",
+            json=remote_author_json,
+            status=200,
+        )
+        
+        expected_payload = {
+            "type": "inbox",
+            "author": f'https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/',
+            "items": [{
+                "type": "Follow",
+                "actor": {
+                    "type": "author",
+                    "id": f"http://testserver.com/api/authors/{local_author.id}/",
+                    "host": "http://testserver/",
+                    "displayName": local_author.display_name,
+                    "github": local_author.github_handle,
+                    "url": f"http://testserver.com/api/authors/{local_author.id}/",
+                    "profileImage": local_author.profile_image,
+                },
+                "object": remote_author_json,
+            }]
+        }
+
+        responses.add(
+            responses.POST,
+            f"https://social-distribution-1.herokuapp.com/api/authors/{remote_author_id}/inbox/",
+            match=[
+                matchers.json_params_matcher(expected_payload),  # team 11's follow request payload
             ],
             status=201,
         )
@@ -1532,9 +1607,9 @@ class PostTestCase(APITestCase):
         
     def test_cannot_get_friends_post(self):
         author_1 = Author.objects.create(username="author_1", display_name="author_1")
+        author_2 = Author.objects.create(username="author_2", display_name="author_2")
         current_date_string = datetime.datetime.utcnow().replace(tzinfo=utc)
-        
-        
+
         post_1 = Post.objects.create(
             author =author_1,
             created_at=current_date_string,
@@ -1549,7 +1624,7 @@ class PostTestCase(APITestCase):
         )
 
         url = f'/api/authors/{author_1.id}/posts/{post_1.id}/'
-        self.client.force_authenticate(user=mock.Mock())
+        self.client.force_authenticate(user=author_2)
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)   
 

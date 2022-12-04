@@ -3,7 +3,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 import uuid
-from .utils import join_urls
+from .utils import join_urls, format_uuid_without_dashes
 from .converters import Converter, Team10Converter, Team11Converter, Team16Converter
 from urllib.parse import urlparse
 from .api_client import http_request, async_http_request
@@ -129,6 +129,8 @@ class RemoteAuthorManager(models.Manager):
             return author
         except RemoteAuthor.DoesNotExist:
             for node in Node.objects.all():
+                if node.team == 11:
+                    author_id = format_uuid_without_dashes(author_id)
                 url = join_urls(node.get_authors_url(), author_id)
                 res, _ = http_request("GET", url=url, node=node, expected_status=200)
                 if res is not None:
@@ -145,6 +147,8 @@ class RemoteAuthor(models.Model):
     objects = RemoteAuthorManager()
 
     def get_absolute_url(self):
+        if self.node.team == 11:
+            return join_urls(self.node.api_url, "authors", format_uuid_without_dashes(self.id))
         return join_urls(self.node.api_url, "authors", str(self.id))
     
     def get_inbox_url(self):
@@ -154,8 +158,10 @@ class RemoteAuthor(models.Model):
 class RemotePost(models.Model):
     id = models.UUIDField(primary_key=True)
     author = models.ForeignKey(RemoteAuthor, on_delete=models.CASCADE)
-    
+
     def get_absolute_url(self):
+        if self.author.node.team == 11:
+            return join_urls(self.author.get_absolute_url(), "posts", format_uuid_without_dashes(self.id))
         return join_urls(self.author.get_absolute_url(), "posts", str(self.id))
 
 
@@ -182,11 +188,11 @@ class Post(models.Model):
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     created_at = models.DateTimeField(verbose_name="date created",auto_now_add=True)
     edited_at = models.DateTimeField("date edited",null=True)
-    title = models.CharField(max_length=300)
-    description = models.TextField(blank=True)
+    title = models.CharField(max_length=300, default='')
+    description = models.TextField(blank=True, default='')
     source = models.CharField(max_length=200,default='')
     origin = models.CharField(max_length=200,default='')
-    unlisted = models.BooleanField(default=False) 
+    unlisted = models.BooleanField(default=False)
 
     VISIBILITY_CHOICES = [
         ("PUBLIC","Public"),
@@ -194,12 +200,17 @@ class Post(models.Model):
         ("PRIVATE","Private")
     ]
     visibility = models.CharField(max_length=200,choices=VISIBILITY_CHOICES,default="PUBLIC")
+    IMAGE_TYPE_CHOICES = [
+        ("image/png;base64", "PNG image"),
+        ("image/jpeg;base64", "JPEG image")
+    ]
     CONTENT_TYPE_CHOICES = [
         ("text/plain","Plain text"),
-        ("text/markdown","Markdown text")
-    ]
+        ("text/markdown","Markdown text"),
+    ] + IMAGE_TYPE_CHOICES
     content_type = models.CharField(max_length=200,choices=CONTENT_TYPE_CHOICES,default="text/plain")
-    content = models.TextField(blank=True)
+    content = models.TextField(blank=True, default='')
+    image = models.ImageField(null=True, blank=True)
 
     # TODO: how much work will it take to make all of the following POST requests async?
     # TODO: might need to add some retry logic for inbox updates over http
@@ -276,6 +287,9 @@ class Post(models.Model):
     
     def get_url(self, request):
         return join_urls(self.author.get_url(request), "posts", str(self.id), ends_with_slash=True)
+    
+    def get_image_url(self, request):
+        return join_urls(self.get_url(request), "image", ends_with_slash=True)
 
 
 class Comment(models.Model):

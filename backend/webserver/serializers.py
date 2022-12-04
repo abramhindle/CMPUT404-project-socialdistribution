@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from drf_base64.fields import Base64ImageField
 from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like, RemoteAuthor, RemotePost
 from .api_client import http_request
-from .utils import join_urls
+from .utils import join_urls, format_uuid_without_dashes
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -34,11 +35,14 @@ class RemotePostSerializer(serializers.Serializer):
         res, _ = http_request("GET", url, expected_status=200, node=node)
         if res is None:
             return None
-        # response should be a list of dictionaries
-        if isinstance(res, list):
-            for post in res:
+        converted_posts = node.get_converter().convert_posts(res)
+        for post in converted_posts:
+            if node.team == 11:
+                if (format_uuid_without_dashes(instance.id) in post.get("id", "")):
+                    return post
+            else:
                 if str(instance.id) in post.get("id", ""):
-                    return node.get_converter().convert_post(post)
+                    return post
         return None
 
 class PostSerializer(serializers.ModelSerializer):
@@ -50,6 +54,12 @@ class PostSerializer(serializers.ModelSerializer):
     
     def count_likes(self, post):
         return Like.objects.filter(post=post.id).count()
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if "image" in data["content_type"]:
+            data["content"] = data["content"].strip("b'").strip("'")
+        return data
 
 class UpdatePostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,6 +72,19 @@ class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['title','description','unlisted','content','visibility',"content_type"]
+
+
+class CreateImagePostSerializer(serializers.ModelSerializer):
+    content_type = serializers.ChoiceField(choices=Post.IMAGE_TYPE_CHOICES)
+    image = Base64ImageField()
+    # making image posts unlisted by default so that they don't show up on timelines
+    unlisted = serializers.BooleanField(default=True, required=False)
+    # making images public by default so that are publicly accessible by a url
+    visibility = serializers.ChoiceField(choices=Post.VISIBILITY_CHOICES, default="PUBLIC", required=False)
+
+    class Meta:
+        model = Post
+        fields = ['content_type', 'image', 'unlisted', 'visibility']
 
 
 class AuthorRegistrationSerializer(serializers.ModelSerializer):
