@@ -1,7 +1,7 @@
 import { html, ref, repeat, when } from "@microsoft/fast-element";
 import { feedPost } from "../../components/feed-post";
 import { followerComponent } from "../../components/follower-component";
-import { FollowRequest, Post } from "../../libs/api-service/SocialApiModel";
+import { ContentType, FollowRequest, Post } from "../../libs/api-service/SocialApiModel";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { Inbox } from "./Inbox";
 
@@ -17,7 +17,7 @@ export const InboxPageTemplate = html<Inbox>`
         <h1>Inbox</h1>
         <div class="inbox-container">
             ${repeat(x => x.inbox, html`
-                ${when(x => x instanceof Post, html<Post>`
+                ${when(x => x instanceof Post && x.contentType != ContentType.Image, html<Post>`
                     <feed-post
                         :post=${x => x}>
                     </feed-post>

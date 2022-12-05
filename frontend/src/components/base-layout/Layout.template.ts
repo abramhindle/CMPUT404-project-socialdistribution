@@ -36,7 +36,7 @@ export const LayoutTemplate = html<Layout>`
                     Public Service Announcements 
                 </div>
                 <div class="psa-post">
-                    Work in progress...
+                    PSA: Announcing New Public Service!
                 </div>
             </div>
         </div>

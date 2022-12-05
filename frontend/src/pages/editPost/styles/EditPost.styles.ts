@@ -37,7 +37,7 @@ export const EditPostPageStyles = css`
     text-align: center;
   }
   .edit-post-container1 {
-    width: 60%;
+    width: 80%;
     height: auto;
     display: flex;
     align-items: flex-end;
@@ -137,7 +137,6 @@ export const EditPostPageStyles = css`
     }
     .edit-post-container3 {
       gap: 30%;
-      height: 100%;
       align-items: center;
       justify-content: center;
     }
