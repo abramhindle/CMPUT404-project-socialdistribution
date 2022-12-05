@@ -108,6 +108,12 @@ def get_post_id_from_url(url):
     id_section = url.split("posts")[1]
     return id_section.split("/")[1].strip("/")
 
+def get_comment_id_from_url(url):
+    if "comments" not in url:
+        return url
+    id_section = url.split("comments")[1]
+    return id_section.split("/")[1].strip("/")
+
 def format_uuid_without_dashes(id: uuid.UUID):
     if isinstance(id, str):
         return id.replace("-", "")

@@ -153,7 +153,8 @@ class SendPostInboxSerializer(serializers.Serializer):
 
 class SendLikeSerializer(serializers.Serializer):
     author = ActorSerializer()
-    post = PostActorSerializer()
+    post = PostActorSerializer(required=False)
+    comment_url = serializers.URLField(required=False)
 
 
 class SendCommentInboxSerializer(serializers.Serializer):
@@ -196,17 +197,31 @@ class CommentSerializer(serializers.ModelSerializer):
         return data
 
 
-class PostLikeSerializer(serializers.ModelSerializer):
+class LikeSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
+    remote_author = RemoteAuthorSerializer(read_only=True)
+
     class Meta:
         model = Like
-        fields = ['author','post']
+        fields = ['author', 'remote_author', 'post', 'comment']
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        # Mark: I am doing this so that I can display the post like this 
-        # "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-        data['post'] = join_urls(data['author']['url'], "posts", str(data['post']), ends_with_slash=True)
+        
+        if instance.post:
+            # Mark: I am doing this so that I can display the post like this 
+            # "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+            data['post'] = join_urls(data['author']['url'], "posts", str(data['post']), ends_with_slash=True)
+            data['object'] = data['post']
+            data.pop('comment', None)
+        else:
+            data['comment'] = instance.comment.get_url(self.context.get('request', None))
+            data['object'] = data['comment']
+            data.pop('post', None)
+
+        if instance.remote_author:
+            data['author'] = data['remote_author']
+        data.pop('remote_author', None)
         return data
 
 class AcceptOrDeclineFollowRequestSerializer(serializers.Serializer):
@@ -244,7 +259,7 @@ class InboxSerializer(serializers.ModelSerializer):
     post = PostSerializer(read_only=True)
     follow_request_received = InboxFollowRequestSerializer(read_only=True)
     remote_post = RemotePostSerializer(read_only=True)
-    like = PostLikeSerializer(read_only=True)
+    like = LikeSerializer(read_only=True)
     comment = CommentSerializer(read_only=True)
 
     class Meta:

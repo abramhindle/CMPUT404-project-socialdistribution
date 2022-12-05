@@ -314,9 +314,12 @@ class Comment(models.Model):
 
 class Like(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    author = models.ForeignKey(Author,on_delete=models.CASCADE)
+    author = models.ForeignKey(Author,on_delete=models.CASCADE, null=True)
+    remote_author = models.ForeignKey(RemoteAuthor, on_delete=models.CASCADE, null=True)
     post = models.ForeignKey(Post,on_delete=models.CASCADE,null=True)
     comment = models.ForeignKey(Comment,on_delete=models.CASCADE,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 class Inbox(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
