@@ -571,61 +571,78 @@ Retreive a list of likes on author with id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 
 <img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201504699-434390ce-e11f-42b4-a138-a641b9f2e132.png">
 
 #### Sample Response
-```
+```json
 [
     {
         "author": {
             "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
-            "id": 6e3c2a39-8fef-4efb-bb98-0826a7f15f39,
+            "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
             "display_name": "cjenkins123",
             "profile_image": "",
             "github_handle": "cashj45"
         },
-        "post": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
+        "post": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/",
+        "object": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
     },
     {
         "author": {
             "url": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/",
-            "id": edcfedc2-0c39-40e9-94de-7d234ebf408e,
+            "id": "edcfedc2-0c39-40e9-94de-7d234ebf408e",
             "display_name": "UltimateBeast123",
             "profile_image": "",
             "github_handle": "ultimateBeast"
         },
-        "post": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
+        "post": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/",
+        "object": "http://127.0.0.1:8000/api/authors/edcfedc2-0c39-40e9-94de-7d234ebf408e/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
     }    
 ]
 ```
+* The `author` represents the author who liked the post
+
 #### Possible Status Codes
 - `200 OK`
 - `401 Unauthorized`
 - `404 Not Found`
 
-### Retrieve a list of likes made by an author on public posts
+### Retrieve a list of likes made by an author
 #### Sample Usage
-Retreive a list of likes on public posts origninating from author with id 6e3c2a39-8fef-4efb-bb98-0826a7f15f39-
-<img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201505044-7aeee91a-1bdc-42f6-84ee-c3c7c515fcde.png">
+<img width="977" alt="image" src="https://user-images.githubusercontent.com/43586048/205526251-4f351e77-80dd-409d-82d7-d2b83b29a433.png">
+
 
 #### Sample Response
-```
+```json
 [
-   {
-    "author": {
-        "url": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/",
-        "id": "6e3c2a39-8fef-4efb-bb98-0826a7f15f39",
-        "display_name": "noob_author",
-        "profile_image": "",
-        "github_handle": ""
+    {
+        "author": {
+            "url": "http://127.0.0.1:8014/api/authors/2cd3cfe1-c56d-45aa-8640-79ffa40f7e3d/",
+            "id": "2cd3cfe1-c56d-45aa-8640-79ffa40f7e3d",
+            "display_name": "john",
+            "profile_image": "",
+            "github_handle": ""
         },
-        "post": "http://127.0.0.1:8000/api/authors/6e3c2a39-8fef-4efb-bb98-0826a7f15f39/posts/9b050b09-97d1-44b7-89ec-d2ed2c23cde1/"
+        "comment": "http://127.0.0.1:8014/api/authors/30558702-f634-4b24-bfa6-4bd25ab441c5/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/comments/afd4bd59-188a-4100-9599-37b26f5e50c8/",
+        "object": "http://127.0.0.1:8014/api/authors/30558702-f634-4b24-bfa6-4bd25ab441c5/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/comments/afd4bd59-188a-4100-9599-37b26f5e50c8/"
+    },
+    {
+        "author": {
+            "url": "http://127.0.0.1:8014/api/authors/2cd3cfe1-c56d-45aa-8640-79ffa40f7e3d/",
+            "id": "2cd3cfe1-c56d-45aa-8640-79ffa40f7e3d",
+            "display_name": "john",
+            "profile_image": "",
+            "github_handle": ""
+        },
+        "post": "http://127.0.0.1:8014/api/authors/2cd3cfe1-c56d-45aa-8640-79ffa40f7e3d/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/",
+        "object": "http://127.0.0.1:8014/api/authors/2cd3cfe1-c56d-45aa-8640-79ffa40f7e3d/posts/595b9f1f-0053-4f44-ad88-aac59f2a6da2/"
     }
-] 
+]
 ```
+
 #### Possible Status Codes
 - `200 OK`
 - `401 Unauthorized`
 - `404 Not Found`
 
-### Like an authors post
+### Like a post
 #### Sample Usage
 Author with id 442352d0-f10a-4ac9-a42b-55c2f41179b3 likes post 9b050b09-97d1-44b7-89ec-d2ed2c23cde1 made by author with id 255c89fd-1b47-4f42-8a1b-5c574c6117f3 
 <img width="1131" alt="image" src="https://user-images.githubusercontent.com/77307203/201505623-aead299a-3766-4b66-bea4-f7a363d06f35.png">
@@ -636,6 +653,20 @@ Author with id 442352d0-f10a-4ac9-a42b-55c2f41179b3 likes post 9b050b09-97d1-44b
     "message": "OK"
 }
 ```
+
+#### Possible Status Codes
+- `201 Created`
+- `400 Bad Request`
+- `401 Unauthorized`
+- `404 Not Found`
+
+### Like a comment
+#### Sample Usage
+![image](https://user-images.githubusercontent.com/43586048/205526447-32f23c55-73e6-4338-a9a8-edce643f5336.png)
+
+* Send the request at the inbox route of the comment's owner
+* The `author` field represents the author liking the post
+
 #### Possible Status Codes
 - `201 Created`
 - `400 Bad Request`
