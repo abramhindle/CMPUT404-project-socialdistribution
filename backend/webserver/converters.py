@@ -250,7 +250,15 @@ class Team11Converter(Converter):
             "unlisted": data["unlisted"],
             "content_type": data["contentType"],
             "content": data["content"],
-            "likes_count": 0
+            "likes_count": 0,
+            "count": 0,         # TODO: Update this when they support comments
+            "comments": "",     # TODO: Update this when they support comments
+            "comments_src": {
+                "type": "comments",
+                "page": 1,
+                "size": 0,
+                "comments": []
+            }
         }
 
     def convert_posts(self, data, from_public_posts_url=False):
