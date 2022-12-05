@@ -119,6 +119,11 @@ class Node(models.Model):
     def get_authors_url(self):
         # assumes that /authors route applies to all nodes
         return join_urls(self.api_url, "authors")
+    
+    def post_request_timeout(self):
+        if self.team == 10:
+            return 2.5
+        return 5
 
 
 class RemoteAuthorManager(models.Manager):

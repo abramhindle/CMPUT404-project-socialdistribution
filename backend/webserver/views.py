@@ -543,7 +543,8 @@ class FollowRequestProcessor(object):
                     url = node_converter.url_to_send_follow_request_at(serializer.data["receiver"]["url"])
                     res, res_status = http_request("POST", url, node=node,
                                                    expected_status=node_converter.expected_status_code("send_follow_request"), 
-                                                   json=node_converter.send_follow_request(request.data, request))
+                                                   json=node_converter.send_follow_request(request.data, request),
+                                                   timeout=node.post_request_timeout())
                     if res is None:
                         return Response("Failed to send remote follow request due to remote node failure", status=res_status)
                     return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
@@ -701,7 +702,7 @@ class LikePostProcessor(object):
                 if url is None:
                     return Response({'message': 'Remote entity does not support likes'}, status=status.HTTP_400_BAD_REQUEST)
                 res, status_code = http_request("POST", url, node=node, 
-                                                json=node_converter.send_like_inbox(request))
+                                                json=node_converter.send_like_inbox(request), timeout=node.post_request_timeout())
                 if res is None:
                     return Response({'message': 'Failed to like a remote entity'}, status=status_code)
                 return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
@@ -757,7 +758,8 @@ class CommentOnPostProcessor(object):
                     return Response({'message': 'Remote entity does not support comments'}, status=status.HTTP_400_BAD_REQUEST)
                 # send the comment to the remote author's inbox
                 res, status_code = http_request("POST", url, node=node, 
-                                                json=node_converter.send_comment_inbox(request))
+                                                json=node_converter.send_comment_inbox(request),
+                                                timeout=node.post_request_timeout())
                 if res is None:
                     return Response({'message': 'Failed to send comment to remote post'}, status=status_code)
                 return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
