@@ -1,6 +1,6 @@
 export const ContentType = Object.freeze({
-    Markdown: "markdown",
-    Plain: "plain"
+    Markdown: "Markdown",
+    Plain: "Plain"
 });
 
 export type ContentType = keyof typeof ContentType;

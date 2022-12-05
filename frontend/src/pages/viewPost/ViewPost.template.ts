@@ -1,9 +1,12 @@
 import { html, when } from "@microsoft/fast-element";
 import { layoutComponent } from "../../components/base-layout";
+import { markdownComponent } from "../../components/markdown-component";
+import { ContentType } from "../../libs/api-service/SocialApiModel";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { ViewPost } from "./ViewPost";
 
 layoutComponent;
+markdownComponent;
 
 export const ViewPostPageTemplate = html<ViewPost>`
     <page-layout
@@ -20,7 +23,14 @@ export const ViewPostPageTemplate = html<ViewPost>`
                         class="post-image"
                 />
                 <div class="post-container2">
-                    <span class="post-text">${x => x.post?.content}</span>
+                    ${when(x => x.post?.contentType == ContentType.Markdown, html<ViewPost>`
+                        <markdown-component
+                            :content=${x => x.post?.content}
+                        ></markdown-component>
+                    `)}
+                    ${when(x => x.post?.contentType == ContentType.Plain, html<ViewPost>`
+                        <span class="post-text">${x => x.post?.content}</span>
+                    `)}
                     <div class="post-container3">
                         <span>${x => x.post?.author?.displayName} | ${x => new Date(x.post?.published || new Date()).toLocaleDateString()}</span>
                     </div>
