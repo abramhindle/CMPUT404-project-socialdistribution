@@ -300,11 +300,21 @@ class Team10Converter(Converter):
         }
     
     def convert_like(self, data: dict):
-        return {
-            "author": self.convert_author(data),
-            "comment": "",
-            "object": "",
+        converted_like = {
+            "author": self.convert_author(data["author"]) if "author" in data else self.convert_author(data),
+            "object": data.get("object", "")
         }
+        if "comment" in converted_like["object"]:
+            converted_like["comment"] = converted_like["object"]
+        elif "post" in converted_like["object"]:
+            converted_like["post"] = converted_like["object"]
+        return converted_like
+    
+    def convert_likes(self, data: list):
+        if isinstance(data, list):
+            return [self.convert_like(like) for like in data]
+        else:
+            return [self.convert_like(like) for like in data["items"]]
 
     def url_to_send_comment_at(self, author_url, post_id=None):
         return join_urls(author_url, "posts", post_id, "comments")
@@ -318,7 +328,7 @@ class Team10Converter(Converter):
     def send_comment_inbox(self, request: HttpRequest):
         return {
             "comment": request.data["comment"],
-            "contentType": request.data["content_type"],
+            "contentType": request.data.get("content_type", "text/plain"),
             "actor": request.data["author"]["url"],
         }
 
