@@ -1466,11 +1466,12 @@ class PostTestCase(APITestCase):
             "contentType": "text/markdown",
             "author": remote_author_json,
             "categories": ["string"],
-            "count": "string",
+            "count": 0,
             "comments": "string",
             "published": "2019-08-24T14:15:22Z",
             "visibility": "public",
-            "unlisted": False
+            "unlisted": False,
+            "commentSrc": [],
         }
             
         responses.add(
@@ -1503,7 +1504,15 @@ class PostTestCase(APITestCase):
             "unlisted": False,
             "content_type": "text/markdown",
             "content": None,
-            "likes_count": 0
+            "likes_count": 0,
+            "count": 0,
+            "comments": "string",
+            "comments_src": {
+                "type": "comments",
+                "page": 1,
+                "size": 0,
+                "comments": []
+            }
         }
         self.assertEqual(converted_remote_post, response.data)
 
@@ -2141,11 +2150,12 @@ class AllPostTestCase(APITestCase):
                     "contentType": "text/markdown",
                     "author": remote_author_json,
                     "categories": ["string"],
-                    "count": "string",
+                    "count": 0,
                     "comments": "string",
                     "published": "2019-08-24T14:15:22Z",
                     "visibility": "public",
-                    "unlisted": False
+                    "unlisted": False,
+                    "commentSrc": [],
                 }
             ]
         }
@@ -2170,7 +2180,15 @@ class AllPostTestCase(APITestCase):
                 "content_type": "text/markdown",
                 "content": None,
                 "visibility": "PUBLIC",
-                "likes_count": 0
+                "likes_count": 0,
+                "count": 0,
+                "comments": "string",
+                "comments_src": {
+                    "type": "comments",
+                    "page": 1,
+                    "size": 0,
+                    "comments": []
+                }
             }
         ]
         

@@ -319,7 +319,7 @@ class CommentsTestCase(APITestCase):
         ]
         responses.add(
             responses.GET,
-            join_urls(node.api_url, f"authors/{remote_author_id}/posts/{remote_post_id}/comments", ends_with_slash=True),
+            join_urls(node.api_url, f"authors/{remote_author_id}/posts/{remote_post_id}/comments"),
             json=remote_comments_json,
             status=200,
         )
