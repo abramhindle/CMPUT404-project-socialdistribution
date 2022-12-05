@@ -769,6 +769,7 @@ class FollowRequestProcessorTestCase(APITestCase):
         # shouldn't create a local FR object for a remote receiver
         self.assertEqual(0, FollowRequest.objects.count())
     
+    @unittest.skip
     @responses.activate
     def test_receiver_is_remote_author_for_team11(self):
         local_author = Author.objects.create(username="local_author", display_name="local_author")
