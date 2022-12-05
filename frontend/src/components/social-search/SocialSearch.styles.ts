@@ -18,6 +18,8 @@ export const SocialSearchStyles = css`
         margin-top: -50px;
         padding-top: 50px;
         width: 100%;
+        max-height: 50vh;
+        overflow: auto;
         background-color: ${neutralFillStrongHover};
         display: flex;
         flex-direction: column;
@@ -26,6 +28,7 @@ export const SocialSearchStyles = css`
         text-align: center;
         border-radius: 20px;
         z-index: -1;
+        justify-content: flex-start;
     }
 
     .results-container follower-component {

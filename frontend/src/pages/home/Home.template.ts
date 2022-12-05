@@ -1,7 +1,6 @@
 import { icon } from "@fortawesome/fontawesome-svg-core";
 import { html, ref, repeat, when } from "@microsoft/fast-element";
-import { socialSearch } from "../../components/social-search";
-import { Post } from "../../libs/api-service/SocialApiModel";
+import { ContentType, Post } from "../../libs/api-service/SocialApiModel";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { FeedType } from "../../libs/core/PageModel";
 import { feedPost } from "../../components/feed-post";
@@ -33,9 +32,11 @@ export const HomePageTemplate = html<Home>`
         </div>
         <div class="post-container">
             ${repeat(x => x.visibilePosts, html<Post>`
-                <feed-post
-                    :post=${x => x}>
-                </feed-post>
+                ${when(x => x instanceof Post && x.contentType != ContentType.Image, html<Post>`
+                    <feed-post
+                        :post=${x => x}>
+                    </feed-post>
+                `)}
             `)
             }
         </div>

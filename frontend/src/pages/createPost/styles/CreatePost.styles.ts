@@ -45,7 +45,7 @@ export const CreatePostPageStyles = css`
     text-align: center;
   }
   .create-post-container1 {
-    width: 60%;
+    width: 80%;
     height: auto;
     display: flex;
     align-items: flex-end;

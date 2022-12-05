@@ -91,6 +91,9 @@ export namespace SocialApiTransform {
                 return ContentType.Plain
             case "text/markdown":
                 return ContentType.Markdown
+            case "image/jpeg;base64":
+            case "image/png;base64":
+                return ContentType.Image
             default:
                 return ContentType.Plain
         }
