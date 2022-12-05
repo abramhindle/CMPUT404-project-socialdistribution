@@ -24,7 +24,6 @@ export class CreatePost extends Page {
     try {
       formData.append("description", "My post description");
       formData.append("unlisted", "false");
-      formData.append("content_type", "text/plain");
       if (this.user) {
         const responseData = await SocialApi.createPost(this.userId, formData);
         if (responseData) {
