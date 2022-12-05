@@ -176,7 +176,7 @@ class Team11Converter(Converter):
         )
         payload = {
             "type": "inbox",
-            "author": request_data["receiver"]["url"],
+            "author": request_data["sender"]["url"],
             "items": [{
                 "type": "Follow",
                 "actor": {
