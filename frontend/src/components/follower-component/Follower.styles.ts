@@ -22,7 +22,7 @@ export const FollowerStyles = css`
     }
 
     .follower.${LayoutStyleClass.Desktop} {
-        justify-content: space-between;
+        justify-content: space-evenly;
         align-items: center;
         flex-direction: row;
     }
@@ -51,6 +51,17 @@ export const FollowerStyles = css`
         background-color: white;
         border: 2px solid lightgrey;
         color: black;
+    }
+
+    .profile-image {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        object-position: 50%;
+        background-color: lightgrey;
+        border: solid lightgrey 3px;
     }
 
     a, a:hover, a:visited, a:active {

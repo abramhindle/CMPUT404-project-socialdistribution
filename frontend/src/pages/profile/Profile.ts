@@ -3,13 +3,19 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { observable } from "@microsoft/fast-element";
 import { SocialApi } from "../../libs/api-service/SocialApi";
 import { SocialApiFollowers } from "../../libs/api-service/SocialApiFollowers";
-import { FollowInfo, FollowRemovalBody, FollowRequestBody } from "../../libs/api-service/SocialApiModel";
+import { FollowInfo, FollowRemovalBody, FollowRequestBody, PaginatedResponse, Post } from "../../libs/api-service/SocialApiModel";
 import { ImageHelpers } from "../../libs/core/Helpers";
 import { FollowStatus } from "../../libs/core/PageModel";
-import { Page } from "../Page";
+import { PaginatedPage } from "../PaginatedPage";
+import { SocialApiTransform } from "../../libs/api-service/SocialApiTransform";
 
-export class Profile extends Page {
+const PAGE_SIZE = 10;
+
+export class Profile extends PaginatedPage {
     public form?: HTMLFormElement;
+
+    @observable
+    public profilePosts: Post[] = [];
 
     @observable
     public modalStateStyle = "modal-close";
@@ -17,6 +23,7 @@ export class Profile extends Page {
     constructor() {
         super();
         this.addIcons()
+        this.getResults()
     }
 
     public openEditModal() {
@@ -25,6 +32,37 @@ export class Profile extends Page {
 
     public closeEditModal() {
         this.modalStateStyle = "modal-close"
+    }
+
+    protected async getResults() {
+        if (!this.profileId) {
+            return;
+        }
+
+        try {
+            let responseData: PaginatedResponse | null;
+
+            if (this.paginatedResponse?.next) {
+                responseData = await SocialApi.fetchPaginatedNext(this.paginatedResponse.next);
+                if (responseData) {
+                    this.paginatedResponse = responseData;
+                    this.setVisiblePosts()
+                }
+            } else if (!this.paginatedResponse) {
+                responseData = await SocialApi.fetchAuthorPosts(this.profileId, 1, PAGE_SIZE);
+                if (responseData) {
+                    this.paginatedResponse = responseData;
+                    this.setVisiblePosts()
+                    if (this.loadMore) {
+                        this.observer?.observe(this.loadMore);
+                    }
+                }
+            } else {
+                responseData = this.paginatedResponse || null;
+            }
+        } catch (e) {
+            console.error("Profile post fetch failed", e);
+        }
     }
 
     public async editProfile(e: Event) {
@@ -117,6 +155,22 @@ export class Profile extends Page {
         } catch (e) {
             // Follow request or removal failed
             console.warn(e)
+        }
+    }
+
+    private setVisiblePosts() {
+        const results = this.paginatedResponse?.results
+        if (!results) {
+            return;
+        }
+
+        for (var postData of results) {
+            if (!postData.type || postData.type == "post") {
+                const post = SocialApiTransform.postDataTransform(postData);
+                if (post) {
+                    this.profilePosts.push(post);
+                }
+            }
         }
     }
 

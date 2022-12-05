@@ -1,8 +1,12 @@
 import { icon } from "@fortawesome/fontawesome-svg-core";
-import { html, ref, when } from "@microsoft/fast-element";
+import { html, ref, repeat, when } from "@microsoft/fast-element";
+import { feedPost } from "../../components/feed-post";
+import { Post } from "../../libs/api-service/SocialApiModel";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { FollowStatus } from "../../libs/core/PageModel";
 import { Profile } from "./Profile";
+
+feedPost;
 
 const editProfileModal = html<Profile>`
     <form ${ref("form")} @submit="${(x, c) => x.editProfile(c.event)}" id="edit-profile" class=" ${x => x.modalStateStyle}">
@@ -41,12 +45,14 @@ export const ProfilePageTemplate = html<Profile>`
             <div class="display-name">
                 <div class="profile-info-display">
                     <h2>${x => x.profile?.displayName}</h2>
+                    ${when(x => x.profile?.githubHandle !== "", html<Profile>`
                     <h4>
                         <a href="${x => x.profile?.githubHandle}" target="_blank">
                             <div class="profile-info-icon" :innerHTML="${_ => icon({ prefix: "fas", iconName: "code-pull-request" }).html}"></div>
                             <span class="profile-link-text">GitHub Handle</span>
                         </a>
                     </h4>
+                    `)}
                 </div>
                 ${when(x => x.user?.id == x.profile?.id, html<Profile>`
                 <button @click=${x => x.openEditModal()}>
@@ -69,6 +75,14 @@ export const ProfilePageTemplate = html<Profile>`
                     Followers
                 </a>
             </div>
+        </div>
+        <div class="post-container">
+            ${repeat(x => x.profilePosts, html<Post>`
+            <feed-post
+                :post=${x => x}>
+            </feed-post>
+            `)}
+            <div ${ref("loadMore")} class="loading"></div>
         </div>
     `)}
     ${when(x => !x.profile, html<Profile>`
