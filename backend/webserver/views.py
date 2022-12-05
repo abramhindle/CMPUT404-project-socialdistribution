@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from urllib.parse import urljoin
 from rest_framework.views import APIView
-from .models import Author, Follow, FollowRequest, Inbox, Post, Node, RemoteAuthor, RemotePost, Like
+from .models import Author, Follow, FollowRequest, Inbox, Post, Node, RemoteAuthor, RemotePost, Like, Comment
 from .serializers import (AcceptOrDeclineFollowRequestSerializer, 
                           AuthorSerializer, 
                           AuthorRegistrationSerializer, 
@@ -20,8 +20,10 @@ from .serializers import (AcceptOrDeclineFollowRequestSerializer,
                           NodesListSerializer,
                           SendPostInboxSerializer,
                           SendLikeSerializer,
-                          PostLikeSerializer,
-                          CreateImagePostSerializer)
+                          LikeSerializer,
+                          CreateImagePostSerializer,
+                          SendCommentInboxSerializer,
+                          CommentSerializer,)
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework import status, permissions
@@ -33,7 +35,8 @@ from .utils import (BasicPagination,
                     IsRemotePostOnly, 
                     is_remote_request, 
                     join_urls,
-                    format_uuid_without_dashes,)
+                    format_uuid_without_dashes,
+                    get_comment_id_from_url)
 from .api_client import http_request
 import logging
 import concurrent.futures
@@ -393,23 +396,83 @@ class AllPublicPostsView(APIView, PaginationHandlerMixin):
 
 class AuthorLikedView(APIView):
     authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
     
-    def get(self,requst,pk):
-        author = get_object_or_404(Author,pk=pk)
-        likes = Like.objects.filter(post__visibility="PUBLIC").filter(author=author)
-        serializer = PostLikeSerializer(likes, many=True, context={'request': requst}) 
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        
+    def get(self, request, pk):
+        try:
+            author = Author.objects.get(pk=pk)
+            author_likes = Like.objects.filter(author=author)
+            queryset = author_likes.filter(post__isnull=False).filter(post__visibility="PUBLIC")\
+                .union(author_likes.filter(comment__isnull=False).filter(comment__post__visibility="PUBLIC")).order_by("created_at")
+            serializer = LikeSerializer(queryset, many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Author.DoesNotExist:
+            if is_remote_request(request):
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            # pk could represent a remote author
+            remote_author = RemoteAuthor.objects.attempt_find(pk)
+            if remote_author is None:
+                return Response({'message': 'Remote author not found'}, status=status.HTTP_404_NOT_FOUND)
+            node = remote_author.node
+            node_converter = node.get_converter()
+            url = node_converter.url_to_get_author_liked_objects(remote_author.get_absolute_url())
+            res, status_code = http_request("GET", url, node=node)
+            if res is None:
+                return Response({'message': 'Failed to get likes made by a remote author'}, status=status_code)
+            return Response(node_converter.convert_likes(res), status=status.HTTP_200_OK)
 
 class PostLikesView(APIView):
     authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
     
-    def get(self,requst,pk,post_id):
-        author = get_object_or_404(Author,pk=pk)
-        post = get_object_or_404(Post,id=post_id,author=author.id)
-        likes = Like.objects.filter(post=post.id)
-        serializer = PostLikeSerializer(likes, many=True, context={'request': requst})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, pk, post_id):
+        try:
+            author = Author.objects.get(pk=pk)
+            post = get_object_or_404(Post, pk=post_id, author=author)
+            serializer = LikeSerializer(post.like_set.all(), many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Author.DoesNotExist:
+            if is_remote_request(request):
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            # local author fetching likes from a remote post
+            remote_author = RemoteAuthor.objects.attempt_find(pk)
+            if remote_author is None:
+                return Response({'message': 'Remote author not found'}, status=status.HTTP_404_NOT_FOUND)
+            node = remote_author.node
+            node_converter = node.get_converter()
+            url = node_converter.url_to_get_likes_at(remote_author.get_absolute_url(), post_id)
+            res, status_code = http_request("GET", url, node=node)
+            if res is None:
+                return Response({'message': 'Failed to get likes on a remote post'}, status=status_code)
+            return Response(node_converter.convert_likes(res), status=status.HTTP_200_OK)
+
+
+class CommentLikesView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, author_id, post_id, comment_id):
+        try:
+            author = Author.objects.get(pk=author_id)
+            post = get_object_or_404(Post, pk=post_id, author=author)
+            comment = get_object_or_404(Comment, pk=comment_id, post=post)
+            serializer = LikeSerializer(comment.like_set.all(), many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Author.DoesNotExist:
+            if is_remote_request(request):
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            # local author fetching likes from a remote comment
+            remote_author = RemoteAuthor.objects.attempt_find(author_id)
+            if remote_author is None:
+                return Response({'message': 'Remote author not found'}, status=status.HTTP_404_NOT_FOUND)
+            node = remote_author.node
+            node_converter = node.get_converter()
+            url = node_converter.url_to_get_likes_at(remote_author.get_absolute_url(), post_id, comment_id)
+            res, status_code = http_request("GET", url, node=node)
+            if res is None:
+                return Response({'message': 'Failed to get likes on a remote comment'}, status=status_code)
+            return Response(node_converter.convert_likes(res), status=status.HTTP_200_OK)
+
 
 class FollowRequestsView(APIView):
     authentication_classes = [BasicAuthentication]
@@ -480,7 +543,8 @@ class FollowRequestProcessor(object):
                     url = node_converter.url_to_send_follow_request_at(serializer.data["receiver"]["url"])
                     res, res_status = http_request("POST", url, node=node,
                                                    expected_status=node_converter.expected_status_code("send_follow_request"), 
-                                                   json=node_converter.send_follow_request(request.data, request))
+                                                   json=node_converter.send_follow_request(request.data, request),
+                                                   timeout=node.post_request_timeout())
                     if res is None:
                         return Response("Failed to send remote follow request due to remote node failure", status=res_status)
                     return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
@@ -567,43 +631,170 @@ class LikePostProcessor(object):
         self.request = request
         self.author_id = author_id
         self.response = self.send_like(request, author_id)
-    
+
+    def duplicate_like_attempt(self, actor, entity):
+        if isinstance(actor, Author) and isinstance(entity, Post):
+            return Like.objects.filter(author=actor, post=entity).count() > 0
+        elif isinstance(actor, Author) and isinstance(entity, Comment):
+            return Like.objects.filter(author=actor, comment=entity).count() > 0
+        elif isinstance(actor, RemoteAuthor) and isinstance(entity, Post):
+            return Like.objects.filter(remote_author=actor, post=entity).count() > 0
+        else:
+            return Like.objects.filter(remote_author=actor, comment=entity).count() > 0
+
+    def create_like(self, actor, entity):
+        if isinstance(actor, Author) and isinstance(entity, Post):
+            return Like.objects.create(author=actor, post=entity)
+        elif isinstance(actor, Author) and isinstance(entity, Comment):
+            return Like.objects.create(author=actor, comment=entity)
+        elif isinstance(actor, RemoteAuthor) and isinstance(entity, Post):
+            return Like.objects.create(remote_author=actor, post=entity)
+        else:
+            return Like.objects.create(remote_author=actor, comment=entity)
+
     def send_like(self, request, author_id):
+        # three cases -
+        # local author can be sending a like to another local author
+        # local author could be sending a like to a remote author
+        # remote author could be sending a like to a local author
+        if "post" not in request.data and "comment_url" not in request.data:
+            return Response({'message': 'You need to specify either a post or a comment to like'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = SendLikeSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                post = Post.objects.get(pk=serializer.data['post']['id'])
-            except Post.DoesNotExist:
-                return Response({'message': f'post with id {serializer.data["post"]["id"]} does not exist'}, 
-                                status=status.HTTP_404_NOT_FOUND)
-            try:   
-                author = Author.objects.get(pk=serializer.data['author']['id'])
+                author = Author.objects.get(pk=author_id)
+                if "post" in serializer.data:
+                    entity_to_like = get_object_or_404(Post, pk=serializer.data["post"]["id"], author=author)
+                else:
+                    comment_id = get_comment_id_from_url(serializer.data["comment_url"])
+                    entity_to_like = get_object_or_404(Comment, pk=comment_id, author=author)
+                try:
+                    # local author sending a like to a local author
+                    actor = Author.objects.get(pk=serializer.data["author"]["id"])
+                    if self.duplicate_like_attempt(actor, entity_to_like):
+                        return Response({'message': 'Cannot like an object more than once'}, status=status.HTTP_400_BAD_REQUEST)
+                    like = self.create_like(actor, entity_to_like)
+                except Author.DoesNotExist:
+                    # remote author sending a like to a local author
+                    try:
+                        node = Node.objects.get_node_with_url(serializer.data["author"]["url"])
+                        actor = RemoteAuthor.objects.get_or_create(id=serializer.data['author']['id'],
+                                                                   node=node)[0]
+                        if self.duplicate_like_attempt(actor, entity_to_like):
+                            return Response({'message': 'Cannot like an object more than once'}, status=status.HTTP_400_BAD_REQUEST)
+                        like = self.create_like(actor, entity_to_like)
+                    except Node.DoesNotExist:
+                        return Response({'message': 'unidentifiable node'}, status=status.HTTP_400_BAD_REQUEST)
+
+                Inbox.objects.create(target_author=author, like=like)
+                return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
             except Author.DoesNotExist:
-                return Response({'message': f'author with id {serializer.data["author"]["id"]} does not exist'}, 
-                                status=status.HTTP_404_NOT_FOUND)
-            try:
-                receiver = Author.objects.get(pk=author_id)
-            except Author.DoesNotExist:
-                return Response({'message': f'author with id {author_id} does not exist'}, 
-                                status=status.HTTP_404_NOT_FOUND)
-            
-            like = Like.objects.filter(author=author,post=post)
-            
-            if like.count() > 0:
-                return Response({'message': 'Cannot like a post more than once'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            # https://docs.djangoproject.com/en/4.1/topics/db/transactions/#controlling-transactions-explicitly
-            with transaction.atomic():
-                like = Like.objects.create(author=author,post=post)
-                # update the inbox of the receiver
-                Inbox.objects.create(target_author=receiver,like=like)
-                # TODO: return the new inbox item when we have an Inbox serializer
-                
-            return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
+                if is_remote_request(request):
+                    return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+                # local author could be sending a like to a remote author
+                remote_author = RemoteAuthor.objects.attempt_find(author_id)
+                if remote_author is None:
+                    return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+                node = remote_author.node
+                node_converter = node.get_converter()
+                post_id = serializer.data["post"]["id"] if "post" in serializer.data else None
+                url = node_converter.url_to_send_like_at(remote_author.get_absolute_url(), post_id)
+                if url is None:
+                    return Response({'message': 'Remote entity does not support likes'}, status=status.HTTP_400_BAD_REQUEST)
+                res, status_code = http_request("POST", url, node=node, 
+                                                json=node_converter.send_like_inbox(request), timeout=node.post_request_timeout())
+                if res is None:
+                    return Response({'message': 'Failed to like a remote entity'}, status=status_code)
+                return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_response(self):
         return self.response
+
+
+class CommentOnPostProcessor(object):
+    def __init__(self, request, author_id):
+        self.request = request
+        self.author_id = author_id
+        self.response = self.send_comment(request, author_id)
+    
+    def send_comment(self, request, author_id):
+        serializer = SendCommentInboxSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                author = Author.objects.get(pk=author_id)
+                post = get_object_or_404(Post, pk=serializer.data['post']['id'], author=author)
+
+                try:
+                    actor = Author.objects.get(id=serializer.data['author']['id'])
+                    comment = Comment.objects.create(
+                        author=actor, post=post, comment=serializer.data['comment'], content_type=serializer.data['content_type'])
+                    
+                except Author.DoesNotExist:
+                    # remote author could be sending a comment to a local author
+                    try:
+                        node = Node.objects.get_node_with_url(serializer.data["author"]["url"])
+                        actor = RemoteAuthor.objects.get_or_create(id=serializer.data['author']['id'],
+                                                                   node=node)[0]
+                        comment = Comment.objects.create(
+                            remote_author=actor, post=post, comment=serializer.data['comment'], content_type=serializer.data['content_type'])
+                    except Node.DoesNotExist:
+                        return Response({'message': 'unidentifiable node'}, status=status.HTTP_400_BAD_REQUEST)
+                # send the comment to the post author's inbox
+                Inbox.objects.create(target_author=author, comment=comment)
+                return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
+            except Author.DoesNotExist:
+                if is_remote_request(request):
+                    return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+                # Our frontend could be sending a comment on a post from a remote author
+                # Can we find a remote author with the given author_id?
+                remote_author = RemoteAuthor.objects.attempt_find(author_id)
+                if remote_author is None:
+                    return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+                node = remote_author.node
+                node_converter = node.get_converter()
+                url = node_converter.url_to_send_comment_at(remote_author.get_absolute_url(), serializer.data['post']['id'])
+                if url is None:
+                    return Response({'message': 'Remote entity does not support comments'}, status=status.HTTP_400_BAD_REQUEST)
+                # send the comment to the remote author's inbox
+                res, status_code = http_request("POST", url, node=node, 
+                                                json=node_converter.send_comment_inbox(request),
+                                                timeout=node.post_request_timeout())
+                if res is None:
+                    return Response({'message': 'Failed to send comment to remote post'}, status=status_code)
+                return Response({'message': 'OK'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get_response(self):
+        return self.response
+
+
+class CommentsView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, author_id, post_id):
+        try:
+            author = Author.objects.get(pk=author_id)
+            post = get_object_or_404(Post, pk=post_id, author=author)
+            if post.visibility != "PUBLIC" and request.user.id != author.id:
+                return Response({'message': 'You are not authorized to view comments of this post'}, status=status.HTTP_403_FORBIDDEN)
+            serializer = CommentSerializer(post.comment_set.order_by("-created_at").all(), many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Author.DoesNotExist:
+            if is_remote_request(request):
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            # Frontend could be trying to fetch comments of a remote post
+            remote_author = RemoteAuthor.objects.attempt_find(author_id)
+            if remote_author is None:
+                return Response({'message': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
+            node = remote_author.node
+            node_converter = node.get_converter()
+            url = node_converter.url_to_get_comments_at(remote_author.get_absolute_url(), post_id)
+            res, status_code = http_request("GET", url, node=node)
+            if res is None:
+                return Response({'message': 'Failed to get comments from remote post'}, status=status_code)
+            return Response(node_converter.convert_comments(res), status=status.HTTP_200_OK)
 
 
 class FollowersView(APIView):
@@ -711,7 +902,9 @@ class InboxView(APIView, PaginationHandlerMixin):
         elif request.data['type'] == 'post':
             return RemotePostProcessor(request, author_id).get_response()
         elif request.data['type'] == 'like':
-            return LikePostProcessor(request,author_id).get_response()
+            return LikePostProcessor(request, author_id).get_response()
+        elif request.data['type'] == 'comment':
+            return CommentOnPostProcessor(request, author_id).get_response()
         else:
             return Response({'message': "unknown 'type'"}, status=status.HTTP_400_BAD_REQUEST)
 

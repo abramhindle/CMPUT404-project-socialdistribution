@@ -1,6 +1,6 @@
 export const ContentType = Object.freeze({
-    Markdown: "markdown",
-    Plain: "plain"
+    Markdown: "Markdown",
+    Plain: "Plain"
 });
 
 export type ContentType = keyof typeof ContentType;
@@ -53,6 +53,8 @@ export class Post {
     visibility?: string;
 
     content?: string;
+
+    url?: string;
 
     constructor(id: string) {
         this.id = id;

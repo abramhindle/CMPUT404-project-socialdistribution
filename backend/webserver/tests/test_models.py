@@ -130,7 +130,7 @@ class PostTestCase(TestCase):
                 "contentType": post.content_type,
                 "unlisted": post.unlisted,
                 "count": 0,
-                "comments": "www.default.com",
+                "comments": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/comments",
                 "published": f"{post.created_at}"
             })],
             status=200,
@@ -159,7 +159,7 @@ class PostTestCase(TestCase):
                 "contentType": post.content_type,
                 "unlisted": post.unlisted,
                 "count": 0,
-                "comments": "www.default.com",
+                "comments": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/comments",
                 "published": f"{post.created_at}"
             })],
             status=200,
@@ -369,7 +369,7 @@ class PostTestCase(TestCase):
                 "contentType": post.content_type,
                 "unlisted": post.unlisted,
                 "count": 0,
-                "comments": "www.default.com",
+                "comments": f"http://testserver/api/authors/{local_author.id}/posts/{post.id}/comments",
                 "published": f"{post.created_at}"  
             })],
             status=200,

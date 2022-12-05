@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from drf_base64.fields import Base64ImageField
-from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like, RemoteAuthor, RemotePost
+from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like, RemoteAuthor, RemotePost, Comment
 from .api_client import http_request
 from .utils import join_urls, format_uuid_without_dashes
 
@@ -45,20 +45,42 @@ class RemotePostSerializer(serializers.Serializer):
                     return post
         return None
 
+
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
+    count = serializers.SerializerMethodField('count_comments')
     likes_count = serializers.SerializerMethodField('count_likes')
+    comments = serializers.SerializerMethodField('get_comments_url')
+
     class Meta:
         model = Post
-        fields = ['id','author','created_at','edited_at','title','description','source','origin','unlisted','content_type','content','visibility',"likes_count"]
+        fields = ['id','author','created_at','edited_at','title','description','source','origin',
+                  'unlisted','content_type','content','visibility','likes_count','count','comments']
     
     def count_likes(self, post):
-        return Like.objects.filter(post=post.id).count()
+        # return Like.objects.filter(post=post.id).count()
+        return post.like_set.count()
+
+    def count_comments(self, post):
+        return post.comment_set.count()
+    
+    def get_comments_url(self, post):
+        # useless field to meet the "spec"
+        return join_urls(post.get_url(self.context.get("request", None)), "comments")
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if "image" in data["content_type"]:
             data["content"] = data["content"].strip("b'").strip("'")
+
+        if instance.visibility == "PUBLIC" or self.context.get("request", None).user.id == instance.author.id:
+            comments_queryset = instance.comment_set.order_by("-created_at").all()[:5]
+            data["comments_src"] = {
+                "type": "comments",     # useless field to meet the "spec"
+                "page": 1,              # useless field to meet the "spec"
+                "size": comments_queryset.count(),
+                "comments": CommentSerializer(comments_queryset, many=True, context=self.context).data
+            }
         return data
 
 class UpdatePostSerializer(serializers.ModelSerializer):
@@ -131,7 +153,16 @@ class SendPostInboxSerializer(serializers.Serializer):
 
 class SendLikeSerializer(serializers.Serializer):
     author = ActorSerializer()
+    post = PostActorSerializer(required=False)
+    comment_url = serializers.URLField(required=False)
+
+
+class SendCommentInboxSerializer(serializers.Serializer):
+    author = ActorSerializer()
     post = PostActorSerializer()
+    comment = serializers.CharField()
+    content_type = serializers.ChoiceField(choices=Comment.CONTENT_TYPE_CHOICES, default="text/plain", required=False)
+
 
 class FollowRequestSerializer(serializers.ModelSerializer):
     sender = AuthorSerializer(read_only=True)
@@ -148,17 +179,49 @@ class FollowRequestSerializer(serializers.ModelSerializer):
             data['sender'] = data['remote_sender']
         return data['sender']
 
-class PostLikeSerializer(serializers.ModelSerializer):
+
+class CommentSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
+    remote_author = RemoteAuthorSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['author', 'remote_author', 'comment', 'content_type', 'created_at', 'id']
+    
+    def to_representation(self, instance):
+        data = super(CommentSerializer, self).to_representation(instance)
+        if instance.remote_author:
+            data['author'] = data['remote_author']
+        data.pop('remote_author', None)
+        data['id'] = instance.get_url(self.context.get('request', None))
+        return data
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(read_only=True)
+    remote_author = RemoteAuthorSerializer(read_only=True)
+
     class Meta:
         model = Like
-        fields = ['author','post']
+        fields = ['author', 'remote_author', 'post', 'comment']
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        # Mark: I am doing this so that I can display the post like this 
-        # "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-        data['post'] = join_urls(data['author']['url'], "posts", str(data['post']), ends_with_slash=True)
+        
+        if instance.post:
+            # Mark: I am doing this so that I can display the post like this 
+            # "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+            data['post'] = join_urls(data['author']['url'], "posts", str(data['post']), ends_with_slash=True)
+            data['object'] = data['post']
+            data.pop('comment', None)
+        else:
+            data['comment'] = instance.comment.get_url(self.context.get('request', None))
+            data['object'] = data['comment']
+            data.pop('post', None)
+
+        if instance.remote_author:
+            data['author'] = data['remote_author']
+        data.pop('remote_author', None)
         return data
 
 class AcceptOrDeclineFollowRequestSerializer(serializers.Serializer):
@@ -196,10 +259,12 @@ class InboxSerializer(serializers.ModelSerializer):
     post = PostSerializer(read_only=True)
     follow_request_received = InboxFollowRequestSerializer(read_only=True)
     remote_post = RemotePostSerializer(read_only=True)
-    like = PostLikeSerializer(read_only=True)
+    like = LikeSerializer(read_only=True)
+    comment = CommentSerializer(read_only=True)
+
     class Meta:
         model = Inbox
-        fields = ['post', 'follow_request_received', 'remote_post','like']
+        fields = ['post', 'follow_request_received', 'remote_post', 'like', 'comment']
 
     # https://www.django-rest-framework.org/api-guide/relations/#generic-relationships
     def to_representation(self, instance):
@@ -217,6 +282,9 @@ class InboxSerializer(serializers.ModelSerializer):
         elif instance.like:
             type = 'like'
             data = data['like']
+        elif instance.comment:
+            type = 'comment'
+            data = data['comment']
         else:
             raise Exception('Unexpected type of inbox item')
         data['type'] = type

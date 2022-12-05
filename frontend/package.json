@@ -22,7 +22,12 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@microsoft/fast-colors": "^5.3.1",
     "@microsoft/fast-components": "^2.30.6",
-    "@microsoft/fast-element": "^1.10.5"
+    "@microsoft/fast-element": "^1.10.5",
+    "@types/marked": "^4.0.7",
+    "@types/sanitize-html": "^2.6.2",
+    "marked": "^4.2.3",
+    "sanitize-html": "^2.7.3",
+    "trusted-types": "^2.0.0"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",

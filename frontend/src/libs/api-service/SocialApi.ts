@@ -167,6 +167,14 @@ export namespace SocialApi {
         return fetchPaginatedResponseInternal(url);
     }
 
+    export async function fetchAuthorPosts(authorId: string, page: number, size: number): Promise<PaginatedResponse | null> {
+        const url = new URL(SocialApiUrls.AUTHORS + authorId + SocialApiUrls.POSTS, window.location.origin);
+        url.searchParams.append("page", page.toString())
+        url.searchParams.append("size", size.toString())
+
+        return fetchPaginatedResponseInternal(url);
+    }
+
     export async function fetchPublicPosts(): Promise<PaginatedResponse | null> {
         const url = new URL(SocialApiUrls.PUBLIC_POSTS, window.location.origin);
 
