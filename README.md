@@ -71,7 +71,7 @@ API Information
 | /api/posts/                | - | Retrieves the list of public posts on the server (open to everyone) | - | - |
 | /api/authors/                | - | **Retrieves the list of authors [A][R]** | - | - |
 | /api/authors/<author_id>/                | Updates an author's profile [A] | **Retrieves an author's profile [A][R]** | - | - |
-| /api/authors/<author_id>/inbox/  [WIP]              | **Creates a new inbox item for an author [A][R]**  | Retrieve's an author's inbox [A] | - | - |
+| /api/authors/<author_id>/inbox/              | **Creates a new inbox item for an author [A][R]**  | Retrieve's an author's inbox [A] | - | - |
 | /api/authors/<author_id>/follow-requests/                | - | Retrives the list of follow requests for an author [A] | - | - |
 | /api/authors/<author_id>/follow-requests/<foreign_author_id>/                | - | - | - | Decline a follow request[A] |
 | /api/authors/<author_id>/followers/                | - | **Retrives the list of followers for an author [A][R]** | - | - |
@@ -79,10 +79,11 @@ API Information
 | /api/authors/<author_id>/posts/               | Creates a new post for an author [A] | **Retrieves recent posts from an author [A][R]** | - | - |
 | /api/authors/<author_id>/posts/<post_id>/                | Update an authors post [A] | **Retrieves an authors post [A][R]** | - | Delete an authors post [A] |
 | /api/nodes/             | Add a node [Admin only] | - | - | - |
-| /api/authors/<author_id>/posts/<post_id>/likes                | - | Retrieves a list of likes on an authors post [A] | - | - |
-| /api/authors/<author_id>/liked                | - | Retrieves a list of public things liked by an author [A] | - | - |
+| /api/authors/<author_id>/posts/<post_id>/likes/                | - | **Retrieves a list of likes on an authors post [A][R]** | - | - |
+| /api/authors/<author_id>/liked/                | - | **Retrieves a list of public things liked by an author [A][R]** | - | - |
 | /api/authors/<author_id>/posts/<post_id>/image/                | - | **Retrieves an image [R]** | - | - |
 | /api/authors/<author_id>/posts/<post_id>/comments/                | - | **Retrieves the comments for a post [A][R]** | - | - |
+| /api/authors/<author_id>/posts/<post_id>/comments/<comment_id>/likes/                | - | **Retrieves the list of likes made on a comment [A][R]** | - | - |
 
 ### Notes
 - [R] specifies that a remote request can be made to the route. In other words, only those routes marked with [R] accept remote requests. They have also been bolded for ease of navigability.
