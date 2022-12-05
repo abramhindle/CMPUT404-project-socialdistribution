@@ -202,6 +202,7 @@ class Team11Converter(Converter):
             "items": [{
                 "type": "post",
                 "id": post.get_url(request),
+                "title": post.title,
                 "source": "www.default.com" if post.source == "" else post.source,
                 "origin": "www.default.com" if post.source == "" else post.source,
                 "description": post.description,
