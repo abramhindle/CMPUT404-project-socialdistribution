@@ -167,6 +167,14 @@ export const ProfilePageStyles = css`
         display: none;
     }
 
+    .post-container {
+        width: 90%;
+    }
+
+    .loading {
+        height: 100px;
+    }
+
     a, a:hover, a:visited, a:active {
         text-decoration: none;
         color: inherit;
