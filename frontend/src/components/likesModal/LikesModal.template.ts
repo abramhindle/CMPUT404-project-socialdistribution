@@ -1,40 +1,27 @@
-import { html } from "@microsoft/fast-element";
+import {html, repeat} from "@microsoft/fast-element";
+import { LayoutHelpers } from "../../libs/core/Helpers";
+import { followerComponent } from "../follower-component";
 import { LikesModal } from "./LikesModal";
 
+followerComponent;
 
 export const LikesModalTemplate = html<LikesModal>`
     <div>
         <div class="likes-container">
             <div class="likes-banner">
                 <h1 class="likes-text"><span>Likes</span></h1>
+                <button class="close-modal" @click="${x => x.parent.toggleModal()}">
+                    Close
+                </button>
             </div>
             <ul class="likes-ul list">
-                <li class="likes-li list-item">
-                    <div class="likes-container1">
-                        <span class="likes-text1"><span>Username</span></span>
-                        <img
-                                alt="image"
-                                src="https://play.teleporthq.io/static/svg/default-img.svg"
-                                class="likes-image"
-                        />
-                    </div>
-                    <div class="likes-container2">
-                        <span class="likes-text2"><span>Username</span></span>
-                        <img
-                                alt="image"
-                                src="https://play.teleporthq.io/static/svg/default-img.svg"
-                                class="likes-image1"
-                        />
-                    </div>
-                    <div class="likes-container3">
-                        <span class="likes-text3"><span>Username</span></span>
-                        <img
-                                alt="image"
-                                src="https://play.teleporthq.io/static/svg/default-img.svg"
-                                class="likes-image2"
-                        />
-                    </div>
-                </li>
+                ${repeat(x => x.likes || [], html`
+                    <follower-component
+                        :profile=${x => x.author}
+                        :user=${(x, c) => c.parent.user}
+                        :layoutStyleClass="${(x, c) => LayoutHelpers.getLayoutStyle(c.parent.layoutType)}">
+                    </follower-component>
+                `)}
             </ul>
         </div>
     </div>

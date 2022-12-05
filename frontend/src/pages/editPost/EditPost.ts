@@ -65,7 +65,6 @@ export class EditPost extends Page {
 
     const formData = new FormData(this.form);
     try {
-      formData.append("description", "My post description");
       formData.append("unlisted", "false");
       if (this.user) {
         if (this.postId) {

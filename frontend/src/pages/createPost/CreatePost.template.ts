@@ -25,6 +25,12 @@ export const CreatePostPageTemplate = html<CreatePost>`
                         name="title"
                 />
                 <textarea
+                        placeholder="Description"
+                        class="create-post-textarea textarea"
+                        name="description"
+                        maxlength="100"
+                ></textarea>
+                <textarea
                         placeholder="Content"
                         class="create-post-textarea textarea"
                         name="content"

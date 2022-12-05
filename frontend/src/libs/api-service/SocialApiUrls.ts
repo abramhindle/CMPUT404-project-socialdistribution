@@ -11,4 +11,6 @@ export class SocialApiUrls {
 
     public static readonly FOLLOWERS = "/followers/";
     public static readonly FOLLOW_REQUESTS = "/follow-requests/";
+
+    public static readonly LIKES = "/likes/";
 }
