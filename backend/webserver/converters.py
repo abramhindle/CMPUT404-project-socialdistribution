@@ -29,9 +29,20 @@ class Converter(object):
     
     def url_to_send_comment_at(self, author_url, post_id=None):
         return join_urls(author_url, "inbox", ends_with_slash=True)
+
+    def url_to_send_like_at(self, author_url, post_id=None, comment_id=None):
+        return join_urls(author_url, "inbox", ends_with_slash=True)
     
     def url_to_get_comments_at(self, author_url, post_id):
         return join_urls(author_url, "posts", post_id, "comments", ends_with_slash=True)
+    
+    def url_to_get_likes_at(self, author_url, post_id, comment_id=None):
+        if comment_id is None:
+            return join_urls(author_url, "posts", post_id, "likes", ends_with_slash=True)
+        return join_urls(author_url, "posts", post_id, "comments", comment_id, "likes", ends_with_slash=True)
+
+    def url_to_get_author_liked_objects(self, author_url):
+        return join_urls(author_url, "liked", ends_with_slash=True)
 
     # returns the request payload required for sending a follow request
     def send_follow_request(self, request_data, request: HttpRequest):
@@ -41,6 +52,9 @@ class Converter(object):
         return False
     
     def send_comment_inbox(self, request: HttpRequest):
+        return request.data
+    
+    def send_like_inbox(self, request: HttpRequest):
         return request.data
     
     # returns the request payload required for sending a post inbox
@@ -114,6 +128,18 @@ class Converter(object):
     
     def supports_image_fetch(self):
         return True
+    
+    def convert_like(self, data: dict):
+        return data
+    
+    def convert_likes(self, data: list):
+        if isinstance(data, list):
+            return [self.convert_like(like) for like in data]
+        else:
+            # data must be in paginated form
+            if "results" in data:
+                return [self.convert_comment(like) for like in data["results"]]
+        return None 
 
 
 class Team11Converter(Converter):
@@ -124,8 +150,23 @@ class Team11Converter(Converter):
     def url_to_send_comment_at(self, author_url, post_id=None):
         return None
     
+    def url_to_send_like_at(self, author_url, post_id=None, comment_id=None):
+        return None
+    
     def url_to_get_comments_at(self, author_url, post_id):
         return join_urls(author_url, "posts", format_uuid_without_dashes(post_id), "comments")
+    
+    def url_to_get_likes_at(self, author_url, post_id, comment_id=None):
+        if comment_id is None:
+            return join_urls(author_url, "posts", format_uuid_without_dashes(post_id), "likes")
+        return join_urls(
+            author_url,
+            "posts",
+            format_uuid_without_dashes(post_id),
+            "comments",
+            format_uuid_without_dashes(comment_id),
+            "likes"
+        )
 
     def send_follow_request(self, request_data, request: HttpRequest):
         actor = models.Author.objects.get(id=request_data["sender"]["id"])
@@ -239,6 +280,9 @@ class Team10Converter(Converter):
     def url_to_send_post_inbox_at(self, author_url):
         return join_urls(author_url, "inbox")
     
+    def url_to_send_like_at(self, author_url, post_id=None, comment_id=None):
+        return None
+    
     # TODO: Update this when they support comments
     def url_to_send_comment_at(self, author_url, post_id=None):
         return None
@@ -347,6 +391,9 @@ class Team16Converter(Converter):
     
     # TODO: Update this when they support comments
     def url_to_send_comment_at(self, author_url, post_id=None):
+        return None
+    
+    def url_to_send_like_at(self, author_url, post_id=None, comment_id=None):
         return None
     
     def send_follow_request(self, request_data, request: HttpRequest):

@@ -19,7 +19,8 @@ from .views import(
     PostLikesView,
     AuthorLikedView,
     ImagePostView,
-    CommentsView
+    CommentsView,
+    CommentLikesView
 )
 
 # first argument, endpoint, second argument is the view that calling the url will send the request to
@@ -43,5 +44,6 @@ urlpatterns = [
     path('authors/<str:author_id>/posts/<str:post_id>/comments/', CommentsView.as_view()),
     path('posts/', AllPublicPostsView.as_view()),
     path('authors/<str:pk>/posts/<str:post_id>/likes/',PostLikesView.as_view()),
+    path('authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/', CommentLikesView.as_view()),
     path('authors/<str:pk>/liked/',AuthorLikedView.as_view()),
 ]
