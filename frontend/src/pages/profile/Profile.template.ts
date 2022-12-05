@@ -1,3 +1,4 @@
+import { icon } from "@fortawesome/fontawesome-svg-core";
 import { html, ref, when } from "@microsoft/fast-element";
 import { LayoutHelpers } from "../../libs/core/Helpers";
 import { FollowStatus } from "../../libs/core/PageModel";
@@ -17,8 +18,9 @@ const editProfileModal = html<Profile>`
                 <div class="form-element">
                     <fast-text-field type="text" value="${x => x.user?.displayName}" name="display_name" required>Display Name</fast-text-field>
                     <fast-text-field type="url" value="${x => x.user?.githubHandle}" name="github_handle">GitHub</fast-text-field>
-                    <img src="${x => x.user?.profileImage}">
-                    <input type="file" name="image">
+                    <label>Profile Image</label>
+                    <img class="profile-image" src="${x => x.user?.profileImage}">
+                    <input class="image-upload" type="file" name="image" accept="image/png, image/jpeg">
                 </div>
             </div>
         </div>
@@ -35,9 +37,17 @@ export const ProfilePageTemplate = html<Profile>`
         ${editProfileModal}
         <div class="profile-background ${x => LayoutHelpers.getLayoutStyle(x.layoutType)}"></div>
         <div class="profile-info">
-            <div class="profile-image">Profile Image (WIP)</div>
+            <img class="profile-image" src="${x => x.profile?.profileImage}">
             <div class="display-name">
-                <h2>${x => x.profile?.displayName}</h2>
+                <div class="profile-info-display">
+                    <h2>${x => x.profile?.displayName}</h2>
+                    <h4>
+                        <a href="${x => x.profile?.githubHandle}" target="_blank">
+                            <div class="profile-info-icon" :innerHTML="${_ => icon({ prefix: "fas", iconName: "code-pull-request" }).html}"></div>
+                            <span class="profile-link-text">GitHub Handle</span>
+                        </a>
+                    </h4>
+                </div>
                 ${when(x => x.user?.id == x.profile?.id, html<Profile>`
                 <button @click=${x => x.openEditModal()}>
                     Edit Profile

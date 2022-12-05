@@ -27,11 +27,37 @@ export const ProfilePageStyles = css`
         align-items: center;
         align-content: center;
     }
+
+    .profile-info-display {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        color: black;
+    }
+
+    .profile-info-display h2, h4 {
+        margin: 0;
+        color: black;
+    }
+
+    .profile-info-icon {
+        display: inline-block;
+        height: 15px;
+        width: 15px;
+    }
+    
+    .profile-link-text {
+        color: ${accentForegroundActive};
+    }
     
     .profile-image {
+        margin-top: 10px;
+        margin-bottom: 10px;
         width: 150px;
         height: 150px;
+        object-fit: cover;
+        object-position: 50%;
         background-color: lightgrey;
+        border: solid lightgrey 3px;
     }
 
     .display-name {
@@ -73,6 +99,7 @@ export const ProfilePageStyles = css`
         width: 90%;
         justify-content: space-between;
         align-items: center;
+        color: white;
     }
 
     .followers {
@@ -124,9 +151,12 @@ export const ProfilePageStyles = css`
     .form-element {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
+        place-content: center;
+        align-items: flex-start;
+    }
+
+    .image-upload {
+        font-size: ${typeRampPlus1FontSize};
     }
 
     .modal-open {
@@ -139,5 +169,6 @@ export const ProfilePageStyles = css`
 
     a, a:hover, a:visited, a:active {
         text-decoration: none;
+        color: inherit;
     }
 `;

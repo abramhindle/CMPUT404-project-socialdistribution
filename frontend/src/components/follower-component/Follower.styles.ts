@@ -3,6 +3,13 @@ import { css } from "@microsoft/fast-element";
 import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const FollowerStyles = css`
+    h3 {
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .follower {
         background-color: white;
         border-radius: 20px;
