@@ -16,6 +16,9 @@ const editProfileModal = html<Profile>`
             <div class="edit-form">
                 <div class="form-element">
                     <fast-text-field type="text" value="${x => x.user?.displayName}" name="display_name" required>Display Name</fast-text-field>
+                    <fast-text-field type="url" value="${x => x.user?.githubHandle}" name="github_handle">GitHub</fast-text-field>
+                    <img src="${x => x.user?.profileImage}">
+                    <input type="file" name="image">
                 </div>
             </div>
         </div>

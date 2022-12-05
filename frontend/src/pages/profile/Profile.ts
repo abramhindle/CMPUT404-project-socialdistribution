@@ -2,6 +2,7 @@ import { observable } from "@microsoft/fast-element";
 import { SocialApi } from "../../libs/api-service/SocialApi";
 import { SocialApiFollowers } from "../../libs/api-service/SocialApiFollowers";
 import { FollowInfo, FollowRemovalBody, FollowRequestBody } from "../../libs/api-service/SocialApiModel";
+import { ImageHelpers } from "../../libs/core/Helpers";
 import { FollowStatus } from "../../libs/core/PageModel";
 import { Page } from "../Page";
 
@@ -35,6 +36,27 @@ export class Profile extends Page {
         }
 
         const formData = new FormData(this.form)
+        
+        // Convert image to base64 if it was uploaded
+        if (formData.get("image")) {
+            formData.delete("image")
+            const base64 = await ImageHelpers.convertBase64(formData.get("image"));
+            if (base64 && typeof base64 === 'string') {
+                const imagePostData = new FormData();
+                imagePostData.set("image", base64)
+
+                let type = "image/jpeg;base64";
+                if (base64.split(",").length > 0) {
+                    type = base64.split(",")[0]
+                }
+                imagePostData.set("content_type", type)
+                try {
+                    SocialApi.createPost(this.userId, imagePostData)
+                }
+                SocialApi.createPost(this.userId, imagePostData)
+            }
+        }
+
         try {
             const responseData = await SocialApi.editProfile(this.userId, formData);
             if (responseData && responseData.id == this.userId) {
@@ -42,7 +64,6 @@ export class Profile extends Page {
                 if (this.profileId == this.userId) {
                     this.profile = this.user;
                 }
-                this.closeEditModal();
             }
         } catch (e) {
             console.warn(e)

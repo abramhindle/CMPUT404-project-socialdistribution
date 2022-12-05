@@ -80,6 +80,7 @@ export namespace SocialApiTransform {
         myPost.published = new Date(postData.created_at);
         myPost.source = postData.source;
         myPost.origin = postData.origin;
+        myPost.url = postData.url;
         return myPost;
     }
 }

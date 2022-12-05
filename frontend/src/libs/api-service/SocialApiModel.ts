@@ -54,6 +54,8 @@ export class Post {
 
     content?: string;
 
+    url?: string;
+
     constructor(id: string) {
         this.id = id;
     }
