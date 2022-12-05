@@ -4,7 +4,6 @@ import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const FollowerStyles = css`
     h3 {
-        width: 50%;
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
