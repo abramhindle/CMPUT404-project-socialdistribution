@@ -43,6 +43,13 @@ export const CreatePostPageTemplate = html<CreatePost>`
                         <option value="FRIENDS">Friends Only</option>
                     </select>
                 </div>
+                <div class="create-post-container2">
+                    <span class="create-post-text4">Content Type:</span>
+                    <select class="create-post-select" name="content_type">
+                        <option value="text/plain">Plain</option>
+                        <option value="text/markdown">Markdown</option>
+                    </select>
+                </div>
                 <button class="create-post-button1 button">
                 <span class="create-post-text5">
                 <span class="create-post-text6">Create</span>

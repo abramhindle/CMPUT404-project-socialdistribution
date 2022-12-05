@@ -1,4 +1,4 @@
-import { Author, FollowRequest, PaginatedResponse, Post } from "./SocialApiModel";
+import { Author, ContentType, FollowRequest, PaginatedResponse, Post } from "./SocialApiModel";
 
 export namespace SocialApiTransform {
     export function parseJsonPaginatedData(jsonData: string): PaginatedResponse | null {
@@ -75,11 +75,22 @@ export namespace SocialApiTransform {
         myPost.title = postData.title;
         myPost.description = postData.description;
         myPost.unlisted = postData.unlisted;
-        myPost.contentType = postData.content_type;
+        myPost.contentType = parseContentType(postData.content_type);
         myPost.content = postData.content;
         myPost.published = new Date(postData.created_at);
         myPost.source = postData.source;
         myPost.origin = postData.origin;
         return myPost;
+    }
+
+    function parseContentType(contentType: string): ContentType {
+        switch (contentType) {
+            case "text/plain":
+                return ContentType.Plain
+            case "text/markdown":
+                return ContentType.Markdown
+            default:
+                return ContentType.Plain
+        }
     }
 }
