@@ -6,10 +6,14 @@ import { Follower } from "./Follower";
 export const FollowerTemplate = html<Follower>`
     ${when(x => !x.isDeleted, html<Follower>`
         <div class="follower ${x => x.layoutStyleClass}">
-            ${when(x => x.profile?.profileImage !== "", html<Follower>`
-                <img class="profile-image" src="${x => x.profile?.profileImage}">
-            `)}
-            <h3><a href="${x => "/profile/" + x.profile?.id}">${x => x.profile?.displayName}</a></h3>
+            <h3>
+                <a href="${x => "/profile/" + x.profile?.id}">
+                    ${when(x => x.profile?.profileImage !== "", html<Follower>`
+                        <img class="profile-image" src="${x => x.profile?.profileImage}">
+                    `)}
+                    ${x => x.profile?.displayName}
+                </a>
+            </h3>
             ${when(x => x.user?.id != x.profile?.id, html<Follower>`
                 ${when(x => x.request, html<Follower>`
                     <div class="follow-decision">

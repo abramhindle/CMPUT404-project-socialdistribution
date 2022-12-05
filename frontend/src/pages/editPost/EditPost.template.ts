@@ -27,6 +27,12 @@ export const EditPostPageTemplate = html<EditPost>`
                     name="title"
             />
             <textarea
+              placeholder="Description"
+              class="edit-post-textarea textarea"
+              name="description"
+              maxlength="100"
+            >${x => x.post?.description}</textarea>
+            <textarea
                     placeholder="Content"
                     class="edit-post-textarea textarea"
                     name="content"

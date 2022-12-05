@@ -4,10 +4,22 @@ import { LayoutStyleClass } from "../../libs/core/PageModel";
 
 export const FollowerStyles = css`
     h3 {
-        width: 100%;
+        width: 50%;
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
+        margin: 10px 0;
+    }
+
+    h3 a {
+        display: flex;
+        place-content: center;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+    
+    h3 a img {
+        margin-right: 10px;
     }
 
     .follower {
@@ -22,7 +34,7 @@ export const FollowerStyles = css`
     }
 
     .follower.${LayoutStyleClass.Desktop} {
-        justify-content: space-evenly;
+        justify-content: space-between;
         align-items: center;
         flex-direction: row;
     }

@@ -2,6 +2,7 @@ import {css} from "@microsoft/fast-element";
 import {ResetStyles} from "./reset.styles";
 import {DefaultStyles} from "./default.styles";
 import {GeneralStyles} from "./general.styles";
+import { typeRampPlus1FontSize, typeRampPlus2FontSize } from "@microsoft/fast-components";
 
 
 export const LikesModalComponentStyles = css`
@@ -17,31 +18,30 @@ export const LikesModalComponentStyles = css`
     align-items: flex-start;
     flex-direction: column;
     background-color: var(--dl-color-gray-white);
+    z-index: 10;
   }
 
   .likes-banner {
-    width: 100%;
-    height: 30%;
     display: flex;
-    padding: var(--dl-space-space-threeunits);
-    position: relative;
-    align-self: center;
+    width: 100%;
+    padding: 10px;
+    justify-content: space-between;
     align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    background-image: linear-gradient(93.58deg, #9F83C7 0%, #ABD9FF 100%);;
+    font-size: ${typeRampPlus2FontSize};
+    font-weight: bold;
+    background-image: linear-gradient(93.58deg, #9F83C7 0%, #ABD9FF 100%);
   }
 
   .likes-text {
-    color: #277bc0;
+    color: black;
     font-size: 3rem;
     align-self: center;
     text-align: center;
   }
 
   .likes-ul {
-    width: 40%;
-    height: 80%;
+    width: 90%;
+    height: 90%;
     overflow: auto;
     align-self: center;
     padding-left: 0px;
@@ -102,6 +102,16 @@ export const LikesModalComponentStyles = css`
     border-top-right-radius: var(--dl-radius-radius-radius4);
     border-bottom-left-radius: var(--dl-radius-radius-radius4);
     border-bottom-right-radius: var(--dl-radius-radius-radius4);
+  }
+
+  .close-modal {
+    border-radius: 50px;
+    padding: 8px 20px;
+    border: 0;
+    background-color: black;
+    color: white;
+    font-size: ${typeRampPlus1FontSize};
+    cursor: pointer;
   }
 
   .likes-text2 {

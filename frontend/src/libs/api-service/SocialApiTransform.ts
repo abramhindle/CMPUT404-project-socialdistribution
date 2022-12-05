@@ -81,6 +81,7 @@ export namespace SocialApiTransform {
         myPost.source = postData.source;
         myPost.origin = postData.origin;
         myPost.url = postData.url;
+        myPost.likes = postData.likes_count;
         return myPost;
     }
 

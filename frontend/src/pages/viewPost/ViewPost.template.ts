@@ -18,12 +18,8 @@ export const ViewPostPageTemplate = html<ViewPost>`
         ${when(x => x.post, html<ViewPost>`
         <div class="post-container">
             <div class="post-container1">
-                <img
-                        src="https://play.teleporthq.io/static/svg/default-img.svg"
-                        alt="post image"
-                        class="post-image"
-                />
                 <div class="post-container2">
+                    <h2><u>${x => x.post?.title}</u></h2>
                     ${when(x => x.post?.contentType == ContentType.Markdown && import('../../components/markdown-component'), html<ViewPost>`
                         <markdown-component
                             :content=${x => x.post?.content}
@@ -35,15 +31,16 @@ export const ViewPostPageTemplate = html<ViewPost>`
                     <div class="post-container3">
                         <span>${x => x.post?.author?.displayName} | ${x => new Date(x.post?.published || new Date()).toLocaleDateString()}</span>
                         <div class="like-post-icon" @click="${x => x.likePost()}" :innerHTML="${_ => icon({prefix: 'fas', iconName: "thumbs-up"}).html}"></div>
-                        <div @click="${x => x.toggleModal()}">
-                            See Likes
+                        <div class="see-likes" @click="${x => x.toggleModal()}">
+                            See ${x => x.post?.likes} Likes
                         </div>
-                        ${when (x => x.viewLikes, html`
+                        ${when (x => x.viewLikes, html<ViewPost>`
                             <fast-dialog modal="true">
                                 <likes-modal 
-                                    :postAuthorId="${x => x.post?.author.id}"
+                                    :postAuthorId="${x => x.post?.author?.id}"
                                     :postId="${x => x.postId}"
                                     :parent="${x => x}"
+                                    :user="${x => x.user}"
                                 ></likes-modal>
                             </fast-dialog>
                         `)}

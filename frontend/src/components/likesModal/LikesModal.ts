@@ -1,16 +1,11 @@
-import {attr, FASTElement, observable} from "@microsoft/fast-element";
-import {SocialApi} from "../../libs/api-service/SocialApi";
-import {Author, Post} from "../../libs/api-service/SocialApiModel";
-import {Page} from "../../pages/Page";
+import { rgbToHSL } from "@microsoft/fast-colors";
+import { attr, FASTElement, observable } from "@microsoft/fast-element";
+import { SocialApi } from "../../libs/api-service/SocialApi";
+import { Author } from "../../libs/api-service/SocialApiModel";
+import { SocialApiTransform } from "../../libs/api-service/SocialApiTransform";
 
 type Like = {
-  author: {
-    url: string,
-    id: string,
-    display_name: string,
-    profile_image: string,
-    github_handle: string
-  },
+  author: Author,
   post: string
 }
 
@@ -22,6 +17,9 @@ export class LikesModal extends FASTElement {
 
   @observable
   public postAuthorId?: string;
+
+  @observable
+  public user?: Author;
 
   @observable
   public likes: Like[] = [];
@@ -53,9 +51,33 @@ export class LikesModal extends FASTElement {
     }
 
     try {
-      this.likes = await SocialApi.getPostLikes(postId, postAuthorId);
+      const response = await SocialApi.getPostLikes(postId, postAuthorId);
+      if (response) {
+        this.setLikes(response)
+      }
     } catch (e) {
       console.error(e);
     }
   }
+
+  private setLikes(responseData: any) {
+    if (!responseData) {
+      return;
+    }
+
+    // Clear likes
+    this.likes.splice(0, this.likes.length);
+
+    for (var data of responseData) {
+      const newLike: any = {}
+      const author = SocialApiTransform.authorDataTransform(data.author);
+      if (author) {
+        newLike["author"] = author
+      }
+      newLike["post"] = data.post
+      this.likes.push(newLike)
+    }
+  }
 }
+
+

@@ -17,24 +17,22 @@ export const ViewPostPageStyles = css`
     min-height: 100vh;
     align-items: center;
     flex-direction: column;
-    background-color: white;
   }
 
   .post-container1 {
     flex: 0 0 auto;
-    width: 80%;
-    height: 100px;
+    width: 90%;
     display: flex;
     margin-top: var(--dl-space-space-twounits);
     align-items: center;
     padding-top: var(--dl-space-space-halfunit);
     padding-left: var(--dl-space-space-halfunit);
     border-radius: var(--dl-radius-radius-radius4);
-    margin-bottom: var(--dl-space-space-twounits);
+    margin-bottom: 5rem;
     padding-right: var(--dl-space-space-halfunit);
     padding-bottom: var(--dl-space-space-halfunit);
     justify-content: flex-start;
-    background-color: #d9d9d9;
+    background-color: white;
     border-top-left-radius: var(--dl-radius-radius-radius4);
     border-top-right-radius: var(--dl-radius-radius-radius4);
     border-bottom-left-radius: var(--dl-radius-radius-radius4);
@@ -55,13 +53,12 @@ export const ViewPostPageStyles = css`
 
   .post-container2 {
     flex: 3 1 0;
-    width: 930px;
-    height: 100%;
     display: flex;
     position: relative;
     align-items: flex-start;
     flex-direction: column;
     justify-content: flex-start;
+    width: 100%;
   }
 
   .post-text {
@@ -71,19 +68,36 @@ export const ViewPostPageStyles = css`
   .post-container3 {
     flex: 0 0 auto;
     right: 0px;
-    width: 50%;
+    width: 100%;
     bottom: 0px;
     height: 30%;
     display: flex;
-    position: absolute;
     align-items: center;
-    justify-content: flex-end;
+    font-weight: bold;
+    justify-content: space-between;
+    font-style: italic;
   }
   
   .like-post-icon {
-    width: 20px;
-    height: 20px;
-    margin-left: 10px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+  }
+
+  .live-post-icon:hover {
+    color: lightgrey;
+  }
+
+  .see-likes {
+    cursor: pointer;
+  }
+
+  fast-dialog {
+    z-index: 5;
+  }
+
+  .see-likes:hover {
+    text-decoration: underline;
   }
 
   .post-ul {
@@ -179,6 +193,8 @@ export const ViewPostPageStyles = css`
     color: black;
 
     width: 90%;
+
+    margin-bottom: 5rem;
   }
 
   @media (max-width: 991px) {
