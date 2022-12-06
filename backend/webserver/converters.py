@@ -91,13 +91,20 @@ class Converter(object):
         return data
     
     def convert_authors(self, data):
+        authors_list = []
         if isinstance(data, list):
-            return [self.convert_author(author) for author in data]
+            for author in data:
+                converted_data = self.convert_author(author)
+                if converted_data is not None:
+                    authors_list.append(converted_data)
         else:
             # data must be in paginated form
             if "results" in data:
-                return [self.convert_author(author) for author in data["results"]]
-        return None
+                for author in data["results"]:
+                    converted_data = self.convert_author(author)
+                    if converted_data is not None:
+                        authors_list.append(converted_data)
+        return authors_list
     
     # converts a remote post's response to the format specified by PostSerializer
     def convert_post(self, data: dict):
