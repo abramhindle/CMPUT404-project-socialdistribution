@@ -12,10 +12,7 @@ export class Markdown extends FASTElement {
         }
 
         return sanitizeHtml(marked.parse(this.content), {
-            allowedAttributes: {
-                'a': []
-            },
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img'])
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ])
         })
     }
 }
