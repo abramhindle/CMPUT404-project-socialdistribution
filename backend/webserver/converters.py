@@ -229,13 +229,17 @@ class Team11Converter(Converter):
         return join_urls(api_url, "authors/all/posts")
     
     def convert_author(self, data: dict):
-        return {
-            "url": data["url"],
-            "id":  get_author_id_from_url(data["id"]),
-            "display_name": data["displayName"],
-            "profile_image": data["profileImage"],
-            "github_handle": data["github"],
-        }
+        try:
+            return {
+                "url": data["url"],
+                "id":  get_author_id_from_url(data["id"]),
+                "display_name": data["displayName"],
+                "profile_image": data["profileImage"],
+                "github_handle": data["github"],
+            }
+        except Exception as e:
+            logger.error(f"Error converting author: {e}")
+            return None
     
     def convert_post(self, data: dict):
         return {
