@@ -228,6 +228,8 @@ class Post(models.Model):
 
     # returns True only if all requests were successful
     def send_to_followers(self, request):
+        if self.unlisted:
+            return True
         success = True
         followers = self.author.followed_by_authors.all()
         max_threads = min(10, len(followers))       # spawn at most 10 threads
@@ -258,6 +260,8 @@ class Post(models.Model):
     
     # returns True only if all requests were successful
     def send_to_all_authors(self, request):
+        if self.unlisted:
+            return True
         success = True
         for author in Author.objects.exclude(id=self.author.id).iterator():
             Inbox.objects.create(target_author=author, post=self)
