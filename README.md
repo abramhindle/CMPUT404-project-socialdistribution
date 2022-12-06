@@ -1,11 +1,12 @@
 CMPUT404-project-socialdistribution
 ===================================
 
-CMPUT404-project-socialdistribution
-
-See project.org (plain-text/org-mode) for a description of the project.
-
-Make a distributed social network!
+Remote Connections
+=================
+Teams that we connected to:
+1. Team 10 - https://socioecon.herokuapp.com/home/
+2. Team 11 - https://cmsjmnet.herokuapp.com/
+3. Team 14 - https://social-distribution-14degrees2.herokuapp.com/
 
 Setup
 =================
