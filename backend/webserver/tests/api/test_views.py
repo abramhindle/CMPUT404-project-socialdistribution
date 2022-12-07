@@ -2362,7 +2362,7 @@ class AllPostTestCase(APITestCase):
         payload = {
             "title": "Mark McGoey",
             "description": "new description",
-            "unlisted":True,
+            "unlisted":False,
             "content":"Some new content",
             "visibility":"FRIENDS",
             "content_type":"text/plain"
@@ -2524,7 +2524,7 @@ class AllPostTestCase(APITestCase):
         payload = {
             "title": "Mark McGoey",
             "description": "new description",
-            "unlisted":True,
+            "unlisted":False,
             "content":"Some new content",
             "visibility":"PUBLIC",
             "content_type":"text/plain"
@@ -2556,7 +2556,7 @@ class AllPostTestCase(APITestCase):
         payload = {
             "title": "Mark McGoey",
             "description": "new description",
-            "unlisted":True,
+            "unlisted":False,
             "content":"Some new content",
             "visibility":"PUBLIC",
             "content_type":"text/plain"
@@ -2975,9 +2975,8 @@ class AllPublicPostsTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(3, len(response.data))
-        self.assertEqual("Test Post", response.data[0]["title"])
-        self.assertEqual("My first post!", response.data[1]["title"])
-        self.assertEqual("my second post!", response.data[2]["title"])
+        expected_titles = ["Test Post", "My first post!", "my second post!"]
+        self.assertEqual(expected_titles.sort(), [post["title"] for post in response.data].sort())
 
 
 class DeclineFollowRequestTestCase(APITestCase):
