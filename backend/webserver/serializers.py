@@ -207,6 +207,9 @@ class LikeSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        if instance.remote_author:
+            data['author'] = data['remote_author']
+        data.pop('remote_author', None)
         
         if instance.post:
             # Mark: I am doing this so that I can display the post like this 
@@ -219,9 +222,6 @@ class LikeSerializer(serializers.ModelSerializer):
             data['object'] = data['comment']
             data.pop('post', None)
 
-        if instance.remote_author:
-            data['author'] = data['remote_author']
-        data.pop('remote_author', None)
         return data
 
 class AcceptOrDeclineFollowRequestSerializer(serializers.Serializer):
