@@ -287,6 +287,8 @@ class InboxSerializer(serializers.ModelSerializer):
             data = data['comment']
         else:
             raise Exception('Unexpected type of inbox item')
+        if data is None:
+            return data
         data['type'] = type
         return data
 
