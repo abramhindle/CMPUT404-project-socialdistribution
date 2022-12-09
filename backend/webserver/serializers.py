@@ -3,6 +3,9 @@ from drf_base64.fields import Base64ImageField
 from .models import Author, Follow, FollowRequest, Inbox, Post, Node, Like, RemoteAuthor, RemotePost, Comment
 from .api_client import http_request
 from .utils import join_urls, format_uuid_without_dashes
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -288,6 +291,7 @@ class InboxSerializer(serializers.ModelSerializer):
         else:
             raise Exception('Unexpected type of inbox item')
         if data is None:
+            logger.error(f'Failed to serialize inbox item {instance}')
             return data
         data['type'] = type
         return data
