@@ -1,12 +1,28 @@
 CMPUT404-project-socialdistribution
 ===================================
 
+List of Contents:
+* [Remote Connections](https://github.com/zarifmahfuz/project-socialdistribution#remote-connections)
+* New features developed since Project Presentation
+* Local Setup -
+  * [Backend Setup](https://github.com/zarifmahfuz/project-socialdistribution#setup)
+  * [Frontend Setup](https://github.com/zarifmahfuz/project-socialdistribution/tree/master/frontend#running-the-front-end)
+* [API Documentation](https://github.com/zarifmahfuz/project-socialdistribution#api-information)
+  * [Sample uses for every API endpoint](https://github.com/zarifmahfuz/project-socialdistribution#sample-usage)
+* [Planning & Design](https://github.com/zarifmahfuz/project-socialdistribution#planning--design)
+
 Remote Connections
 =================
 Teams that we connected to:
 1. Team 10 - https://socioecon.herokuapp.com/home/
 2. Team 11 - https://cmsjmnet.herokuapp.com/
 3. Team 14 - https://social-distribution-14degrees2.herokuapp.com/
+
+Additions Made Since Project Presentation
+=================
+* Likes
+* Comments
+* Image Posts
 
 Setup
 =================
@@ -935,7 +951,7 @@ Comments will also be associated with their corresponding posts in the following
 Planning & Design
 ============
 - You can view the [ER model for our app here](https://github.com/zarifmahfuz/project-socialdistribution/blob/master/docs/ERModelv2.png).
-- You can view the Figma designs for our UI here.
+- You can view the [Figma designs for our UI here.](https://github.com/zarifmahfuz/project-socialdistribution/blob/master/docs/DESIGN.md)
 
 Deployment
 ============
@@ -952,19 +968,13 @@ Send a pull request and be sure to update this file with your name.
 Contributors / Licensing
 ========================
 
-Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
+Generally everything is LICENSE'D under the Apache 2 license by Zarif Mahfuz.
 
 All text is licensed under the CC-BY-SA 4.0 http://creativecommons.org/licenses/by-sa/4.0/deed.en_US
 
 Contributors:
 
-    Karim Baaba
-    Ali Sajedi
-    Kyle Richelhoff
-    Chris Pavlicek
-    Derek Dowling
-    Olexiy Berjanskii
-    Erin Torbiak
-    Abram Hindle
-    Braedy Kuzma
-    Nhan Nguyen 
+    Zarif Mahfuz
+    Mark McGoey
+    Chidubem Ogbudibe
+    Timothee Legros
