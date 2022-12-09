@@ -179,16 +179,12 @@ class PostView(APIView):
         if post.visibility == "PUBLIC":
             serializer = PostSerializer(post, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
-        elif post.visibility == "FRIENDS":
-            if post.author.id == request.user.id:
-                serializer = PostSerializer(post, context={'request': request})
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            elif Follow.objects.filter(follower=request.user.id,followee=post.author.id).count() > 0:
+        else:
+            if post.author.id == request.user.id or Follow.objects.filter(follower=request.user.id,followee=post.author.id).count() > 0:
                 serializer = PostSerializer(post, context={'request': request})
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response({'message': 'you are not authorized to view this post'}, status=status.HTTP_400_BAD_REQUEST)
-            
 
     def post(self, request, pk,post_id, *args, **kwargs):
         author = self.get_author(pk)
