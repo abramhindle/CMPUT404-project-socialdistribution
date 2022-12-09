@@ -1,9 +1,11 @@
 CMPUT404-project-socialdistribution
 ===================================
 
-List of Contents:
+[14Degrees](https://social-distribution-14degrees.herokuapp.com/), a distributed social networking app designed to help you find connections within 14 degrees of separation.
+
+## List of Contents:
 * [Remote Connections](https://github.com/zarifmahfuz/project-socialdistribution#remote-connections)
-* New features developed since Project Presentation
+* [New features developed since Project Presentation](https://github.com/zarifmahfuz/project-socialdistribution#additions-made-since-project-presentation)
 * Local Setup -
   * [Backend Setup](https://github.com/zarifmahfuz/project-socialdistribution#setup)
   * [Frontend Setup](https://github.com/zarifmahfuz/project-socialdistribution/tree/master/frontend#running-the-front-end)
