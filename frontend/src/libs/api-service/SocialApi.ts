@@ -2,7 +2,7 @@ import { SocialApiConstants } from "./SocialApiConstants";
 import { Author, PaginatedResponse, Post } from "./SocialApiModel";
 import { SocialApiTransform } from "./SocialApiTransform";
 import { SocialApiUrls } from "./SocialApiUrls";
-import {textFieldStyles} from "@microsoft/fast-components";
+import { textFieldStyles } from "@microsoft/fast-components";
 
 
 export type PostVisibility = 'PUBLIC' | 'PRIVATE' | 'FRIENDS';
@@ -339,11 +339,11 @@ export namespace SocialApi {
     }
 
     export async function likePost(
-      postId: string,
-      likeAuthorId: string,
-      likeAuthorUrl: string,
-      postAuthorId: string,
-      postAuthorUrl: string
+        postId: string,
+        likeAuthorId: string,
+        likeAuthorUrl: string,
+        postAuthorId: string,
+        postAuthorUrl: string
     ) {
         const body = JSON.stringify({
             type: 'like',
@@ -402,6 +402,75 @@ export namespace SocialApi {
 
         console.log("Success:", JSON.parse(text));
         return JSON.parse(text);
+    }
+
+    export async function getComments(postAuthorId: string, postId: string) {
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+
+        const requestOptions = {
+            method: "GET",
+            credentials: credentialType,
+            headers: headers,
+        };
+
+        const url = new URL(SocialApiUrls.AUTHORS + postAuthorId + SocialApiUrls.POSTS + postId + SocialApiUrls.COMMENTS, window.location.origin);
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        console.log("Success:", JSON.parse(text));
+        return JSON.parse(text);
+    }
+
+    export async function postComment(
+        authorId: string,
+        authorUrl: string,
+        postId: string,
+        postAuthorId: string,
+        postAuthorUrl: string,
+        commentForm: FormData) {
+        const comment = serializeForm(commentForm)["comment"];
+        const body = JSON.stringify({
+            type: "comment",
+            author: {
+                id: authorId,
+                url: authorUrl
+            },
+            post: {
+                id: postId,
+                author: {
+                    id: postAuthorId,
+                    url: postAuthorUrl
+                }
+            },
+            comment,
+            content_type: "text/plain"
+        });
+
+        const credentialType: RequestCredentials = "include";
+        const headers: HeadersInit = new Headers();
+        headers.set("Authorization", authHeader());
+        headers.set("Content-Type", "application/json; charset=UTF-8");
+
+        const requestOptions = {
+            method: "POST",
+            credentials: credentialType,
+            headers: headers,
+            body: body
+        };
+
+        const url = new URL(SocialApiUrls.AUTHORS + postAuthorId + SocialApiUrls.INBOX, window.location.origin);
+        const response = await fetch(url, requestOptions);
+        const text = await response.text();
+        if (!response.ok) {
+            throw new Error(response.statusText)
+        }
+
+        return text;
     }
 }
 

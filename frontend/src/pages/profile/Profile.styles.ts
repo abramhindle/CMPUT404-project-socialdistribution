@@ -1,4 +1,4 @@
-import { accentColor, accentFillRest, accentForegroundActive, neutralColor, typeRampPlus1FontSize, typeRampPlus1LineHeight, typeRampPlus2FontSize } from "@microsoft/fast-components";
+import { accentColor, accentFillRest, accentForegroundActive, neutralColor, neutralLayer2, typeRampPlus1FontSize, typeRampPlus1LineHeight, typeRampPlus2FontSize } from "@microsoft/fast-components";
 import { css } from "@microsoft/fast-element";
 import { LayoutStyleClass } from "../../libs/core/PageModel";
 
@@ -123,6 +123,7 @@ export const ProfilePageStyles = css`
         padding: 20px;
         border-radius: 20px;
         width: 70%;
+        linear-gradient(to bottom right, ${neutralLayer2}, ${accentFillRest});
     }
 
     .edit-header {

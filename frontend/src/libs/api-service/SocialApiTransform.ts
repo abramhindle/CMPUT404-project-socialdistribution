@@ -1,4 +1,4 @@
-import { Author, ContentType, FollowRequest, PaginatedResponse, Post } from "./SocialApiModel";
+import { Author, ContentType, FollowRequest, PaginatedResponse, Post, Comment, Like } from "./SocialApiModel";
 
 export namespace SocialApiTransform {
     export function parseJsonPaginatedData(jsonData: string): PaginatedResponse | null {
@@ -41,10 +41,10 @@ export namespace SocialApiTransform {
         if (!authorData) {
             return null;
         }
-        
+
         if (!authorData.id || !authorData.display_name) {
             return null;
-        } 
+        }
 
         const myAuthor = new Author(authorData.id, authorData.display_name);
         myAuthor.url = authorData.url;
@@ -83,6 +83,42 @@ export namespace SocialApiTransform {
         myPost.url = postData.url;
         myPost.likes = postData.likes_count;
         return myPost;
+    }
+
+    export function commentDataTransform(commentData: any): Comment | null {
+        if (!commentData) {
+            return null;
+        }
+
+        if (!commentData.id) {
+            return null;
+        }
+
+        const myComment = new Comment(commentData.id)
+        const author = SocialApiTransform.authorDataTransform(commentData.author);
+        if (author) {
+            myComment.author = author
+        }
+        myComment.comment = commentData.comment
+        myComment.contentType = parseContentType(commentData.content_type)
+        myComment.published = new Date(commentData.created_at);
+
+        return myComment
+    }
+
+    export function likeDataTransform(likeData: any): Like | null {
+        if (!likeData) {
+            return null;
+        }
+
+        const myLike = new Like()
+        const author = SocialApiTransform.authorDataTransform(likeData.author);
+        if (author) {
+            myLike.author = author
+        }
+        myLike.post = likeData.post;
+
+        return myLike;
     }
 
     function parseContentType(contentType: string): ContentType {

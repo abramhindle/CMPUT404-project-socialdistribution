@@ -66,6 +66,28 @@ export class FollowRequest {
     sender?: Author;
 }
 
+export class Comment {
+    author?: Author;
+
+    comment?: string;
+
+    contentType?: ContentType;
+
+    published?: Date;
+
+    id: string;
+
+    constructor(id: string) {
+        this.id = id;
+    }
+}
+
+export class Like {
+    author?: Author;
+
+    post?: string;
+}
+
 export class PaginatedResponse {
     count?: number;
 

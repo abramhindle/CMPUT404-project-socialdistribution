@@ -1,17 +1,18 @@
 import { html, when } from "@microsoft/fast-element";
 import { ContentType } from "../../libs/api-service/SocialApiModel";
+import { authorInfo } from "../author-info";
 import { FeedPost } from "./FeedPost";
+
+authorInfo;
 
 export const FeedPostTemplate = html<FeedPost>`
     <article class="post">
         <a href="${x => x.getPostUrl()}"><h2>${x => x.post?.title}</h2></a>
-        <h4>
-            ${when(x => x.post?.author?.profileImage !== "", html<FeedPost>`
-                <img class="profile-image" src="${x => x.post?.author?.profileImage}">
-            `)}
-            <a href="${x => x.getAuthorUrl(x.post?.author?.id)}">${x => x.post?.author?.displayName + " "}</a>
-            <small>${x => " | " + x.post?.published?.toLocaleDateString() || " | " + new Date().toLocaleDateString()}</small>
-        </h4>
+        <author-info
+            :authorId=${x => x.post?.author?.id}
+            :author=${x => x.post?.author}
+            :published=${x => x.post?.published}
+        ></author-info>
         ${when(x => x.post?.contentType == ContentType.Markdown && import('../markdown-component'), html<FeedPost>`
             <markdown-component
                 :content=${x => x.post?.description + "..."}
