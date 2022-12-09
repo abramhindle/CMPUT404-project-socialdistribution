@@ -410,8 +410,6 @@ class Team10Converter(Converter):
             "profile_image": data["profileImage"],
             "github_handle": data["github"],
         }
-        if "base64" in converted_data["profile_image"]:
-            converted_data["profile_image"] = ""
         return converted_data
 
     def convert_authors(self, data):
