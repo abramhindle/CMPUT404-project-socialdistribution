@@ -665,6 +665,7 @@
    - [ ] 1 Working Website
    - [ ] 1 Github git repo
    - [ ] 1 Presentation
+   - [ ] 1 OpenAPI (formally 'Swagger') specification for your API 
    - [ ] 1 Video
  
 ** Restrictions
@@ -743,10 +744,13 @@
       - Failure: no demo or unable to demo.
     - Web Service API & Documentation
       - Excellent: Documented, adheres to requirements to augments
-        them with compatibility
-      - Good: Documented, exists, tries to adhere to requirements
-      - Satisfactory: Some of the webservice exists
-      - Unsatisfactory: Well you tried right?
+        them with compatibility. Open API specification exists, has clear descriptions,
+        and has example requests and responses from your API. 
+      - Good: Documented, exists, tries to adhere to requirements. Open API specification exists,
+        and has some descriptions and a few example requests and responses.
+      - Satisfactory: Some of the webservice exists. Open API specification exists, but no descriptions
+        or example requests and responses.
+      - Unsatisfactory: Well you tried right? Open API specification does not exist.
       - Failure: Ok you didn't try. 
     - Design
       - Excellent: Adheres to standards, well designed
@@ -765,10 +769,13 @@
       - Failure 0: Missing. No attempted. Not complete enough to evaluate.
     - Web Service API & Documentation
       - Excellent: Documented, adheres to requirements to augments
-        them with compatibility
-      - Good: Documented, exists, tries to adhere to requirements
-      - Satisfactory: Some of the webservice exists
-      - Unsatisfactory: Webservice exists, barely.
+        them with compatibility.  Open API specification exists, has clear descriptions,
+        and has example requests and responses from your API. 
+      - Good: Documented, exists, tries to adhere to requirements.  Open API specification exists,
+        and has some descriptions and a few example requests and responses.
+      - Satisfactory: Some of the webservice exists. Open API specification exists, but no descriptions
+        or example requests and responses.
+      - Unsatisfactory: Webservice exists, barely. Open API specification does not exist.
       - Failure: it is not usable.
     - Web Service Coordination
       - Excellent: Web service coordinates with 2+ other group
@@ -822,11 +829,15 @@
       - Unsatisfactory: Coordination doesn't work or barely works.
     - Web Service API & Documentation
       - Excellent: Documented, adheres to requirements to augments
-        them with compatibility
-      - Good: Documented, exists, tries to adhere to requirements
-      - Satisfactory: Some of the webservice exists
-      - Unsatisfactory: Effort taken but incomplete.
-      - Failure: API or Documentation Missing
+        them with compatibility.  Open API specification exists, has clear descriptions,
+        and has example requests and responses from your API. 
+      - Good: Documented, exists, tries to adhere to requirements.  Open API specification exists,
+        and has some descriptions and a few example requests and responses.
+      - Satisfactory: Some of the webservice exists. Open API specification exists,
+        and has a few example requests and responses.
+      - Unsatisfactory: Effort taken but incomplete. Open API specification exists, but no descriptions
+        or example requests and responses.
+      - Failure: API or Documentation Missing. Open API specification does not exist.
     - Test Cases
       - Excellent: System is well tested
       - Good: System has some tests
