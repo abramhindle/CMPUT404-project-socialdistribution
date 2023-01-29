@@ -36,4 +36,3 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen 
-    Shihao Liu
