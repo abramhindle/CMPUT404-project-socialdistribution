@@ -10,7 +10,7 @@ Make a distributed social network!
 Contributing
 ============
 
-Send a pull request and be sure to update this file with your name.
+Courtenay Laing-Kobe [laingkob@ualberta.ca]
 
 Contributors / Licensing
 ========================
