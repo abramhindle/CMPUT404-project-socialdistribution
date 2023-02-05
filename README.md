@@ -1,19 +1,27 @@
-CMPUT404-project-socialdistribution
-===================================
+# CMPUT404-project-socialdistribution
 
-CMPUT404-project-socialdistribution
+## Getting started
+### Backend
+Create and activate a python virtual environment and install from `requirements.txt`. For example:
+```shell
+cd api
+python -m venv .venv 
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
+### Frontend: todo
+
+### Deployment
 See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
-Contributing
-============
+## Contributing
 
 Send a pull request and be sure to update this file with your name.
 
-Contributors / Licensing
-========================
+## Contributors / Licensing
 
 Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
 
