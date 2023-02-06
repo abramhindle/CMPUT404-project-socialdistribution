@@ -1,9 +1,10 @@
 from flask import Flask
+from .user import user_bp
+from .admin import admin_bp
 
 app = Flask(__name__)
-
-import api.user.authors
-
+app.register_blueprint(user_bp)
+app.register_blueprint(admin_bp)
 
 @app.route("/")
 def hello_world():
