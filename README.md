@@ -36,3 +36,17 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen 
+
+# System Dependencies
+| Package or OS | Version |
+| - | - |
+| Python | 3.8.16 |
+| python3.8-distutils | 3.8.16 |
+
+# Python Dependencies
+| Package or OS | Version |
+| - | - |
+| Django | 3.1.6 |
+| python-dotenv | 0.21.1 |
+
+# UI Dependencies
