@@ -40,7 +40,7 @@ Contributors:
 # System Dependencies
 | Package or OS | Version |
 | - | - |
-| Python | 3.8.16 |
+| Python | 3.8+ |
 | python3.8-distutils | 3.8.16 |
 
 # Python Dependencies
