@@ -1,18 +1,30 @@
 # CMPUT404-project-socialdistribution
 
 ## Getting started
+
+
 ### Backend
 Create and activate a python virtual environment and install from `requirements.txt`. For example:
 ```shell
 cd api
-python -m venv .venv 
+python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ### Frontend: todo
 
-### Deployment
+### pre-commit
+CI runs linters on your code and checks will fail if there are any issues. To help identify/fix issues before you push, you use the [pre-commit](https://pre-commit.com/) hooks. Ensure you have pre-commit PyPi package installed (it should be installed already if you've completed backend setup), then run
+```shell
+pre-commit install
+```
+From now on, hooks will run _prior_ to committing, if the hooks modify files, you will have to recommit. If you do not want the hooks to run hooks, you can unselect "Run Git hooks" when committing in an IntelliJ or commit with `--no-verify` on the command line, or uninstall hooks entirely by running `pre-commit uninstall`.
+
+The first time commmitting, hooks may take some time to install.
+### Deployment to Heroku
+
+TODO (MATT)
 See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
@@ -38,4 +50,4 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
-    Nhan Nguyen 
+    Nhan Nguyen
