@@ -29,3 +29,4 @@ frontend/build
 # backend stuff
 .venv
 venv
+__pycache__
