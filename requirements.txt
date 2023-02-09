@@ -1,0 +1,4 @@
+Flask==2.2.2
+python-dotenv==0.21.1
+gunicorn
+pre-commit
