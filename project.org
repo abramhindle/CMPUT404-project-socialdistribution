@@ -1,6 +1,6 @@
 * Project: Distributed Social Networking
 ** Description
-   
+
    The web is fundamentally interconnected and peer to peer. There's
    no really great reason why we should all use facebook.com or
    google+ or myspace or something like that. If these social networks
@@ -16,19 +16,19 @@
    distributing sharing of posts and content.
 
    An author sitting on one server can aggregate the posts of their
-   friends on other servers.   
+   friends on other servers.
 
    We are going to go with an inbox model where by you share posts to
    your friends by sending them your posts. This is similar to
    activity pub: https://www.w3.org/TR/activitypub/ Activity Pub is
    great, but too complex for a class project.
-   
+
    We also won't be adding much in the way of encryption or security
    to this platform. We're keeping it simple and restful.
 
    Choose at least 2 other groups to work with
 
-*** Scenario 
+*** Scenario
 
    I log into SocialDistribution. I see my stream which is filled with
    posts that have arrived in my inbox. I browse them and I click like
@@ -72,7 +72,7 @@
     Likes, Comments, Public Posts, Friends Only posts, Private posts are
     all sent to the inbox of the author.
 
-*** Project Parts 
+*** Project Parts
     - Part 0 - sign up a repo
     - Part 1 - 1/2 way implementation
     - Part 2 - Connect with Groups
@@ -90,7 +90,7 @@
      your webservices to integrate with each other
 
 ** User Stories
-   
+
    - As an author I want to make public posts.
    - As an author I want to edit public posts.
    - As an author, posts I create can link to images.
@@ -176,9 +176,9 @@
    - Restful service
      - The model of the service and its API
    - UI
-     - The HTML/CSS/JS coated version user interface 
+     - The HTML/CSS/JS coated version user interface
    - Public Post
-     - this is a post that will show up publicly. 
+     - this is a post that will show up publicly.
      - it has a public URL
      - anyone can see it
      - Public posts can be liked
@@ -217,12 +217,12 @@
       - GET [local, remote]: retrieve all profiles on the server (paginated)
          - page: how many pages
          - size: how big is a page
-    - Example query: GET ://service/authors?page=10&size=5 
+    - Example query: GET ://service/authors?page=10&size=5
       - Gets the 5 authors, authors 45 to 49.
     - Example: GET ://service/authors/
       #+BEGIN_SRC json
       {
-          "type": "authors",      
+          "type": "authors",
           "items":[
               {
                   "type":"author",
@@ -278,7 +278,7 @@
     - Example: GET ://service/authors/{AUTHOR_ID}/followers
       #+BEGIN_SRC json
       {
-          "type": "followers",      
+          "type": "followers",
           "items":[
               {
                   "type":"author",
@@ -301,16 +301,16 @@
           ]
       }
       #+END_SRC
-   
+
 *** Friend/Follow Request
     - This allows you to follow someone you, so they can send you their post.
     - If the recipient accepts the Friend Request then you are friends
     - If the recipient folows you, you are true friends
-    - Sent to inbox of "object" 
+    - Sent to inbox of "object"
     - Example format:
       #+BEGIN_SRC json
       {
-          "type": "Follow",      
+          "type": "Follow",
           "summary":"Greg wants to follow Lara",
           "actor":{
               "type":"author",
@@ -339,7 +339,7 @@
       }
       #+END_SRC
 
-*** Post    
+*** Post
     - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
       - GET [local, remote] get the public post whose id is POST_ID
       - POST [local] update the post whose id is POST_ID (must be authenticated)
@@ -447,7 +447,7 @@
 
 *** Image Posts
     Image Posts are just posts that are images. But they are encoded as base64 data.
-    You can inline an image post using a data url or you can use this 
+    You can inline an image post using a data url or you can use this
     shortcut to get the image if authenticated to see it.
     - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
       - GET [local, remote] get the public post converted to binary as an iamge
@@ -534,7 +534,7 @@
       #+BEGIN_SRC json
       {
           "@context": "https://www.w3.org/ns/activitystreams",
-          "summary": "Lara Croft Likes your post",         
+          "summary": "Lara Croft Likes your post",
           "type": "Like",
           "author":{
               "type":"author",
@@ -560,7 +560,7 @@
           "items":[
               {
                   "@context": "https://www.w3.org/ns/activitystreams",
-                  "summary": "Lara Croft Likes your post",         
+                  "summary": "Lara Croft Likes your post",
                   "type": "Like",
                   "author":{
                       "type":"author",
@@ -659,15 +659,15 @@
    - [ ] Make a presentation about your blog
    - [ ] Follow the guidelines in the project.org for URLs and services
    - [ ] Allow users to accept or reject friend requests
-   - [ ] Images get the same protection that posts get as they are POSTS   
+   - [ ] Images get the same protection that posts get as they are POSTS
 
 ** Take-aways
    - [ ] 1 Working Website
    - [ ] 1 Github git repo
    - [ ] 1 Presentation
-   - [ ] 1 OpenAPI (formally 'Swagger') specification for your API 
+   - [ ] 1 OpenAPI (formally 'Swagger') specification for your API
    - [ ] 1 Video
- 
+
 ** Restrictions
    - [ ] Use Python 3.6+ (otherwise get approval)
    - [ ] Use Django or Flask (otherwise get approval)
@@ -678,9 +678,9 @@
      - Put your name (or some representation of you like GeneralHuxFan768) on it!
 
 ** API Guidelines
-   
+
    When building your API, try to adhere to these rules for easy compatibility with other groups:
-   
+
    - REST API calls may be prefixed. ie. http://service_address/api/authors/{AUTHOR_ID}/posts/
    - Document your service address, port, hostname, prefix(if used), and the username/password for HTTP
     Basic Auth(if used) in your README so that HTTP clients can connect to your API.
@@ -690,7 +690,7 @@
       https://github.com/abramhindle/CMPUT404-project-socialdistribution
    - Share your repo in part 0
 ** Warning!!!!
-   
+
    This spec is subject to change!
 
 ** Marking
@@ -709,7 +709,7 @@
         parts run
       - Unsatisfactory 3: Effort exists, it's missing lots of components but something is there.
       - Failure 0: Missing. No attempted. Not complete enough to evaluate.
-    - Code Base 
+    - Code Base
       - Excellent : Excellent effort. Relatively consistent. At least ½
         of the project implemented. Clean code
       - Good : Good quality. Some inconsistency. About ½ of
@@ -717,7 +717,7 @@
       - Satisfactory : Codebase in places. Passes some tests. Some
         parts run
       - Unsatisfactory : Does not meet Satisfactory level
-    - Test Cases 
+    - Test Cases
       - Excellent: System is well tested
       - Good: System has some blind spots for testing
       - Satisfactory: Effort was placed on testing but it is inconsistent.
@@ -745,13 +745,13 @@
     - Web Service API & Documentation
       - Excellent: Documented, adheres to requirements to augments
         them with compatibility. Open API specification exists, has clear descriptions,
-        and has example requests and responses from your API. 
+        and has example requests and responses from your API.
       - Good: Documented, exists, tries to adhere to requirements. Open API specification exists,
         and has some descriptions and a few example requests and responses.
       - Satisfactory: Some of the webservice exists. Open API specification exists, but no descriptions
         or example requests and responses.
       - Unsatisfactory: Well you tried right? Open API specification does not exist.
-      - Failure: Ok you didn't try. 
+      - Failure: Ok you didn't try.
     - Design
       - Excellent: Adheres to standards, well designed
       - Good: Adheres to standards somewhat, some awkward parts
@@ -759,7 +759,7 @@
       - Unsatisfactory: Little effort went into documenting and
         designing the project
       - Failure: failure to learn from the class and apply concepts even remedially
-*** Project Part 2: The web service 
+*** Project Part 2: The web service
     - 5 Marks
     - Total Project
       - Excellent 5: Excellent effort. Coordinates and connects fine with 2 or more groups.
@@ -770,7 +770,7 @@
     - Web Service API & Documentation
       - Excellent: Documented, adheres to requirements to augments
         them with compatibility.  Open API specification exists, has clear descriptions,
-        and has example requests and responses from your API. 
+        and has example requests and responses from your API.
       - Good: Documented, exists, tries to adhere to requirements.  Open API specification exists,
         and has some descriptions and a few example requests and responses.
       - Satisfactory: Some of the webservice exists. Open API specification exists, but no descriptions
@@ -787,13 +787,13 @@
         Probably many snags.
       - Unsatisfactory 0: Coordination barely works.
       - Failure: failure to coordinate
-    - Design 
+    - Design
       - Excellent: Adheres to standards, well designed
       - Good: Adheres to standards somewhat, some awkward parts
       - Satisfactory: Some good parts, some nasty parts
       - Unsatisfactory: Little effort went into documenting and
         designing the project
-      - Failure: failure to apply what was learned in class        
+      - Failure: failure to apply what was learned in class
 *** Project Part 3
     - 20 Marks
     - Total Project
@@ -830,7 +830,7 @@
     - Web Service API & Documentation
       - Excellent: Documented, adheres to requirements to augments
         them with compatibility.  Open API specification exists, has clear descriptions,
-        and has example requests and responses from your API. 
+        and has example requests and responses from your API.
       - Good: Documented, exists, tries to adhere to requirements.  Open API specification exists,
         and has some descriptions and a few example requests and responses.
       - Satisfactory: Some of the webservice exists. Open API specification exists,
@@ -898,24 +898,24 @@
 ** License
 
    - Parts of this document are derived from the W3C Documentation for Activity Pub
-   - Copyright © 2018 W3C® (MIT, ERCIM, Keio, Beihang). W3C liability, trademark and permissive document license rules apply. 
+   - Copyright © 2018 W3C® (MIT, ERCIM, Keio, Beihang). W3C liability, trademark and permissive document license rules apply.
    - https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
      #+BEGIN_SRC plain
      License
-     
+
      By obtaining and/or copying this work, you (the licensee) agree that you have read, understood, and will comply with the following terms and conditions.
-     
+
      Permission to copy, modify, and distribute this work, with or without modification, for any purpose and without fee or royalty is hereby granted, provided that you include the following on ALL copies of the work or portions thereof, including modifications:
-     
+
          The full text of this NOTICE in a location viewable to users of the redistributed or derivative work.
          Any pre-existing intellectual property disclaimers, notices, or terms and conditions. If none exist, the W3C Software and Document Short Notice should be included.
-         Notice of any changes or modifications, through a copyright statement on the new code or document such as "This software or document includes material copied from or derived from [title and URI of the W3C document]. Copyright © [YEAR] W3C® (MIT, ERCIM, Keio, Beihang)." 
-     
+         Notice of any changes or modifications, through a copyright statement on the new code or document such as "This software or document includes material copied from or derived from [title and URI of the W3C document]. Copyright © [YEAR] W3C® (MIT, ERCIM, Keio, Beihang)."
+
      Disclaimers
-     
+
      THIS WORK IS PROVIDED "AS IS," AND COPYRIGHT HOLDERS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE OR DOCUMENT WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
-     
+
      COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE SOFTWARE OR DOCUMENT.
-     
+
      The name and trademarks of copyright holders may NOT be used in advertising or publicity pertaining to the work without specific, written prior permission. Title to copyright in this work will at all times remain with copyright holders.
      #+END_SRC
