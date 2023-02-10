@@ -7,15 +7,11 @@
 Create and activate a python virtual environment and install from `requirements.txt`. For example:
 
 ```shell
-cd api
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
-Then, to run the backend use the following command:
-```shell
-python app.py
-```
+Then, to start the backend server, run `api/app.py`
 
 ### Frontend
 
@@ -64,15 +60,6 @@ TODO (MATT): do we want autopushes to Heroku via CI? this can be setup. In the m
   - If your current git branch is `master` already, you can just write `git push heroku master`
   - You can use the following alias in your `.bashrc` to make this operation require less typing: `alias whateveruwant="git push heroku $(git branch --show-current):master"`
 
-### Other Stuff
-
-See project.org (plain-text/org-mode) for a description of the project.
-
-Make a distributed social network!
-
-## Contributing
-
-Send a pull request and be sure to update this file with your name.
 
 ## Contributors / Licensing
 
