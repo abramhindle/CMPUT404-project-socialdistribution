@@ -11,6 +11,7 @@ Contributing
 ============
 
 Courtenay Laing-Kobe [laingkob@ualberta.ca]
+Aidan Horemans [horemans@ualberta.ca]
 
 Contributors / Licensing
 ========================

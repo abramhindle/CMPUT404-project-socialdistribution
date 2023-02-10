@@ -1,0 +1,12 @@
+{
+    "openapi":"3.0.2",
+    "info": {
+      "title":"Social Distribution API Specification",
+      "version":"1.0"
+    },
+    "servers": [
+      {"url":"https://ourwebsite/v1"}
+    ],
+    "paths": {
+    }
+  }
