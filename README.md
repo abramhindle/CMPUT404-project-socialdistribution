@@ -112,7 +112,7 @@ postgres=#    \q # To exit console
 ```
 
 Lastly, in **settings.py** of the *social_distribution* directory.
-Change the default of DATABASES from sqlite3 to postgresql
+Change the default of DATABASES from sqlite3 to postgresql.
 For the **NAME**, use the name of your database
 
 ```
