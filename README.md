@@ -111,7 +111,7 @@ postgres=#    GRANT ALL PRIVILEGES ON DATABASE social_distribution_db TO admin; 
 postgres=#    \q # To exit console
 ```
 
-Lasting in **settings.py** of the *social_distribution* directory.
+Lastly, in **settings.py** of the *social_distribution* directory.
 Change the default of DATABASES from sqlite3 to postgresql
 For the **NAME**, use the name of your database
 
