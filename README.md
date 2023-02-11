@@ -74,6 +74,48 @@ You can nagivate to this url from your web browser to see the home page.
 
 - To run tests `python manage.py test`
 
+# Creating a Database
+
+**For Windows** first install PostgreSQL via https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+Following this guide for installation and how to get to the Postgres console :
+https://medium.com/@9cv9official/creating-a-django-web-application-with-a-postgresql-database-on-windows-c1eea38fe294
+
+In the **psql** shell, accept the default for the **Server**, **Database**, **Port**, and **Username** fields by pressing Enter.
+However, at the **Password** field, you must enter the password that you chose during in the Installation Setup Wizard.
+
+Enter the following information below after you see the warning message and the line ```postgres=#```:
+
+```
+ postgres=# CREATE DATABASE social_distribution_db with ENCODING 'UTF-8';
+ postgres=# CREATE USER admin WITH ENCRYPTED PASSWORD 'password';
+ postgres=# GRANT postgres TO admin;
+ postgres=# GRANT ALL PRIVILEGES ON DATABASE social_distribution_db to admin;
+```
+**For Linux** following this guide: https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-20-04
+
+Configure your local PostgreSQL DB for the project as such:
+```
+source venv/bin/activate
+sudo apt install libpq-dev postgresql                           # Install Postgres
+sudo -u postgres psql                                           # Open the Postgres console
+
+# In the Postgres console
+postgres=#    CREATE DATABASE social_distribution_db;           # Same as DB in settings.py
+postgres=#    CREATE USER admin WITH PASSWORD 'password';       # Create user with a password
+postgres=#    ALTER ROLE admin SET client_encoding TO 'utf8';   # Set encoding
+postgres=#    ALTER ROLE admin SET default_transaction_isolation TO 'read committed';       # Set transaction
+postgres=#    GRANT ALL PRIVILEGES ON DATABASE social_distribution_db TO admin;             # Allow user access to DB
+postgres=#    \q # To exit console
+
+# Admin Authentication
+
+To login in to the admin page.
+Run the following command from the root and add your user information.
+
+```
+python manage.py createsuperuser
+```
+
 # Django Project Structure
 This Django project was created by loosely following this guide for file structure and organization:
 
