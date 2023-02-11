@@ -31,3 +31,7 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen 
+
+References
+==========
+*gitignore file is based on django template found at: https://www.toptal.com/developers/gitignore/api/django
