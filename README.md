@@ -111,6 +111,23 @@ postgres=#    GRANT ALL PRIVILEGES ON DATABASE social_distribution_db TO admin; 
 postgres=#    \q # To exit console
 ```
 
+Lasting in **settings.py** of the *social_distribution* directory.
+Change the default of DATABASES from sqlite3 to postgresql
+For the **NAME**, use the name of your database
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'social_distribution_db',
+        'USER': 'admin',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+```
+
 # Admin Authentication
 
 To login in to the admin page.
