@@ -77,13 +77,14 @@ You can nagivate to this url from your web browser to see the home page.
 # Creating a Database
 
 **For Windows** first install PostgreSQL via https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
-Following this guide for installation and how to get to the Postgres console :
+
+Follow this guide for installation and how to get to the Postgres console:
 https://medium.com/@9cv9official/creating-a-django-web-application-with-a-postgresql-database-on-windows-c1eea38fe294
 
 In the **psql** shell, accept the default for the **Server**, **Database**, **Port**, and **Username** fields by pressing Enter.
-However, at the **Password** field, you must enter the password that you chose during in the Installation Setup Wizard.
+However, at the **Password** field, you must enter the password that you chose during the Installation Setup Wizard.
 
-Enter the following information below after you see the warning message and the line ```postgres=#```:
+Next, follow the steps below (after you see the warning message and the line ```postgres=#```):
 
 ```
  postgres=# CREATE DATABASE social_distribution_db with ENCODING 'UTF-8';
@@ -91,9 +92,11 @@ Enter the following information below after you see the warning message and the 
  postgres=# GRANT postgres TO admin;
  postgres=# GRANT ALL PRIVILEGES ON DATABASE social_distribution_db to admin;
 ```
+
 **For Linux** following this guide: https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-20-04
 
-Configure your local PostgreSQL DB for the project as such:
+To configure your local PostgreSQL DB for the project, enter the following steps:
+
 ```
 source venv/bin/activate
 sudo apt install libpq-dev postgresql                           # Install Postgres
@@ -106,6 +109,7 @@ postgres=#    ALTER ROLE admin SET client_encoding TO 'utf8';   # Set encoding
 postgres=#    ALTER ROLE admin SET default_transaction_isolation TO 'read committed';       # Set transaction
 postgres=#    GRANT ALL PRIVILEGES ON DATABASE social_distribution_db TO admin;             # Allow user access to DB
 postgres=#    \q # To exit console
+```
 
 # Admin Authentication
 
