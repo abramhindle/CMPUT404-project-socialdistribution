@@ -4,7 +4,6 @@ MAX_LENGTH = 100
 SMALLER_MAX_LENGTH = 50
 
 
-# Create your models here.
 
 
 class Post(models.Model):
@@ -25,13 +24,9 @@ class Post(models.Model):
     # put in visibility here
     is_unlisted = models.BooleanField()
 
+    def __str__(self):
+        return self.title
+
 class ImagePost(models.Model):
     pass
 
-
-    
-
-
-
-
-    
