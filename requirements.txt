@@ -2,4 +2,7 @@
 django
 
 # PostgreSQL
-psycopg2
+# psycopg2
+
+# Attempt 2
+psycopg2-binary
