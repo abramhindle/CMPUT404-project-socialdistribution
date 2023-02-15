@@ -32,6 +32,8 @@ class Post(models.Model):
 
     content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
 
+    image_url = models.URLField(editable=True, blank=True)
+
 
 class Comments(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
