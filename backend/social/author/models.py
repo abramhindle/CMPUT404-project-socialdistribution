@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 class Author(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    friends = models.ManyToManyField('self')
+    friends = models.ManyToManyField('self',blank=True)
     display_name = models.CharField(max_length=20, blank=False)
-    profileImage = models.URLField(editable=True)
+    profileImage = models.URLField(editable=True,blank=True)
     url = models.URLField(editable=False)
     host = models.URLField(editable=False)
     

@@ -9,7 +9,16 @@ class Post(models.Model):
 
     title = models.CharField(max_length=100)
     description = models.CharField(blank=True, default="", max_length=500)
-    private = models.BooleanField(default=False)
+
+    PUBLIC = 'false'
+    PRIVATE = 'true'
+    
+    privacy_choices = [
+        (PUBLIC, 'Public'),
+        (PRIVATE, 'Private'),
+    ]
+
+    private = models.CharField(choices=privacy_choices, default="false", max_length=20)
 
     MARKDOWN = 'text/markdown'
     PLAIN = 'text/plain'

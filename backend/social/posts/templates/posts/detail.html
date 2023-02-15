@@ -1,16 +1,8 @@
-<h1>Make a post</h1>
-
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form action="{% url 'posts:post' %}" method="post">
-  {% csrf_token %}
-  <label for="fname">Title:</label><br>
-  <input type="text" name="title" id="title" value="t">
-  <label for="fname">Description:</label><br>
-  <input type="text" name="desc" id="desc" value="d">
-  <input type="radio" id="Private" name="private" value="Private">
-  <label for="private">Private</label><br>
-  <input type="radio" id="public" name="public" value="Public">
-  <label for="public">Public</label><br>
-  <input type="submit" value="Post">
-</form>
+<h1>{{post.title}}</h1>
+
+<h3>Author: {{post.author.display_name}}</h3><br>
+<h3>Description: {{post.description}}</h3><br>
+<h3>Privacy: {{post.private}}</h3><br>
+<h3>Contnet-type: {{post.content_type}}</h3><br>
