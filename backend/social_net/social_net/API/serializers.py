@@ -11,10 +11,15 @@ class AuthorSerializer(serializers.ModelSerializer):
     github = serializers.CharField(max_length=150, blank=False, default='')
     url = serializers.CharField(max_length=100, blank=False, default='')
     profileImageURL = serializers.CharField(max_length=500, blank=False, default='')
+
+    
     
     def create(self, validated_data):
         validated_data['type']= 'author'
         validated_data['id'] = str(uuid.uuid4())
+        validated_data['host'] = 'http://127.0.0.1:5454/authors/' + str(validated_data['id'])
+        validated_data['displayName'] = 
+        validated_data['host'] = 'http://127.0.0.1:5454/authors/' + str(validated_data['id'])
         validated_data['host'] = 'http://127.0.0.1:5454/authors/' + str(validated_data['id'])
         return AuthorModel.objects.create(**validated_data)
 

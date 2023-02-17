@@ -1,7 +1,7 @@
 from django.db import models
 
-
 # Create your models here.
+
 class AuthorModel(models.Model):
     type = models.CharField(max_length=100, blank=False, default='author')
     id = models.AutoField(primary_key=True)
