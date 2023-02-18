@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  frontend:
+    ports: 
+      - 3000:3000
+    build:
+      context: ./frontend
+  backend:
+    ports:
+      - 8000:8000
+    build:
+      context: ./backend/social_net
+      target: builder
+    depends_on:
+      - db
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    ports:
+      - 8001:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: social_net
+    volumes: 
+      - db:/var/lib/postgresql/data
+  
+volumes:
+  db:
+    driver: local
