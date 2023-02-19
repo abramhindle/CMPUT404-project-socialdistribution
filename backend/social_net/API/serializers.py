@@ -11,8 +11,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     url = serializers.CharField(max_length=100, default='')
     profileImageURL = serializers.CharField(max_length=500, default='')
 
-    # def update(self, validated_data):
-    #     return super().update(validated_data)
+    # TODO: Add update function for author view POST request
 
     class Meta:
         model = AuthorModel
