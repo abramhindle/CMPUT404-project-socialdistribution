@@ -1,7 +1,3 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from rest_framework.views import APIView
-from rest_framework import permissions
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import AuthorModel
@@ -22,6 +18,5 @@ def AuthorView(request, uid):
         author_object = AuthorModel.objects.get(id=uid)
         serialized_object = AuthorSerializer(author_object)
         parameters = json.loads(request.body)
-        # serialized_object.update(parameters)
-
-        return JsonResponse(parameters, status = 200)
+        serialized_object.update(author_object, parameters)
+        return JsonResponse(serialized_object.data, status = 200)
