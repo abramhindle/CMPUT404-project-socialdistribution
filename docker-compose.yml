@@ -5,6 +5,7 @@ services:
       - 3000:3000
     build:
       context: ./frontend
+      target: runner
   backend:
     ports:
       - 8000:8000
