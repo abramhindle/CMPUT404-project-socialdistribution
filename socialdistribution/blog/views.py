@@ -11,5 +11,3 @@ def home(request):
     p = Person(first_name="Akanksha", last_name="Parmar")
     p.save()
     return HttpResponse("Welcome!")
-  
-  
