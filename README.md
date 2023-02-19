@@ -12,6 +12,7 @@ Contributing
 
 Courtenay Laing-Kobe [laingkob@ualberta.ca]
 Aidan Horemans [horemans@ualberta.ca]
+Hua Wang [hua6@ualberta.ca]
 
 Contributors / Licensing
 ========================
