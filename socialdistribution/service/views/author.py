@@ -2,6 +2,7 @@ from django.http import *
 from service.models.author import Author
 from service.service_constants import *
 
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 import json
 
@@ -11,7 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 def multiple_authors(request: HttpRequest):
     if request.method == GET:
-        authors_queryset = Author.objects.all()
+        print(request.user.is_authenticated)
+        authors_queryset = Author.objects.all().order_by('displayName')
         page = request.GET.get('page', '')
         size = request.GET.get('size', '')
 
@@ -46,12 +48,13 @@ def single_author(request: HttpRequest, id):
 
         if not author:
             return HttpResponseNotFound()
-        
+
         author_json = encode_json(author)
 
         return HttpResponse(json.dumps(author_json), content_type = CONTENT_TYPE_JSON)
     
     elif request.method == POST:
+
         body = request.body.decode(UTF8)
         body = json.loads(body)
 
@@ -84,7 +87,7 @@ def encode_json(author: Author):
             "displayName": author.displayName,
             "url": f"{author.host}/authors/{author._id}", #generated here
             "github": author.github,
-            "profileImage": author.profileImage
+            "profileImage": author.profileImage,
     }
 
 def encode_list(authors: list[Author]):
