@@ -7,9 +7,7 @@ from django.http import HttpResponse
 
 # To test djongo migration
 # def home(request):
-  
-#     p = Person(first_name="Akanksha", last_name="Parmar")
-#     p.save()
-#     return HttpResponse("Welcome!")
-  
-  
+    p = Person(first_name="Akanksha", last_name="Parmar")
+    p.save()
+    return HttpResponse("Welcome!")
+
