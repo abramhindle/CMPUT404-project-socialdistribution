@@ -7,6 +7,9 @@ class AuthorTests(TestCase):
 
     def setUp(self):
 
+        self.single_view = SingleAuthor()
+        self.multiple_view = MultipleAuthors()
+
         self.user1 = User.objects.create_user("joeguy", "joeguy@email.com", "12345")
         self.user2 = User.objects.create_user("somebody", "somebody@email.com", "1234")
 
@@ -21,7 +24,8 @@ class AuthorTests(TestCase):
     def test_get_single_author(self):
         get_request = self.request_factory.get("/service/", user = self.user1)
         get_request.user = self.user1
-        author_response = single_author(get_request, self.author1._id)
+
+        author_response = self.single_view.get(get_request, id=self.author1._id)
 
         self.assertEqual(author_response.status_code, 200)
 
@@ -32,7 +36,7 @@ class AuthorTests(TestCase):
         self.assertEqual(author["url"], f"{self.author1.host}/authors/{self.author1._id}")
 
     def test_post_single_author(self):
-        
+
         body = {
             "displayName": "Some Other Guy"
         }
@@ -40,7 +44,7 @@ class AuthorTests(TestCase):
         post_request = self.request_factory.post("/service/", data=json.dumps(body), content_type = CONTENT_TYPE_JSON)
         post_request.user = self.user1
 
-        post_response = single_author(post_request, self.author1._id)
+        post_response = self.single_view.post(post_request, id=self.author1._id)
 
         self.assertEqual(post_response.status_code, 202)
 
@@ -51,7 +55,7 @@ class AuthorTests(TestCase):
     def test_get_multiple_authors(self):
         get_multiple_request = self.request_factory.get("/service/", QUERY_STRING="page=1&size=2")
         get_multiple_request.user = self.user1
-        authors_response = multiple_authors(get_multiple_request)
+        authors_response = self.multiple_view.get(get_multiple_request)
 
         self.assertEqual(authors_response.status_code, 200)
 
@@ -72,3 +76,10 @@ class AuthorTests(TestCase):
         self.assertEqual(json_authors[0]["displayName"], str(self.author1.displayName))
         self.assertEqual(json_authors[1]["id"], str(self.author2._id))
         self.assertEqual(json_authors[1]["displayName"], str(self.author2.displayName))
+
+    #use these once we get authentication working
+    def test_get_author_unauthenticated(self):
+        pass
+
+    def test_post_author_unauthenticated(self):
+        pass
