@@ -1,0 +1,16 @@
+version: '3'
+
+tasks:
+  up:
+    cmds:
+      - docker compose create
+      - docker compose start
+
+  down:
+    cmds:
+      - 'docker stop mongo-db'
+      - 'docker rm mongo-db'
+
+  remove-db:
+    cmds:
+      - rm -rf mongo/

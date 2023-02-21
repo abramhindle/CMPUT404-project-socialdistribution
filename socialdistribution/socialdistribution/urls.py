@@ -18,5 +18,5 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('service/authors/', include('service.urls')), #all API calls are prefixed with service/authors/ so we forward to the service app
+    path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
 ]
