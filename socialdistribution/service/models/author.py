@@ -11,11 +11,3 @@ class Author(models.Model):
     displayName = models.CharField(max_length=128)
     github = models.URLField()
     profileImage = models.URLField()
-
-    class Meta:
-        permissions = [
-            (
-                "change_user_information",
-                "Allows the user to modify their Author information"
-            )
-        ]
