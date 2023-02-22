@@ -62,6 +62,8 @@ class SingleAuthor(View):
         body = request.body.decode(UTF8)
         body = json.loads(body)
 
+        print(body)
+
         self.id = kwargs['id']
 
         try:

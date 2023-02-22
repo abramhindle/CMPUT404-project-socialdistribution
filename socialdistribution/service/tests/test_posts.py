@@ -3,13 +3,14 @@ from service.models.author import Author
 from service.models.posts import Post
 from django.contrib.auth.models import User
 from service.views.post import *
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.urls import reverse
 
 class PostTests(TestCase):
     def setUp(self):
-        self.post_id = PostWithId()
-        self.multiple_view = PostCreation()
+        self.id_view = PostWithId()
+        self.creation_view = PostCreation()
 
         self.user1 = User.objects.create_user("joeguy", "joeguy@email.com", "12345")
         self.user2 = User.objects.create_user("somebody", "somebody@email.com", "1234")
@@ -36,7 +37,7 @@ class PostTests(TestCase):
         get_request = self.request_factory.get(url, user = self.user1)
         get_request.user = self.user1
 
-        posts_response = self.multiple_view.get(get_request, author_id=self.kwargs["author_id"]) #not sure why i have to pass kwargs in reverse and individually here?
+        posts_response = self.creation_view.get(get_request, author_id=self.kwargs["author_id"]) #not sure why i have to pass kwargs in reverse and individually here?
 
         self.assertEqual(posts_response.status_code, 200)
 
@@ -59,10 +60,108 @@ class PostTests(TestCase):
         }
 
         url = reverse('post_creation', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
-        post_request = self.request_factory.post(url, user = self.user1)
+        
+        body = create_post()
+
+        post_request = self.request_factory.post(url, data=json.dumps(body), content_type = CONTENT_TYPE_JSON)
         post_request.user = self.user1
 
-        posts_response = self.multiple_view.post(post_request, author_id=self.kwargs["author_id"])
+        posts_response = self.creation_view.post(post_request, author_id=self.kwargs["author_id"])
 
         self.assertEqual(posts_response.status_code, 201)
 
+        post = Post.objects.get(title=body["title"])
+
+        self.assertEqual(post.author, self.author1)
+        self.assertEqual(post.description, body["description"])
+
+    def test_get_post_by_id(self):
+        self.kwargs = {
+            'author_id': self.author1._id,
+            'post_id': self.post1._id
+        }
+
+        url = reverse('post_with_id', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
+        
+        post_request = self.request_factory.get(url, content_type = CONTENT_TYPE_JSON)
+        post_request.user = self.user1
+
+        posts_response = self.id_view.get(post_request, author_id=self.kwargs["author_id"], post_id=self.kwargs["post_id"])
+
+        self.assertEqual(posts_response.status_code, 200)
+
+        posts = json.loads(posts_response.content)
+
+        self.assertEqual(posts["id"], str(self.post1._id))
+        self.assertEqual(posts["author"]["id"], str(self.post1.author._id))
+
+    def test_post_post_by_id(self):
+        self.kwargs = {
+            'author_id': self.author1._id,
+            'post_id': self.post1._id
+        }
+
+        url = reverse('post_with_id', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
+        
+        body = create_post()
+
+        post_request = self.request_factory.post(url, data=json.dumps(body), content_type = CONTENT_TYPE_JSON)
+        post_request.user = self.user1
+
+        posts_response = self.id_view.post(post_request, author_id=self.kwargs["author_id"], post_id=self.kwargs["post_id"])
+        
+        self.assertEqual(posts_response.status_code, 202)
+
+        post = Post.objects.get(_id=self.kwargs["post_id"])
+
+        self.assertEqual(post._id, self.post1._id)
+        self.assertEqual(post.title, body["title"])
+        self.assertEqual(post.content, body["content"])
+        self.assertEqual(post.description, body["description"])
+        self.assertEqual(post.contentType, body["contentType"])
+        self.assertEqual(post.visibility, body["visibility"])
+        self.assertEqual(post.unlisted, body["unlisted"])
+
+    def test_post_post_by_id(self):
+        post_to_delete = Post.objects.create(author=self.author1) #create a blank object to delete
+
+        self.kwargs = {
+            'author_id': self.author1._id,
+            'post_id': post_to_delete._id
+        }
+
+        post = Post.objects.get(_id=post_to_delete._id)
+
+        if not post:
+            self.fail("Object was not created properly, migration may be broken")
+
+        url = reverse('post_with_id', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
+
+        body = create_post()
+
+        post_request = self.request_factory.delete(url, content_type = CONTENT_TYPE_JSON)
+        post_request.user = self.user1
+
+        posts_response = self.id_view.delete(post_request, author_id=self.kwargs["author_id"], post_id=self.kwargs["post_id"])
+        
+        self.assertEqual(posts_response.status_code, 202)
+
+        try:
+            Post.objects.get(_id=self.kwargs["post_id"])
+        except ObjectDoesNotExist:
+            pass
+        else:
+            self.fail("Post should have been deleted")
+
+
+
+
+def create_post():
+    return {
+        "title": "This is a title!",
+        "content":"Lorem Ipsum",
+        "description": "I am describing the post",
+        "contentType": "text/plain",
+        "visibility": "PUBLIC",
+        "unlisted": False
+    }

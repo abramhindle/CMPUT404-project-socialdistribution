@@ -61,6 +61,7 @@ class PostCreation(View):
         except:
             return HttpResponseNotFound()
 
+
         try:
             post.author = author
             post.title = body["title"]
@@ -130,6 +131,7 @@ class PostWithId(View):
 
         try:
             post.title = body["title"]
+            post.content = body["content"]
             post.description = body["description"]
             post.contentType = body["contentType"]
             post.visibility = body["visibility"]
