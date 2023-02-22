@@ -17,7 +17,7 @@ from django.views.decorators.http import require_http_methods
 class MultipleAuthors(View):
     http_method_names = ["get"]
     
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs):
         authors_queryset = Author.objects.all().order_by('displayName')
         page = request.GET.get('page', '')
         size = request.GET.get('size', '')
@@ -57,7 +57,7 @@ class SingleAuthor(View):
         author_json = encode_json(author)
 
         return HttpResponse(json.dumps(author_json), content_type = CONTENT_TYPE_JSON)
-
+    
     def post(self, request, *args, **kwargs):
         body = request.body.decode(UTF8)
         body = json.loads(body)
