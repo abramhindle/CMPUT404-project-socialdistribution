@@ -1,6 +1,6 @@
 from django.test import *
 from service.models.author import Author
-from service.models.posts import Post
+from service.models.post import Post
 from django.contrib.auth.models import User
 from service.views.post import *
 from django.core.exceptions import ObjectDoesNotExist
@@ -48,7 +48,6 @@ class PostTests(TestCase):
         self.assertTrue("items" in paged_posts)
 
         posts = paged_posts["items"]
-        len(posts)
         self.assertTrue(len(posts) == 1) #even though we created a post for author1 and author2, we should only get the post from 1
 
         self.assertEqual(posts[0]["title"], self.post1.title)
@@ -122,7 +121,7 @@ class PostTests(TestCase):
         self.assertEqual(post.visibility, body["visibility"])
         self.assertEqual(post.unlisted, body["unlisted"])
 
-    def test_post_post_by_id(self):
+    def test_delete_post_by_id(self):
         post_to_delete = Post.objects.create(author=self.author1) #create a blank object to delete
 
         self.kwargs = {
@@ -137,7 +136,6 @@ class PostTests(TestCase):
 
         url = reverse('post_with_id', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
 
-        body = create_post()
 
         post_request = self.request_factory.delete(url, content_type = CONTENT_TYPE_JSON)
         post_request.user = self.user1
@@ -163,5 +161,8 @@ def create_post():
         "description": "I am describing the post",
         "contentType": "text/plain",
         "visibility": "PUBLIC",
-        "unlisted": False
+        "unlisted": False,
+        "categories": [
+            "some", "category"
+        ]
     }

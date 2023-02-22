@@ -1,1 +1,1 @@
-from service.models import author, posts
+from service.models import author, post

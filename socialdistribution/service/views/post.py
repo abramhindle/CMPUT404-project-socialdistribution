@@ -1,5 +1,5 @@
 from django.http import *
-from service.models.posts import Post
+from service.models.post import Post, Category
 from service.models.author import Author
 from service.service_constants import *
 from django.views import View
@@ -61,7 +61,6 @@ class PostCreation(View):
         except:
             return HttpResponseNotFound()
 
-
         try:
             post.author = author
             post.title = body["title"]
@@ -69,18 +68,25 @@ class PostCreation(View):
             post.description = body["description"]
             post.source = request.build_absolute_uri() #use the local server ast he source and origin, since this is a BRAND NEW post
             post.origin = request.build_absolute_uri()
-            post.contentType = body["contentType"]
-            post.published = datetime.now(timezone.utc)
 
-            valid_visibility = False
+            is_valid = valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
+
+            if not is_valid:
+                return HttpResponseBadRequest()
+
+            post.contentType = body["contentType"]
+
+            categories = create_categories(body["categories"])
+
+            post.categories.set(categories)
+
+            post.published = datetime.now(timezone.utc)
 
             #this should be handled by some sort of enum system
 
-            for visibility in Post.VISIBILITY_CHOICES:
-                if body["visibility"] in visibility:
-                    valid_visibility = True
+            is_valid = valid_choice(body["visibility"], Post.VISIBILITY_CHOICES)
 
-            if not valid_visibility:
+            if not is_valid:
                 return HttpResponseBadRequest()
 
             post.visibility = body["visibility"]
@@ -133,8 +139,25 @@ class PostWithId(View):
             post.title = body["title"]
             post.content = body["content"]
             post.description = body["description"]
+
+            is_valid = valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
+
+            if not is_valid:
+                return HttpResponseBadRequest()
+
             post.contentType = body["contentType"]
+
+            is_valid = valid_choice(body["visibility"], Post.VISIBILITY_CHOICES) #we might not need this, but good to have just in case
+
+            if not is_valid:
+                return HttpResponseBadRequest()
+
             post.visibility = body["visibility"]
+
+            categories = create_categories(body["categories"])
+
+            post.categories.set(categories)
+            
             post.unlisted = bool(body["unlisted"])
 
         except KeyError:
@@ -166,6 +189,25 @@ class PostWithId(View):
 
         return HttpResponse(status=405) # we will do this later, not super useful as a local API without multiple hosts
 
+
+def create_categories(json_categories):
+    categories = []
+    for item in json_categories:
+        try:
+            category = Category.objects.create(data=item)
+        except:
+            category = Category.objects.get(data=item)
+        categories.append(category)
+    
+    return categories
+
+def valid_choice(choice, options):
+    valid_visibility = False
+    for choices in options:
+        if choice in choices:
+            valid_visibility = True
+
+    return valid_visibility
 
 def encode_list(posts):
     return {

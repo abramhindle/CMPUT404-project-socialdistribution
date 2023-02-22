@@ -1,14 +1,12 @@
 from djongo import models
+from django import forms
 from service.models.author import Author
-from django.core import serializers
 import uuid
 
 #Djongo freaks out if we don't define the meta values for the ArrayField CharField. This solves that problem
-class Categories(models.Model):
-    data = models.CharField(max_length=32)
+class Category(models.Model):
+    data = models.CharField(max_length=32, primary_key=True)
 
-    class Meta:
-        abstract = True # is not saved as a table
 
 class Post(models.Model):
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) #post id
@@ -34,9 +32,8 @@ class Post(models.Model):
     contentType = models.CharField(max_length=20, choices=CONTENT_TYPES, default=MARKDOWN)
     content = models.TextField()
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    #categories =  models.ArrayField(Categories, default=None) # this sucks, but we have to do it because djongo throws a hissy fit
 
-    #dont need the comments values here, we get them at API time
+    categories = models.ManyToManyField(Category)
 
     published = models.DateTimeField()
 
@@ -62,6 +59,7 @@ class Post(models.Model):
             "contentType": self.contentType,
             "content": self.content,
             "author": self.author.toJSON(),
+            "categories": list(self.categories.values_list(flat=True)),
             "published": str(self.published),
             "visibility": self.visibility,
             "unlisted": self.unlisted
