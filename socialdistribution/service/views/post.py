@@ -206,6 +206,7 @@ def valid_choice(choice, options):
     for choices in options:
         if choice in choices:
             valid_visibility = True
+            break
 
     return valid_visibility
 
