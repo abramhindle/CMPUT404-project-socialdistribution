@@ -75,7 +75,11 @@ class CommentView(View, RestService):
 
         comment.save()
 
-        return HttpResponse(status=201)
+        host = request.build_absolute_uri('/')
+
+        comment_json = comment.toJSON(host)
+
+        return HttpResponse(json.dumps(comment_json), status=201, content_type = CONTENT_TYPE_JSON)
 
 def encode_list(comments, host, page, size, author_id, post_id):
     return {

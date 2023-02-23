@@ -98,7 +98,9 @@ class PostCreation(View, RestService):
 
         post.save()
 
-        return HttpResponse(status=201)
+        post_json = post.toJSON()
+
+        return HttpResponse(json.dumps(post_json), status=201, content_type = CONTENT_TYPE_JSON)
 
 
 #Endpoints with post_id and author_id
@@ -166,7 +168,9 @@ class PostWithId(View, RestService):
 
         post.save()
 
-        return HttpResponse(status=201)
+        post_json = post.toJSON()
+
+        return HttpResponse(json.dumps(post_json), status=201, content_type = CONTENT_TYPE_JSON)
 
     #DELETE
     def delete(self, request: HttpRequest, *args, **kwargs):
