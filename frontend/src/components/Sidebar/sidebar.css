@@ -3,8 +3,13 @@
     background-color: black;
 }
 
+.Profile p {
+    color: white;
+    text-align: center;
+    padding: 2em;
+}
+
 .Sidebar {
-    position: fixed;
     min-height: 100vh;
     max-width: fit-content;
     display: flex;
@@ -17,14 +22,14 @@
     padding: 0;
 }
 
-li {
+.Sidebar li {
     display: block;
     width: 100%;
     margin: 0;
     padding: 0;
 }
 
-button {
+.Sidebar button {
     color: white;
     font-size: large;
     display: block;
@@ -34,14 +39,8 @@ button {
 
 }
 
-p {
-    color: white;
-    text-align: center;
-    padding: 2em;
-}
-
 /* Page Menu */
-menu {
+.Sidebar menu {
     background-color: #FF8A5B;
     list-style: none;
     width: 100%;
@@ -53,7 +52,7 @@ menu {
 }
 
 /* Options Menus */
-ul.Options-bar {
+.Sidebar ul.Options-bar {
     display: none;      /* Hide by default */
     list-style: none;
     padding: 0;
@@ -66,25 +65,25 @@ ul.Options-bar {
     }
 
 /* Page Buttons */
-button.Page {
+.Sidebar button.Page {
     font-weight: bold;
     border-style: none;
     background-color: #FF8A5B;
     text-align: left;
 }
 
-    button.Page:hover {
+    .Sidebar button.Page:hover {
         background-color: #FF4242;
     }
 
 /* Option Buttons */
-button.Options {
+.Sidebar button.Options {
     font-size: medium;
     border-style: none;
     background-color: #25CED1;
 }
 
-    button.Options:hover {
+    .Sidebar button.Options:hover {
         background-color: #1C9AB0;
     }
 

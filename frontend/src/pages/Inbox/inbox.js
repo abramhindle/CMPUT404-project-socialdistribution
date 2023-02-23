@@ -3,10 +3,10 @@ import './inbox.css';
 
 function Inbox() {
   return (
-    <div>
+    <div className='Page'>
       <Sidebar/>
-      <div>
-        <p className='Center'>
+      <div className='Inbox'>
+        <p>
             This is now the inbox page
         </p>
       </div>
