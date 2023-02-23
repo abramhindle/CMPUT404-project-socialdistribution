@@ -1,7 +1,6 @@
 from djongo import models
 from django.contrib.auth.models import User
 import uuid
-from django.core import serializers
 
 # Create your models here.
 

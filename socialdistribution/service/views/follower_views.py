@@ -1,7 +1,6 @@
 from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView, \
     RetrieveAPIView, RetrieveDestroyAPIView
 
-
 # TODO all below are just scatch and need to be fixed and rebuilt 
 
 class FollowersAPIView(RetrieveAPIView):

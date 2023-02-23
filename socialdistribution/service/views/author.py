@@ -95,7 +95,7 @@ def encode_json(author: Author):
             "profileImage": author.profileImage,
     }
 
-def encode_list(authors: list[Author]):
+def encode_list(authors):
     return {
         "type": "author",
         "items": authors
