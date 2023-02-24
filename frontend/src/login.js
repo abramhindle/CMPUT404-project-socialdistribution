@@ -1,19 +1,29 @@
 // Import the react JS packages
-import { useContext, useState } from "react";
-import AuthContext from "./Auth";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signInUser } from "./reducer/userSlice";
+import login_api from "./login_api";
 
 // Define the Login function.
 export const Login = () => {
-  const { loginUser } = useContext(AuthContext);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // Create the submit method.
 
+  const success = (res) => {
+    dispatch(signInUser(res));
+    navigate("/");
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     console.log("Loggin in with", username, password);
-    loginUser(username, password);
+    login_api(username, password, success);
   };
 
   return (

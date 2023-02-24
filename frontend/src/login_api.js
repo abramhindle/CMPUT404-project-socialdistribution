@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const login_api = async (username, password, success, fail) => {
+const login_api = async (username, password, success) => {
   const user = {
     username: username,
     password: password,
   };
-  const response = await axios.post(
-    "http://localhost:8000/api/token/",
+  const res = await axios.post(
+    "http://localhost:8000/api/signin/",
     user,
     {
       headers: {
@@ -16,11 +16,9 @@ const login_api = async (username, password, success, fail) => {
     },
     { withCredentials: true }
   );
-  console.log(response);
-  // const text = await response.data;
-  if (response.status === 200) {
+  if (res.status === 200) {
     console.log("success");
-    success();
+    success(res);
   } else {
     console.log("failed");
   }

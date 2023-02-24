@@ -1,17 +1,11 @@
-import { Route, Navigate } from "react-router-dom";
-import { useContext } from "react";
-import AuthContext from "../Auth";
+import { Navigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const PrivateRoute = ({ children, ...rest }) => {
-  let { user } = useContext(AuthContext);
-  if (!user) {
-    // not logged in so redirect to login page with the return url
-    return <Navigate to="/login" />;
-  }
+const PrivateRoute = ({ children }) => {
+  const user = useSelector((state) => state.user);
+  console.log(user.isLogin);
 
-  // authorized so return child components
-  return children;
-  // return <Route {...rest}>{!user ? <Navigate to="/login" /> : children}</Route>;
+  return user.isLogin ? children : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;
