@@ -1,7 +1,7 @@
 from django.urls import path
 from service.views.author import SingleAuthor, MultipleAuthors
 from service.views.post import PostCreation, PostWithId
-#from .views.follower_views import FollowerAPIView, FollowersAPIView
+from .views.follower_views import FollowerAPIView, FollowersAPIView
 from service.views.comment import CommentView
 
 urlpatterns = [
