@@ -2,13 +2,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from service.models.author import Author
 from django.contrib import auth
+import json
 
 class SignInView(APIView):
     def post(self, request, format=None):
-        data = self.request.data
-
+        try:
+            data = json.loads(self.request.data)
+        except:
+            data = self.request.data
         username = data["username"]
-        password = data["password"]
+        password =  data["password"]
 
         user = auth.authenticate(username=username, password=password)
         if user is not None:
