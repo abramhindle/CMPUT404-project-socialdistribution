@@ -46,13 +46,14 @@ class PostCreation(View, RestService):
 
         return HttpResponse(json.dumps(posts_json), content_type = CONTENT_TYPE_JSON)
 
-    @method_decorator(csrf_exempt)
     def post(self, request: HttpRequest, *args, **kwargs): #create a new post
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
         
         body = request.body.decode(UTF8)
         body = json.loads(body)
+
+        print("HERE")
 
         self.author_id = kwargs['author_id']
 
@@ -131,6 +132,8 @@ class PostWithId(View, RestService):
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
         
+        print("HERE")
+
         body = request.body.decode(UTF8)
         body = json.loads(body)
 

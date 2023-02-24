@@ -45,6 +45,9 @@ class SingleAuthor(View):
 
     def get(self, request, *args, **kwargs):
         self.id = kwargs['author_id']
+
+        print(self.id)
+
         try:
             author = Author.objects.get(_id=self.id)
         except:

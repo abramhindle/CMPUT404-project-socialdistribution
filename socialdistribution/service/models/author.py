@@ -27,3 +27,11 @@ class Author(models.Model):
             "github": self.github,
             "profileImage": self.profileImage,
     }
+
+    def toObject(self, json_object):
+        self._id = json_object["id"]
+        self.host = json_object["host"]
+        self.displayName = json_object["displayName"]
+        self.url = json_object["url"]
+        self.github = json_object["github"]
+        self.profileImage = json_object["profileImage"]

@@ -5,7 +5,7 @@ from django.conf import settings
 import uuid
 
 def createCommentId(author_id, post_id, comment_id):
-    return f"{settings.DOMAIN}/authors/{author_id}/posts/{post_id}/comments/{comment_id}"
+    return f"{settings.DOMAIN}/authors/{author_id}/posts/{post_id}/comments/{comment_id}" #TODO: rather than the whole id, just get the ends of _id and put those here
 
 class Comment(models.Model):
     _id = models.URLField(primary_key=True)
@@ -29,5 +29,12 @@ class Comment(models.Model):
             "comment": self.comment,
             "contentType": self.contentType,
             "published": str(self.published),
-            "id": f"{host}authors/{self.author._id}/posts/{self.post._id}/comments/{self._id}",
+            "id": f"{host}authors/{self.author._id}/posts/{self.post._id}/comments/{self._id}", 
         }
+
+    def toObject(self, json_object):
+        self.author = Author().toObject(json_object["author"])
+        self.comment = json_object["comment"]
+        self.contentType = json_object["contentType"]
+        self.published = json_object["published"]
+        self._id = json_object["id"]

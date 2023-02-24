@@ -1,6 +1,8 @@
 from django.http import *
 from service.models.author import Author
 from service.models.inbox import Inbox
+from service.models.post import Post
+from service.models.comment import Comment
 from service.service_constants import *
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -43,19 +45,12 @@ class InboxView(View):
             inbox = Inbox.objects.create(author=self.author)
 
         try:
-            #we assume that the
             id = body["id"]
-            id = id.rsplit('/', 1)[-1]
 
             if body["type"] == "post":
-                post = inbox.posts.get(_id=id)
-
-                
-
-                inbox.posts.add(_id=post)
+                self.handle_post(inbox, id)
 
             elif body["type"] == "comment":
-                comment = inbox.comments.get()
                 pass
 
             elif body["type"] == "follow":
@@ -72,3 +67,17 @@ class InboxView(View):
 
     def delete(self, request: HttpRequest, *args, **kwargs):
         pass
+
+    def handle_post(self, inbox: Inbox, post_id):
+        try:
+            post = inbox.posts.get(_id=post_id)
+        except ObjectDoesNotExist:
+            post = Post.objects.create()
+        inbox.posts.add(post)
+        
+    def handle_comment(self, inbox: Inbox, comment_id):
+        try:
+            post = inbox.comments.get(_id=comment_id)
+        except ObjectDoesNotExist:
+            post = Comment.toObject()
+        inbox.posts.add(post)
