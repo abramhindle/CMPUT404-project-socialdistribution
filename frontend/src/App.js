@@ -1,7 +1,7 @@
 import "./App.css";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import PrivateRoute from "./utils/PrivateRoute";
+import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
 import SignIn from "./Signin";
 import Main from "./Main";
 
@@ -18,7 +18,14 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/login" element={<SignIn />} />
+          <Route
+            path="/signin"
+            element={
+              <SignInRoute>
+                <SignIn />
+              </SignInRoute>
+            }
+          />
         </Routes>
       </Router>
     </div>

@@ -1,7 +1,7 @@
 // Import the react JS packages
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { signInUser } from "./reducer/userSlice";
 import { signIn_api } from "./api/user_api";
 
