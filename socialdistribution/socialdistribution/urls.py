@@ -20,5 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # commneted since author model prevents server to run.
     path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
-    path('api/', include("api.urls"))
+    path('api/', include("blog.urls"))
 ]
