@@ -1,28 +1,32 @@
 import "./App.css";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import PrivateRoute from "./utils/PrivateRoute";
-import { AuthProvider } from "./Auth";
-import Login from "./login";
+import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
+import SignIn from "./Signin";
 import Main from "./Main";
 
 function App() {
   return (
     <div>
       <Router>
-        <AuthProvider>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <Main />
-                </PrivateRoute>
-              }
-            />
-            <Route element={<Login />} path="/login" />
-          </Routes>
-        </AuthProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Main />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/signin"
+            element={
+              <SignInRoute>
+                <SignIn />
+              </SignInRoute>
+            }
+          />
+        </Routes>
       </Router>
     </div>
   );

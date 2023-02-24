@@ -1,13 +1,33 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-# from .models import Person
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from service.models.author import Author
+from django.contrib import auth
+import json
 
+class SignInView(APIView):
+    def post(self, request, format=None):
+        try:
+            data = json.loads(self.request.data)
+        except:
+            data = self.request.data
+        username = data["username"]
+        password =  data["password"]
 
-# Create your views here.
-
-# To test djongo migration
-# def home(request):
-    p = Person(first_name="Akanksha", last_name="Parmar")
-    p.save()
-    return HttpResponse("Welcome!")
-
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            try:
+                author = Author.objects.get(user=user)
+                auth.login(request, user)
+                return Response({"success": "User authenticated", "author": author.toJSON()}, status=200)
+            except:             
+                return Response({"error": "Error Authenticating"}, status=401)
+        
+        return Response({"error": "Error Authenticating"}, status=401)
+        
+class SignOutView(APIView):
+    def post(self, request, format=None):
+        try:
+            auth.logout(request)
+            return Response({ 'success': 'Loggout Out' }, status=200)
+        except:
+            return Response({ 'error': 'Something went wrong when logging out' }, status=401)
