@@ -1,7 +1,6 @@
 from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView, \
     RetrieveAPIView, RetrieveDestroyAPIView
 
-
 # TODO all below are just scatch and need to be fixed and rebuilt 
 
 class FollowersAPIView(RetrieveAPIView):
@@ -26,8 +25,8 @@ class FollowersAPIView(RetrieveAPIView):
 class FollowerAPIView(RetrieveUpdateDestroyAPIView):
     """ GET if is a follower PUT a new follower DELETE an existing follower"""
 
-    serializer_class = serializers.FollowersSerializer
-    renderer_classes = [JSONRenderer]
+    # serializer_class = serializers.FollowersSerializer
+    # renderer_classes = [JSONRenderer]
     # TODO foreign author (currently our author)
 
     def usernames(self, *args, **kwargs):
