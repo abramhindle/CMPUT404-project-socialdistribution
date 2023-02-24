@@ -3,11 +3,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signInUser } from "./reducer/userSlice";
-import login_api from "./login_api";
+import { signIn_api } from "./api/user_api";
 
 // Define the Login function.
-export const Login = () => {
-  const user = useSelector((state) => state.user);
+export const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,7 +22,7 @@ export const Login = () => {
   const submit = async (e) => {
     e.preventDefault();
     console.log("Loggin in with", username, password);
-    login_api(username, password, success);
+    signIn_api(username, password, success);
   };
 
   return (
@@ -66,4 +65,4 @@ export const Login = () => {
   );
 };
 
-export default Login;
+export default SignIn;

@@ -1,6 +1,6 @@
-import logout_api from "./logout_api";
 import { useSelector, useDispatch } from "react-redux";
 import { clearUser } from "./reducer/userSlice.js";
+import { signOut_api } from "./api/user_api";
 
 function Main() {
   const user = useSelector((state) => state.user);
@@ -13,7 +13,7 @@ function Main() {
   return (
     <div>
       Main! Welcome {user.displayName}
-      <button onClick={() => logout_api(signOut)}> Sign Out </button>
+      <button onClick={() => signOut_api(signOut)}> Sign Out </button>
     </div>
   );
 }

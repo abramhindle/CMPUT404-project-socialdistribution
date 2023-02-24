@@ -2,7 +2,7 @@ import "./App.css";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./utils/PrivateRoute";
-import Login from "./login";
+import SignIn from "./Signin";
 import Main from "./Main";
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<SignIn />} />
         </Routes>
       </Router>
     </div>

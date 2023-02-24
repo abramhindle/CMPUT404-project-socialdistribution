@@ -20,7 +20,6 @@ export const userSlice = createSlice({
       state.profileImage = action.payload.data.author.profileImage;
       state.url = action.payload.data.author.url;
       state.isLogin = true;
-      // sessionStorage.setItem("state", JSON.stringify(state));
       return state;
     },
     clearUser: (state) => {
@@ -31,7 +30,6 @@ export const userSlice = createSlice({
       state.profileImage = "";
       state.url = "";
       state.isLogin = false;
-      // sessionStorage.clear("state");
       return state;
     },
   },
