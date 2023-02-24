@@ -22,7 +22,7 @@ class Post(models.Model):
 
     MARKDOWN = 'text/markdown'
     PLAIN = 'text/plain'
-    IMAGE = 'image/jpeg'
+    IMAGE = 'image'
     
     content_types = [
         (MARKDOWN, 'markdown'),
@@ -31,9 +31,9 @@ class Post(models.Model):
     ]
 
     content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
-
-    image_url = models.URLField(editable=True, blank=True)
-
+    
+    # you may need to pip install pillow
+    uploaded_img = models.ImageField(null=True, blank=True, upload_to='images/')
 
 class Comments(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
