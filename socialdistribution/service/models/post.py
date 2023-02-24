@@ -2,14 +2,14 @@ from djongo import models
 from django import forms
 from service.models.author import Author
 import uuid
+from django.conf import settings
 
 #Djongo freaks out if we don't define the meta values for the ArrayField CharField. This solves that problem
 class Category(models.Model):
     data = models.CharField(max_length=32, primary_key=True)
 
-
 class Post(models.Model):
-    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) #post id
+    _id = models.URLField(primary_key=True) #post id
     title = models.CharField(max_length=32)
     source = models.URLField()
     origin = models.URLField()
@@ -52,7 +52,7 @@ class Post(models.Model):
         return {
             "type": "post",
             "title": self.title,
-            "id": str(self._id),
+            "id": self._id,
             "source": self.source,
             "origin": self.origin,
             "description": self.description,
@@ -64,3 +64,11 @@ class Post(models.Model):
             "visibility": self.visibility,
             "unlisted": self.unlisted
         }
+
+    def toObject(self, json_object):
+        self._id = json_object["id"] #this is a url, we need to get the last item of the url
+        self.title = json_object["title"]
+        self.source = json_object["source"]
+
+def createPostId(author_id, post_id):
+    return f"{settings.DOMAIN}/authors/{author_id}/posts/{post_id}"

@@ -1,10 +1,14 @@
 from djongo import models
 from service.models.author import Author
 from service.models.post import Post
+from django.conf import settings
 import uuid
 
+def createCommentId(author_id, post_id, comment_id):
+    return f"{settings.DOMAIN}/authors/{author_id}/posts/{post_id}/comments/{comment_id}"
+
 class Comment(models.Model):
-    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    _id = models.URLField(primary_key=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.TextField()
 

@@ -10,9 +10,9 @@ urlpatterns = [
     # path('service/authors/<str:author>/followers', FollowersAPIView.as_view(), name='service-followers'),
     # path('service/authors/<str:author>/followers/<str:another_author>', FollowerAPIView.as_view(), name='service-follower'),
     path('', MultipleAuthors.as_view()), 
-    path('<uuid:id>/', SingleAuthor.as_view()),
-    path('<uuid:author_id>/posts/', PostCreation.as_view(), name='post_creation'),
-    path('<uuid:author_id>/posts/<uuid:post_id>', PostWithId.as_view(), name='post_with_id'),
-    path('<uuid:author_id>/posts/<uuid:post_id>/comments', CommentView.as_view(), name='comment_view'),
+    path('<path:author_id>/', SingleAuthor.as_view()),
+    path('<path:author_id>/posts/', PostCreation.as_view(), name='post_creation'),
+    path('<path:author_id>/posts/<path:post_id>', PostWithId.as_view(), name='post_with_id'),
+    path('<path:author_id>/posts/<path:post_id>/comments', CommentView.as_view(), name='comment_view'),
     path('<uuid:author_id>/inbox', InboxView.as_view(), name='inbox_view')
 ]

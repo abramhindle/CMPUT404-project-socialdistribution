@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 import json
+import uuid
 
 from django.utils.decorators import method_decorator
 
@@ -22,7 +23,8 @@ class InboxView(View):
     ["get", "post", "delete"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        pass
+        print("http://localhost:8000/authors/author_id/posts/post_id".rsplit('/', 1)[-1])
+        return HttpResponse()
 
     def post(self, request: HttpRequest, *args, **kwargs):
         self.author_id = kwargs['author_id']
@@ -41,12 +43,31 @@ class InboxView(View):
             inbox = Inbox.objects.create(author=self.author)
 
         try:
-            if body["type"] not in INBOX_TYPES: #cannot add an item to inbox that isnt of the 4 types
+            #we assume that the
+            id = body["id"]
+            id = id.rsplit('/', 1)[-1]
+
+            if body["type"] == "post":
+                post = inbox.posts.get(_id=id)
+
+                
+
+                inbox.posts.add(_id=post)
+
+            elif body["type"] == "comment":
+                comment = inbox.comments.get()
+                pass
+
+            elif body["type"] == "follow":
+                pass
+            elif body["type"] == "comment":
+                pass
+            else:
                 return HttpResponseBadRequest()
 
-            
-            
         except KeyError:
+            return HttpResponseBadRequest()
+        except ObjectDoesNotExist:
             return HttpResponseBadRequest()
 
     def delete(self, request: HttpRequest, *args, **kwargs):

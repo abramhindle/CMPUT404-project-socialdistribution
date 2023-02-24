@@ -18,8 +18,11 @@ class PostTests(TestCase):
         self.author1 = Author.objects.create(displayName = "Joe Guy", host = "http://localhost:8000", user = self.user1)
         self.author2 = Author.objects.create(displayName = "Somebody Else", host = "http://localhost:8000", user = self.user2)
 
-        self.post1 = Post.objects.create(title="Hello World!", author=self.author1)
-        self.post2 = Post.objects.create(title="Somebody else's post", author=self.author2)
+        self.post1 = Post.objects.create(_id=createPostId(self.author1._id, uuid.uuid4()), title="Hello World!", author=self.author1)
+        self.post2 = Post.objects.create(_id=createPostId(self.author2._id, uuid.uuid4()), title="Somebody else's post", author=self.author2)
+
+        print("HERE")
+        print(self.post1._id)
 
         self.request_factory = RequestFactory()
 
@@ -32,6 +35,8 @@ class PostTests(TestCase):
         self.kwargs = {
             'author_id': self.author1._id
         }
+
+        print(self.kwargs["author_id"])
 
         url = reverse('post_creation', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
         get_request = self.request_factory.get(url, user = self.user1)
@@ -122,7 +127,7 @@ class PostTests(TestCase):
         self.assertEqual(post.unlisted, body["unlisted"])
 
     def test_delete_post_by_id(self):
-        post_to_delete = Post.objects.create(author=self.author1) #create a blank object to delete
+        post_to_delete = Post.objects.create(_id=createPostId(self.author1._id, uuid.uuid4()), author=self.author1) #create a blank object to delete
 
         self.kwargs = {
             'author_id': self.author1._id,

@@ -7,8 +7,9 @@ from django.http import *
 import json
 from datetime import datetime, timezone
 from service.services.rest_service import RestService
+import uuid
 
-from service.models.comment import Comment
+from service.models.comment import Comment, createCommentId
 from service.models.post import Post
 from service.models.author import Author
 
@@ -58,6 +59,7 @@ class CommentView(View, RestService):
         comment = Comment()
 
         try:
+            comment._id = createCommentId(self.author_id, self.post_id, uuid.uuid4())
             comment.comment = body["comment"]
             comment.author = author
             comment.post = post

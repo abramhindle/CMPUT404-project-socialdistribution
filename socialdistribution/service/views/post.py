@@ -1,5 +1,5 @@
 from django.http import *
-from service.models.post import Post, Category
+from service.models.post import Post, Category, createPostId
 from service.models.author import Author
 from service.service_constants import *
 from django.views import View
@@ -45,7 +45,8 @@ class PostCreation(View, RestService):
         posts_json = encode_list(posts)
 
         return HttpResponse(json.dumps(posts_json), content_type = CONTENT_TYPE_JSON)
-    
+
+    @method_decorator(csrf_exempt)
     def post(self, request: HttpRequest, *args, **kwargs): #create a new post
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
@@ -62,7 +63,10 @@ class PostCreation(View, RestService):
         except:
             return HttpResponseNotFound()
 
+        post.author = author
+
         try:
+            post._id = createPostId(self.author_id, uuid.uuid4()) #NEW ID!!
             post.author = author
             post.title = body["title"]
             post.content = body["content"]

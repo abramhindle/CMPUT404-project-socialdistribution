@@ -1,9 +1,10 @@
 from django.test import *
 from service.models.author import Author
-from service.models.comment import Comment
-from service.models.post import Post
+from service.models.comment import Comment, createCommentId
+from service.models.post import Post, createPostId
 from django.contrib.auth.models import User
 from service.views.comment import *
+import uuid
 
 from django.urls import reverse
 
@@ -19,10 +20,10 @@ class AuthorTests(TestCase):
         self.author1 = Author.objects.create(displayName = "Joe Guy", host = "http://localhost:8000", user = self.user1)
         self.author2 = Author.objects.create(displayName = "Somebody Else", host = "http://localhost:8000", user = self.user2)
 
-        self.post1 = Post.objects.create(title="Hello World!", author=self.author1)
+        self.post1 = Post.objects.create(_id=createPostId(self.author1._id, uuid.uuid4()), title="Hello World!", author=self.author1)
 
-        self.comment1 = Comment.objects.create(comment="This is a comment.", author=self.author1, post=self.post1)
-        self.comment2 = Comment.objects.create(comment="I hate this post!", author=self.author2, post=self.post1)
+        self.comment1 = Comment.objects.create(_id=createCommentId(self.author1._id, self.post1._id, uuid.uuid4()), comment="This is a comment.", author=self.author1, post=self.post1)
+        self.comment2 = Comment.objects.create(_id=createCommentId(self.author2._id, self.post1._id, uuid.uuid4()), comment="I hate this post!", author=self.author2, post=self.post1)
 
         self.request_factory = RequestFactory()
     
@@ -84,9 +85,11 @@ class AuthorTests(TestCase):
 
         comments = Comment.objects.all().filter(post=self.post1)
 
+
         self.assertEqual(len(comments), 3) #we added 1 more to post1
 
         self.assertEqual(comments[2].comment, body["comment"])
         self.assertEqual(comments[2].contentType, body["contentType"])
+        self.assertTrue(comments[2]._id) #makes sure that the id is not None or empty
     
 
