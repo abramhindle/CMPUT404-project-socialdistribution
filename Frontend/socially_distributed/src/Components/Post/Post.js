@@ -14,7 +14,7 @@ function POST({ postobj }) {
 		
 		// Peter you just need to return the image here 
 		if (post["contentType"] === "image/jpeg") {
-			return <div>image</div>;
+			return <p>{}</p>;
 		}
 	};
 
