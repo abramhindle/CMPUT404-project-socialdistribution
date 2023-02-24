@@ -1,0 +1,8 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<h1>{{post.title}}</h1>
+
+<h3>Author: {{post.author.display_name}}</h3><br>
+<h3>Description: {{post.description}}</h3><br>
+<h3>Privacy: {{post.private}}</h3><br>
+<h3>Contnet-type: {{post.content_type}}</h3><br>
