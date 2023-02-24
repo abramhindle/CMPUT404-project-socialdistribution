@@ -38,3 +38,4 @@ def AuthorsView(request):
     "items": serialized_authors_list,
     }
     return JsonResponse(output, status = 200)
+
