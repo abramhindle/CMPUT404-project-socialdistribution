@@ -1,0 +1,89 @@
+.Profile {
+    height: 10em;
+    background-color: black;
+}
+
+.Profile p {
+    color: white;
+    text-align: center;
+    padding: 2em;
+}
+
+.Sidebar {
+    min-height: 100vh;
+    max-width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: left;
+    font-size: calc(10px + 2vmin);
+    background-color: #FF8A5B;
+    margin: 0;
+    padding: 0;
+}
+
+.Sidebar li {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.Sidebar button {
+    color: white;
+    font-size: large;
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding: 0.5em;
+
+}
+
+/* Page Menu */
+.Sidebar menu {
+    background-color: #FF8A5B;
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    float: left;
+    padding: 0;
+    margin: 0;
+
+}
+
+/* Options Menus */
+.Sidebar ul.Options-bar {
+    display: none;      /* Hide by default */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    /* Display Options bar when item hovered over -- probably change to only when clicked later */
+    .Sidebar li:hover ul.Options-bar {
+        display: block;
+    }
+
+/* Page Buttons */
+.Sidebar button.Page {
+    font-weight: bold;
+    border-style: none;
+    background-color: #FF8A5B;
+    text-align: left;
+}
+
+    .Sidebar button.Page:hover {
+        background-color: #FF4242;
+    }
+
+/* Option Buttons */
+.Sidebar button.Options {
+    font-size: medium;
+    border-style: none;
+    background-color: #25CED1;
+}
+
+    .Sidebar button.Options:hover {
+        background-color: #1C9AB0;
+    }
+
