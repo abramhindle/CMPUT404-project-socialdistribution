@@ -1,12 +1,16 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom"
-import SIGN_IN from "./Components/sign_in";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SIGN_IN from "./Components/SignIn/Sign_in";
+import POSTSVIEW from "./Components/Post/PostsView";
+import PROFILE from "./Components/Profile/Profile";
 
 function App() {
 	return (
 		<div className="App">
 			<BrowserRouter>
 				<Routes>
-					<Route path="/signin" element={ <SIGN_IN/> } />
+					<Route path="/login" element={<SIGN_IN />} />
+					<Route path="/postview" element={<POSTSVIEW />} />
+					<Route path="/profile" element={<PROFILE />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
