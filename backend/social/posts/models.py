@@ -33,6 +33,7 @@ class Post(models.Model):
     content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
     
     # you may need to pip install pillow
+    # for the post request, use <form method="post" enctype="multipart/form-data">
     uploaded_img = models.ImageField(null=True, blank=True, upload_to='images/')
 
 class Comments(models.Model):
