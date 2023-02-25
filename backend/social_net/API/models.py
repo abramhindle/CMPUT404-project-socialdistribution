@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 
@@ -10,6 +11,11 @@ class AuthorModel(models.Model):
     displayName = models.CharField(max_length=100, blank=False, default='')
     github = models.CharField(max_length=100, blank=False, default='')
     profileImage = models.CharField(max_length=500, blank=False, default='')
+    followers = ArrayField(models.CharField(max_length=100, blank=True, default=''), blank=True, default=list)
 
+    # def addFollower(self, instance, validated_data):
+    #     instance.followers.append(validated_data)
+    #     return instance
+    
     class Meta:
         ordering = ['type', 'id', 'host', 'displayName', 'profileImage']

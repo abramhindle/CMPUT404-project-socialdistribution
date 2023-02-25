@@ -39,3 +39,47 @@ def AuthorsView(request):
     }
     return JsonResponse(output, status = 200)
 
+@api_view(['GET'])
+def AuthorFollowersView(request, uid):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    
+    author_object = AuthorModel.objects.get(id=uid).followers
+    # serialized_object = AuthorSerializer(author_object)
+    # output = serialized_object.data
+    return JsonResponse({uid:author_object}, status = 200)
+
+@api_view(['DELETE', 'PUT', 'GET'])
+def AuthorFollowersOperationsView(request, uid, foreign_uid):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+
+    if request.method == 'GET':
+        author_object = AuthorModel.objects.get(id=uid).followers
+        if foreign_uid in author_object:
+            return JsonResponse({"status": "success"}, status = 200)
+        else:
+            return JsonResponse({"status": "failure"}, status = 200)
+
+    elif request.method == 'PUT':
+        author_object = AuthorModel.objects.get(id=uid)
+        author_object.followers.append(foreign_uid)
+        serialized_object = AuthorSerializer(author_object)
+        parameters = json.loads(request.body)
+        output = serialized_object.data
+        author_object.save()
+        return JsonResponse(output, status = 200)
+    
+    elif request.method == 'DELETE':
+        author_object = AuthorModel.objects.get(id=uid)
+        author_object.followers.remove(foreign_uid)
+        serialized_object = AuthorSerializer(author_object)
+        parameters = json.loads(request.body)
+        output = serialized_object.data
+        author_object.save()
+        return JsonResponse(output, status = 200)
+
+
+

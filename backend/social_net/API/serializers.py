@@ -20,9 +20,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         instance.displayName = validated_data.get('displayName', instance.displayName)
         instance.github = validated_data.get('github', instance.github)
         instance.profileImage = validated_data.get('profileImage', instance.profileImage)
-
         return instance
-
     class Meta:
         model = AuthorModel
         # Tuple of serialized model fields (see link [2])
