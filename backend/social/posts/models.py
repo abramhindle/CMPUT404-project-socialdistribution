@@ -29,21 +29,21 @@ content_types = [
 ]
 
 class Post(models.Model):
-    id = models.AutoField(primary_key=True, editable=False)  # ID of post
+    id = models.UUIDField(primary_key=True, editable=False)  # ID of post
     url = models.URLField(editable=False, max_length=500)  # url of post
     author = models.ForeignKey(Author, related_name="posts", on_delete=models.CASCADE)  # author of post
-    
-    title = models.CharField(max_length=200)  # title of post
+    categories = ''
+    title = models.CharField(max_length=150)  # title of post
     source = models.URLField(default="",max_length=500)  # source of post
     origin = models.URLField(default="",max_length=500)  # origin of post
-    description = models.CharField(blank=True, default="", max_length=300)  # brief description of post
+    description = models.CharField(blank=True, default="", max_length=200)  # brief description of post
     content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
     content = models.TextField(blank=False, default="")  # content of post
     visibility = models.CharField(choices=visbility_choices, default=PUBLIC, max_length=20)  # visibility status of post
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
     
-    refImage = models.URLField(max_length=200, default="")
+    refImage = models.URLField(max_length=200, default="")  # reference to an image post
 
     # make it pretty
     def __str__(self):
@@ -60,20 +60,60 @@ class Post(models.Model):
     # get public id of post
     def get_public_id(self):
         return self.url or self.id
+    
+    # get comments url
+    def get_comments_source(self):
+        if self.url.endswith("/"):
+            return self.url + 'comments/'
+        else:
+            return self.url + '/comments/'
+        
+    def get_comment_count(self):
+        return self.comments.count()
 
+    def get_likes_count(self):
+        return self.likes.count()
+    
     @staticmethod
     def get_api_type():
         return 'post'
 
 class Comments(models.Model):
-    id = models.AutoField(primary_key=True, editable=False)
-    url = models.URLField(editable=False, max_length=500)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    comment = models.TextField(max_length=200)
-    published = models.DateTimeField(auto_now_add=True)
-    content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
+    id = models.UUIDField(primary_key=True, editable=False)  # ID of comment
+    url = models.URLField(editable=False, max_length=500)  # URL of comment
+    author = models.ForeignKey(Author, related_name = 'comments', on_delete=models.CASCADE)  # author of comment
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # post of the commen
+    comment = models.TextField()  # the comment
+    published = models.DateTimeField(auto_now_add=True)  # date published
+    content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
 
+    # get public id of comment
+    def get_public_id(self):
+        return self.url or self.id
+    
     @staticmethod
     def get_api_type():
         return 'comment'
+    
+    class Meta:
+        ordering = ['published']
+
+    def __str__(self):
+        return 'Comment {} by {}'.format(self.content, self.author)
+    
+class Likes(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False)  # ID of like
+    object = models.URLField(editable=False, max_length=500)  # URL of liked object
+    summary = models.CharField (max_length=100)
+    author = models.ForeignKey(Author, related_name = 'likes', on_delete=models.CASCADE)  # author of like
+    inbox = GenericRelation(Inbox, related_query_name='like')  # inbox in which like is in
+
+    # get public id of like
+    def get_public_id(self):
+        return self.url or self.id
+    
+    @staticmethod
+    def get_api_type():
+        return 'Like'
+    
+    ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGE
