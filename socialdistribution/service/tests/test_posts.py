@@ -109,7 +109,7 @@ class PostTests(TestCase):
 
         posts_response = self.id_view.post(post_request, author_id=self.kwargs["author_id"], post_id=self.kwargs["post_id"])
         
-        self.assertEqual(posts_response.status_code, 202)
+        self.assertEqual(posts_response.status_code, 201)
 
         post = Post.objects.get(_id=self.kwargs["post_id"])
 

@@ -4,6 +4,7 @@ from service.models.author import Author
 from service.service_constants import *
 from django.views import View
 from datetime import datetime, timezone
+from service.services.rest_service import RestService
 
 import uuid
 
@@ -18,7 +19,7 @@ from django.views.decorators.http import require_http_methods
 
 #endpoints with just author_id
 @method_decorator(csrf_exempt, name='dispatch')
-class PostCreation(View):
+class PostCreation(View, RestService):
     http_method_names = ['get', 'post']
 
     def get(self, request: HttpRequest, *args, **kwargs): #get all recent posts for author_id
@@ -69,7 +70,7 @@ class PostCreation(View):
             post.source = request.build_absolute_uri() #use the local server ast he source and origin, since this is a BRAND NEW post
             post.origin = request.build_absolute_uri()
 
-            is_valid = valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
+            is_valid = self.valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
 
             if not is_valid:
                 return HttpResponseBadRequest()
@@ -84,7 +85,7 @@ class PostCreation(View):
 
             #this should be handled by some sort of enum system
 
-            is_valid = valid_choice(body["visibility"], Post.VISIBILITY_CHOICES)
+            is_valid = self.valid_choice(body["visibility"], Post.VISIBILITY_CHOICES)
 
             if not is_valid:
                 return HttpResponseBadRequest()
@@ -102,7 +103,7 @@ class PostCreation(View):
 
 #Endpoints with post_id and author_id
 @method_decorator(csrf_exempt, name='dispatch')
-class PostWithId(View):
+class PostWithId(View, RestService):
     http_method_names = ['get', 'post', 'delete', 'put']
 
     #GET
@@ -140,14 +141,14 @@ class PostWithId(View):
             post.content = body["content"]
             post.description = body["description"]
 
-            is_valid = valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
+            is_valid = self.valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
 
             if not is_valid:
                 return HttpResponseBadRequest()
 
             post.contentType = body["contentType"]
 
-            is_valid = valid_choice(body["visibility"], Post.VISIBILITY_CHOICES) #we might not need this, but good to have just in case
+            is_valid = self.valid_choice(body["visibility"], Post.VISIBILITY_CHOICES) #we might not need this, but good to have just in case
 
             if not is_valid:
                 return HttpResponseBadRequest()
@@ -165,7 +166,7 @@ class PostWithId(View):
 
         post.save()
 
-        return HttpResponse(status=202)
+        return HttpResponse(status=201)
 
     #DELETE
     def delete(self, request: HttpRequest, *args, **kwargs):
@@ -200,15 +201,6 @@ def create_categories(json_categories):
         categories.append(category)
     
     return categories
-
-def valid_choice(choice, options):
-    valid_visibility = False
-    for choices in options:
-        if choice in choices:
-            valid_visibility = True
-            break
-
-    return valid_visibility
 
 def encode_list(posts):
     return {
