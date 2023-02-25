@@ -1,6 +1,7 @@
 from django.urls import path
 from service.views.author import SingleAuthor, MultipleAuthors
 from service.views.post import PostCreation, PostWithId
+from service.views.comment import CommentView
 from .views.follower_views import FollowerAPIView, FollowersAPIView
 from .views.likes import CommentLikesView, PostLikesView
 from .views.liked import LikedView
@@ -18,4 +19,5 @@ urlpatterns = [
     path('authors/<uuid:id>/', SingleAuthor.as_view()),
     path('authors/<uuid:author_id>/posts/', PostCreation.as_view(), name='post_creation'),
     path('authors/<uuid:author_id>/posts/<uuid:post_id>', PostWithId.as_view(), name='post_with_id')
+    path('<uuid:author_id>/posts/<uuid:post_id>/comments', CommentView.as_view(), name='comment_view'),
 ]
