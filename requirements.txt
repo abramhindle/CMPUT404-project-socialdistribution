@@ -1,8 +1,0 @@
-# Django
-django
-
-# PostgreSQL
-# psycopg2
-
-# Attempt 2
-psycopg2-binary
