@@ -1,70 +1,87 @@
 import React, { useState } from "react";
-import { Input, Avatar, InputGroup } from "rsuite";
-import { Scrollbars } from "react-custom-scrollbars-2";
+import { Input, Avatar, Panel, Dropdown, Uploader } from "rsuite";
+// import { Scrollbars } from "react-custom-scrollbars-2";
 // Component Imports
 
-function CREATEPOST({ postobj }) {
-	const [post, set_post] = useState(postobj);
-	const [comment, set_comment] = useState("");
+function CREATEPOST() {
+	const [post_status, set_post_status] = useState("Public");
+	const [post_type, set_post_type] = useState("Text");
 
-	const body = () => {
-		if (post["contentType"] === "text/plain") {
-			return <p>{post["content"]}</p>;
+	const input = () => {
+		if (post_type === "Text") {
+			return (
+				<Input
+					style={{ float: "left", marginTop: "5px" }}
+					as="textarea"
+					rows={5}
+					placeholder="Text"
+				/>
+			);
 		}
 
-		// Peter you just need to return the image here
-		if (post["contentType"] === "image/jpeg") {
-			return <div>image</div>;
+		if (post_type === "Image") {
+			return (
+				<Uploader
+					action="//jsonplaceholder.typicode.com/posts/"
+					draggable
+					style={{
+						float: "left",
+						width: "100%",
+						margin: "auto",
+						paddingTop: "5px",
+					}}
+				>
+					<div
+						style={{
+							height: "100px",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<span>Click or Drag files to this area to upload</span>
+					</div>
+				</Uploader>
+			);
 		}
 	};
 
 	return (
 		<div
 			style={{
+				marginBottom: "5px",
 				display: "block",
-				height: "50vh",
-				borderTop: "2px solid grey",
-				width: "50%",
-				margin: "auto",
+				height: "25vh",
+				border: "1px solid black",
+				borderRadius: "10px",
+				padding: "5px",
 			}}
 		>
-			<div
-				style={{
-					padding: "5px",
-					height: "50px",
-					borderBottom: "0.5px solid grey",
-				}}
+			<Avatar
+				style={{ float: "left" }}
+				circle
+				src="https://avatars.githubusercontent.com/u/12592949"
+			/>
+			<Dropdown
+				title={post_status}
+				activeKey={post_status}
+				onSelect={(eventkey) => set_post_status(eventkey)}
+				style={{ float: "left", marginLeft: "10px" }}
 			>
-				<Avatar
-					style={{ float: "left" }}
-					circle
-					src="https://avatars.githubusercontent.com/u/12592949"
-				></Avatar>
-				<h5
-					style={{
-						paddingTop: "5px",
-						marginLeft: "10px",
-						float: "left",
-					}}
-				>
-					{post["author"]["displayName"]}
-				</h5>
-			</div>
-			<Scrollbars style={{ height: "320px" }}>
-				<div>
-					<h3>{post["title"]}</h3>
-					<h5>{post["description"]}</h5>
-					<p style={{ padding: "5px" }}>{body()}</p>
-				</div>
-			</Scrollbars>
-			<InputGroup inside>
-				<Input
-					onChange={(e) => set_comment(e)}
-					value={comment}
-					placeholder="comment"
-				/>
-				<InputGroup.Button>Submit</InputGroup.Button>
-			</InputGroup>
+				<Dropdown.Item eventKey="Public">Public</Dropdown.Item>
+				<Dropdown.Item eventKey="Friends">Friends</Dropdown.Item>
+				<Dropdown.Item eventKey="Private">Private</Dropdown.Item>
+			</Dropdown>
+			<Dropdown
+				title={post_type}
+				activeKey={post_type}
+				onSelect={(eventkey) => set_post_type(eventkey)}
+				style={{ float: "left", marginLeft: "10px" }}
+			>
+				<Dropdown.Item eventKey="Text">text</Dropdown.Item>
+				<Dropdown.Item eventKey="Image">image</Dropdown.Item>
+			</Dropdown>
+			{input()}
 		</div>
 	);
 }

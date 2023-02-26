@@ -9,7 +9,7 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path="/login" element={<SIGN_IN />} />
-					<Route path="/postview" element={<POSTSVIEW />} />
+					<Route path="/stream" element={<POSTSVIEW />} />
 					<Route path="/profile" element={<PROFILE />} />
 				</Routes>
 			</BrowserRouter>
