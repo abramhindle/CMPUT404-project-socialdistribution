@@ -18,11 +18,11 @@
 | GET, POST, DELETE      | ://service/authors/{AUTHOR_ID}/inbox                                       |                         |                                                                                                                                                                                                                                                                    |
 |                        |                                                                            |                         |                                                                                                                                                                                                                                                                    |
 
-| Other URI's         | Description |
-| ------------------- | ----------- |
-| ://admin/           |             |
-| ://api-auth/login/  |             |
-| ://api-auth/logout/ |             |
-| ://api-schema/      |             |
-| ://docs/api/        |             |
-|                     |             |
+| Other URI's         | Description         |
+| ------------------- | ------------------- |
+| ://admin/           | Django admin page   |
+| ://api-auth/login/  | API login           |
+| ://api-auth/logout/ | API logout          |
+| ://api-schema/      | API schema endpoint |
+| ://docs/api/        | API docs            |
+|                     |                     |
