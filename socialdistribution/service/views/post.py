@@ -66,8 +66,10 @@ class PostCreation(View, RestService):
 
         post.author = author
 
+        author_uuid = self.author_id.rsplit('/', 1)[-1] #get slug from author_id url to get the uuid
+
         try:
-            post._id = createPostId(self.author_id, uuid.uuid4()) #NEW ID!!
+            post._id = createPostId(author_uuid, uuid.uuid4()) #NEW ID!!
             post.author = author
             post.title = body["title"]
             post.content = body["content"]
@@ -131,8 +133,6 @@ class PostWithId(View, RestService):
     def post(self, request: HttpRequest, *args, **kwargs):
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
-        
-        print("HERE")
 
         body = request.body.decode(UTF8)
         body = json.loads(body)

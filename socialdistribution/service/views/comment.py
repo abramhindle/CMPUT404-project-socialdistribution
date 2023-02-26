@@ -58,8 +58,13 @@ class CommentView(View, RestService):
 
         comment = Comment()
 
+        author_uuid = self.author_id.rsplit('/', 1)[-1]
+        post_uuid = self.post_id.rsplit('/', 1)[-1]
+
+        print("THIS:" + author_uuid)
+
         try:
-            comment._id = createCommentId(self.author_id, self.post_id, uuid.uuid4())
+            comment._id = createCommentId(author_uuid, post_uuid, uuid.uuid4())
             comment.comment = body["comment"]
             comment.author = author
             comment.post = post

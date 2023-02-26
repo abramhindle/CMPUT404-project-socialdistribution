@@ -1,6 +1,7 @@
 from djongo import models
 from django import forms
 from service.models.author import Author
+from service.services.inbox_object_base import InboxObjectBase
 import uuid
 from django.conf import settings
 
@@ -8,7 +9,7 @@ from django.conf import settings
 class Category(models.Model):
     data = models.CharField(max_length=32, primary_key=True)
 
-class Post(models.Model):
+class Post(models.Model, InboxObjectBase):
     _id = models.URLField(primary_key=True) #post id
     title = models.CharField(max_length=32)
     source = models.URLField()
@@ -48,7 +49,7 @@ class Post(models.Model):
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
 
-    def toJSON(self, comments=list):
+    def toJSON(self):
         return {
             "type": "post",
             "title": self.title,
@@ -82,5 +83,5 @@ class Post(models.Model):
         self.unlisted = bool(json_object["unlisted"])
 
 
-def createPostId(author_id, post_id):
+def createPostId(author_id, post_id): #uses the last uuid value from author id, and generates a custom post_id
     return f"{settings.DOMAIN}/authors/{author_id}/posts/{post_id}"
