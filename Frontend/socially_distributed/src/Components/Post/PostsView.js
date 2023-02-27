@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Scrollbars from "react-custom-scrollbars-2";
 // Component Imports
 import POST from "./Post";
@@ -121,6 +121,10 @@ function POSTSVIEW() {
 		// unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
 	};
 
+	// we need make a query to get all the postid that need to be in the author's stream
+	const [postids, set_postids] = useState(["a", "n"]);
+	// useEffect();
+
 	return (
 		<div
 			style={{
@@ -131,9 +135,9 @@ function POSTSVIEW() {
 			}}
 		>
 			<CREATEPOST></CREATEPOST>
-			<POST postobj={postobj} />
-			<POST postobj={postobj} />
-			<POST postobj={postobj} />
+			{postids.map((obj) => (
+				<POST postobj={postobj}></POST>
+			))}
 		</div>
 	);
 }

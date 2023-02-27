@@ -18,6 +18,8 @@ function PROFILE() {
 		setAppearance({ posts: "ghost", friends: "primary" });
 	};
 
+	// make a get request to get author and every post the author made and comments on the posts 
+
 	return (
 		<Panel shaded style={{ width: "50%", margin: "auto" }}>
 			<Avatar
