@@ -3,21 +3,21 @@ import { useNavigate } from "react-router-dom";
 const navigate = useNavigate();
     
 //Navigate to Main Inbox Feed
-const navigateInbox = () =>{
+const goToInbox = () =>{
     navigate("/inbox/feed")
 }
 
 //Navigate to Requests page
-const navigateRequests = () => {
+const goToRequests = () => {
     navigate("/friends/pending")
 }
 
 //Navigate to Post creation page
-const navigateNewPost = () => {
+const goToNewPost = () => {
     navigate("/posts/new")
 }
 
 //Navigate to ...
 
-export {navigateInbox, navigateRequests, navigateNewPost};
+export {goToInbox, goToRequests, goToNewPost};
     

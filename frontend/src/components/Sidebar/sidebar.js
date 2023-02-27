@@ -1,8 +1,5 @@
 import './sidebar.css';
 import * as Nav from "../../navigation/navigate-to-page";
-import { navigateInbox } from '../../navigation/navigate-to-page';
-import { navigateRequests } from '../../navigation/navigate-to-page';
-import { navigateNewPost } from '../../navigation/navigate-to-page';
 
 function Sidebar() {
   return (
@@ -14,11 +11,11 @@ function Sidebar() {
         {/* Navigation Menu */}
         <menu>
             <li>
-                <button className='Page' onClick={navigateInbox}>Inbox</button>
+                <button className='Page' onClick={Nav.goToInbox}>Inbox</button>
                 {/* Inbox Options Submenu, only show if Inbox selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options' onClick={navigateInbox}>Feed</button>
+                        <button className='Options' onClick={Nav.goToInbox}>Feed</button>
                     </li>
                     <li>
                         <button className='Options'>Likes</button>
@@ -29,11 +26,11 @@ function Sidebar() {
                 </ul>
             </li>
             <li>
-                <button className='Page' onClick={navigateRequests}>Friends</button>
+                <button className='Page' onClick={Nav.goToRequests}>Friends</button>
                 {/* Requests Options Submenu, only show if Requests selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options' onClick={navigateRequests}>Pending</button>
+                        <button className='Options' onClick={Nav.goToRequests}>Pending</button>
                     </li>
                     <li>
                         <button className='Options'>True Friends</button>
@@ -47,11 +44,11 @@ function Sidebar() {
                 </ul>
             </li>
             <li>
-                <button className='Page' onClick={navigateNewPost}>Post</button>
+                <button className='Page' onClick={Nav.goToNewPost}>Post</button>
                 {/* Post Options Submenu, only show if Post selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options' onClick={navigateNewPost}>New Post</button>
+                        <button className='Options' onClick={Nav.goToNewPost}>New Post</button>
                     </li>
                     <li>
                         <button className='Options'>My Posts</button>
