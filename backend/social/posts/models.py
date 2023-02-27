@@ -15,7 +15,6 @@ visbility_choices = [
     (FRIENDS, 'FRIENDS')
 ]
 
-
 MARKDOWN = 'text/markdown'
 PLAIN = 'text/plain'
 IMAGE_PNG = 'image/png'
