@@ -1,0 +1,23 @@
+import { useNavigate } from "react-router-dom";
+
+const navigate = useNavigate();
+    
+//Navigate to Main Inbox Feed
+const navigateInbox = () =>{
+    navigate("/inbox/feed")
+}
+
+//Navigate to Requests page
+const navigateRequests = () => {
+    navigate("/friends/pending")
+}
+
+//Navigate to Post creation page
+const navigateNewPost = () => {
+    navigate("/posts/new")
+}
+
+//Navigate to ...
+
+export {navigateInbox, navigateRequests, navigateNewPost};
+    
