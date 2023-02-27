@@ -82,6 +82,47 @@ def AuthorFollowersOperationsView(request, uid, foreign_uid):
         return JsonResponse(output, status = 200)
     
 
+@api_view(['GET', 'PUT'])
+def FollowView(request, uid, uid2):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    #checks friendship
+    if request.method == 'GET':
+        author_object = AuthorModel.objects.get(id=uid).followers
+        if uid2 in author_object:
+            author_object_2 = AuthorModel.objects.get(id=uid2).followers
+            if uid in author_object_2:
+                return JsonResponse({"status": "true_friends"}, status = 200)
+            else:
+                return JsonResponse({"status": "friends"}, status = 200)
+        else:
+            author_object_2 = AuthorModel.objects.get(id=uid2).followers
+            if uid in author_object_2:
+                return JsonResponse({"status": "friends"}, status = 200)
+            else:
+                return JsonResponse({"status": "not friends"}, status = 200)
+    elif request.method == 'PUT':
+        author_object = AuthorModel.objects.get(id=uid)
+        author_object2 = AuthorModel.objects.get(id=uid2)
+        author_object.followers.append(uid2)
+        serialized_object = AuthorSerializer(author_object)
+        serialized_object2 = AuthorSerializer(author_object2)
+        parameters = json.loads(request.body)
+        output = serialized_object.data
+        output2 = serialized_object2.data
+
+        author_object.save()
+        follow_output = {
+            "type": "Follow",
+            "type": serialized_object.displayName + "wants to follow" + serialized_object2.displayName,      
+            "actor": output,
+            "object": output2,
+        }
+
+        return JsonResponse(follow_output, status = 200)
+    
+
 
 
 
