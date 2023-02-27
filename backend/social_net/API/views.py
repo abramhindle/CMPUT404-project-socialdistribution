@@ -115,7 +115,7 @@ def FollowView(request, uid, uid2):
         author_object.save()
         follow_output = {
             "type": "Follow",
-            "type": serialized_object.displayName + "wants to follow" + serialized_object2.displayName,      
+            "type": serialized_object.displayName + " wants to follow " + serialized_object2.displayName,      
             "actor": output,
             "object": output2,
         }
