@@ -4,22 +4,15 @@ from service.models.likes import Likes
 from service.serializers.likes import LikesSerializer
 import json
 
-class PostLikesView(APIView):
+class LikesView(APIView):
     serializer_class = LikesSerializer
-    
-    def get(self, request, author, post):
-        likes_query = Likes.objects.filter(object = post)
+
+    def get(self, request, author, post, comment=None):
+
+        if not comment:
+            likes_query = Likes.objects.filter(object = post)
+        else:
+            likes_query = Likes.objects.filter(object = comment)
         likes = self.serializer_class(likes_query, many=True).data
 
-        return Response({"likes": likes}, status=200)
-        
-class CommentLikesView(APIView):
-    def get(self, request, author, post, comment):
-        path = self.request.path_info
-
-        likes_query = Likes.objects.filter(object = comment)
-        likes = []
-        for like in likes_query:
-            likes.append(like.toJSON())
-
-        return Response({"likes": likes})
+        return Response({"likes": json.dumps(likes)}, status=200)

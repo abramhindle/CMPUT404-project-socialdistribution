@@ -9,4 +9,4 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ("id", "host", "displayName", "url", "github", "profileImage")
+        fields = ("type", "id", "host", "displayName", "url", "github", "profileImage")

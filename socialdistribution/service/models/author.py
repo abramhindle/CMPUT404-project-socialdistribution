@@ -5,6 +5,7 @@ import uuid
 # Create your models here.
 
 class Author(models.Model):
+    type = models.CharField(editable=False, null=True, max_length=6, default="author") # need this field to serialize
     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     host = models.URLField()
     user = models.OneToOneField(User, on_delete=models.CASCADE) #link an Author to a registered user
@@ -20,7 +21,7 @@ class Author(models.Model):
     
     def toJSON(self):
         return {
-            "type": "author",
+            "type": self.type,
             "id": str(self._id),
             "host": self.host,
             "displayName": self.displayName,

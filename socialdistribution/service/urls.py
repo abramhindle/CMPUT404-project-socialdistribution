@@ -3,7 +3,7 @@ from service.views.author import SingleAuthor, MultipleAuthors
 from service.views.post import PostCreation, PostWithId
 from service.views.comment import CommentView
 from .views.follower_views import FollowerAPIView, FollowersAPIView
-from .views.likes import CommentLikesView, PostLikesView
+from .views.likes import LikesView
 from .views.liked import LikedView
 
 urlpatterns = [
@@ -11,8 +11,8 @@ urlpatterns = [
     path('authors/<str:author>/followers', FollowersAPIView.as_view(), name='service-followers'),
     path('authors/<str:author>/followers/<str:another_author>', FollowerAPIView.as_view(), name='service-follower'),
 
-    path('authors/<uuid:author>/posts/<uuid:post>/likes/', PostLikesView.as_view(), name='post-likes'),
-    path('authors/<uuid:author>/posts/<uuid:post>/comments/<uuid:comment>/likes/', CommentLikesView.as_view(), name='comment-likes'),
+    path('authors/<uuid:author>/posts/<uuid:post>/likes/', LikesView.as_view(), name='post-likes'),
+    path('authors/<uuid:author>/posts/<uuid:post>/comments/<uuid:comment>/likes/', LikesView.as_view(), name='comment-likes'),
     path('authors/<uuid:author>/liked/', LikedView.as_view(), name='liked'),
 
     path('authors/', MultipleAuthors.as_view()), 
