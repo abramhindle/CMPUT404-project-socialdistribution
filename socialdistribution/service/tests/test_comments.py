@@ -29,6 +29,7 @@ class AuthorTests(TestCase):
     
     def tearDown(self):
         self.user1.delete()
+        self.user2.delete()
 
     def test_get_comments(self):
         self.kwargs = {

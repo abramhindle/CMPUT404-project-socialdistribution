@@ -12,6 +12,7 @@ import uuid
 from service.models.comment import Comment
 from service.models.post import Post
 from service.models.author import Author
+from django.core.exceptions import ObjectDoesNotExist
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CommentView(View, RestService):
@@ -19,6 +20,11 @@ class CommentView(View, RestService):
     def get(self, request, *args, **kwargs):
         self.author_id = kwargs['author_id']
         self.post_id = kwargs['post_id']
+
+        try:
+            Post.objects.get(_id=self.post_id)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
 
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)

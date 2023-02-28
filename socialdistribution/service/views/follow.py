@@ -1,79 +1,81 @@
 from django.http import *
 from service.models.author import Author
-from service.models.follow import Followers
 from service.service_constants import *
 from django.views import View
 import json
 from djongo.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+
+from django.views.decorators.csrf import csrf_exempt
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class FollowersAPI(View):
     """ GET an Author's all followers """
 
     http_method_names = ['get']
 
-    def get(self, request,pk):
+    def get(self, request,author_id):
 
-        Author_Followers = Followers.objects.filter(author___id = pk)
-        followerList = list()
+        author = Author.objects.get(_id = author_id)
 
-        for follower in Author_Followers:
-           followerList.append(encode_json(follower.follower))
+        followers_list = list()
 
-        followers_json = encode_Follower_list(followerList)
+        for follower in list(author.followers.all().order_by('displayName')):
+            followers_list.append(follower.toJSON())
+
+        followers_json = encode_Follower_list(followers_list)
         return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)
-
         
-
+@method_decorator(csrf_exempt, name='dispatch')
 class FollowerAPI(View):
     """ GET if is a follower PUT a new follower DELETE an existing follower"""
     http_method_names = ['get','put','delete']
     
-    def delete(self,request,pk,foreignPk):  
-        selectedFollowObject = Followers.objects.filter(Q(author___id=pk)&Q(follower___id = foreignPk))
-        selectedFollowObject.delete()
+    def delete(self,request,author_id,foreign_author_id):
+        author = Author.objects.get(_id=author_id)
+        foreign_author = Author.objects.get(_id=foreign_author_id)
+
+        author.followers.remove(foreign_author)
+        author.save()
+
         return HttpResponse(status=200)
 
-    def put(self,request,pk,foreignPk):
-        
+    def put(self,request,author_id,foreign_author_id):
         #if request.user.is_authenticated:
-        followedBy = Author.objects.get(_id = foreignPk)
-        followTo = Author.objects.get(_id = pk)
-        newFollow  = Followers(author = followTo,follower = followedBy)
-        newFollow.save()
-        return HttpResponse(status=200)
 
-        #else:
-            #return HttpResponseRedirect(reverse("getfollowers"),status=303)
+        if author_id == foreign_author_id:
+            return HttpResponseBadRequest() #can't follow yourself!
 
+        author = Author.objects.get(_id = author_id)
+        follower = Author.objects.get(_id = foreign_author_id)
 
-    def get(self,request,pk,foreignPk):
+        try:
+            author.followers.get(_id=foreign_author_id)
+        except ObjectDoesNotExist:
+            author.followers.add(follower)
+            author.save()
+
+            return HttpResponse(status=200)
+
+        return HttpResponse(status=409)
+
+    def get(self,request,author_id,foreign_author_id):
+
+        author = Author.objects.get(_id=author_id)
+        foreign = Author.objects.get(_id=foreign_author_id)
+
+        try:
+            follower = author.followers.get(_id=foreign._id)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
         
-        selectedFollowObject = Followers.objects.filter(Q(author___id=pk)&Q(follower___id = foreignPk))
-
-        if selectedFollowObject.exists():
+        follower_json = follower.toJSON()
+        return HttpResponse(json.dumps(follower_json), content_type = CONTENT_TYPE_JSON)
         
-            selectedFollower = Author.objects.filter(_id = foreignPk)
-            follower_json = encode_json(selectedFollower[0])
 
-            return HttpResponse(json.dumps(follower_json), content_type = CONTENT_TYPE_JSON)
-
-        else:
-            return HttpResponse(status=404)
-
-def encode_json(author: Author):
-    return {
-            "type": "author",
-            "id": str(author._id),
-            "host": author.host,
-            "displayName": author.displayName,
-            "url": f"{author.host}/authors/{author._id}", #generated here
-            "github": author.github,
-            "profileImage": author.profileImage,
-    }
-
-        
 def encode_Follower_list(authors):
     return {
         "type": "followers",

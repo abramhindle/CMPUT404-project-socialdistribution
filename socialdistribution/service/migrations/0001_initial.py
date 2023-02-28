@@ -50,14 +50,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Followers',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='all_authors', to='service.author')),
-                ('follower', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='all_followers', to='service.author')),
-            ],
-        ),
-        migrations.CreateModel(
             name='Comment',
             fields=[
                 ('_id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),

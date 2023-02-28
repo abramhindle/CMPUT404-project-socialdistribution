@@ -12,10 +12,11 @@ class Author(models.Model):
     _id = models.URLField(primary_key=True, default=newId, editable=False)
     host = models.URLField()
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True) #link an Author to a registered user -> not required
-    displayName = models.CharField(max_length=128) 
+    displayName = models.CharField(max_length=128)
     github = models.URLField()
     profileImage = models.URLField()
 
+    followers = models.ManyToManyField('Author')
 
     def toJSON(self):
         return {
@@ -35,3 +36,5 @@ class Author(models.Model):
         self.url = json_object["url"]
         self.github = json_object["github"]
         self.profileImage = json_object["profileImage"]
+
+    
