@@ -11,6 +11,8 @@ from django.utils.decorators import method_decorator
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from djongo.models import Q
+from django.urls import reverse
 
 # Create your views here.
 
@@ -46,7 +48,7 @@ class SingleAuthor(View):
 
     def get(self, request, *args, **kwargs):
         self.id = kwargs['id']
-        try:
+        try: 
             author = Author.objects.get(_id=self.id)
         except:
             author = None
@@ -84,8 +86,11 @@ class SingleAuthor(View):
 
         return HttpResponse(json.dumps(author_json), status=202, content_type = CONTENT_TYPE_JSON)
 
+
 def encode_list(authors):
     return {
         "type": "author",
         "items": authors
     }
+
+
