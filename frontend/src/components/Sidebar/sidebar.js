@@ -12,12 +12,10 @@ function Sidebar() {
     //Navigate to Main Inbox Feed
     const goToInbox = () =>{
         navigate("/");
-    };
-    //Navigate to Requests page
+    };//Navigate to Requests page
     const goToRequests = () => {
         navigate("/friends/pending");
-    };
-    //Navigate to Post creation page
+    };//Navigate to Post creation page
     const goToNewPost = () => {
         navigate("/posts/new");
     };

@@ -1,0 +1,26 @@
+.message {
+    display: flex;
+    margin: 1em;
+    padding: 1em;
+}
+
+.from {
+    border: none;
+    border-radius: 05em;
+    margin: 0;
+    display: flex;
+}
+.from img {
+    height: 3em;
+    width:3em;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.post {
+    width: fit-content;
+    border: solid black 4pt;
+    border-radius: 0.5em;
+    margin: 0;
+}
