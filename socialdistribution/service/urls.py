@@ -1,5 +1,6 @@
 from django.urls import re_path, path
 from service.views.author import SingleAuthor, MultipleAuthors
+from service.views.follow import FollowersAPI, FollowerAPI
 from service.views.post import PostCreation, PostWithId
 from service.views.inbox import InboxView
 #from .views.follower_views import FollowerAPIView, FollowersAPIView
@@ -21,4 +22,6 @@ urlpatterns = [
     re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/inbox/$', InboxView.as_view(), name='inbox_view'),
     re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/$', SingleAuthor.as_view()),
     re_path(r'^$', MultipleAuthors.as_view()), 
+    path('<str:pk>/followers/', FollowersAPI.as_view(),name = "getfollowers"), #going to to need to fix the ids on this
+    path('<str:pk>/followers/<str:foreignPk>',FollowerAPI.as_view(),name="getfollower"),
 ]

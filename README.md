@@ -1,5 +1,4 @@
-CMPUT404-project-socialdistribution
-===================================
+# CMPUT404-project-socialdistribution
 
 CMPUT404-project-socialdistribution
 
@@ -7,15 +6,14 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
-Contributing
-============
+# Contributing
 
 Courtenay Laing-Kobe [laingkob@ualberta.ca]
 Aidan Horemans [horemans@ualberta.ca]
 Hua Wang [hua6@ualberta.ca]
+Junesung Lee [junesung@ualberta.ca]
 
-Contributors / Licensing
-========================
+# Contributors / Licensing
 
 Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
 
@@ -32,4 +30,4 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
-    Nhan Nguyen 
+    Nhan Nguyen
