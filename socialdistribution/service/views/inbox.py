@@ -46,17 +46,23 @@ class InboxView(View):
 
         inbox_items.sort(key=lambda x: x.published, reverse=True) #TODO: this needs to be optimized
 
-        paged_inbox = list()
+        paged_inbox_items = list()
 
         for i in range(0, page): # do this for as many times as we need for paging
             #get size of items out of inbox_items
-            paged_inbox = inbox_items[0:size]
+            paged_inbox_items = inbox_items[0:size]
             inbox_items = inbox_items[size:]
 
-        for i in range(0, len(paged_inbox)):
-            paged_inbox[i] = paged_inbox[i].toJSON()
+        for i in range(0, len(paged_inbox_items)):
+            paged_inbox_items[i] = paged_inbox_items[i].toJSON()
 
-        return HttpResponse(json.dumps(paged_inbox), content_type = CONTENT_TYPE_JSON)
+        inbox_json = {
+            "type": "inbox",
+            "author": str(self.author_id),
+            "items": paged_inbox_items
+        }
+
+        return HttpResponse(json.dumps(inbox_json), content_type = CONTENT_TYPE_JSON)
 
     def post(self, request: HttpRequest, *args, **kwargs):
         self.author_id = kwargs['author_id']

@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from service.services.rest_service import RestService
 import uuid
 
-from service.models.comment import Comment, createCommentId
+from service.models.comment import Comment
 from service.models.post import Post
 from service.models.author import Author
 
@@ -37,7 +37,7 @@ class CommentView(View, RestService):
         comments = list()
 
         for comment in comment_page:
-            comments.append(comment.toJSON(host))
+            comments.append(comment.toJSON())
 
         comments_json = encode_list(comments, host, page, size, self.author_id, self.post_id)
 
@@ -58,13 +58,8 @@ class CommentView(View, RestService):
 
         comment = Comment()
 
-        author_uuid = self.author_id.rsplit('/', 1)[-1]
-        post_uuid = self.post_id.rsplit('/', 1)[-1]
-
-        print("THIS:" + author_uuid)
-
         try:
-            comment._id = createCommentId(author_uuid, post_uuid, uuid.uuid4())
+            comment._id = Comment.create_comment_id(self.author_id, self.post_id)
             comment.comment = body["comment"]
             comment.author = author
             comment.post = post
@@ -82,9 +77,7 @@ class CommentView(View, RestService):
 
         comment.save()
 
-        host = request.build_absolute_uri('/')
-
-        comment_json = comment.toJSON(host)
+        comment_json = comment.toJSON()
 
         return HttpResponse(json.dumps(comment_json), status=201, content_type = CONTENT_TYPE_JSON)
 

@@ -1,5 +1,5 @@
 from django.http import *
-from service.models.post import Post, Category, createPostId
+from service.models.post import Post, Category
 from service.models.author import Author
 from service.service_constants import *
 from django.views import View
@@ -53,8 +53,6 @@ class PostCreation(View, RestService):
         body = request.body.decode(UTF8)
         body = json.loads(body)
 
-        print("HERE")
-
         self.author_id = kwargs['author_id']
 
         post = Post()
@@ -66,10 +64,8 @@ class PostCreation(View, RestService):
 
         post.author = author
 
-        author_uuid = self.author_id.rsplit('/', 1)[-1] #get slug from author_id url to get the uuid
-
         try:
-            post._id = createPostId(author_uuid, uuid.uuid4()) #NEW ID!!
+            post._id = Post.create_post_id(self.author_id) #NEW ID!!
             post.author = author
             post.title = body["title"]
             post.content = body["content"]

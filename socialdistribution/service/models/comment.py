@@ -5,9 +5,6 @@ from service.services.inbox_object_base import InboxObjectBase
 from django.conf import settings
 import uuid
 
-def createCommentId(author_id, post_id, comment_id):
-    return f"{settings.DOMAIN}/authors/{author_id}/posts/{post_id}/comments/{comment_id}" #TODO: rather than the whole id, just get the ends of _id and put those here
-
 class Comment(models.Model, InboxObjectBase):
     _id = models.URLField(primary_key=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -32,10 +29,19 @@ class Comment(models.Model, InboxObjectBase):
             "published": str(self.published),
             "id": self._id, 
         }
-
+    
     def toObject(self, json_object):
         self.author = Author().toObject(json_object["author"])
         self.comment = json_object["comment"]
         self.contentType = json_object["contentType"]
         self.published = json_object["published"]
         self._id = json_object["id"]
+
+    @staticmethod
+    def create_comment_id(author_id, post_id, comment_id=None):
+        if not comment_id:
+            comment_id = uuid.uuid4()
+
+        author_uuid = author_id.rsplit('/', 1)[-1]
+        post_uuid = post_id.rsplit('/', 1)[-1]
+        return f"{settings.DOMAIN}/authors/{author_uuid}/posts/{post_uuid}/comments/{comment_id}" #TODO: rather than the whole id, just get the ends of _id and put those here

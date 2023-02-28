@@ -82,6 +82,12 @@ class Post(models.Model, InboxObjectBase):
         self.visibility = json_object["visibility"]
         self.unlisted = bool(json_object["unlisted"])
 
+    @staticmethod
+    def create_post_id(author_id, post_id=None): #uses the last uuid value from author id, and generates a custom post_id
+        if not post_id:
+            post_id = uuid.uuid4()
 
-def createPostId(author_id, post_id): #uses the last uuid value from author id, and generates a custom post_id
-    return f"{settings.DOMAIN}/authors/{author_id}/posts/{post_id}"
+        author_uuid = author_id.rsplit('/', 1)[-1]
+        return f"{settings.DOMAIN}/authors/{author_uuid}/posts/{post_id}"
+
+
