@@ -12,6 +12,7 @@ class Author(models.Model):
     github = models.URLField()
     profileImage = models.URLField()
 
+
     def toJSON(self):
         return {
             "type": "author",
@@ -22,3 +23,5 @@ class Author(models.Model):
             "github": self.github,
             "profileImage": self.profileImage,
     }
+    
+
