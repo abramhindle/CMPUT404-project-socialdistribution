@@ -29,3 +29,5 @@ class Author(models.Model):
             "github": self.github,
             "profileImage": self.profileImage,
     }
+    
+
