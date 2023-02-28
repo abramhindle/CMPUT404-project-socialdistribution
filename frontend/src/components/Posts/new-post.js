@@ -1,6 +1,6 @@
 import "./posts.css"
 import { useSelector } from "react-redux";
-import { post_api } from "../../api/post_api";
+import { post_api } from "../../api/post_display_api";
 import { useState } from "react";
 
 export default function NewPost() {
@@ -31,6 +31,7 @@ export default function NewPost() {
         post_api(user.id, post, onSuccess, onFailure);
     };
 
+    //For confirmation dialogs
     const onSuccess = () => {
         setSucess(true);
     }

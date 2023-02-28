@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
-import SignIn from "./Signin";
+import SignIn from "./pages/Login/Signin"
 import Friends from "./pages/Friends/friends"
 import Posts from "./pages/Posts/posts";
 import Main from "./pages/Main";
@@ -30,7 +30,7 @@ function App() {
               <Route path="requests"/>
               <Route path="true"/>
               <Route path="followed"/>
-              <Route path="follwers"/>
+              <Route path="followers"/>
             </Route>
           {/* Posting */}
           <Route path="/posts"
