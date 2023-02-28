@@ -19,6 +19,7 @@ function PROFILE() {
 	};
 
 	// make a get request to get author and every post the author made and comments on the posts 
+	// make a get request to get all the friends of an author 
 
 	return (
 		<Panel shaded style={{ width: "50%", margin: "auto" }}>
