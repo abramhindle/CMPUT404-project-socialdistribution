@@ -1,21 +1,50 @@
 import './sidebar.css';
-import * as Nav from "../../navigation/navigate-to-page";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 
 function Sidebar() {
+    //Get user info
+    const user = useSelector((state) => state.user);
+
+    //Handle Navigations
+    const navigate = useNavigate();
+    //Navigate to Main Inbox Feed
+    const goToInbox = () =>{
+        navigate("/");
+    };
+    //Navigate to Requests page
+    const goToRequests = () => {
+        navigate("/friends/pending");
+    };
+    //Navigate to Post creation page
+    const goToNewPost = () => {
+        navigate("/posts/new");
+    };
+
+    console.log(user);
+
   return (
-    <div className="Sidebar">
+    <nav className="Sidebar">
         {/* Profile Preview */}
         <div className='Profile'>
-            <p>Profile <br/>Placeholder</p>
+            <img className="profile-pic" src={user.profileImage} alt="profile"/>
+            <p>{user.displayName}</p>
+            <div className="stats">
+                <p>Friends: 0</p>
+                <p>Followers: 0</p>
+                <p>Followed: 0</p>
+            </div>
+            
         </div>
         {/* Navigation Menu */}
         <menu>
             <li>
-                <button className='Page' onClick={Nav.goToInbox}>Inbox</button>
+                <button className='Page' id="inbox-page-nav" onClick={goToInbox}>Inbox</button>
                 {/* Inbox Options Submenu, only show if Inbox selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options' onClick={Nav.goToInbox}>Feed</button>
+                        <button className='Options'>Feed</button>
                     </li>
                     <li>
                         <button className='Options'>Likes</button>
@@ -26,11 +55,11 @@ function Sidebar() {
                 </ul>
             </li>
             <li>
-                <button className='Page' onClick={Nav.goToRequests}>Friends</button>
-                {/* Requests Options Submenu, only show if Requests selected */}
+                <button className='Page' onClick={goToRequests}>Friends</button>
+                {/* Requests Options Submenu, only show if Friends selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options' onClick={Nav.goToRequests}>Pending</button>
+                        <button className='Options' onClick={goToRequests}>Pending</button>
                     </li>
                     <li>
                         <button className='Options'>True Friends</button>
@@ -44,11 +73,11 @@ function Sidebar() {
                 </ul>
             </li>
             <li>
-                <button className='Page' onClick={Nav.goToNewPost}>Post</button>
+                <button className='Page' onClick={goToNewPost}>Post</button>
                 {/* Post Options Submenu, only show if Post selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options' onClick={Nav.goToNewPost}>New Post</button>
+                        <button className='Options' onClick={goToNewPost}>New Post</button>
                     </li>
                     <li>
                         <button className='Options'>My Posts</button>
@@ -57,7 +86,7 @@ function Sidebar() {
 
             </li>
         </menu>
-    </div>
+    </nav>
   );
 }
 
