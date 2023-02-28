@@ -14,8 +14,11 @@ class LikedTests(TestCase):
     def setUp(self):
         self.user1_password = "12345"
         self.user1 = User.objects.create_user("joeguy", "joeguy@email.com", self.user1_password)
+        self.user2_password = "1234"
+        self.user2 = User.objects.create_user("somebody", "somebody@email.com", self.user2_password)
 
         self.author1 = Author.objects.create(displayName = "Joe Guy", host = "http://localhost:8000", user = self.user1)
+        self.author2 = Author.objects.create(displayName = "Somebody Else", host = "http://localhost:8000", user = self.user2)
 
         self.post1 = Post.objects.create(title="Hello World!", author=self.author1)
         self.post2 = Post.objects.create(title="Test222", author=self.author1)
@@ -45,3 +48,9 @@ class LikedTests(TestCase):
         response = self.client.generic(method="GET", path=path)
 
         self.assertJSONEqual(json.dumps(LikedSerializer(self.liked1).data), json.loads(response.data["liked"]))
+
+    def test_author_without_any_likes(self):
+        path = f"/service/authors/{self.author2._id}/liked/"
+        response = self.client.generic(method="GET", path=path)
+
+        self.assertEqual(404, response.status_code)

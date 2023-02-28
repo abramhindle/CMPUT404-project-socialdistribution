@@ -10,7 +10,10 @@ class LikedView(APIView):
     serializer_class = LikedSerializer
 
     def get(self, request, author):
-        author_query = Author.objects.get(_id = author)
-        liked = Liked.objects.filter(items__author = str(author_query._id))[0] # would be better to add author_id field into Liked model, so it takes less resources to querying
+        try:
+            author_query = Author.objects.get(_id = author)
+            liked = Liked.objects.filter(items__author = str(author_query._id))[0] # would be better to add author_id field into Liked model, so it takes less resources to querying
+        except:
+            return Response(status=404)
         
         return Response({"liked": json.dumps(self.serializer_class(liked).data)})

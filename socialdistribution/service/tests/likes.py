@@ -30,6 +30,7 @@ class LikesTests(TestCase):
         self.likes4 = Likes.objects.create(context="Comment Test Test222", summary="Testing Now", author=self.author2, object=str(self.comment1._id))
 
         self.client = APIClient()
+
     
     def tearDown(self):
         self.user1.delete()
@@ -51,10 +52,31 @@ class LikesTests(TestCase):
         self.assertJSONEqual(json.dumps(LikesSerializer(self.likes1).data), json.loads(response.data["likes"])[0])
         self.assertJSONEqual(json.dumps(LikesSerializer(self.likes2).data), json.loads(response.data["likes"])[1])
 
-    #need to be implemented when comment modesl implemented
+
     def test_comment_likes(self):
         path = "/service/authors/{}/posts/{}/comments/{}/likes/".format(self.author1._id, self.post1._id, self.comment1._id)
         response = self.client.generic(method="GET", path=path)
 
         self.assertJSONEqual(json.dumps(LikesSerializer(self.likes3).data), json.loads(response.data["likes"])[0])
         self.assertJSONEqual(json.dumps(LikesSerializer(self.likes4).data), json.loads(response.data["likes"])[1])
+
+
+    def test_no_author(self):
+        path = "/service/authors/{}/posts/{}/comments/{}/likes/".format("baad2e16-b04b-4349-8c9b-edd6b0a42297", self.post1._id, self.comment1._id)
+        response = self.client.generic(method="GET", path=path)
+
+        self.assertEqual(404, response.status_code)
+
+
+    def test_no_post(self):
+        path = "/service/authors/{}/posts/{}/comments/{}/likes/".format(self.author1._id, "baad2e16-b04b-4349-8c9b-edd6b0a42297", self.comment1._id)
+        response = self.client.generic(method="GET", path=path)
+
+        self.assertEqual(404, response.status_code)
+
+
+    def test_no_post(self):
+        path = "/service/authors/{}/posts/{}/comments/{}/likes/".format(self.author1._id, self.post1._id, "baad2e16-b04b-4349-8c9b-edd6b0a42297")
+        response = self.client.generic(method="GET", path=path)
+
+        self.assertEqual(404, response.status_code)
