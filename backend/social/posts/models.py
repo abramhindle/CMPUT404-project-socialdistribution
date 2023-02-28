@@ -2,6 +2,7 @@ from django.db import models
 from author.models import Author, Inbox
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils import timezone
+import uuid
 
 # Create your models here.
 
@@ -10,9 +11,9 @@ PRIVATE = 'PRIVATE'
 FRIENDS = 'FRIENDS'
 
 visbility_choices = [
-    (PUBLIC, 'PUBLIC'),
-    (PRIVATE, 'PRIVATE'),
-    (FRIENDS, 'FRIENDS')
+    (PUBLIC, 'Public'),
+    (PRIVATE, 'Private'),
+    (FRIENDS, 'Friends')
 ]
 
 MARKDOWN = 'text/markdown'
@@ -28,10 +29,10 @@ content_types = [
 ]
 
 class Post(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False)  # ID of post
-    url = models.URLField(editable=False, max_length=500)  # url of post
+    id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
+    url = models.URLField(editable=False, max_length=255)  # url of post
     author = models.ForeignKey(Author, related_name="posts", on_delete=models.CASCADE)  # author of post
-    categories = ''
+    categories = models.CharField(max_length=255, default="", blank=True)
     title = models.CharField(max_length=150)  # title of post
     # source = models.URLField(default="",max_length=500)  # source of post
     # origin = models.URLField(default="",max_length=500)  # origin of post
@@ -42,7 +43,7 @@ class Post(models.Model):
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
     
-    refImage = models.URLField(max_length=200, default="")  # reference to an image post
+    refImage = models.URLField(max_length=200, default="", blank=True)  # reference to an image post
 
     # make it pretty
     def __str__(self):
@@ -51,6 +52,9 @@ class Post(models.Model):
     # get visbility status
     def get_visilibility(self):
         return self.Visibility(self.visibility).label
+    
+    def get_categories(self):
+        return self.categories.split(',')
 
     # get content type
     def get_content_type(self):
@@ -78,7 +82,7 @@ class Post(models.Model):
         return 'post'
 
 class Comments(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False)  # ID of comment
+    id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of comment
     url = models.URLField(editable=False, max_length=500)  # URL of comment
     author = models.ForeignKey(Author, related_name = 'comments', on_delete=models.CASCADE)  # author of comment
     post = models.ForeignKey(Post, on_delete=models.CASCADE)  # post of the commen
@@ -101,7 +105,7 @@ class Comments(models.Model):
         return 'Comment {} by {}'.format(self.content, self.author)
     
 class Likes(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False)  # ID of like
+    id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of like
     object = models.URLField(editable=False, max_length=500)  # URL of liked object
     summary = models.CharField (max_length=100)
     author = models.ForeignKey(Author, related_name = 'likes', on_delete=models.CASCADE)  # author of like

@@ -30,7 +30,6 @@ class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
     context_object_name = 'post'
     success_url = '/admin/'
     
-    
     def test_func(self):
         post = self.get_object()
         print(post.title)
