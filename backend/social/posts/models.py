@@ -37,7 +37,7 @@ class Post(models.Model):
     # source = models.URLField(default="",max_length=500)  # source of post
     # origin = models.URLField(default="",max_length=500)  # origin of post
     description = models.CharField(blank=True, default="", max_length=200)  # brief description of post
-    content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
+    contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
     content = models.TextField(blank=False, default="")  # content of post
     visibility = models.CharField(choices=visbility_choices, default=PUBLIC, max_length=20)  # visibility status of post
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in

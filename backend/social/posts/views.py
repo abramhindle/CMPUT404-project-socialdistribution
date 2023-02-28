@@ -7,7 +7,18 @@ from django.views.generic import ListView,DetailView,CreateView,UpdateView,Delet
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post
 from django.http import HttpResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import PostSerializer
 
+@api_view(['GET'])
+def get_posts(request):
+    """
+    Get the list of posts on our website
+    """
+    posts = Post.objects.all()
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
 
 class IndexView(generic.ListView):
     template_name = 'posts/index.html'
