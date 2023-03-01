@@ -17,16 +17,20 @@ class Post(models.Model):
     contentType = models.CharField(max_length=20, blank=True)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
 
-    def document_template():
-        return {"friend_id": "[]"}
-    category = models.JSONField(blank=True, default=document_template)
-    comment_list = models.JSONField(
-        blank=True, verbose_name='comment', default=document_template)
-    friend_list = models.JSONField(blank=True, default=document_template)
+    def commentlist_template():
+        return {"comment_id": "[]"}
+
+    def category_template():
+        return {"category": "[]"}
+    categories = models.JSONField(blank=True, default=category_template)
+    comments = models.JSONField(
+        blank=True, verbose_name='comment', default=commentlist_template)
+
     count = models.PositiveBigIntegerField(default=0)
-    publish_date = models.DateField(auto_now_add=True)
-    is_public = models.BooleanField()
+    published = models.DateTimeField(auto_now_add=True)
+    visibility = models.BooleanField(default=True)
     image = models.ImageField(blank=True)
+    unlisted = models.BooleanField(blank=True, default=False)
 
     def get_like(self):
         return self.count
@@ -41,13 +45,23 @@ class Post(models.Model):
         """The plan is to call a function from the comment class and then get it here."""
         pass
 
+    def __str__(self):
+        return self.title
+
 
 class Comment(models.Model):
     id = models.BigAutoField(primary_key=True)
+    url = models.URLField(max_length=200)
+    host = models.CharField(max_length=100, blank=True)
+    displayName = models.CharField(max_length=200)
     message: models.CharField(max_length=250)
     parent_post_id = models.ForeignKey(
         Post, on_delete=models.CASCADE, blank=True, null=True)
+    profileImage = models.ImageField(blank=True)
     parent_comment_id = models.BigIntegerField(blank=True, null=True)
 
     def get_comment_id(self):
         return self.id
+
+    def __str__(self):
+        self.message
