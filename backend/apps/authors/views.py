@@ -3,8 +3,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 from .models import Author
+from apps.posts.models import Post
 from django.http import Http404
 from .serializers import AuthorSerializer
+from apps.posts.serializers import PostSerializer
 from rest_framework import status
 from rest_framework.views import APIView
 # Create your views here.
@@ -95,7 +97,7 @@ class Author_Individual(APIView):
         query = self.get_object(id)
         serializer = AuthorSerializer(query)
         return Response(serializer.data)
-    
+
     def put(self, request, id, format=None):
         query = self.get_object(id)
         serializer = AuthorSerializer(query, data=request.data)
@@ -103,3 +105,17 @@ class Author_Individual(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Author_Post(APIView):
+
+    def get_object(self, id, format=None):
+        query_set = Post.objects.filter(author_id__pk=id)
+        if query_set:
+            return query_set
+        raise Http404
+
+    def get(self, request, id, format=None):
+        query = self.get_object(id)
+        serializer = PostSerializer(query, many=True)
+        return Response(serializer.data)

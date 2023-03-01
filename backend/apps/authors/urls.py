@@ -16,13 +16,13 @@ Including another URLconf
 from django.urls import include, path
 from apps.posts.views import posts_paginated
 from apps.authors.views import all_authors, single_author
-from .views import Author_Individual, Author_All
+from .views import Author_Individual, Author_All, Author_Post
 
 
 urlpatterns = [
     path('', Author_All.as_view(), name="All Authors"),
-    path('<str:author_id>/posts/', include('apps.posts.urls')),
-    path('<str:author_id>/posts', posts_paginated, name="Posts Paginated"),
+    path('<int:id>/posts/', Author_Post.as_view(), name="Author's posts"),
+    path('<str:author_id>/posts/', posts_paginated, name="Posts Paginated"),
     path('<int:id>/', Author_Individual.as_view(), name="Single Author"),
-    
+
 ]
