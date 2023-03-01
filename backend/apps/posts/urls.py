@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.urls import path
 from apps.posts.views import all_posts, single_post
+from .views import Post_All, Post_individual
 
 
 urlpatterns = [
-    path('', all_posts, name="All Posts"),
-    path('<str:post_id>', single_post, name="Single Post"),
+    path('', Post_All.as_view(), name="All Posts"),
+    path('<int:pk>/', Post_individual.as_view(), name="Single Post"),
 ]

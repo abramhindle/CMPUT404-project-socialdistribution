@@ -25,5 +25,6 @@ urlpatterns = [
     path('api-schema/', get_schema_view(), name='API Schema'),
     path('docs/', include('apps.docs.urls')),
     path('authors/', include('apps.authors.urls')),
+    path('posts/', include('apps.posts.urls')),
     path('authors', authors_paginated, name='Authors Paginated')
 ]

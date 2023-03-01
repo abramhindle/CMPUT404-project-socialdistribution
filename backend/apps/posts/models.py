@@ -29,7 +29,7 @@ class Post(models.Model):
     count = models.PositiveBigIntegerField(default=0)
     published = models.DateTimeField(auto_now_add=True)
     visibility = models.BooleanField(default=True)
-    image = models.ImageField(blank=True)
+    image = models.ImageField(blank=True, null=True)
     unlisted = models.BooleanField(blank=True, default=False)
 
     def get_like(self):
