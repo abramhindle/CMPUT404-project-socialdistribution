@@ -78,7 +78,7 @@ class Post(models.Model):
     def get_api_type():
         return 'post'
 
-class Comments(models.Model):
+class Comment(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of comment
     url = models.URLField(editable=False, max_length=500)  # URL of comment
     author = models.ForeignKey(Author, related_name = 'comments', on_delete=models.CASCADE)  # author of comment
@@ -101,7 +101,7 @@ class Comments(models.Model):
     def __str__(self):
         return 'Comment {} by {}'.format(self.content, self.author)
     
-class Likes(models.Model):
+class Like(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of like
     object = models.URLField(editable=False, max_length=500)  # URL of liked object
     summary = models.CharField (max_length=100)

@@ -16,7 +16,7 @@ class Author(models.Model):
 
     # make it pretty
     def __str__(self):
-        return self.display_name + " (" + str(self.id) + ")"
+        return self.displayName + " (" + str(self.id) + ")"
     
     # return type of model
     @staticmethod

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post
+from .models import Post, Comment
 from author.serializers import AuthorSerializer
 
 
@@ -18,6 +18,7 @@ class PostSerializer(serializers.ModelSerializer):
     def get_categories(self, instance):
         categories_list = instance.categories.split(",")
         return [category for category in categories_list]
+    
     class Meta:
         model = Post
         fields = [
