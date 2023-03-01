@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signInUser } from "./reducer/userSlice";
-import { signIn_api } from "./api/user_api";
+import { signInUser } from "../../reducer/userSlice";
+import { signIn_api } from "../../api/user_api";
 
 // Define the Login function.
 export const SignIn = () => {
