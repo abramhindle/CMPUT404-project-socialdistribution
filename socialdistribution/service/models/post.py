@@ -1,7 +1,6 @@
 from djongo import models
 from django import forms
 from service.models.author import Author
-from service.services.inbox_object_base import InboxObjectBase
 import uuid
 from django.conf import settings
 
@@ -9,7 +8,7 @@ from django.conf import settings
 class Category(models.Model):
     data = models.CharField(max_length=32, primary_key=True)
 
-class Post(models.Model, InboxObjectBase):
+class Post(models.Model):
     _id = models.URLField(primary_key=True) #post id
     title = models.CharField(max_length=32)
     source = models.URLField()

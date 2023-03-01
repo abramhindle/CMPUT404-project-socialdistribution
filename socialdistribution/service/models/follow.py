@@ -1,7 +1,32 @@
 from djongo import models
+from django import forms
 from service.models.author import Author
 import uuid
+from django.conf import settings
+from datetime import datetime, timezone
 
-# class Followers(models.Model): # list of an author's followers
-#     autho = models.OneToOneField(Author, on_delete=models.CASCADE, related_name="all_authors", primary_key=True)
-#     follo = models.ManyToManyField(Author)
+class Follow(models.Model): # list of an author's followers
+    _id = models.URLField(default=None)
+    actor = models.OneToOneField(Author, on_delete=models.CASCADE, related_name="all_authors") #this is the person DOING THE FOLLOWING -> i.e. author of the follow request
+    object = models.OneToOneField(Author, on_delete=models.CASCADE) #this is the person being FOLLOWED!
+
+    published = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        self._id = self.create_follow_id(self.actor._id, self.object._id)
+        self.published = datetime.now(timezone.utc)
+        super(Follow, self).save(*args, **kwargs)
+
+    @staticmethod
+    def create_follow_id(object_id, actor_id): #uses the last uuid value from author id, and generates a custom post_id
+        object_uuid = object_id.rsplit('/', 1)[-1]
+        actor_uuid = actor_id.rsplit('/', 1)[-1]
+        return f"{settings.DOMAIN}/authors/{actor_uuid}/follower-request/{object_uuid}" #object = person being followed
+
+    def toJSON(self):
+        return {
+            "type": "Follow",
+            "summary": f"{self.actor.displayName} wants to follow {self.object.displayName}",
+            "actor": self.actor.toJSON(), #wants to follow
+            "object": self.object.toJSON()
+        }

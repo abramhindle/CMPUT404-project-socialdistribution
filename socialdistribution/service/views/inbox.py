@@ -3,6 +3,7 @@ from service.models.author import Author
 from service.models.inbox import Inbox
 from service.models.post import Post
 from service.models.comment import Comment
+from service.models.follow import Follow
 from service.service_constants import *
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -41,8 +42,9 @@ class InboxView(View):
         
         posts = self.inbox.posts.all()
         comments = self.inbox.comments.all()
+        follow_requests = self.inbox.follow_requests.all()
 
-        inbox_items = list(posts) + list(comments)
+        inbox_items = list(posts) + list(comments) + list(follow_requests)
 
         inbox_items.sort(key=lambda x: x.published, reverse=True) #TODO: this needs to be optimized
 
@@ -81,29 +83,16 @@ class InboxView(View):
             inbox = Inbox.objects.create(author=self.author)
 
         try:
-            id = body["id"]
-
             if body["type"] == "post":
-                post = inbox.posts.all().filter(_id=id)
-
-                if post.exists():
-                    return HttpResponse(status=409) #conflict, item is already in inbox
-
-                post = Post.objects.get(_id=id)
-                inbox.posts.add(post)
-
+                id = body["id"]
+                self.handle_post(inbox, id)
             elif body["type"] == "comment":
-                post = inbox.comments.all().filter(_id=id)
-                
-                if post.exists():
-                    return HttpResponse(status=409) #conflict, item is already in inbox
-
-                comment = Comment.objects.get(_id=id)
-                inbox.comments.add(comment)
-
+                id = body["id"]
+                self.handle_comment(inbox, id)
             elif body["type"] == "follow": #TODO: fill these in once the objects are done
-                pass
-            elif body["type"] == "comment":
+                id = Follow.create_follow_id(body["object"]["id"], body["actor"]["id"])
+                self.handle_follow(inbox, id, body, self.author)
+            elif body["type"] == "like":
                 pass
             else:
                 return HttpResponseBadRequest()
@@ -113,6 +102,8 @@ class InboxView(View):
         except ObjectDoesNotExist:
             return HttpResponseBadRequest()
         
+        inbox.save()
+
         return HttpResponse(status=202)
 
     def delete(self, request: HttpRequest, *args, **kwargs):
@@ -125,27 +116,53 @@ class InboxView(View):
 
         try:
             self.inbox = Inbox.objects.get(author=self.author) #already deleted
+
         except ObjectDoesNotExist:
             return HttpResponse(status=202)
 
+        #delete all follow requests
+        #TODO: maybe a different endpoint for this later?
+        follow_requests = self.inbox.follow_requests.all()
+
+        for follow_request in follow_requests:
+            follow_request.delete()
+
         self.inbox.delete()
 
-        return HttpResponse(status=202) 
+        return HttpResponse(status=202)
+    
+    def handle_post(self, inbox: Inbox, id):
+        post = inbox.posts.all().filter(_id=id)
 
-#TODO: when handling cross domain requests, at this step we WILL need to fetch post or author information from a remote host
-# and store a copy on this server if that author or post doesn't already exist on our local, for now
-    def handle_post(self, inbox: Inbox, post_id):
-        try:
-            post = inbox.posts.get(_id=post_id)
-        except ObjectDoesNotExist:
-            #CREATE OBJECT
-            raise ObjectDoesNotExist #TODO: placeholder, this will get filled in I just wanted to outline the structure
+        if post.exists():
+            return HttpResponse(status=409) #conflict, item is already in inbox
+
+        post = Post.objects.get(_id=id)
         inbox.posts.add(post)
+
+    def handle_comment(self, inbox: Inbox, id):
+        comment = inbox.comments.all().filter(_id=id)
         
-    def handle_comment(self, inbox: Inbox, comment_id):
+        if comment.exists():
+            return HttpResponse(status=409) #conflict, item is already in inbox
+
+        comment = Comment.objects.get(_id=id)
+        inbox.comments.add(comment)
+
+    def handle_follow(self, inbox: Inbox, id, body, author: Author): #we actually create the follow request here
+        follow_req = inbox.follow_requests.all().filter(_id=id)
+
+        if follow_req.exists():
+            return HttpResponse(status=409) #conflict, item is already in inbox
+        
+        print(body["actor"])
+
+        foreign_author = Author()
+        foreign_author.toObject(body["actor"])
+
         try:
-            comment = inbox.comments.get(_id=comment_id)
-        except ObjectDoesNotExist:
-            #CREATE OBJECT
-            raise ObjectDoesNotExist #TODO: placeholder, this will get filled in I just wanted to outline the structure
-        inbox.posts.add(comment)
+            author.followers.get(_id=foreign_author._id)
+        except ObjectDoesNotExist: #only create request if they are NOT already being followed
+            follow_request = Follow.objects.create(actor=foreign_author, object=author)
+            inbox.follow_requests.add(follow_request)
+    

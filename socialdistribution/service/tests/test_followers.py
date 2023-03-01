@@ -2,7 +2,7 @@ from django.test import *
 from service.models.author import Author
 from django.contrib.auth.models import User
 from service.views.author import *
-from service.views.follow import *
+from service.views.follower import *
 
 
 class FollowTests(TestCase):

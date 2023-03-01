@@ -1,11 +1,10 @@
 from djongo import models
 from service.models.author import Author
 from service.models.post import Post
-from service.services.inbox_object_base import InboxObjectBase
 from django.conf import settings
 import uuid
 
-class Comment(models.Model, InboxObjectBase):
+class Comment(models.Model):
     _id = models.URLField(primary_key=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.TextField()

@@ -17,7 +17,7 @@ class FollowersAPI(View):
 
     http_method_names = ['get']
 
-    def get(self, request,author_id):
+    def get(self, request, author_id):
 
         author = Author.objects.get(_id = author_id)
 
@@ -34,7 +34,7 @@ class FollowerAPI(View):
     """ GET if is a follower PUT a new follower DELETE an existing follower"""
     http_method_names = ['get','put','delete']
     
-    def delete(self,request,author_id,foreign_author_id):
+    def delete(self, request, author_id, foreign_author_id):
         author = Author.objects.get(_id=author_id)
         foreign_author = Author.objects.get(_id=foreign_author_id)
 
@@ -43,7 +43,7 @@ class FollowerAPI(View):
 
         return HttpResponse(status=200)
 
-    def put(self,request,author_id,foreign_author_id):
+    def put(self, request, author_id, foreign_author_id):
         #if request.user.is_authenticated:
 
         if author_id == foreign_author_id:
@@ -62,8 +62,7 @@ class FollowerAPI(View):
 
         return HttpResponse(status=409)
 
-    def get(self,request,author_id,foreign_author_id):
-
+    def get(self, request, author_id, foreign_author_id):
         author = Author.objects.get(_id=author_id)
         foreign = Author.objects.get(_id=foreign_author_id)
 
