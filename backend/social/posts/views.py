@@ -5,11 +5,11 @@ from django.views import generic
 from .models import Post
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post, Author
+from .models import *
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import PostSerializer
+from .serializers import *
 
 @api_view(['GET'])
 def get_posts(request, pk_a):
@@ -19,6 +19,39 @@ def get_posts(request, pk_a):
     author = Author.objects.get(id=pk_a)
     posts = Post.objects.filter(author=author)
     serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def create_posts(request, pk_a):
+    """
+    Post a question
+    """
+    author = Author.objects.get(id=pk_a)
+    serializer = PostSerializer(author, data=request.data, partial=True)
+    if serializer.is_valid():
+        return Response(serializer.data)
+    return Response(status=400, data=serializer.errors)
+
+@api_view(['GET'])
+def get_comments(request, pk_a, pk):
+    """
+    Get the list of comments on our website
+    """
+    author = Author.objects.get(id=pk_a)
+    post = Post.objects.get(author=author, id=pk)
+    comments = Comment.objects.filter(author=author,post=post)
+    serializer = CommentSerializer(comments, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_likes(request, pk_a, pk):
+    """
+    Get the list of comments on our website
+    """
+    author = Author.objects.get(id=pk_a)
+    post = Post.objects.get(author=author, id=pk)
+    likes = Like.objects.filter(object=post.id)
+    serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
 class IndexView(generic.ListView):

@@ -85,7 +85,7 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)  # post of the commen
     comment = models.TextField()  # the comment
     published = models.DateTimeField(auto_now_add=True)  # date published
-    content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
+    contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
 
     # get public id of comment
     def get_public_id(self):
@@ -99,13 +99,13 @@ class Comment(models.Model):
         ordering = ['published']
 
     def __str__(self):
-        return 'Comment {} by {}'.format(self.content, self.author)
+        return 'Comment by {}'.format(self.author)
     
 class Like(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of like
-    object = models.URLField(editable=False, max_length=500)  # URL of liked object
     summary = models.CharField (max_length=100)
     author = models.ForeignKey(Author, related_name = 'likes', on_delete=models.CASCADE)  # author of like
+    object = models.URLField(max_length=500)  # URL of liked object
     inbox = GenericRelation(Inbox, related_query_name='like')  # inbox in which like is in
 
     # get public id of like
@@ -115,5 +115,8 @@ class Like(models.Model):
     @staticmethod
     def get_api_type():
         return 'Like'
+    
+    def __str__(self):
+        return 'Liked by {}'.format(self.author)
     
     ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGE
