@@ -52,9 +52,6 @@ class Post(models.Model):
     # get visbility status
     def get_visilibility(self):
         return self.Visibility(self.visibility).label
-    
-    def get_categories(self):
-        return self.categories.split(',')
 
     # get content type
     def get_content_type(self):
