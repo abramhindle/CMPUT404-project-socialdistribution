@@ -1,12 +1,29 @@
 .Profile {
-    height: 10em;
-    background-color: black;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    background-color: #37342F;
+    align-items: center;
+    padding: 1em;
 }
 
 .Profile p {
-    color: white;
+    color: #FCEDE3;
     text-align: center;
-    padding: 2em;
+    margin: 0.2em;
+}
+
+.Profile img.profile-pic {
+    height: 23vh;
+    width: 23vh;
+    border-radius: 50%;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.Profile div.stats {
+    padding: 0.2em;
+    font-size: medium;
 }
 
 .Sidebar {
@@ -59,7 +76,7 @@
     margin: 0;
 }
 
-    /* Display Options bar when item hovered over -- probably change to only when clicked later */
+    /* Display Options bar when item active */
     .Sidebar li:hover ul.Options-bar {
         display: block;
     }

@@ -1,0 +1,49 @@
+.content-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    padding: 0;
+}
+
+.message {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.from {
+    border: none;
+    border-radius: 0.5em;
+    margin: 0;
+    display: flex;
+}
+.from img {
+    height: 3em;
+    width:3em;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 50%;
+    padding: 0.5em;
+}
+
+.content {
+    width: fit-content;
+    border: solid black 4pt;
+    border-radius: 0.5em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    padding: 0.5em;
+}
+
+.timestamp {
+    font-size: small;
+    text-align: right;
+    margin-right: 1.5em;
+}
+
+h5 {
+    text-align: left;
+    margin: 0;
+    margin-left: 1.5em;
+}
