@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
+from .models import Author
 
 # Create your views here.
 
@@ -45,8 +46,9 @@ def all_authors(request: Request):
     """
     return Response({"message": "Viewing all authors"})
 
+
 @api_view(['GET', 'POST'])
-def single_author(request: Request, author_id:str):
+def single_author(request: Request, author_id: str):
     """
     /authors/{author_id}/
 
@@ -60,6 +62,3 @@ def single_author(request: Request, author_id:str):
 
     elif request.method == 'POST':
         return Response({"message": f"Updating author {author_id}"})
-
-
-    
