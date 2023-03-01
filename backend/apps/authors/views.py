@@ -95,3 +95,11 @@ class Author_Individual(APIView):
         query = self.get_object(id)
         serializer = AuthorSerializer(query)
         return Response(serializer.data)
+    
+    def put(self, request, id, format=None):
+        query = self.get_object(id)
+        serializer = AuthorSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

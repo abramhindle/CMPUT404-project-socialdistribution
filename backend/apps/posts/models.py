@@ -14,7 +14,12 @@ class Post(models.Model):
     source = models.CharField(max_length=50, blank=True)
     origin = models.CharField(max_length=50, blank=True)
     description = models.CharField(max_length=250, blank=True)
-    contentType = models.CharField(max_length=20, blank=True)
+
+    CONTENT_CHOICES = (
+        ("MARKDOWN", "text/markdown"),
+    )
+    contentType = models.CharField(
+        choices=CONTENT_CHOICES, max_length=20, blank=True)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     def commentlist_template():
@@ -28,7 +33,12 @@ class Post(models.Model):
 
     count = models.PositiveBigIntegerField(default=0)
     published = models.DateTimeField(auto_now_add=True)
-    visibility = models.BooleanField(default=True)
+    VISIBIILTY_CHOICES = (
+        (True, "PUBLIC"),
+        (False, "PRIVATE"),
+    )
+    visibility = models.BooleanField(
+        choices=VISIBIILTY_CHOICES, default=True)
     image = models.ImageField(blank=True, null=True)
     unlisted = models.BooleanField(blank=True, default=False)
 
@@ -65,3 +75,29 @@ class Comment(models.Model):
 
     def __str__(self):
         self.message
+
+
+class Friend(models.Model):
+    """
+    Each individual record is a someone following someone. So, all the following/Friend
+    info is here.
+    follower is the id of the author who is following.
+    owner is the id of the author who is being followed.
+    """
+    id = models.BigAutoField(primary_key=True)
+    followers = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name='follower')
+    dateTime = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name='owner')
+
+
+class Inbox(models.Model):
+    """
+    Here the author is the id of the author whos inbox is this
+    Post is the post sent to the person's inbox. Pretty straightforward. 
+    """
+    id = models.BigAutoField(primary_key=True)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    dateTime = models.DateTimeField(auto_now_add=True)
