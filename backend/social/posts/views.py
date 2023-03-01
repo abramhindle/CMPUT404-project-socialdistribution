@@ -10,16 +10,32 @@ from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import *
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.renderers import (
+                                        HTMLFormRenderer, 
+                                        JSONRenderer, 
+                                        BrowsableAPIRenderer,
+                                    )
 
-@api_view(['GET'])
-def get_posts(request, pk_a):
-    """
-    Get the list of posts on our website
-    """
-    author = Author.objects.get(id=pk_a)
-    posts = Post.objects.filter(author=author)
-    serializer = PostSerializer(posts, many=True)
-    return Response(serializer.data)
+class post_list(APIView):
+
+    def get(self, request, pk_a):
+        """
+        Get the list of posts on our website
+        """
+        author = Author.objects.get(id=pk_a)
+        posts = Post.objects.filter(author=author)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, pk_a):
+        # author = Author.objects.get(id=pk_a)
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def create_posts(request, pk_a):
@@ -27,7 +43,8 @@ def create_posts(request, pk_a):
     Post a question
     """
     author = Author.objects.get(id=pk_a)
-    serializer = PostSerializer(author, data=request.data, partial=True)
+    posts = Post.objects.filter(author=author)
+    serializer = PostSerializer(posts, data=request.data)
     if serializer.is_valid():
         return Response(serializer.data)
     return Response(status=400, data=serializer.errors)

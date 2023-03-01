@@ -19,6 +19,10 @@ class PostSerializer(WritableNestedModelSerializer):
         categories_list = instance.categories.split(",")
         return [category for category in categories_list]
     
+    def create(self, validated_data):
+        updated_author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context.get('author_id'))
+        return Post.objects.create(**validated_data, author=updated_author)
+    
     class Meta:
         model = Post
         fields = [
