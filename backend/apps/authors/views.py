@@ -2,7 +2,11 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-
+from .models import Author
+from django.http import Http404
+from .serializers import AuthorSerializer
+from rest_framework import status
+from rest_framework.views import APIView
 # Create your views here.
 
 
@@ -61,3 +65,33 @@ def single_author(request: Request, author_id: str):
 
     elif request.method == 'POST':
         return Response({"message": f"Updating author {author_id}"})
+
+
+class Author_All(APIView):
+
+    def get(self, request, format=None):
+        query_set = Author.objects.all()
+        serializer = AuthorSerializer(query_set, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = AuthorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Author_Individual(APIView):
+
+    def get_object(self, id, format=None):
+        try:
+            return Author.objects.get(id=id)
+        except:
+            Author.DoesNotExist
+            return Http404
+
+    def get(self, request, id, format=None):
+        query = self.get_object(id)
+        serializer = AuthorSerializer(query)
+        return Response(serializer.data)

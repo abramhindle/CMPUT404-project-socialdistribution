@@ -9,7 +9,7 @@ class Author(models.Model):
     host = models.CharField(max_length=200, blank=True)
     displayName = models.CharField(max_length=200, blank=True)
     github = models.CharField(max_length=100, blank=True)
-    profileImage = models.ImageField(blank=True)
+    profileImage = models.ImageField(blank=True, null=True)
 
     def friendlist_template():
         return {"friend_id": "[]"}
