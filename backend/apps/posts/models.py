@@ -9,7 +9,6 @@ from apps.authors.models import Author
 class Post(models.Model):
 
     # Fields
-    id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=250, blank=True)
     source = models.CharField(max_length=50, blank=True)
     origin = models.CharField(max_length=50, blank=True)
@@ -43,7 +42,6 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    id: models.BigAutoField(primary_key=True)
     message: models.CharField(max_length=250)
     parent_post_id = models.ForeignKey(
         Post, on_delete=models.CASCADE, blank=True, null=True)
