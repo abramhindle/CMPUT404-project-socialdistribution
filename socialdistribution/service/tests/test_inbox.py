@@ -106,6 +106,37 @@ class InboxTests(TestCase):
         self.assertEqual(inbox["items"][0]["id"], self.comment1._id)
         self.assertEqual(inbox["items"][0]["author"]["id"], self.author1._id) #author2 sent to author1 inbox
 
+    def test_author_inbox_post_comment_202_get_200(self):
+        self.kwargs = {
+            'author_id': self.author2._id
+        }
+
+        comment_json = self.comment1.toJSON() #push author2's post to author1's inbox
+
+        url = reverse('inbox_view', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
+
+        post_request = self.request_factory.post(url, user = self.user2, data=json.dumps(comment_json), content_type = CONTENT_TYPE_JSON)
+
+        inbox_post_response = self.inbox_view.post(post_request, author_id=self.author2._id)
+
+        self.assertEqual(inbox_post_response.status_code, 202) # was created correctly!
+
+        get_request = self.request_factory.get(url, user = self.user2)
+
+        inbox_response = self.inbox_view.get(get_request, author_id=self.author2._id)
+
+        self.assertEqual(inbox_response.status_code, 200)
+
+        inbox = json.loads(inbox_response.content)
+
+        self.assertEqual(inbox["type"], "inbox")
+        self.assertEqual(inbox["author"], self.author2._id)
+        self.assertEqual(len(inbox["items"]), 1)
+
+        self.assertEqual(inbox["items"][0]["type"], "comment")
+        self.assertEqual(inbox["items"][0]["id"], self.comment1._id)
+        self.assertEqual(inbox["items"][0]["author"]["id"], self.author1._id) #author2 sent to author1 inbox
+
     def test_delete_clear_inbox(self):
         self.kwargs = {
             'author_id': self.author2._id

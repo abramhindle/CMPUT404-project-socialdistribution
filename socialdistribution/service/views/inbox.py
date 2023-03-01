@@ -85,10 +85,10 @@ class InboxView(View):
         try:
             if body["type"] == "post":
                 id = body["id"]
-                self.handle_post(inbox, id)
+                self.handle_post(inbox, id, body, self.author)
             elif body["type"] == "comment":
                 id = body["id"]
-                self.handle_comment(inbox, id)
+                self.handle_comment(inbox, id, body, self.author)
             elif body["type"] == "follow": #TODO: fill these in once the objects are done
                 id = Follow.create_follow_id(body["object"]["id"], body["actor"]["id"])
                 self.handle_follow(inbox, id, body, self.author)
@@ -100,7 +100,9 @@ class InboxView(View):
         except KeyError:
             return HttpResponseBadRequest()
         except ObjectDoesNotExist:
-            return HttpResponseBadRequest()
+            return HttpResponseNotFound()
+        except ConflictException:
+            return HttpResponse(status=409)
         
         inbox.save()
 
@@ -131,11 +133,17 @@ class InboxView(View):
 
         return HttpResponse(status=202)
     
-    def handle_post(self, inbox: Inbox, id):
+    def handle_post(self, inbox: Inbox, id, body, author):
         post = inbox.posts.all().filter(_id=id)
 
+        #TODO: make request and PUT post to DB if it isnt already there -> for now, we assume it IS there
+        # post_author = body["author"]["id"]
+        # post_id = body["id"]
+        # url = f"{settings.DOMAIN}/authors/{post_author}/posts/{post_id}"
+        # requests.put()
+
         if post.exists():
-            return HttpResponse(status=409) #conflict, item is already in inbox
+            raise ConflictException #conflict, item is already in inbox
 
         post = Post.objects.get(_id=id)
         inbox.posts.add(post)
@@ -144,7 +152,7 @@ class InboxView(View):
         comment = inbox.comments.all().filter(_id=id)
         
         if comment.exists():
-            return HttpResponse(status=409) #conflict, item is already in inbox
+            raise ConflictException #conflict, item is already in inbox
 
         comment = Comment.objects.get(_id=id)
         inbox.comments.add(comment)
@@ -153,9 +161,7 @@ class InboxView(View):
         follow_req = inbox.follow_requests.all().filter(_id=id)
 
         if follow_req.exists():
-            return HttpResponse(status=409) #conflict, item is already in inbox
-        
-        print(body["actor"])
+            raise ConflictException
 
         foreign_author = Author()
         foreign_author.toObject(body["actor"])
@@ -166,3 +172,6 @@ class InboxView(View):
             follow_request = Follow.objects.create(actor=foreign_author, object=author)
             inbox.follow_requests.add(follow_request)
     
+
+class ConflictException(Exception):
+    pass
