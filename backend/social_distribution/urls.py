@@ -20,10 +20,13 @@ from apps.authors.views import authors_paginated
 
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),                                # Django admin site
     path('api-auth/', include('rest_framework.urls')),              # Prefix for API login and logout
     path('api-schema/', get_schema_view(), name='API Schema'),      # API schema endpoint (used for dynamic swagger docs generation)
     path('docs/', include('apps.docs.urls')),                       # Prefix for documentation pages (currently /docs/api/ only)
     path('authors/', include('apps.authors.urls')),                 # Pretty much every other URI starts with this author prefix
+    path('posts/', include('apps.posts.urls')),                     # All direct post related operations 
     path('authors', authors_paginated, name='Authors Paginated')    # Project spec indicates there shouldn't be a trailing slash on paginated authors, so here it is
+    
 ]
