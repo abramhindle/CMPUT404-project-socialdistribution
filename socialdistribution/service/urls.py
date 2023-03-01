@@ -1,16 +1,26 @@
-from django.urls import path
+from django.urls import re_path, path
 from service.views.author import SingleAuthor, MultipleAuthors
-from service.views.follow import FollowersAPI, FollowerAPI
+from service.views.follower import FollowersAPI, FollowerAPI
+from service.views.follow_request import AuthorFollowRequests
 from service.views.post import PostCreation, PostWithId
+from service.views.inbox import InboxView
+#from .views.follower_views import FollowerAPIView, FollowersAPIView
 from service.views.comment import CommentView
+
+
+#this shit is hell, but django freaks out trying to parse nested urls otherwise
+AUTHOR_ID_REGEX = r"http://[A-Za-z0-9]+/authors/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"
+POST_ID = r"http://[A-Za-z0-9]+/authors/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/posts/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"
 
 urlpatterns = [
     #for every different model, create a new model file and view file in the /model and /view directories then link it up here
-    path('', MultipleAuthors.as_view()), 
-    path('<uuid:id>/', SingleAuthor.as_view()),
-    path('<uuid:author_id>/posts/', PostCreation.as_view(), name='post_creation'),
-    path('<uuid:author_id>/posts/<uuid:post_id>', PostWithId.as_view(), name='post_with_id'),
-    path('<uuid:author_id>/posts/<uuid:post_id>/comments', CommentView.as_view(), name='comment_view'),
-    path('<str:pk>/followers/', FollowersAPI.as_view(),name = "getfollowers"),
-    path('<str:pk>/followers/<str:foreignPk>',FollowerAPI.as_view(),name="getfollower"),
+    re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/follow-request/', AuthorFollowRequests.as_view(),name="author_request"),
+    re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/followers/(?P<foreign_author_id>{AUTHOR_ID_REGEX})', FollowerAPI.as_view(),name="getfollower"),
+    re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/followers/', FollowersAPI.as_view(),name = "getfollowers"), #going to to need to fix the ids on this
+    re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/posts/(?P<post_id>{POST_ID})/comments/$', CommentView.as_view(), name='comment_view'),
+    re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/posts/(?P<post_id>{POST_ID})/$', PostWithId.as_view(), name='post_with_id'),
+    re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/posts/$', PostCreation.as_view(), name='post_creation'),
+    re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/inbox/$', InboxView.as_view(), name='inbox_view'),
+    re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/$', SingleAuthor.as_view()),
+    re_path(r'^$', MultipleAuthors.as_view()), 
 ]

@@ -18,14 +18,18 @@ class PostTests(TestCase):
         self.author1 = Author.objects.create(displayName = "Joe Guy", host = "http://localhost:8000", user = self.user1)
         self.author2 = Author.objects.create(displayName = "Somebody Else", host = "http://localhost:8000", user = self.user2)
 
-        self.post1 = Post.objects.create(title="Hello World!", author=self.author1)
-        self.post2 = Post.objects.create(title="Somebody else's post", author=self.author2)
+        self.post1 = Post.objects.create(_id=Post.create_post_id(self.author1._id), title="Hello World!", author=self.author1)
+        self.post2 = Post.objects.create(_id=Post.create_post_id(self.author2._id), title="Somebody else's post", author=self.author2)
 
         self.request_factory = RequestFactory()
 
     def tearDown(self):
         self.user1.delete()
         self.user2.delete() 
+        self.author1.delete()
+        self.author2.delete()
+        self.post1.delete()
+        self.post2.delete()
 
     def test_get_author_posts(self):
 
@@ -122,7 +126,7 @@ class PostTests(TestCase):
         self.assertEqual(post.unlisted, body["unlisted"])
 
     def test_delete_post_by_id(self):
-        post_to_delete = Post.objects.create(author=self.author1) #create a blank object to delete
+        post_to_delete = Post.objects.create(_id=Post.create_post_id(self.author1._id), author=self.author1) #create a blank object to delete
 
         self.kwargs = {
             'author_id': self.author1._id,
@@ -150,9 +154,6 @@ class PostTests(TestCase):
             pass
         else:
             self.fail("Post should have been deleted")
-
-
-
 
 def create_post():
     return {

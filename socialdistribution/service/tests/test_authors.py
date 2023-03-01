@@ -25,7 +25,7 @@ class AuthorTests(TestCase):
         get_request = self.request_factory.get("/service/", user = self.user1)
         get_request.user = self.user1
 
-        author_response = self.single_view.get(get_request, id=self.author1._id)
+        author_response = self.single_view.get(get_request, author_id=self.author1._id)
 
         self.assertEqual(author_response.status_code, 200)
 
@@ -44,7 +44,7 @@ class AuthorTests(TestCase):
         post_request = self.request_factory.post("/service/", data=json.dumps(body), content_type = CONTENT_TYPE_JSON)
         post_request.user = self.user1
 
-        post_response = self.single_view.post(post_request, id=self.author1._id)
+        post_response = self.single_view.post(post_request, author_id=self.author1._id)
 
         self.assertEqual(post_response.status_code, 202)
 

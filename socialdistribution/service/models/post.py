@@ -2,14 +2,14 @@ from djongo import models
 from django import forms
 from service.models.author import Author
 import uuid
+from django.conf import settings
 
 #Djongo freaks out if we don't define the meta values for the ArrayField CharField. This solves that problem
 class Category(models.Model):
     data = models.CharField(max_length=32, primary_key=True)
 
-
 class Post(models.Model):
-    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) #post id
+    _id = models.URLField(primary_key=True) #post id
     title = models.CharField(max_length=32)
     source = models.URLField()
     origin = models.URLField()
@@ -48,11 +48,11 @@ class Post(models.Model):
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
 
-    def toJSON(self, comments=list):
+    def toJSON(self):
         return {
             "type": "post",
             "title": self.title,
-            "id": str(self._id),
+            "id": self._id,
             "source": self.source,
             "origin": self.origin,
             "description": self.description,
@@ -64,3 +64,29 @@ class Post(models.Model):
             "visibility": self.visibility,
             "unlisted": self.unlisted
         }
+
+    def toObject(self, json_object):
+        self._id = json_object["id"] #this is a url, we need to get the last item of the url
+        self.title = json_object["title"]
+        self.id = json_object["id"]
+        self.source = json_object["source"]
+        self.origin = json_object["origin"]
+        self.description = json_object["description"]
+        self.contentType = json_object["contentType"]
+        self.content = json_object["content"]
+        self.author = Author().toObject(json_object["author"])
+        self.categories = json_object["categories"]
+        self.comments = json_object["comments"]
+        self.published = json_object["published"]
+        self.visibility = json_object["visibility"]
+        self.unlisted = bool(json_object["unlisted"])
+
+    @staticmethod
+    def create_post_id(author_id, post_id=None): #uses the last uuid value from author id, and generates a custom post_id
+        if not post_id:
+            post_id = uuid.uuid4()
+
+        author_uuid = author_id.rsplit('/', 1)[-1]
+        return f"{settings.DOMAIN}/authors/{author_uuid}/posts/{post_id}"
+
+
