@@ -21,6 +21,8 @@ function POST({ postobj }) {
 		}
 	};
 
+	// need to make a get request to get the post obj and set post obj to that.
+
 	return (
 		<div
 			style={{
