@@ -13,12 +13,36 @@ class PostSerializer(WritableNestedModelSerializer):
 #    source = serializers.URLField(default="",max_length=500)  # source of post
 #    origin = serializers.URLField(default="",max_length=500)  # origin of post
     categories = serializers.SerializerMethodField(read_only=True)
-    
+        
     def get_categories(self, instance):
         categories_list = instance.categories.split(",")
         return [category for category in categories_list]
     
-    def create(self, validated_data):
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Post` instance, given the validated data
+        """
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.content = validated_data.get('content', instance.content)
+        instance.contentType = validated_data.get('contentType', instance.contentType)
+        instance.published = validated_data.get('published', instance.published)
+        return instance
+    
+    def create(self, instance, validated_data):
+        print("create")
+        post_id = self.context.get('post_id')
+        print("id",post_id)
+        if post_id is not None:
+            post = Post.objects.get(id=post_id)
+            if post is not None:
+                print("post ID")
+                instance.id = post_id
+                instance.url = self.context.get('url')
+                print("URL", instance.url)
+                instance.save()
+                return instance
+                
         updated_author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context.get('author_id'))
         categories = ' '.join(validated_data.get('categories'))
         print("categories", categories)

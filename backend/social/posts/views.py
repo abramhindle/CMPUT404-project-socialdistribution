@@ -45,16 +45,45 @@ class post_list(APIView, PageNumberPagination):
 
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
         if serializer.is_valid():
-            # using raw create because we need custom id
-            # print("original",serializer.validated_data.get('categories'))
-            # categories = ' '.join(serializer.validated_data.get('categories'))
-            # print("categories", categories)
-            #serializer.validated_data.pop('categories')
             serializer.validated_data.pop("author")
             post = Post.objects.create(**serializer.validated_data, author=author, id=post_id)
             post.update_fields_with_request(request)
 
             serializer = PostSerializer(post, many=False)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class post_detail(APIView, PageNumberPagination):
+    serializer_class = PostSerializer
+    pagination_class = PostSetPagination
+
+    def get(self, request, pk_a, pk):
+        """
+        Get the list of posts on our website
+        """
+        author = Author.objects.get(id=pk_a)
+        post = Post.objects.get(author=author, id = pk)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
+
+    def post(self, request, pk, pk_a):        
+        try:
+            _ = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            error_msg = "Post id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            post = serializer.save()
+            post.update_fields_with_request(request)           
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
