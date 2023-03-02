@@ -3,47 +3,66 @@
     flex-direction: column;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    padding: 0;
 }
 
 .message {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    color: black;
 }
 
 .from {
     border: none;
-    border-radius: 0.5em;
     margin: 0;
     display: flex;
+    flex-direction: column-reverse;
 }
 .from img {
     height: 3em;
     width:3em;
     object-fit: cover;
     overflow: hidden;
-    border-radius: 50%;
     padding: 0.5em;
+}
+
+.line {
+    border-top: 1px solid black;
+    padding-inline: 1em;
 }
 
 .content {
     width: fit-content;
-    border: solid black 4pt;
-    border-radius: 0.5em;
     margin-left: 0.5em;
     margin-right: 0.5em;
+    margin: 1em;
     padding: 0.5em;
+    font-size: 12pt;
+    text-align: left;
 }
 
 .timestamp {
+    color: black;
     font-size: small;
     text-align: right;
     margin-right: 1.5em;
+    text-align: right;
 }
 
 h5 {
     text-align: left;
     margin: 0;
     margin-left: 1.5em;
+    padding: 0.5em;
+}
+.interaction-options {
+    display: flex;
+}
+
+.interaction-options > button {
+    padding: 0.2em;
+}
+
+.post-body {
+    width:100%;
 }

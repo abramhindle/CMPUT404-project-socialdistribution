@@ -7,6 +7,9 @@ function Sidebar() {
     //Get user info
     const user = useSelector((state) => state.user);
 
+    const port = window.location.port ? `:${window.location.port}` : "";
+    const authorUrl = `//${window.location.hostname}${port}/user/${(user.id ?? "").split('/').pop()}`; // allows linking to the author who wrote the post
+
     //Handle Navigations
     const navigate = useNavigate();
     //Navigate to Main Inbox Feed
@@ -20,14 +23,12 @@ function Sidebar() {
         navigate("/posts/new");
     };
 
-    console.log(user);
-
   return (
     <nav className="Sidebar">
         {/* Profile Preview */}
         <div className='Profile'>
             <img className="profile-pic" src={user.profileImage} alt="profile"/>
-            <p>{user.displayName}</p>
+            <p><a href={authorUrl}>{user.displayName}</a></p>
             <div className="stats">
                 <p>Friends: 0</p>
                 <p>Followers: 0</p>

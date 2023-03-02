@@ -1,0 +1,57 @@
+div.Page {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.myprofile {
+  text-align: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  flex: 1;
+  float: right;
+}
+
+.profileHead {
+  background-color: #37342F;
+  padding: 1em;
+  float: top;
+}
+
+.navbar a {
+  color: black;
+  list-style-type: none;
+  margin: 0;
+  padding: 1;
+  padding-inline: 3em;
+  margin-inline: 1em;
+  display: inline;
+}
+
+.followers {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.followers li {
+  border: grey;
+  background-color: lightgrey;
+  padding: 1em;
+  margin-inline: 1em;
+  margin-bottom: 1em;
+  border-style: solid;
+  border-width: 0.5pt;
+}
+
+.emptyList {
+  color: black;
+}
+
+.profileContent {
+  padding: 0;
+}
+
+.myprofile button {
+  margin: 1em;
+}

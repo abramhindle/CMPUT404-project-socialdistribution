@@ -1,0 +1,11 @@
+.follower li {
+  background-color: grey;
+}
+
+.followersList {
+  background-color: lightgrey;
+  list-style: none;
+  padding: 1em;
+  margin: 1em;
+  flex: 1; 
+}

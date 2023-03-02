@@ -1,4 +1,4 @@
-from djongo import models
+from django.db import models
 from service.models.author import Author
 from service.models.post import Post
 from django.conf import settings
