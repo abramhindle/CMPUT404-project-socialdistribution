@@ -10,7 +10,9 @@ from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import *
+from .pagination import PostSetPagination
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from rest_framework.renderers import (
                                         HTMLFormRenderer, 
@@ -19,6 +21,8 @@ from rest_framework.renderers import (
                                     )
 
 class post_list(APIView):
+    serializer_class = PostSerializer
+    pagination_class = PostSetPagination
 
     def get(self, request, pk_a):
         """
