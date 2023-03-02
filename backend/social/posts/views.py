@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import generic
 
@@ -17,5 +18,10 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Post
     template_name = 'posts/detail.html'
-    
 
+# referenced from https://www.geeksforgeeks.org/python-uploading-images-in-django/
+def get_image(request):
+    if request.method == 'GET':
+        # unfinished
+        image = 'asdf'
+        return render((request, image))
