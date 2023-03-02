@@ -5,7 +5,7 @@ from .views import PostDeleteView
 
 app_name = 'posts'
 urlpatterns = [
-  path('authors/<str:pk_a>/posts/', views.post_list.as_view()),
+  path('authors/<str:pk_a>/posts/', views.post_list.as_view(), name = "posts"),
   #path('authors/<str:pk_a>/posts/post/', views.create_posts, name='create_posts'),
   path('authors/<str:pk_a>/posts/<str:pk>/', views.DetailView.as_view(), name='detail'),
   path('authors/<str:pk_a>/posts/<str:pk>/delete/', PostDeleteView.as_view(), name='delete'),

@@ -29,22 +29,40 @@ class post_list(APIView):
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
-    def post(self, request, pk_a):
-        # author = Author.objects.get(id=pk_a)
-        serializer = PostSerializer(data=request.data)
+    def put(self, request, pk_a):
+        post_id = uuid.uuid4
+        
+        try:
+            author = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # using raw create because we need custom id
+            # print("original",serializer.validated_data.get('categories'))
+            # categories = ' '.join(serializer.validated_data.get('categories'))
+            # print("categories", categories)
+            #serializer.validated_data.pop('categories')
+            serializer.validated_data.pop("author")
+            post = Post.objects.create(**serializer.validated_data, author=author, id=post_id)
+            post.update_fields_with_request(request)
+
+            serializer = PostSerializer(post, many=False)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def create_posts(request, pk_a):
     """
-    Post a question
+    Update a question
     """
     author = Author.objects.get(id=pk_a)
     posts = Post.objects.filter(author=author)
-    serializer = PostSerializer(posts, data=request.data)
+    serializer = PostSerializer(posts, data=request.data, context = {"author_id": pk_a})
     if serializer.is_valid():
         return Response(serializer.data)
     return Response(status=400, data=serializer.errors)

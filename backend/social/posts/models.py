@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from author.models import Author, Inbox
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils import timezone
@@ -73,6 +74,16 @@ class Post(models.Model):
 
     def get_likes_count(self):
         return self.likes.count()
+    
+    def update_fields_with_request(self, request=None):
+        if not request:
+            return
+        self.url = request.build_absolute_uri(self.get_absolute_url())
+        self.save()
+
+    def get_absolute_url(self):
+        url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
+        return url[:-1] if url.endswith('/') else url 
     
     @staticmethod
     def get_api_type():
