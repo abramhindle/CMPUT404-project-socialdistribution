@@ -20,7 +20,7 @@ from rest_framework.renderers import (
                                         BrowsableAPIRenderer,
                                     )
 
-class post_list(APIView):
+class post_list(APIView, PageNumberPagination):
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
 
@@ -30,8 +30,9 @@ class post_list(APIView):
         """
         author = Author.objects.get(id=pk_a)
         posts = Post.objects.filter(author=author)
+        posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        return  self.get_paginated_response(serializer.data)
 
     def post(self, request, pk_a):
         post_id = uuid.uuid4
