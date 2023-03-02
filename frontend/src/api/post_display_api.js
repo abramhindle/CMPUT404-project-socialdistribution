@@ -16,19 +16,11 @@ export const post_api = async (authorId, post, success, failure) => {
     .catch(function (error) {
       console.log(error);
     });
-
-    /*if (res.status === 200) {
-      console.log("successfully posted");
-      success(res);
-    } else {
-      console.log("failed to post");
-      failure(res);
-    }*/
   };
 
-export const author_api = async (authorId, success) => {
+export const get_author_posts = async (authorId, page, success) => {
   console.log("Attempting to retrieve author info for", {authorId});
-  await axios.get(`http://localhost:8000/authors/${authorId}`,
+  await axios.get(`http://localhost:8000/authors/${authorId}/posts/?page=${page}`,
   {
     headers: {
       Accept: "application/json"

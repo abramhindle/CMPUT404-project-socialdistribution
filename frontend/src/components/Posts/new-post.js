@@ -17,7 +17,6 @@ export default function NewPost() {
 
     const [success, setSucess] = useState(null);
 
-
     const submit = async (e) => {
         let post = {"title": title,
                     "description": description,

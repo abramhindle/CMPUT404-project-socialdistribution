@@ -4,6 +4,7 @@ import SignIn from "./pages/Login/Signin"
 import Friends from "./pages/Friends/friends"
 import Posts from "./pages/Posts/posts";
 import Main from "./pages/Main";
+import Profile from "./pages/Profile/profile";
 
 function App() {
   return (
@@ -41,6 +42,13 @@ function App() {
             }>
             <Route path="new"/>
             <Route path="sent"/>
+          </Route>
+          <Route path="user/:author_id"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }>
           </Route>
           {/* Sign In */}
           <Route
