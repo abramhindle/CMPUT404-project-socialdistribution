@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SIGN_IN from "./Components/SignIn/Sign_in";
-import POSTSVIEW from "./Components/Post/PostsView";
+import INBOX from "./Components/Post/Inbox";
 import PROFILE from "./Components/Profile/Profile";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path="/login" element={<SIGN_IN />} />
-					<Route path="/postview" element={<POSTSVIEW />} />
+					<Route path="/inbox" element={<INBOX />} />
 					<Route path="/profile" element={<PROFILE />} />
 				</Routes>
 			</BrowserRouter>

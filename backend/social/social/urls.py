@@ -23,6 +23,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('posts.urls')),
+    path('authors/', include('author.urls')),
+
 ]
 
 # allows us to find image URLs from the configured media path (media/images/[filename])
