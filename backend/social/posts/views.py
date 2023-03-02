@@ -59,19 +59,6 @@ class post_list(APIView, PageNumberPagination):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['POST'])
-def create_posts(request, pk_a):
-    """
-    Update a question
-    """
-    author = Author.objects.get(id=pk_a)
-    posts = Post.objects.filter(author=author)
-    serializer = PostSerializer(posts, data=request.data, context = {"author_id": pk_a})
-    if serializer.is_valid():
-        return Response(serializer.data)
-    return Response(status=400, data=serializer.errors)
-
 @api_view(['GET'])
 def get_comments(request, pk_a, pk):
     """
