@@ -10,17 +10,18 @@ class AuthorTests(TestCase):
         self.single_view = SingleAuthor()
         self.multiple_view = MultipleAuthors()
 
-        #self.user1 = User.objects.create_user("joeguy", "joeguy@email.com", "12345")
-        #self.user2 = User.objects.create_user("somebody", "somebody@email.com", "1234")
+        self.user1 = User.objects.create_user("joeguy", "joeguy@email.com", "12345")
+        self.user2 = User.objects.create_user("somebody", "somebody@email.com", "1234")
 
         self.author1 = Author.objects.create(displayName = "Joe Guy", host = "http://localhost:8000", user = self.user1)
         self.author2 = Author.objects.create(displayName = "Somebody Else", host = "http://localhost:8000", user = self.user2)
         self.request_factory = RequestFactory()
 
     def tearDown(self):
-        #self.user1.delete()
-        #self.user2.delete()
-        pass
+        self.user1.delete()
+        self.user2.delete()
+        self.author1.delete()
+        self.author2.delete()
 
     def test_get_single_author(self):
         get_request = self.request_factory.get("/service/", user = self.user1)

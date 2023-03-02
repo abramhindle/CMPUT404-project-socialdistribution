@@ -148,7 +148,7 @@ class InboxView(View):
         post = Post.objects.get(_id=id)
         inbox.posts.add(post)
 
-    def handle_comment(self, inbox: Inbox, id):
+    def handle_comment(self, inbox: Inbox, id, body, author):
         comment = inbox.comments.all().filter(_id=id)
         
         if comment.exists():

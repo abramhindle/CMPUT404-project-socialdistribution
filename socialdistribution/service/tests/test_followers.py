@@ -34,6 +34,10 @@ class FollowTests(TestCase):
         self.user2.delete()
         self.user3.delete()
         self.user4.delete()
+        self.author1.delete()
+        self.author2.delete()
+        self.author3.delete()
+        self.author4.delete()
 
     def test_get_single_follower(self):
         request = HttpRequest()
