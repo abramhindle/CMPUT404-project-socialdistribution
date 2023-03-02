@@ -29,7 +29,7 @@ class post_list(APIView):
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
-    def put(self, request, pk_a):
+    def post(self, request, pk_a):
         post_id = uuid.uuid4
         
         try:
