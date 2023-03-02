@@ -72,4 +72,5 @@ class LikeSerializer(serializers.ModelSerializer):
             "type",
             "author",
             "object",
+            "id"
         ]
