@@ -19,6 +19,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from serveradmin.views import *
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +29,6 @@ urlpatterns = [
 
 ]
 
-# allows us to find image URLs from the configured media path (media/images/[filename])
+# adds the path to the media directory, we can put images in media/images/[filename] 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
