@@ -1,4 +1,4 @@
-from djongo import models
+from django.db import models
 from django.contrib.auth.models import User
 import uuid
 from django.conf import settings
@@ -11,12 +11,12 @@ def newId():
 class Author(models.Model):
     _id = models.URLField(primary_key=True, default=newId, editable=False)
     host = models.URLField()
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True) #link an Author to a registered user -> not required
-    displayName = models.CharField(max_length=128)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True, related_name='user') #this shouldn't be a ManyToMany, but djongo loses its mind trying to insert a dupe null
+    displayName = models.CharField(max_length=20)
     github = models.URLField()
     profileImage = models.URLField()
 
-    followers = models.ManyToManyField('Author')
+    followers = models.ManyToManyField('Author', blank=True)
 
     def toJSON(self):
         return {

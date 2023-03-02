@@ -1,4 +1,4 @@
-from djongo import models
+from django.db import models
 from django import forms
 from service.models.author import Author
 import uuid
