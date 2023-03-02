@@ -108,3 +108,19 @@ class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
         if self.request.user == post.author.user:
             return True
         return False
+
+class LikeView(APIView):
+    def post(self, request, pk_a):
+        try:
+            author = Author.objects.get(id=pk_a)
+        except Author.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        data = {'author': author.id, **request.data}
+        serializer = LikeSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
