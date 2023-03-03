@@ -1,13 +1,27 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Input, Panel, InputGroup } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
 import axios from "axios";
+import {
+	setAxiosAuthToken,
+	setToken,
+	getCurrentUser,
+	setLoggedIn,
+	unsetCurrentUser,
+} from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 function LOGIN() {
 	const [username, set_username] = useState("");
 	const [password, set_password] = useState("");
 	const [visible, setVisible] = React.useState(false);
+
+	let navigate = useNavigate();
+
+	useEffect(() => {
+		unsetCurrentUser();
+	});
 
 	const handleChange = () => {
 		setVisible(!visible);
@@ -20,7 +34,12 @@ function LOGIN() {
 		};
 		axios({ method: "post", url: "login", data: params })
 			.then((res) => {
-				console.log(res);
+				// console.log(res);
+				setAxiosAuthToken(res.data["accessToken"]);
+				setToken(res.data["refreshToken"]);
+				getCurrentUser(res.data["author_id"]);
+				setLoggedIn(true);
+				navigate("/");
 			})
 			.catch((err) => console.log(err));
 	};

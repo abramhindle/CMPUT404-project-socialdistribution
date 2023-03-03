@@ -23,7 +23,8 @@ function CREATEPOST() {
 			return (
 				<div>
 					<Uploader
-						action="//jsonplaceholder.typicode.com/posts/"
+						action="post/authors/{AUTHOR_ID}/posts/"
+						autoUpload={false}
 						draggable
 						style={{
 							float: "left",

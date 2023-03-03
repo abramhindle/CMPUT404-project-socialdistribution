@@ -110,6 +110,12 @@ function INBOX() {
 	const [curPage, setCurPage] = useState("inbox");
 	let navigate = useNavigate();
 
+	useEffect(() => {
+		console.log(localStorage.getItem("token"));
+		console.log(localStorage.getItem("user"));
+		console.log(localStorage.getItem("loggedIn"));
+	});
+
 	const handleProfileClick = () => {
 		if (curPage !== "profile") {
 			console.log(curPage);
