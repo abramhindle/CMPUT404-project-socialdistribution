@@ -56,7 +56,7 @@ class Post(models.Model):
 
     # for some reason, this is throwing an error for me(column does not exist), so it's commented out for the time being. 
 
-    content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
+    # content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
     
     # get content type
     def get_content_type(self):

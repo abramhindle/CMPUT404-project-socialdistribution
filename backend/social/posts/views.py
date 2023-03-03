@@ -19,6 +19,8 @@ from rest_framework.renderers import (
                                         JSONRenderer, 
                                         BrowsableAPIRenderer,
                                     )
+import base64
+from .image_renderer import JPEGRenderer, PNGRenderer
 
 class post_list(APIView, PageNumberPagination):
     serializer_class = PostSerializer
@@ -81,25 +83,6 @@ def get_likes(request, pk_a, pk):
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
-@api_view(['GET'])
-def get_image(request, pk_a, pk):
-    author = Author.objects.get(id=pk_a)
-    post = Post.objects.get(author=author, id=pk)
-    
-    # not an image post
-    if 'image' not in post.contentType:
-        return Response(status=404, data=serializer.errors)
-    
-    serializer = ImagePostSerializer(author,post)
-    
-    # image with the post:
-    if serializer.is_valid():
-        return Response(serializer.data)
-    
-    # if there isnt an image attached to the post:
-    else:
-        return Response(status=404, data=serializer.errors)
-
 class IndexView(generic.ListView):
     template_name = 'posts/index.html'
     context_object_name = 'latest_posts'
@@ -126,3 +109,26 @@ class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
         if self.request.user == post.author.user:
             return True
         return False
+
+class ImageView(APIView):
+    renderer_classes = [JPEGRenderer, PNGRenderer]
+
+    def post(self):
+        # DO THIS
+        return
+
+    def get(self, request, pk_a, pk):
+        try:
+            author = Author.objects.get(id=pk_a) 
+            post = Post.objects.get(author=author, id=pk)
+            # not image post
+            if 'image' not in post.contentType:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+            post_content = post.contentType.split(';')[0]
+            image = base64.b64decode(post.content.strip("b'").strip("'"))
+            return Response(image, content_type=post_content, status=status.HTTP_200_OK)
+
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        

@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views import PostDeleteView
+from .views import ImageView
 
 
 app_name = 'posts'
@@ -11,6 +12,6 @@ urlpatterns = [
   path('authors/<str:pk_a>/posts/<str:pk>/delete/', PostDeleteView.as_view(), name='delete'),
   path('authors/<str:pk_a>/posts/<str:pk>/comments/', views.get_comments, name='get_comments'),
   path('authors/<str:pk_a>/posts/<str:pk>/likes/', views.get_comments, name='get_likes'),
-  path('authors/<str:pk_a>/posts/<str:pk>/image/', views.get_image, name='get_image'),
+  path('authors/<str:pk_a>/posts/<str:pk>/image/', ImageView.as_view()),
 
 ]

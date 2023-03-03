@@ -76,7 +76,7 @@ class LikeSerializer(serializers.ModelSerializer):
             "object",
         ]
 
-class ImagePostSerializer(serializers.ModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     image = Base64ImageField()
     # later, visibility should be public by default for sharing
