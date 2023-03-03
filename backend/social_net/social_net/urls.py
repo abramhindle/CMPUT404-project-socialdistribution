@@ -7,5 +7,6 @@ from django.contrib import admin
 urlpatterns = [
     # path('', include(router.urls)),
     path('services/', include('API.urls')),
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
+    # path('^activity/', include('actstream.urls')),
 ]

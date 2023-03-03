@@ -49,3 +49,11 @@ class CommentsModel(models.Model):
     
     class Meta:
         ordering = ['type', 'author', 'comment', 'host', 'contentType', 'published', 'id', 'post_id']
+
+class LikeModel(models.Model):
+    summary = models.CharField(max_length=200)
+    type = models.CharField(max_length=100, default='like')
+    author = models.CharField(max_length=255)
+    object = models.CharField(max_length=255)
+    class Meta:
+        ordering = ['summary', 'type', 'author', 'object']

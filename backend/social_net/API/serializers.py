@@ -1,5 +1,5 @@
 #from django.contrib.auth.models import User, Group
-from .models import AuthorModel, PostsModel, CommentsModel
+from .models import AuthorModel, PostsModel, CommentsModel, LikeModel
 from rest_framework import serializers
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -79,3 +79,15 @@ class CommentsSerializer(serializers.ModelSerializer):
         model = CommentsModel
         # Tuple of serialized model fields (see link [2])
         fields = ('type', 'author', 'comment', 'host', 'contentType', 'published', 'id')
+
+class LikeSerializer(serializers.ModelSerializer):
+    summary = serializers.CharField(max_length=200)
+    type = serializers.CharField(max_length=100)
+    author = serializers.CharField(max_length=100)
+    object = serializers.CharField(max_length=255)
+
+    class Meta:
+        model = LikeModel
+        # Tuple of serialized model fields (see link [2])
+        fields = ('summary', 'type', 'author', 'object')
+
