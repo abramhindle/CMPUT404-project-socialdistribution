@@ -39,16 +39,23 @@ function COMMENTS({ postobj }) {
 
 	return (
 		<div
-			style={{
-				display: "block",
-				height: "50vh",
-				borderLeft: "2px solid black",
-				padding: "10px",
-			}}
+			style={
+				{
+					// display: "block",
+					// // height: "50vh",
+					// // borderLeft: "2px solid black",
+					// padding: "10px",
+				}
+			}
 		>
-			<h4>Commnets</h4>
 			{commentOBj.comments.map((obj) => (
-				<div>
+				<div
+					style={{
+						width: "100%",
+						border: "2px solid lightgrey",
+						padding: "5px",
+					}}
+				>
 					<h5
 						style={{
 							marginLeft: "10px",

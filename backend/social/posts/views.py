@@ -35,7 +35,7 @@ class post_list(APIView, PageNumberPagination):
         return  self.get_paginated_response(serializer.data)
 
     def post(self, request, pk_a):
-        post_id = uuid.uuid4
+        pk = str(uuid.uuid4())
         
         try:
             author = Author.objects.get(pk=pk_a)
@@ -45,13 +45,83 @@ class post_list(APIView, PageNumberPagination):
 
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
         if serializer.is_valid():
-            # using raw create because we need custom id
-            # print("original",serializer.validated_data.get('categories'))
-            # categories = ' '.join(serializer.validated_data.get('categories'))
-            # print("categories", categories)
-            #serializer.validated_data.pop('categories')
             serializer.validated_data.pop("author")
-            post = Post.objects.create(**serializer.validated_data, author=author, id=post_id)
+            post = Post.objects.create(**serializer.validated_data, author=author, id = pk)
+            post.update_fields_with_request(request)
+
+            serializer = PostSerializer(post, many=False)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class post_detail(APIView, PageNumberPagination):
+    serializer_class = PostSerializer
+    pagination_class = PostSetPagination
+
+    def get(self, request, pk_a, pk):
+        """
+        Get the list of posts on our website
+        """
+        try: 
+            author = Author.objects.get(id=pk_a)
+            post = Post.objects.get(author=author, id = pk)
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
+        except Post.DoesNotExist: 
+            return self.put(request, pk_a, pk)
+
+    def post(self, request, pk_a, pk):        
+        try:
+            _ = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            error_msg = "Post id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            post = serializer.save()
+            post.update_fields_with_request(request)           
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk_a, pk):
+
+        # TODO: check permissions 
+
+        try: 
+            post = Post.objects.get(id=pk)
+            post.delete()
+            post.save()
+            print(post.title)
+            
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Post.DoesNotExist:
+            return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
+      
+    def put(self, request, pk_a, pk):
+
+        try:
+            author = Author.objects.get(id=pk_a)
+            try:
+                _ = Post.objects.get(id=pk)
+                return Response("Post already exists", status=status.HTTP_400_NOT_FOUND)
+            except Post.DoesNotExist:
+                pass
+        except Author.DoesNotExist:
+            author = Author.objects.get(id=pk_a)
+            Response("Author does not exist", status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        if serializer.is_valid():
+            serializer.validated_data.pop("author")
+            post = Post.objects.create(**serializer.validated_data, author=author, id=pk)
             post.update_fields_with_request(request)
 
             serializer = PostSerializer(post, many=False)
@@ -75,8 +145,7 @@ def get_likes(request, pk_a, pk):
     """
     Get the list of comments on our website
     """
-    author = Author.objects.get(id=pk_a)
-    post = Post.objects.get(author=author, id=pk)
+    post = Post.objects.get(id=pk)
     likes = Like.objects.filter(object=post.id)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)

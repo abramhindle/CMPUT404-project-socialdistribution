@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
-// Component Imports
-import POST from "./Post";
-import CREATEPOST from "./CreatePost";
-import LIKE from "./Like";
-import { Navbar, Nav, Panel } from "rsuite";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Avatar, ButtonGroup, Panel, Button, PanelGroup } from "rsuite";
+import COMMENTS from "../Post/Comment";
 
-function INBOX() {
-	const inbox = {
+function AUTHORPOSTS() {
+	// make a get request to get author and every post the author made and comments on the posts
+	// make a get request to get all the friends of an author
+	const posts = {
 		type: "inbox",
 		author: "http://127.0.0.1:5454/authors/c1e3db8ccea4541a0f3d7e5c75feb3fb",
 		items: [
@@ -38,21 +36,6 @@ function INBOX() {
 				unlisted: false,
 			},
 			{
-				"@context": "https://www.w3.org/ns/activitystreams",
-				summary: "Lara Croft Likes your post",
-				type: "Like",
-				author: {
-					type: "author",
-					id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-					host: "http://127.0.0.1:5454/",
-					displayName: "Lara Croft",
-					url: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-					github: "http://github.com/laracroft",
-					profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
-				},
-				object: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
-			},
-			{
 				type: "post",
 				title: "DID YOU READ MY POST YET?",
 				id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/999999983dda1e11db47671c4a3bbd9e",
@@ -77,69 +60,53 @@ function INBOX() {
 				visibility: "FRIENDS",
 				unlisted: false,
 			},
-			{
-				"@context": "https://www.w3.org/ns/activitystreams",
-				summary: "Lara Croft Likes your post",
-				type: "Like",
-				author: {
-					type: "author",
-					id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-					host: "http://127.0.0.1:5454/",
-					displayName: "Lara Croft",
-					url: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-					github: "http://github.com/laracroft",
-					profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
-				},
-				object: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
-			},
 		],
 	};
 
+	const body = (obj) => {
+		if (obj["contentType"] === "text/plain") {
+			return <p style={{ padding: "5px" }}>{obj["content"]}</p>;
+		}
+
+		// Peter you just need to return the image here
+		if (obj["contentType"] === "image/jpeg") {
+			return <div>image</div>;
+		}
+	};
+
 	const item = (obj) => {
-		if (obj.type === "post") {
-			return <POST postobj={obj}></POST>;
-		}
-		if (obj.type === "Like") {
-			return <LIKE likeobj={obj}>like</LIKE>;
-		}
-	};
-
-	// we need make a query to get all the postid that need to be in the author's stream
-	const [postids, set_postids] = useState(["a", "n"]);
-	// useEffect();
-
-	const [curPage, setCurPage] = useState("inbox");
-	let navigate = useNavigate();
-
-	const handleProfileClick = () => {
-		if (curPage !== "profile") {
-			console.log(curPage);
-			setCurPage("profile");
-			navigate("profile");
-		}
-	};
-
-	return (
-		<div style={{ padding: "10px", width: "60%", margin: "auto" }}>
-			<Navbar>
-				<Navbar.Brand>Socially Distrubted</Navbar.Brand>
-				<Nav pullRight>
-					<Nav.Menu title="Inbox">
-						<Nav.Item style={{ color: "red" }}>
-							Clear Inbox
-						</Nav.Item>
-					</Nav.Menu>
-				</Nav>
-				<Nav pullRight>
-					<Nav.Item onClick={handleProfileClick}>Profile</Nav.Item>
-				</Nav>
-			</Navbar>
-			<Panel bordered header="New Post" collapsible>
-				<CREATEPOST></CREATEPOST>
+		return (
+			<Panel
+				header={obj["title"]}
+				style={{
+					// height: "50px",
+					// border: "0.5px solid lightgrey",
+					// borderRadius: "10px",
+					marginTop: "5px",
+				}}
+				bordered
+				collapsible
+			>
+				<div style={{ padding: "5px" }}>
+					<h3
+						style={{
+							marginLeft: "10px",
+							float: "left",
+						}}
+					>
+						{obj["description"]}
+					</h3>
+					<br />
+					<p>{body(obj)}</p>
+				</div>
+				<Panel bordered collapsible header="Comments">
+					<COMMENTS postobj={obj}></COMMENTS>
+				</Panel>
 			</Panel>
-			{inbox.items.map((obj) => item(obj))}
-		</div>
-	);
+		);
+	};
+
+	return <PanelGroup>{posts.items.map((obj) => item(obj))}</PanelGroup>;
 }
 
-export default INBOX;
+export default AUTHORPOSTS;
