@@ -1,4 +1,3 @@
-import "./posts.css"
 import { useSelector } from "react-redux";
 import { post_api } from "../../api/post_display_api";
 import { useState } from "react";
@@ -9,7 +8,7 @@ export default function NewPost() {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const contentType = "text/markdown";
+    const [contentType, setContentType] = useState("text/plain");
     const [body, setBody] = useState("");
     const [visibility, setVisibility] = useState("");
     const [unlisted, setUnlisted] = useState(false);
@@ -50,8 +49,8 @@ export default function NewPost() {
     }*/
 
     return (
-        <div className="message">
-            <form>
+        <div>
+            <form justify-self="center">
                 <label>Title</label><br/>
                 <input
                     placeholder="Title.."
@@ -70,8 +69,24 @@ export default function NewPost() {
                     required
                     onChange={(e) => setDescription(e.target.value)}
                 /><br/>
+                <label>Content Type: </label>
+                    <input
+                        name="type"
+                        type="radio"
+                        value="text/plain"
+                        required
+                        onChange={(e) => setContentType(e.target.value)}/>
+                     Plain Text
+                    <input
+                        name="type"
+                        type="radio"
+                        value="text/markdown"
+                        required
+                        onChange={(e) => setContentType(e.target.value)}/>
+                     Markdown
+                     <br/>
                 <label>Body</label><br/>
-                <input
+                    <input
                     placeholder="Content.."
                     name="content"
                     type="text"
