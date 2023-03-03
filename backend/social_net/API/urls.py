@@ -1,18 +1,20 @@
-from django.urls import path
-from . import views
+from django.urls import path, include, re_path
+# from . import views
+from . import followers, authors, comments, liked, likes, posts
+from API.authors import views
+from API.followers import views
+from API.comments import views
+from API.liked import views
+from API.likes import views
+from API.posts import views
+# from API import views
 
 
 urlpatterns = [
-  path('authors/<slug:uid>', views.AuthorView, name='AuthorView'),
-  path('authors/<slug:uid>/followers/', views.AuthorFollowersView, name='AuthorFollowersView'),
-  path('authors/<slug:uid>/followers/<slug:foreign_uid>', views.AuthorFollowersOperationsView, name='AuthorFollowersOperationsView'),
-  path('authors', views.AuthorsView, name='AuthorsView'),
-  path('follow/<slug:uid>/<slug:uid2>', views.FollowView, name='FollowView'),
-  path('authors/<slug:author_id>/posts/<slug:post_id>/comments', views.CommentsView, name='CommentsView'),
-  path('authors/<slug:author_id>/posts/<slug:post_id>/', views.PostsRetriveView, name='PostsRetriveView'),
-  path('authors/<slug:author_id>/posts/', views.PostsView, name='PostsView'),
-  path('authors/<slug:author_id>/inbox/', views.InboxView, name='InboxView'),
-  path('authors/<slug:author_id>/posts/<slug:post_id>/likes/', views.PostLikeView, name='PostLikeView'),
-  path('authors/<slug:author_id>/posts/<slug:post_id>/comments/<slug:comment_id>/likes/', views.CommentLikeView, name='CommentLikeView'),
-  path('authors/<slug:author_id>/liked/', views.LikedView, name='LikedView'),
+    path('', include('API.authors.urls')),
+    path('', include('API.comments.urls')),
+    path('', include('API.followers.urls')),
+    path('', include('API.liked.urls')),
+    path('', include('API.likes.urls')),
+    path('', include('API.posts.urls')),
 ]
