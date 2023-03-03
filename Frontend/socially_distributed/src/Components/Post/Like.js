@@ -8,11 +8,11 @@ function LIKE({ likeobj }) {
 	return (
 		<Panel bordered style={{ marginBottom: "5px" }}>
 			<Avatar
-				style={{ float: "left" }}
+				style={{ float: "left", marginBotton: "5px" }}
 				circle
 				src="https://avatars.githubusercontent.com/u/12592949"
 			></Avatar>
-			<h3>{like["summary"]}</h3>
+			<h4 style={{ marginLeft: "50px" }}>{like["summary"]}</h4>
 		</Panel>
 	);
 }

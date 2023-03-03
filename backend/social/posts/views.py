@@ -100,7 +100,9 @@ class DetailView(generic.DetailView):
     context_object_name = 'postt'
     template_name = 'posts/detail.html'
     
+
 class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
+
     model = Post
     template_name = 'posts/delete.html'
     context_object_name = 'post'
@@ -140,3 +142,44 @@ class ImageView(APIView):
             error_msg = {"message":"Post does not exist!"}
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
+class LikeView(APIView, PageNumberPagination):
+    serializer_class = LikeSerializer
+    pagination_class = PostSetPagination
+    
+    def post(self, request, pk_a):
+        post_id = uuid.uuid4
+        
+        try:
+            author = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = LikeSerializer(data=request.data, context={'author_id': pk_a})
+        if serializer.is_valid():
+            # using raw create because we need custom id
+            # print("original",serializer.validated_data.get('categories'))
+            # categories = ' '.join(serializer.validated_data.get('categories'))
+            # print("categories", categories)
+            #serializer.validated_data.pop('categories')
+            serializer.validated_data.pop("author")
+            like = Like.objects.create(**serializer.validated_data, author=author, id=post_id)
+            like.update_fields_with_request(request)
+
+            serializer = LikeSerializer(like, many=False)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        #     author = Author.objects.get(id=pk_a)
+        # except Author.DoesNotExist:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        # data = {'author': author.id, **request.data}
+        # serializer = LikeSerializer(data=data)
+        
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # else:
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

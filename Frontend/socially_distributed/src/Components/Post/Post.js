@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Input, Avatar, InputGroup, Panel, IconButton } from "rsuite";
-import { Scrollbars } from "react-custom-scrollbars-2";
+import { Avatar, Panel, IconButton } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import ShareIcon from "@rsuite/icons/legacy/Reply";
 import COMMENTS from "./Comment";
@@ -36,14 +35,14 @@ function POST({ postobj }) {
 				circle
 				src="https://avatars.githubusercontent.com/u/12592949"
 			></Avatar>
-			<h5
+			<h4
 				style={{
 					marginLeft: "10px",
 					float: "left",
 				}}
 			>
 				{post["author"]["displayName"]}
-			</h5>
+			</h4>
 			<IconButton
 				style={{ float: "right", marginRight: "10px" }}
 				appearance="subtle"

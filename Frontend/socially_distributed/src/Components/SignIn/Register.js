@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Input, Panel, InputGroup } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
+import axios from "axios";
 
 function REGISTER() {
 	const [username, set_username] = useState("");
@@ -12,6 +13,20 @@ function REGISTER() {
 
 	const handleChange = () => {
 		setVisible(!visible);
+	};
+
+	const handleSubmitClick = () => {
+		var params = {
+			username: username,
+			password: password,
+			fullname: fullname,
+			email: email,
+		};
+		axios({ method: "post", url: "register", data: params })
+			.then((res) => {
+				console.log(res);
+			})
+			.catch((err) => console.log(err));
 	};
 
 	return (
@@ -53,6 +68,7 @@ function REGISTER() {
 					apperance="Primary"
 					block
 					style={{ width: "70%", margin: "auto", marginTop: "10px" }}
+					onClick={handleSubmitClick}
 				>
 					Register
 				</Button>

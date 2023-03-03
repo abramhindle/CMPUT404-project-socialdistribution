@@ -21,12 +21,13 @@ from serveradmin.views import *
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('posts.urls')),
     path('authors/', include('author.urls')),
-
+    path("register", views.register.as_view(), name="register")
 ]
 
 # adds the path to the media directory, we can put images in media/images/[filename] 
