@@ -123,24 +123,25 @@ def FollowView(request, uid, uid2):
         return JsonResponse(follow_output, status = 200)
     
 @api_view(['GET', 'POST'])
-def PostsView(request, uid):
+def PostsView(request, author_id):
     """
     API endpoint that allows users to be viewed or edited.
     """
     #checks friendship
-    posts_paginated = {}
+    posts_paginated = []
     if request.method == 'GET':
-        post_object = PostsModel.objects.filter(author=uid).order_by('-published')[0:4]
+        post_object = PostsModel.objects.filter(author=author_id).order_by('-published')[0:4]
         for post in post_object:
             serialized_object = PostsSerializer(post)
             posts_paginated.append(serialized_object.data)
-        return JsonResponse(posts_paginated, status = 200)
+        output = {"posts": posts_paginated}
+        return JsonResponse(output, status = 200)
     elif request.method == 'POST':
-        PostsModel.objects.create(author=uid, id=str(uuid.uuid4()))
+        PostsModel.objects.create(author=author_id, id=str(uuid.uuid4()))
         return JsonResponse({"status":"success"}, status = 200)
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
-def PostsRetriveView(request, uid, post_id):
+def PostsRetriveView(request, author_id, post_id):
     """
     API endpoint that allows users to be viewed or edited.
     """
@@ -155,10 +156,10 @@ def PostsRetriveView(request, uid, post_id):
         serialized_object.update(post_object, parameters)
         return JsonResponse({"status":"success"}, status = 200)
     elif request.method == 'DELETE':
-        PostsModel.objects.filter(author=uid, id=post_id).delete()
+        PostsModel.objects.filter(author=author_id, id=post_id).delete()
         return JsonResponse({"status":"success"}, status = 200)
     elif request.method == 'PUT':
-        PostsModel.objects.create(author=uid, id=post_id)
+        PostsModel.objects.create(author=author_id, id=post_id)
         return JsonResponse({"status":"success"}, status = 200)
 
 
