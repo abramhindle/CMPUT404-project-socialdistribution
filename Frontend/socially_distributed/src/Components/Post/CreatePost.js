@@ -2,20 +2,27 @@ import React, { useState } from "react";
 import { Input, Avatar, Panel, Dropdown, Uploader, Button } from "rsuite";
 // import { Scrollbars } from "react-custom-scrollbars-2";
 // Component Imports
+import axios from "axios";
 
 function CREATEPOST() {
 	const [post_status, set_post_status] = useState("Public");
 	const [post_type, set_post_type] = useState("Text");
+	const [text, setText] = useState("");
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
 
 	const input = () => {
 		if (post_type === "Text") {
 			return (
-				<Input
-					style={{ float: "left", marginTop: "5px" }}
-					as="textarea"
-					rows={5}
-					placeholder="Text"
-				/>
+				<div>
+					<Input
+						style={{ float: "left", marginTop: "5px" }}
+						as="textarea"
+						rows={5}
+						placeholder="Text"
+						onChange={(e) => setText(e)}
+					/>
+				</div>
 			);
 		}
 
@@ -51,11 +58,35 @@ function CREATEPOST() {
 		}
 	};
 
+	const handlePostClick = () => {
+		const author = JSON.parse(localStorage.getItem("user"));
+		const len = "2a647e52-3345-4dd7-b2ab-91eec3bc9340".length;
+		const author_id = author.id.slice(
+			author.id.length - len,
+			author.id.length
+		);
+		const url = "posts/authors/" + author_id + "/posts/";
+		console.log(len);
+		console.log(url);
+		var params = {
+			title: title,
+			description: description,
+			content: text,
+			contentType: "text/plain",
+			author_id: localStorage.getItem("user"),
+		};
+		axios({ method: "post", url: url, data: params })
+			.then((res) => {
+				console.log(res);
+			})
+			.catch((err) => console.log(err));
+	};
+
 	return (
 		<div
 			style={{
 				marginBottom: "5px",
-				height: "25vh",
+				height: "auto",
 				border: "1px solid black",
 				borderRadius: "10px",
 				padding: "5px",
@@ -86,8 +117,27 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="Text">text</Dropdown.Item>
 				<Dropdown.Item eventKey="Image">image</Dropdown.Item>
 			</Dropdown>
+			<Input
+				style={{ float: "left", marginTop: "5px" }}
+				as="textarea"
+				rows={1}
+				placeholder="Title"
+				onChange={(e) => setTitle(e)}
+			/>
+			<Input
+				style={{ float: "left", marginTop: "5px" }}
+				as="textarea"
+				rows={1}
+				placeholder="description"
+				onChange={(e) => setDescription(e)}
+			/>
 			{input()}
-			<Button style={{ marginTop: "3px" }} appearance="primary" block>
+			<Button
+				style={{ marginTop: "3px" }}
+				onClick={handlePostClick}
+				appearance="primary"
+				block
+			>
 				Post
 			</Button>
 		</div>

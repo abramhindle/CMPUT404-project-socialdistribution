@@ -38,7 +38,6 @@ class post_list(APIView, PageNumberPagination):
 
     def post(self, request, pk_a):
         pk = str(uuid.uuid4())
-        
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:

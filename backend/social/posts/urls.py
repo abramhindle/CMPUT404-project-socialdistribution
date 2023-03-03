@@ -12,5 +12,4 @@ urlpatterns = [
   path('authors/<str:pk_a>/posts/<str:pk>/', views.DetailView.as_view(), name='detail'),
   path('authors/<str:pk_a>/posts/<str:pk>/image/', ImageView.as_view()),
   path('authors/<str:pk_a>/inbox/', views.LikeView.as_view(), name = "likes"),
-
 ]
