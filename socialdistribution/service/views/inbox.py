@@ -92,9 +92,9 @@ class InboxView(View):
             inbox = Inbox.objects.create(author=self.author)
 
         try:    #TODO check if requires additional tweaking
-            if body["data"]["type"] == "post":
-                id = body["data"]["id"]
-                self.handle_post(inbox, id, body["data"], self.author)
+            if body["type"] == "post":
+                id = body["id"]
+                self.handle_post(inbox, id, body, self.author)
             elif body["type"] == "comment":
                 id = body["id"]
                 self.handle_comment(inbox, id, body, self.author)
