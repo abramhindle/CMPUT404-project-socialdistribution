@@ -1,7 +1,6 @@
 import Sidebar from '../../components/Sidebar/sidebar';
 import './inbox.css';
 import  { get_inbox_posts } from '../../api/post_display_api';
-import { get_author }from '../../api/author_api'
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import PostList from '../../components/ListItems/post-list'

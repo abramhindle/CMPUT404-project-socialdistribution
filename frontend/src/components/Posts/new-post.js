@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
-import { post_api } from "../../api/post_display_api";
 import { useState } from "react";
+import { send_api, post_api } from "../../api/post_display_api";
+import { get_followers_for_author } from "../../api/follower_api";
 
 export default function NewPost() {
     //Get user info
@@ -16,17 +17,31 @@ export default function NewPost() {
 
     const [success, setSucess] = useState(null);
 
-    const submit = async (e) => {
+    const post = async (e) => {
         let post = {"title": title,
-                    "description": description,
-                    "contentType": contentType,
-                    "content": body,
-                    "visibility": visibility,
-                    "unlisted": unlisted,
-                    "categories": categories};
+        "description": description,
+        "contentType": contentType,
+        "content": body,
+        "visibility": visibility,
+        "unlisted": unlisted,
+        "categories": categories};
         e.preventDefault();
         console.log(user.displayName, "is attempting to post", post);
-        post_api(user.id, post, onSuccess, onFailure);
+        return post_api(user.id, post, onSuccess, onFailure);
+    }
+    const submit = async (e) => {
+        console.log("Submitting ...");
+        let data = post(e);
+        let followers = get_followers_for_author(user);
+        console.log("Starting to send ...");
+        await send_api(followers, data)
+            .then(function (response) {
+                console.log("Sending complete");
+            })
+            .catch(function (error){
+                console.log(error);
+            });
+
     };
 
     //For confirmation dialogs
