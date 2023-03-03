@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 function Inbox(filter) {
   //Get user info
   let id = useSelector((state) => state.user).id;
-  const author_id = `/authors/${id}/inbox`
+  const author_id = `${id}/inbox`
   console.log(author_id);
   const [author, setAuthor] = useState({});
   const [post_list, setList] = useState({"items": []});

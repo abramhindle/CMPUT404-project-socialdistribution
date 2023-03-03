@@ -5,7 +5,7 @@ import { get_followers_for_author } from "../../api/follower_api";
 
 export default function NewPost() {
     //Get user info
-    const user = useSelector((state) => state.user);
+    const user = useSelector((state) => state.user).id;
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -17,24 +17,22 @@ export default function NewPost() {
 
     const [success, setSucess] = useState(null);
 
-    const post = async (e) => {
-        let post = {"title": title,
+    const submit = async (e) => {
+        console.log("Submitting ...");
+        let data = {"title": title,
         "description": description,
         "contentType": contentType,
         "content": body,
         "visibility": visibility,
         "unlisted": unlisted,
-        "categories": categories};
+        "categories": categories.split(",")};
+
         e.preventDefault();
-        console.log(user.displayName, "is attempting to post", post);
-        return post_api(user.id, post, onSuccess, onFailure);
-    }
-    const submit = async (e) => {
-        console.log("Submitting ...");
-        let data = post(e);
-        let followers = get_followers_for_author(user);
+        console.log(user, "is attempting to post", data);
+        let sendLink = await post_api(user, data, onSuccess, onFailure);
+        let followers = await get_followers_for_author(user, setSucess);
         console.log("Starting to send ...");
-        await send_api(followers, data)
+        await send_api(followers, sendLink)
             .then(function (response) {
                 console.log("Sending complete");
             })
@@ -52,16 +50,11 @@ export default function NewPost() {
         setSucess(false);
     }
 
-    /*EXAMPLE
-    {
-        "title": "This is my post!",
-        "description": "this is a description",
-        "contentType": "text/markdown",
-        "content": "this is the content body",
-        "visibility": "PUBLIC",
-        "unlisted": false,
-        "categories": ["web", "design"]
-    }*/
+    const handleCheckbox = (e) => {
+        //console.log(e.target.checked);
+        let check = e.target.checked ? true : false;
+        setUnlisted(check);
+    }
 
     return (
         <div>
@@ -131,9 +124,9 @@ export default function NewPost() {
                 <label>Unlisted</label>
                 <input
                     name="unlisted"
-                    type="checkbox" 
-                    checked={false}
-                    onChange={(e) => setUnlisted(e.target.value)}
+                    type="checkbox"
+                    defaultChecked={false}
+                    onChange={handleCheckbox}
                 /><br/>
                 <label>Categories</label><br/>
                 <input

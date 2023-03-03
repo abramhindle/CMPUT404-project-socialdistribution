@@ -54,7 +54,7 @@ export const get_inbox_posts = async (authorInbox, page, success) => {
       Accept: "application/json"
     }
   }).then(function (response) {
-    console.log("Author_api res: ", response);
+    console.log("get_inbox_posts res: ", response.data);
     success(response.data);
   })
   .catch(function (error) {
