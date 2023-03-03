@@ -45,7 +45,7 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)  # date published
     
     refImage = models.URLField(max_length=200, default="", blank=True)  # reference to an image post
-
+    
     # make it pretty
     def __str__(self):
         return self.title + " (" + str(self.id) + ")"
@@ -60,7 +60,7 @@ class Post(models.Model):
 
     # get public id of post
     def get_public_id(self):
-        return self.url or self.id
+        return self.url or str(self.id)
     
     # get comments url
     def get_comments_source(self):
@@ -82,6 +82,8 @@ class Post(models.Model):
         self.save()
 
     def get_absolute_url(self):
+        print("ID HERE", self.id)
+        print("ID HERE", str(self.id))
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
         return url[:-1] if url.endswith('/') else url 
     
