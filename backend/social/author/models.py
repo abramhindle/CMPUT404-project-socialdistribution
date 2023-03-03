@@ -28,11 +28,11 @@ class Author(models.Model):
     # used internally
     def get_absolute_url(self):
         url = 'http://authors/%s'.format(self.id)
-        return url[:-1] if url.endswith('/') else url # get rid of slash for url
+        return url[:-1] if url.endswith('/') else url 
     
     def update_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self.get_absolute_url())
-        self.host = request.build_absolute_uri('/') # points to the server root
+        self.host = request.build_absolute_uri('/') 
         self.save()
     
     # return the author public ID
@@ -43,12 +43,16 @@ class Inbox(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
     author = models.ForeignKey(Author, related_name="inbox", on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
         return self.tag
-
+    
+    @staticmethod
+    def get_api_type():
+        return 'inbox'
+    
     class Meta:
         indexes = [
             models.Index(fields=["content_type", "object_id"]),

@@ -1,8 +1,7 @@
 import uuid
 from django.urls import reverse
 from rest_framework import serializers, exceptions
-from .models import Author
-
+from .models import *
 
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author",source="get_api_type",read_only=True)
@@ -45,3 +44,25 @@ class AuthorSerializer(serializers.ModelSerializer):
             #'github',
             'profileImage',
         ]
+
+class InboxSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer()
+    object = serializers.JSONField()
+
+    def get_author(self, data):
+        author = self.context.get('author')
+        validated_data = {
+            'author': author,
+            'object': data
+        }
+        return validated_data
+
+    def to_representation(self, instance):
+        return instance.object
+
+    def create(self, validated_data):
+        return Inbox.objects.create(**validated_data)
+    
+    class Meta:
+        model = Inbox
+        fields = ['author', 'object']

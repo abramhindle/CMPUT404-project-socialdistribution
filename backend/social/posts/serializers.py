@@ -3,7 +3,7 @@ from .models import *
 from author.serializers import AuthorSerializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
-class PostSerializer(WritableNestedModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     id = serializers.CharField(source="get_public_id", read_only=True)
     count = serializers.IntegerField(source="count_comments", read_only=True)
