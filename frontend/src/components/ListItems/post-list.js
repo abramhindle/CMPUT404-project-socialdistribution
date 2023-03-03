@@ -1,5 +1,5 @@
 import React from 'react'
-import PlainPost from '../../components/Posts/post-plain'
+import PlainPost from '../../components/Posts/post-text'
 import './post-list.css';
 
 function PostList({user_list}) { //gets a json object, and returns a list item for it

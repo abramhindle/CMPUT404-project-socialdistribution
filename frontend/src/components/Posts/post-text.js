@@ -1,13 +1,13 @@
 import "./posts.css";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { author_api } from "../../api/post_display_api";
+import ReactMarkdown from 'react-markdown'
 import { post_comment } from "../../api/comment_api";
 
 export default function PlainPost(data) {
   const user = useSelector((state) => state.user);
-  //Get Author data -> author data is attached to data
-
+  //Check if markdown
+  let markdown = data["post"]["contentType"] === "text/markdown" ? true : false;
   //Decide if shareable
   let shareable =
     data["post"]["visibility"] === "PUBLIC" ||
@@ -54,7 +54,12 @@ export default function PlainPost(data) {
           {/* Will need to handle other post types here, plain for now */}
           <div className="content-container">
             <h5>{data["post"]["title"]}</h5>
-            <div className="content line">{data["post"]["content"]}</div>
+            {markdown && <ReactMarkdown className="content line">
+{String(data["post"]["content"])} {/* Mardown doesn't like leading whitespace */}
+                        </ReactMarkdown>}
+                        {(!markdown) && <div className="content line">
+                            {data["post"]["content"]}
+                        </div>}
           </div>
           <div className="interaction-options">
             <button>like</button>

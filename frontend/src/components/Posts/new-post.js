@@ -1,57 +1,52 @@
-import "./posts.css"
 import { useSelector } from "react-redux";
-import { post_api } from "../../api/post_display_api";
 import { useState } from "react";
+import { send_api, post_api } from "../../api/post_display_api";
+import { get_followers_for_author } from "../../api/follower_api";
 
 export default function NewPost() {
     //Get user info
-    const user = useSelector((state) => state.user);
+    const user = useSelector((state) => state.user).id;
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const contentType = "text/markdown";
+    const [contentType, setContentType] = useState("text/plain");
     const [body, setBody] = useState("");
     const [visibility, setVisibility] = useState("");
     const [unlisted, setUnlisted] = useState(false);
     const [categories, setCategories] = useState([]);
 
-    const [success, setSucess] = useState(null);
+    const [followers, setFollowers] = useState([]);
+    const [posted, setPosted] = useState(null);
 
     const submit = async (e) => {
-        let post = {"title": title,
-                    "description": description,
-                    "contentType": contentType,
-                    "content": body,
-                    "visibility": visibility,
-                    "unlisted": unlisted,
-                    "categories": categories};
+        console.log("Submitting ...");
+        let data = {"title": title,
+        "description": description,
+        "contentType": contentType,
+        "content": body,
+        "visibility": visibility,
+        "unlisted": unlisted,
+        "categories": categories.split(",")};
+
         e.preventDefault();
-        console.log(user.displayName, "is attempting to post", post);
-        post_api(user.id, post, onSuccess, onFailure);
+        console.log(user, "is attempting to post", data);
+        await post_api(user, data, setPosted, setFollowers)
+            .then(send_api(followers, posted));
+        
+        //let followers = get_followers_for_author(user, setSucess);
+        // console.log("Starting to send ...");
+        // send_api(followers, sendLink);
     };
 
-    //For confirmation dialogs
-    const onSuccess = () => {
-        setSucess(true);
+    const handleCheckbox = (e) => {
+        //console.log(e.target.checked);
+        let check = e.target.checked ? true : false;
+        setUnlisted(check);
     }
-    const onFailure = () => {
-        setSucess(false);
-    }
-
-    /*EXAMPLE
-    {
-        "title": "This is my post!",
-        "description": "this is a description",
-        "contentType": "text/markdown",
-        "content": "this is the content body",
-        "visibility": "PUBLIC",
-        "unlisted": false,
-        "categories": ["web", "design"]
-    }*/
 
     return (
-        <div className="message">
-            <form>
+        <div>
+            <form justify-self="center">
                 <label>Title</label><br/>
                 <input
                     placeholder="Title.."
@@ -70,8 +65,24 @@ export default function NewPost() {
                     required
                     onChange={(e) => setDescription(e.target.value)}
                 /><br/>
+                <label>Content Type: </label>
+                    <input
+                        name="type"
+                        type="radio"
+                        value="text/plain"
+                        required
+                        onChange={(e) => setContentType(e.target.value)}/>
+                     Plain Text
+                    <input
+                        name="type"
+                        type="radio"
+                        value="text/markdown"
+                        required
+                        onChange={(e) => setContentType(e.target.value)}/>
+                     Markdown
+                     <br/>
                 <label>Body</label><br/>
-                <input
+                    <input
                     placeholder="Content.."
                     name="content"
                     type="text"
@@ -101,9 +112,9 @@ export default function NewPost() {
                 <label>Unlisted</label>
                 <input
                     name="unlisted"
-                    type="checkbox" 
-                    checked={false}
-                    onChange={(e) => setUnlisted(e.target.value)}
+                    type="checkbox"
+                    defaultChecked={false}
+                    onChange={handleCheckbox}
                 /><br/>
                 <label>Categories</label><br/>
                 <input

@@ -1,6 +1,6 @@
 //import './friends.css';
-import { get_authors }from '../../api/author_api'
 import { get_author }from '../../api/author_api'
+import { get_all_authors }from '../../api/author_api'
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
 import { add_followers_for_author } from '../../api/follower_api';
@@ -36,7 +36,7 @@ function Friends() {
     const location = useLocation();
 
     useEffect(() => { 
-      get_authors(page, setList)
+      get_all_authors(page, setList)
       
     }, []);
 

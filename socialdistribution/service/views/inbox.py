@@ -31,8 +31,8 @@ class InboxView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         self.author_id = kwargs['author_id']
 
-        page = request.GET.get('page', 1)
-        size = request.GET.get('size', 5)
+        page = int(request.GET.get('page', 1))
+        size = int(request.GET.get('size', 5))
 
         try:
             self.author = Author.objects.get(_id=self.author_id)
@@ -91,7 +91,7 @@ class InboxView(View):
         except ObjectDoesNotExist:
             inbox = Inbox.objects.create(author=self.author)
 
-        try:
+        try:    #TODO check if requires additional tweaking
             if body["type"] == "post":
                 id = body["id"]
                 self.handle_post(inbox, id, body, self.author)

@@ -1,28 +1,96 @@
-import NewPost from "../../components/Posts/new-post";
-import PlainPost from "../../components/Posts/post-plain";
-import Sidebar from "../../components/Sidebar/sidebar";
-import "./inbox.css";
+import Sidebar from '../../components/Sidebar/sidebar';
+import './inbox.css';
+import  { get_inbox_posts } from '../../api/post_display_api';
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
+import PostList from '../../components/ListItems/post-list'
+import { useSelector } from "react-redux";
 
-function Inbox() {
-  let pseudoPost = {
-    title: "This is my post!",
-    author: "0c1d8f09-2395-4a9d-8fe3-de4bad85e468",
-    description: "this is a description",
-    contentType: "text/markdown",
-    content: "this is the content body",
-    visibility: "PUBLIC",
-    published: "2023-02-28 05:45:42",
-    unlisted: false,
-    categories: ["web", "design"],
+
+function Inbox(filter) {
+  //Get user info
+  let id = useSelector((state) => state.user).id;
+  const author_id = `${id}/inbox`
+  console.log(author_id);
+  const [author, setAuthor] = useState({});
+  const [post_list, setList] = useState({"items": []});
+
+  let page = 1; //default page 1
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const get_search_params = () =>{
+    const queryParams = new URLSearchParams(location.search);
+    const query_page = queryParams.get("page");
+
+    if (query_page) page = parseInt(query_page);
+  };
+
+  get_search_params();
+
+  useEffect(() => { //only runs once
+    get_inbox_posts(author_id, page, setList);
+  }, []);
+
+  const populateList = () =>{
+    if (post_list.items.length == 0){
+      return <div className='emptyList'><h3>Nothing to see here yet!</h3></div>
+    }
+    else{
+      console.log(post_list);
+      return <PostList user_list={post_list}/>
+    }
+  };
+
+  const insert_query = () => {
+    <button href={insert_query}>Next Page</button>
+  };
+
+  const page_buttons = () => {
+    if (post_list.items.length < 5 && page == 1)
+    {
+      return;
+    } 
+    else if (page == 1)
+    {
+        return (<button onClick={forward_page}>Next Page</button>);//only 1 button
+    } 
+    else if (post_list.items.length < 5)
+    {
+      return <button onClick={back_page}>Prev Page</button>
+    } 
+    else 
+    {
+      return (
+      <div>
+        <button onClick={back_page}>Prev Page</button>
+        <button onClick={forward_page}>Next Page</button>
+      </div>);//only 1 button
+    }
+  };
+
+  const forward_page = () => {
+    page = page + 1;
+    navigate(`/inbox/${filter}?page=${page}`);
+    navigate(0); //WHY?
+  };
+
+  const back_page = () => {
+    page = page - 1;
+    navigate(`/inbox/${filter}?page=${page}`);
+    navigate(0);
   };
 
   return (
-    <div className="Page">
-      <Sidebar />
-      <div className="Inbox">
-        <p>This is now the inbox page</p>
-        <PlainPost post={pseudoPost} />
-        <NewPost />
+    <div className='Page'>
+      <div>
+        <Sidebar/>
+      </div>
+      <div className='Inbox'>
+        <div className="profileContent">
+          {populateList()};
+        </div>
+          {page_buttons()}
       </div>
     </div>
   );

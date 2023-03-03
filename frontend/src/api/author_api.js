@@ -16,8 +16,7 @@ export const get_author = async (authorId, success) => {
   });
 };
 
-
-export const get_authors = async (page, success) => {
+export const get_all_authors = async (page, success) => {
   console.log("Attempting to retrieve all authors");
   await axios.get(`http://localhost:8000/authors/?page=${page}`,
   {
