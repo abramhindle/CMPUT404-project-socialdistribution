@@ -36,10 +36,19 @@ class InboxView(View):
 
         try:
             self.author = Author.objects.get(_id=self.author_id)
-            self.inbox = Inbox.objects.get(author=self.author) #author_id is the primary key for an inbox
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
         
+        try:
+            self.inbox = Inbox.objects.get(author=self.author) #author_id is the primary key for an inbox
+        except ObjectDoesNotExist:
+            inbox_json = {
+                "type": "inbox",
+                "author": str(self.author_id),
+                "items": list()
+            }
+            return HttpResponse(json.dumps(inbox_json), content_type = CONTENT_TYPE_JSON)
+
         posts = self.inbox.posts.all()
         comments = self.inbox.comments.all()
         follow_requests = self.inbox.follow_requests.all()
