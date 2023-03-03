@@ -85,10 +85,17 @@ def get_likes(request, pk_a, pk):
 def get_image(request, pk_a, pk):
     author = Author.objects.get(id=pk_a)
     post = Post.objects.get(author=author, id=pk)
+    
+    # not an image post
+    if 'image' not in post.contentType:
+        return Response(status=404, data=serializer.errors)
+    
     serializer = ImagePostSerializer(author,post)
+    
     # image with the post:
     if serializer.is_valid():
         return Response(serializer.data)
+    
     # if there isnt an image attached to the post:
     else:
         return Response(status=404, data=serializer.errors)
