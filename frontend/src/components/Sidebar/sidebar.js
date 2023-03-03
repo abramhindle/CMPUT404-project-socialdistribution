@@ -17,7 +17,7 @@ function Sidebar() {
         navigate("/");
     };//Navigate to Requests page
     const goToRequests = () => {
-        navigate("/friends/pending");
+        navigate("/friends/");
     };//Navigate to Post creation page
     const goToNewPost = () => {
         navigate("/posts/new");

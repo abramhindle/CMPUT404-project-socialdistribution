@@ -16,3 +16,19 @@ export const get_followers_for_author = async (authorId, success) => {
       console.log(error);
     });
   };
+
+export const add_followers_for_author = async (authorId, followId, success) => {
+    console.log("Adding follower", {followId});
+    await axios.put(`http://localhost:8000/authors/${authorId}/followers/${followId}`,
+    {
+      headers: {
+        Accept: "application/json"
+      }
+    }).then(function (response) {
+      console.log("Author_api res: ", response);
+      success(response.data);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  };
