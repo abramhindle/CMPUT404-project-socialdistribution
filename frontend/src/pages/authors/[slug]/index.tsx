@@ -128,7 +128,6 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		} else {
 			followStatus = 'FRIENDS'
 		}
-		console.log(followStatus)
 		
 		
 		return {

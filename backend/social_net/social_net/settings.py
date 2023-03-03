@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'social_net',
     'API',
     'corsheaders',
+    'rest_framework_swagger',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
