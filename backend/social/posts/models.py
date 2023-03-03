@@ -44,8 +44,8 @@ class Post(models.Model):
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
     
-    refImage = models.URLField(max_length=200, default="", blank=True)  # reference to an image post
-    
+    image = models.ImageField(null=True,blank=True)  # reference to an image in the DB
+
     # make it pretty
     def __str__(self):
         return self.title + " (" + str(self.id) + ")"
@@ -53,7 +53,7 @@ class Post(models.Model):
     # get visbility status
     def get_visilibility(self):
         return self.Visibility(self.visibility).label
-
+    
     # get content type
     def get_content_type(self):
         return self.ContentType(self.content_type).label
@@ -68,7 +68,7 @@ class Post(models.Model):
             return self.url + 'comments/'
         else:
             return self.url + '/comments/'
-        
+    
     def get_comment_count(self):
         return self.comments.count()
 

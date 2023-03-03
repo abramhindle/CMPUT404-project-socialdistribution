@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, ButtonGroup, Panel, Button } from "rsuite";
+import { Avatar } from "rsuite";
 
 function FRIENDS() {
 	// make a get request to get author and every post the author made and comments on the posts
