@@ -5,7 +5,7 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
-    id = serializers.URLField(source="get_public_id",read_only=True)
+    id = serializers.CharField(source="get_public_id", read_only=True)
     count = serializers.IntegerField(source="count_comments", read_only=True)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
     author = AuthorSerializer()
@@ -30,25 +30,19 @@ class PostSerializer(WritableNestedModelSerializer):
         return instance
     
     def create(self, instance, validated_data):
-        print("create")
-        post_id = self.context.get('post_id')
-        print("id",post_id)
-        if post_id is not None:
-            post = Post.objects.get(id=post_id)
-            if post is not None:
-                print("post ID")
-                instance.id = post_id
-                instance.url = self.context.get('url')
-                print("URL", instance.url)
-                instance.save()
-                return instance
-                
         updated_author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context.get('author_id'))
         categories = ' '.join(validated_data.get('categories'))
         print("categories", categories)
         validated_data.pop('categories')
         return Post.objects.create(**validated_data, categories = categories, author=updated_author)
-    
+
+    def to_representation(self, instance):
+            id = instance.get_public_id()
+            id = id[:-1] if id.endswith('/') else id
+            return {
+                **super().to_representation(instance),
+                'id': id
+            }
     class Meta:
         model = Post
         fields = [
