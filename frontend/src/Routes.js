@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
 import SignIn from "./pages/Login/Signin"
 import Friends from "./pages/Friends/friends"
-import Posts from "./pages/Posts/posts";
+import Posts from "./pages/Posts/new-post-page";
 import Main from "./pages/Main";
 import Profile from "./pages/Profile/profile";
 
