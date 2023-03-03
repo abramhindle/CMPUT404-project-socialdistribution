@@ -1,0 +1,31 @@
+Test case ID: 001
+Test case name: Likes and Liked Functionality Test
+Test case objective: To verify that the "likes" and "liked" functionality of the web application is working as expected.
+
+Test case steps:
+
+Launch the web application.
+Navigate to a post or comment.
+Click on the "like" button.
+Verify that the "liked" button is displayed instead of the "like" button.
+Verify that the number of likes for the post or comment is incremented by one.
+Verify that a like object is sent to the inbox of the author of the post or comment.
+Verify that the like object includes the correct author ID, display name, and profile image.
+Verify that the like object includes the correct URL of the post or comment.
+Navigate to the author's "liked" page.
+Verify that the liked object is displayed in the list of liked items.
+Verify that the liked object includes the correct summary, type, and author information.
+Verify that the liked object includes the correct URL of the post or comment.
+Test case expected result:
+
+After completing the steps above, the user should be able to successfully like a post or comment and view the like object in the author's inbox and "liked" page.
+Test case preconditions:
+
+The web application is installed and running.
+The author account exists in the application with valid credentials.
+A post or comment is available for testing.
+Test case post-conditions:
+
+The post or comment has been liked by the author.
+The like object is sent to the inbox of the author of the post or comment.
+The liked object is displayed in the list of liked items on the author's "liked" page.
