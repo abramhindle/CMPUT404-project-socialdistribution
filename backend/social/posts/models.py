@@ -82,8 +82,6 @@ class Post(models.Model):
         self.save()
 
     def get_absolute_url(self):
-        print("ID HERE", self.id)
-        print("ID HERE", str(self.id))
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
         return url[:-1] if url.endswith('/') else url 
     
