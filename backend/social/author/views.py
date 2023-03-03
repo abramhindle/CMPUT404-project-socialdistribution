@@ -29,20 +29,28 @@ class AuthorView(APIView):
     
     serializer_class = AuthorSerializerr
 
+    def validate(self, data):
+        if 'displayName' not in data:
+            data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
+        return data 
+
     def get(self, request, pk_a):
         author = Author.objects.get(id=pk_a)
-        serializer = AuthorSerializerr(author)
+        serializer = AuthorSerializerr(author,partial=True)
         return  Response(serializer.data)
     def post(self, request, pk_a):
         author_id = pk_a
         
         
         
-        serializer = AuthorSerializerr(data=request.data)
+        serializer = AuthorSerializerr(data=request.data,partial=True)
         
         
         if serializer.is_valid():
-            print(980)
+            display = Author.objects.filter(id=author_id).values('displayName')
+            if request.data['displayName'] == '':
+                request.data._mutable = True
+                request.data['displayName'] = display
             
             Author.objects.filter(id=author_id).update(**serializer.validated_data)
             author = Author.objects.get(id=pk_a)

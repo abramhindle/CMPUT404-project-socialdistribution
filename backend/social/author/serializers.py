@@ -49,6 +49,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 class AuthorSerializerr(serializers.ModelSerializer):
     type = serializers.CharField(default="author",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
+    displayName = serializers.CharField(default = 'x')
     @staticmethod
     def extract_and_upcreate_author(validated_data, author_id=None):
         """
