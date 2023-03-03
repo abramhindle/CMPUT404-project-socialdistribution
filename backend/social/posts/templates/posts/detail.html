@@ -1,0 +1,9 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<h1>{{postt.title}}</h1>
+
+<h3>Author: {{postt.author.display_name}}</h3><br>
+<h3>Description: {{postt.description}}</h3><br>
+<h3>Privacy: {{postt.private}}</h3><br>
+<h3>Contnet-type: {{postt.content_type}}</h3><br>
+<li><a href="/posts/author{{postt.author.id}}/{{ postt.id }}/delete">Delete?</a></li>
