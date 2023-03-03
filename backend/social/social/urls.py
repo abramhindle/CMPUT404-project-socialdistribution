@@ -24,12 +24,10 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="Test API",
+      title="Social Distribution API",
       default_version='v1',
-      description="Test description",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="testing@api.com"),
-      license=openapi.License(name="BSD License"),
+      description="The social network API would provide developers with access to various features and functionalities of the platform, such as user profiles, posts, comments, likes, and messages. It would also allow developers to authenticate users and perform actions on their behalf, such as posting on their timeline or sending messages.",
+      
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
