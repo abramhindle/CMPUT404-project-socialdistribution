@@ -2,6 +2,7 @@ FROM node:16-alpine AS deps
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
+COPY .env ./
 COPY package.json ./
 COPY yarn.lock  ./
 
