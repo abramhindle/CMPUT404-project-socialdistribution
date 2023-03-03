@@ -13,6 +13,8 @@ To run these tests, execute the following command from the command line:
 from django.test import TestCase, Client
 from . import models
 import datetime
+import uuid
+import random
 
 # FIXME: tHE THING RUNS EACH TEST INDEPENDANT FROM EACH OTHER BUT THAT'S NOT HOW i WROTE THEM.
 
@@ -161,32 +163,111 @@ class PostEndpointTest(TestCase):
             
         return post_json
     
+    author_data = {
+        'names': ["john", "emily", "june", "sabastian", "edward", "michael", "bob", "joe", "jessica", "alfred", "mozart"],
+        'imageLinks': ["https://pbs.twimg.com/profile_images/949787136030539782/LnRrYf6e_400x400.jpg",
+                   "https://cdn.theatlantic.com/media/mt/science/cat_caviar.jpg",
+                   "https://umbrellacreative.com.au/wp-content/uploads/2020/01/hide-the-pain-harold-why-you-should-not-use-stock-photos-1024x683.jpg",
+                   "https://cdn.discordapp.com/attachments/1062163687529521305/1079886393817432214/image.png",
+                   "https://preview.redd.it/o3ptlv2r6d681.jpg?width=640&crop=smart&auto=webp&s=55b318959c4cfd9f9f7c952be401389a7913fe21",
+                   "https://i.insider.com/602ee9ced3ad27001837f2ac?width=750&format=jpeg&auto=webp"],
+    }
+    
+    post_data = {
+        'titles': ['post1', 'post2', 'post3', 'post4', 'post5', 'post6', 'post7', 'post8', 'post9'],
+        'descriptions': ['a','b','c','d','e','f','g'],
+        'categories': ['web', 'meme', 'dog pictures', 'cat pictures', 'art', 'anime', '#yummyfood', '#funnyfails'],
+        'content': ['a','bBBBBBBBBBBBBBB','c','dDDDDDDD','eEE','f','g'],   # TODO: add images 
+    }
+    
+    @classmethod
+    def helper_populate_authors(cls, num=6):
+        """
+        Populate database with num random authors, return a list of urls, author
+        ids, expected json formats
+        """
+        links = []
+        uids = []
+        url_mid = '/service/authors/'
+        jsons = []
+        for i in range(num):
+            uid = str(uuid.uuid4())
+            uids.push(uid)
+            rel_url = url_mid + uid
+            url = cls.LOCAL_NODE_ADDR + rel_url
+            host = cls.LOCAL_NODE_ADDR
+            displayname=random.choice(cls.author_data['names'])
+            profileimg=random.choice(cls.author_data['imagLinks'])
+            github = 'http://github.com/' + displayname
+            links.push(rel_url)
+            models.AuthorModel.objects.create(type='author', id=uid, url=url,
+                                              host=host, displayName=displayname,
+                                              github=github, profileImage=profileimg)
+            jsons.push(cls.helper_generate_author_json(uid,host,displayname,url,github,profileimg))
+        return links, uids, jsons
+    
+    
+    # TODO: populate with comments too.
+    @classmethod
+    def helper_populate_posts(cls, uids, num=20):
+        """
+        Populate database with num random posts, return a list of urls and
+        expected json formats.
+        """
+        links = []
+        jsons = []
+        for i in range(num):
+            random.shuffle(uids)
+            author_id = uids[0]
+            rel_url = '/service/authors/' + author_id + '/posts'
+            url_base = cls.LOCAL_NODE_ADDR + rel_url
+            pid = str(uuid.uuid4())
+            url = url_base + pid
+            content = random.choice(cls.post_data['content'])
+            links.push(rel_url)
+            try:
+                origin = random.choice([url_base, cls.LOCAL_NODE_ADDR + '/service/authors/' + random.choice(uids)])
+                source = random.choice([url_base, cls.LOCAL_NODE_ADDR + '/service/authors/' + random.choice(uids)])
+            except IndexError:
+                origin = url_base
+                source = url_base
+            description = random.choice(cls.post_data['description'])
+            categories = []
+            for i in range(random.randint(1,4)):
+                categories.push(random.choice(cls.post_data['categories']))
+            visibility = random.choice([True, False])
+            unlisted = random.choice([True, False])
+            ctype = random.choice(['text/markdown', 'text/plain'])
+            title = random.choice(cls.post_model['titles'])
+            commentslink = url + '/comments'
+            models.PostsModel.objects.create(type='post', title=title, id=pid,
+                                             source=source, origin=origin,
+                                             description=description,
+                                             contentType=ctype,
+                                             visibility=visibility,
+                                             unlisted=unlisted, content=content,
+                                             author=author_id, comments=commentslink)
+            jsons.push(cls.helper_generate_post_json(pid,author_id, DATE_TODO,
+                                                     title, source, origin,
+                                                     description, ctype, content,
+                                                     categories, 0, commentslink, None, visibility, unlisted))
+        return links, jsons
+            
+                
+            
+        
+        
     
     def setUp(self) -> None:
         """
         Sets up the test case.
 
-        This method creates an author and a post to use in the tests, as well as setting
+        This method populates the db full of authors and posts, as well as setting
         up the client to make HTTP requests.
-        """
-        models.AuthorModel.objects.create(id='post_test_author',
-                                          github='http://github.com/fooBar123',
-                                                        displayName='fooBar123')
-        post1_published = datetime.datetime.now() - datetime.timedelta(days=365)
-        models.PostModel.objects.create(id='test_post1',
-                                        title='Test Post',
-                                        description='Test Post Description',
-                                        contentType='text/plain',
-                                        content='Hello World!',
-                                        categories=['test', 'dev'],
-                                        visibility='PUBLIC',
-                                        published=self.post1_published)   # TODO: Add more parameters if needed
-        # TODO: Make more posts so can test markdown content types and what not in the GET test
-        self.author1_json = self.helper_generate_author_json(
-                                                          id='post_test_author')
-        self.post1_json = self.helper_generate_post_json(
-                                'test_post1', self.author1_json,
-                                                    post1_published.isoformat())
+        """        
+        self.author_links, uids, self.author_jsons = self.helper_populate_authors()
+        self.post_links, self.post_jsons = self.helper_populate_posts(uids)
+        
         self.client = Client()
                  
         
@@ -199,12 +280,11 @@ class PostEndpointTest(TestCase):
         200 and that the response JSON matches the expected JSON.
         """
         
-        response = self.client.get(
-                      '/service/authors/post_test_author/posts/test_post1')
+        response = self.client.get(self.post_links[0])
         json_data = response.json()
         
         self.assertEqual(response.status_code, 200, "Status code is not 200")
-        self.assertJSONEqual(json_data, self.post1_json,
+        self.assertJSONEqual(json_data, self.post_jsons[0],
                                        "response json does not match expected.")
         
     
@@ -219,10 +299,11 @@ class PostEndpointTest(TestCase):
         request.
         """
         
-        relative_url = '/service/authors/post_test_author/posts/test_post2'
+        pid = str(uuid.uuid4())
+        relative_url = '/service/authors/post_test_author/posts/' + pid
         now = datetime.datetime.now().isoformat()
-        new_post_json = self.helper_generate_post_json('test_post2',
-                                                         self.author1_json, now)
+        new_post_json = self.helper_generate_post_json(pid,
+                                                       self.author_jsons[0], now)
         response = self.client.put(relative_url, new_post_json,
                                                              'application/json')
         json_data = self.client.get(relative_url).json()
@@ -249,15 +330,15 @@ class PostEndpointTest(TestCase):
         relative_url = '/service/authors/post_test_author/posts/'
         now = datetime.datetime.now().isoformat()
         new_post_json = self.helper_generate_post_json('',
-                                                         self.author1_json, now)
+                                                         self.author_jsons[0], now)
         response = self.client.put(relative_url, new_post_json,
                                                              'application/json')
         # Note: It would be handy to have the response contain the generated ID,
         # and this test will assume such.
-        relative_url += response.content
-        self.new_post_url = relative_url
-        new_post_json = self.helper_generate_post_json(response.content,
-                                                         self.author1_json, now)
+        relative_url += response.content['id']
+        new_post_url = relative_url
+        new_post_json = self.helper_generate_post_json(response.content['id'],
+                                                         self.author_jsons[0], now)
         json_data = self.client.get(relative_url).json()
         
         self.assertEqual(response.status_code, 200, "Status code is not 200")
@@ -268,17 +349,15 @@ class PostEndpointTest(TestCase):
     def test_GET_recent_posts(self):
         """Test GET request to retrieve recent posts by an author."""
         # Assuming recent posts just means all posts ordered most recent first and paginated.
+        auth_links, uids, auth_jsons = self.helper_populate_authors(1)
+        post_links, post_jsons = self.helper_populate_posts(uids)
         relative_url = '/service/authors/post_test_author/posts/'
         response = self.client.get(relative_url, {'page': 1, 'size': 5})
         json_data = response.json()
         
         expected_json = {
             'type': "posts",
-            'items': [
-                self.client.get(self.new_post_url).json(),
-                self.client.get('/service/authors/post_test_author/posts/test_post2').json(),
-                self.client.get('/service/authors/post_test_author/posts/test_post1').json()
-            ]
+            'items': post_jsons     # XXX: Order may not turn out as expectes. Pay attention to this when you strat testing these tests.
         }
         
         self.assertEqual(response.status_code, 200, "Status code is not 200")
@@ -289,10 +368,12 @@ class PostEndpointTest(TestCase):
     def test_POST_update_existing(self):
         """Test POST request to update an existing post."""
         # TODO: User must be authenticated.
-        relative_url = '/service/authors/post_test_author/posts/test_post2'
+        auth_links, uids, auth_jsons = self.helper_populate_authors(1)
+        post_links, post_jsons = self.helper_populate_posts(uids)
+        relative_url = post_links[0]
         now = datetime.datetime.now().isoformat()
         new_post_json = self.helper_generate_post_json(
-                            'test_post2', self.author1_json, now,
+                            'test_post2', auth_jsons[0], now,
                             'Test Post 2 Updated', ctype='text/markdown',
                                            content='Hello World! *remastered*.')
         response = self.client.post(relative_url, new_post_json,
@@ -307,7 +388,8 @@ class PostEndpointTest(TestCase):
     def test_DELETE(self):
         """Test DELETE request to delete a post by an author."""
         # TODO: User must be authenticated(?)
-        response = self.client.delete(
-                           '/service/authors/post_test_author/posts/test_post2')
+        auth_links, uids, auth_jsons = self.helper_populate_authors(1)
+        post_links, post_jsons = self.helper_populate_posts(uids)
+        response = self.client.delete(post_links[0])
         
         self.assertEqual(response.status_code, 404, "Status code is not 404")
