@@ -105,7 +105,6 @@ function INBOX() {
 	};
 
 	// we need make a query to get all the postid that need to be in the author's stream
-	const [postids, set_postids] = useState(["a", "n"]);
 	// useEffect();
 
 	const [curPage, setCurPage] = useState("inbox");

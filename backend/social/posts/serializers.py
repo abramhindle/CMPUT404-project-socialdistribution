@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import *
 from author.serializers import AuthorSerializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
+# pip install drf-base64
+from drf_base64.fields import Base64ImageField
 
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
@@ -19,9 +21,6 @@ class PostSerializer(WritableNestedModelSerializer):
         return [category for category in categories_list]
     
     def update(self, instance, validated_data):
-        """
-        Update and return an existing `Post` instance, given the validated data
-        """
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.content = validated_data.get('content', instance.content)
@@ -80,7 +79,7 @@ class CommentSerializer(serializers.ModelSerializer):
         ]
 
 class LikeSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(default="Like",source="get_api_type",read_only=True)
+    type = serializers.CharField(default="like",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer()
     class Meta:
@@ -90,4 +89,20 @@ class LikeSerializer(serializers.ModelSerializer):
             "type",
             "author",
             "object",
+            "id",
+        ]
+
+class ImageSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="post",source="get_api_type",read_only=True)
+    image = Base64ImageField()
+    author = AuthorSerializer()
+    id = serializers.URLField(source="get_public_id",read_only=True)
+    class Meta:
+        model = Post
+        fields = [
+            "type",
+            "id",
+            "author",
+            "image",
+            "visibility",
         ]

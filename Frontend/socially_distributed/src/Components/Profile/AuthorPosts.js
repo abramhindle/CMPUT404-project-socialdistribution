@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, ButtonGroup, Panel, Button, PanelGroup } from "rsuite";
+import { Panel, PanelGroup } from "rsuite";
 import COMMENTS from "../Post/Comment";
 
 function AUTHORPOSTS() {

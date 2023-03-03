@@ -25,14 +25,13 @@ class Author(models.Model):
     def get_api_type():
         return 'author'
     
-    # used internally
     def get_absolute_url(self):
         url = 'http://authors/%s'.format(self.id)
-        return url[:-1] if url.endswith('/') else url # get rid of slash for url
+        return url[:-1] if url.endswith('/') else url 
     
     def update_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self.get_absolute_url())
-        self.host = request.build_absolute_uri('/') # points to the server root
+        self.host = request.build_absolute_uri('/') 
         self.save()
     
     # return the author public ID
