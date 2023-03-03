@@ -43,8 +43,8 @@ class post_list(APIView, PageNumberPagination):
         except Author.DoesNotExist:
             return Response("Author not found", status=status.HTTP_404_NOT_FOUND)
 
-        # should do this a different way but for now, it should serialize as image
-        if 'image' in request.data:
+        # should do this a different fway but for now, it should serialize as image
+        if 'image' in request.data['contentType']:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
         else:
             serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
