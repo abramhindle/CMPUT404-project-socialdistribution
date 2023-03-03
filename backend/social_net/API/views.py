@@ -99,46 +99,67 @@ def AuthorFollowersOperationsView(request, uid, foreign_uid):
         return JsonResponse(output, status = 200)
     
 
-@api_view(['GET', 'PUT'])
-def FollowView(request, uid, uid2):
+@api_view(['GET', 'POST'])
+def FollowView(request, author_uid, foreign_uid):
     """
     API endpoint that allows users to be viewed or edited.
     """
     #checks friendship
     if request.method == 'GET':
-        author_object = AuthorModel.objects.get(id=uid).followers
-        if uid2 in author_object:
-            author_object_2 = AuthorModel.objects.get(id=uid2).followers
-            if uid in author_object_2:
-                return JsonResponse({"status": "true_friends"}, status = 200)
-            else:
-                return JsonResponse({"status": "friends"}, status = 200)
+        print("author_uid: ", author_uid)
+        print("foreign_uid: ", foreign_uid)
+        author_object_followers = AuthorModel.objects.get(id=author_uid).followers
+        foreign_object_followers = AuthorModel.objects.get(id=foreign_uid).followers
+        if foreign_uid in author_object_followers and author_uid in foreign_object_followers:
+            return JsonResponse({"status": "FRIENDS"}, status = 200)
+        elif foreign_uid in author_object_followers:
+            return JsonResponse({"status": "FOLLOWED_BY"}, status = 200)
+        elif author_uid in foreign_object_followers:
+            return JsonResponse({"status": "FOLLOWING"}, status = 200)
         else:
-            author_object_2 = AuthorModel.objects.get(id=uid2).followers
-            if uid in author_object_2:
-                return JsonResponse({"status": "friends"}, status = 200)
-            else:
-                return JsonResponse({"status": "not friends"}, status = 200)
-    elif request.method == 'PUT':
-        author_object = AuthorModel.objects.get(id=uid)
-        author_object2 = AuthorModel.objects.get(id=uid2)
-        author_object.followers.append(uid2)
-        serialized_object = AuthorSerializer(author_object)
-        serialized_object2 = AuthorSerializer(author_object2)
-        parameters = json.loads(request.body)
-        output = serialized_object.data
-        output2 = serialized_object2.data
+            return JsonResponse({"status": "NOT_FRIENDS"}, status = 200)
+        
 
+    elif request.method == 'POST':
+        author_object = AuthorModel.objects.get(id=author_uid)
+        foreign_object = AuthorModel.objects.get(id=foreign_uid)
+        ## check if already friends
+        if author_object.id in foreign_object.followers:
+            author_object.following.remove(foreign_uid)
+            foreign_object.followers.remove(author_uid)
+            ## make a set to remove duplicates
+            author_object.following = list(set(author_object.following))
+            foreign_object.followers = list(set(foreign_object.followers))
+            author_object.save()
+            foreign_object.save()
+            return JsonResponse({"status": "success"}, status = 200)
+
+        author_object.following.append(foreign_uid)
+        foreign_object.followers.append(author_uid)
+        ## make a set to remove duplicates
+        author_object.following = list(set(author_object.following))
+        foreign_object.followers = list(set(foreign_object.followers))
         author_object.save()
-        follow_output = {
-            "type": "Follow",
-            "type": serialized_object.displayName + " wants to follow " + serialized_object2.displayName,      
-            "actor": output,
-            "object": output2,
-        }
+        foreign_object.save()
+        return JsonResponse({"status": "success"}, status = 200)
 
-        return JsonResponse(follow_output, status = 200)
-    
+
+@api_view(['GET'])
+def SearchView(request):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    #checks friendship
+    if request.method == 'GET':
+        query = request.GET.get('query')
+        authors_list = AuthorModel.objects.filter(displayName__icontains=query)
+        serialized_authors_list = list([AuthorSerializer(author).data for author in authors_list])
+        output = {
+        "type": "authors",      
+        "items": serialized_authors_list,
+        }
+        return JsonResponse(output, status = 200)
+
 @api_view(['GET', 'POST'])
 def PostsView(request, author_id):
     """
@@ -149,6 +170,7 @@ def PostsView(request, author_id):
     if request.method == 'GET':
         page = int(request.GET.get('page', '0'))
         count = int(request.GET.get('count', '10'))
+        following = request.GET.get('following')
         count = max(count, 25)
         post_object = PostsModel.objects.filter(author=author_id).order_by('-published')[page*count:page*count+count]
         for post in post_object:
@@ -158,7 +180,24 @@ def PostsView(request, author_id):
             data = dict(serialized_object.data)
             data['author'] = serialized_author.data
             posts_paginated.append(data)
+
+        if following:
+            author_object = AuthorModel.objects.get(id=author_id)
+            for follower in author_object.following:
+                follower_posts = PostsModel.objects.filter(author=follower).order_by('-published')[page*count:page*count+count]
+                for post in follower_posts:
+                    serialized_object = PostsSerializer(post)
+                    author_data = AuthorModel.objects.get(id=post.author)
+                    serialized_author = AuthorSerializer(author_data)
+                    data = dict(serialized_object.data)
+                    data['author'] = serialized_author.data
+                    if data['unlisted'] == False:
+                        posts_paginated.append(data)
+
+        ## sort by published
+        posts_paginated = sorted(posts_paginated, key=lambda k: k['published'], reverse=True)
         output = {"posts": posts_paginated}
+
         return JsonResponse(output, status = 200)
     elif request.method == 'POST':
         json_data = json.loads(request.body)

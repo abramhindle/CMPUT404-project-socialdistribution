@@ -6,6 +6,8 @@ export interface Author {
     url: string;
     github: string;
     profileImage: string;
+    followers?: string[];
+    following?: string[];
 }
 
 export interface Post {

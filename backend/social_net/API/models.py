@@ -12,6 +12,7 @@ class AuthorModel(models.Model):
     github = models.CharField(max_length=100, blank=False, default='')
     profileImage = models.TextField(blank=False, default='')
     followers = ArrayField(models.CharField(max_length=100, blank=True, default=''), blank=True, default=list)
+    following = ArrayField(models.CharField(max_length=100, blank=True, default=''), blank=True, default=list)
     
     class Meta:
         ordering = ['type', 'id', 'host', 'displayName', 'profileImage']

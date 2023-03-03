@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { GetServerSideProps } from 'next';
 import Button from '@/components/Button';
 import { NextPage } from 'next';
@@ -18,11 +18,14 @@ import { Author, Post as PostType } from '@/index';
 interface Props {
 	author:Author
 	posts: PostType[]
+	followStatus: boolean;
 }
 
-const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, posts}) => {
+const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, posts, followStatus}) => {
 	const supabaseClient = useSupabaseClient()
   	const user = useUser()
+	const [followStatusState, setFollowStatusState] = useState(followStatus)
+	
 	const router = useRouter()
 
 	if (!user)
@@ -54,7 +57,21 @@ const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, 
 			<div className='flex flex-row space-x-3'> 
 			{user.id === id ? <Button name='Edit Profile' onClick={() => {
 				router.push('/authors/' + id + '/edit')
-			}} className='bg-white text-gray-600 border-2 border-gray-100 hover:bg-gray-50 focus:ring-gray-100'/>:<Button name='Friend' className='text-white'/>}</div>
+			}} className='bg-white text-gray-600 border-2 border-gray-100 hover:bg-gray-50 focus:ring-gray-100'/>:
+			
+			<Button
+			onClick={async () => {
+				try {
+					await axios.post(`/authors/${user.id}/followers/${id}`)
+					setFollowStatusState(!followStatusState)
+				}
+				catch {
+					console.log('error')
+				}
+			}}
+			name={
+				followStatusState ? 'Unfollow' : 'Follow'
+			} className='text-white'/>}</div>
 			</div>
 			<div className='text-gray'>
 			<Link href={github} >
@@ -88,28 +105,39 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		  }
 		}
 	  }
-
+	  let res = null;
 	  try {
-		let res = await axios.get(`/authors/${user.id}`);
-		let resPosts = await axios.get(`/authors/${user.id}/posts`);
+		res = await axios.get(`/authors/${context.params?.slug}`);
+	  }
+	  catch (err) {
+		return {
+			redirect: {
+				destination: '/onboarding',
+				permanent: false,
+			}
+		}
+	  }
+
+	  let resPosts = await axios.get(`/authors/${context.params?.slug}/posts`);
 		let author = res.data;
 		let posts = resPosts.data.posts;
+		let followStatus;
+		if (user.id !== context.params?.slug) {
+			let resFollow = await axios.get(`/authors/${user.id}/followers/${context.params?.slug}`)
+			followStatus = resFollow.data.status;
+		} else {
+			followStatus = 'FRIENDS'
+		}
+		console.log(followStatus)
+		
 		
 		return {
 			props: {
 				author: author,
-				posts: posts
+				posts: posts,
+				followStatus: (followStatus === 'FRIENDS' || followStatus === 'FOLLOWING')
 			}
 	}	
-	  }
-	  catch {
-		return {
-			redirect: {
-				destination: '/onboarding',
-				permanent: false
-			}
-		}
-	  }
 
 	
 }

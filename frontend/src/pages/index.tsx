@@ -93,9 +93,15 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
+	  let resPosts = await axios.get(`/authors/${user.id}/posts`, {
+		params: {
+			following: true
+		}
+	  });
+
 	return {
 	  props: {
-		posts: []
+		posts: resPosts.data.posts
 	  }
 	}
   }

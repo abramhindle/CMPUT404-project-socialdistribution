@@ -9,23 +9,25 @@ import { Menu } from '@headlessui/react'
 import {Post as PostProps} from '@/index';
 import axios from '@/utils/axios';
 import { useRouter } from 'next/router';
+import { useUser } from '@supabase/auth-helpers-react';
 
 
 const Post: React.FC<PostProps> = ({title, description, contentType, content, source, categories, author, count, comments, id}) => {
 	const [liked, setLiked] = React.useState(false);
+	const user = useUser()
 	const router = useRouter()
 		return (<div >
 			<div className="flex flex-col border border-gray-100 shadow-sm rounded-sm mb-4"> 
-				<div className="flex flex-row justify-between items-center pt-4 px-5"><Link href={`/post/${id}`}><h2 className='text-base hover:underline text-gray-700 font-semibold'>{title}</h2></Link>
+				<div className="flex flex-row justify-between items-center pt-4 px-5"><Link href={`/posts/${id}`}><h2 className='text-base hover:underline text-gray-700 font-semibold'>{title}</h2></Link>
 					<div>
-					<Menu as='div' className='relative'>
+					{user?.id === author.id && <Menu as='div' className='relative'>
 						<Menu.Button>
 					<EllipsisHorizontalIcon className='w-7 h-7 text-gray-700 cursor-pointer' />
 						</Menu.Button>
 						<Menu.Items className={'absolute right-0 mt-0 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'}>
 							<Menu.Item>
 								{({ active }) => (
-									<Link className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`} href={`/post/${id}/edit`}>
+									<Link className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`} href={`/posts/${id}/edit`}>
 										Edit
 									</Link>
 								)}
@@ -48,7 +50,7 @@ const Post: React.FC<PostProps> = ({title, description, contentType, content, so
 								)}
 							</Menu.Item>
 						</Menu.Items>
-					</Menu>
+					</Menu>}
 					</div>
 				</div>
 				<div className={`my-3 border-t border-b border-gray-100 ${!contentType.includes('image')? 'p-5':''}`}>
@@ -105,7 +107,7 @@ const Post: React.FC<PostProps> = ({title, description, contentType, content, so
 				<Tooltip content='Copy Link'>
 				<Link2 className='h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer'  onClick={() => {
 					navigator.clipboard.writeText(
-						`${window.location.protocol}//${window.location.host}/post/${id}`
+						`${window.location.protocol}//${window.location.host}/posts/${id}`
 					);
 				}}/>
 				</Tooltip>

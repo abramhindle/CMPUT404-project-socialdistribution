@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form";
 import axios from '@/utils/axios'
 import {getBase64} from '@/utils'
 import { useRouter } from 'next/router';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { GetServerSideProps } from 'next';
 interface createProps {
 
 }
@@ -67,3 +69,36 @@ const Create: React.FC<createProps> = ({}) => {
 		</form></div></div></div>);
 }
 export default Create;
+
+export const getServerSideProps:GetServerSideProps = async (context) => {
+
+	const supabaseServerClient = createServerSupabaseClient(context)
+	  const {
+		data: { user },
+	  } = await supabaseServerClient.auth.getUser();
+
+	  if (!user) {
+		return {
+		  redirect: {
+			destination: '/auth',
+			permanent: false
+		  }
+		}
+	  }
+
+	  try {
+		await axios.get(`/authors/${user?.id}`)
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+	  } catch (error) {
+        return {
+            props: {}
+        }
+      }
+
+
+  }
