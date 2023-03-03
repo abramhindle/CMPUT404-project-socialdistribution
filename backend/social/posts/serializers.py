@@ -7,7 +7,7 @@ from drf_base64.fields import Base64ImageField
 
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
-    id = serializers.URLField(source="get_public_id",read_only=True)
+    id = serializers.CharField(source="get_public_id", read_only=True)
     count = serializers.IntegerField(source="count_comments", read_only=True)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
     author = AuthorSerializer()
@@ -15,18 +15,36 @@ class PostSerializer(WritableNestedModelSerializer):
 #    source = serializers.URLField(default="",max_length=500)  # source of post
 #    origin = serializers.URLField(default="",max_length=500)  # origin of post
     categories = serializers.SerializerMethodField(read_only=True)
-    
+        
     def get_categories(self, instance):
         categories_list = instance.categories.split(",")
         return [category for category in categories_list]
     
-    def create(self, validated_data):
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Post` instance, given the validated data
+        """
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.content = validated_data.get('content', instance.content)
+        instance.contentType = validated_data.get('contentType', instance.contentType)
+        instance.published = validated_data.get('published', instance.published)
+        return instance
+    
+    def create(self, instance, validated_data):
         updated_author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context.get('author_id'))
         categories = ' '.join(validated_data.get('categories'))
         print("categories", categories)
         validated_data.pop('categories')
         return Post.objects.create(**validated_data, categories = categories, author=updated_author)
-    
+
+    def to_representation(self, instance):
+            id = instance.get_public_id()
+            id = id[:-1] if id.endswith('/') else id
+            return {
+                **super().to_representation(instance),
+                'id': id
+            }
     class Meta:
         model = Post
         fields = [

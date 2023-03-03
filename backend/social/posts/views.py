@@ -37,7 +37,7 @@ class post_list(APIView, PageNumberPagination):
         return  self.get_paginated_response(serializer.data)
 
     def post(self, request, pk_a):
-        post_id = uuid.uuid4
+        pk = str(uuid.uuid4())
         
         try:
             author = Author.objects.get(pk=pk_a)
@@ -57,7 +57,7 @@ class post_list(APIView, PageNumberPagination):
             # print("categories", categories)
             #serializer.validated_data.pop('categories')
             serializer.validated_data.pop("author")
-            post = Post.objects.create(**serializer.validated_data, author=author, id=post_id)
+            post = Post.objects.create(**serializer.validated_data, author=author, id=pk)
             post.update_fields_with_request(request)
 
             serializer = PostSerializer(post, many=False)
@@ -81,8 +81,7 @@ def get_likes(request, pk_a, pk):
     """
     Get the list of comments on our website
     """
-    author = Author.objects.get(id=pk_a)
-    post = Post.objects.get(author=author, id=pk)
+    post = Post.objects.get(id=pk)
     likes = Like.objects.filter(object=post.id)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)

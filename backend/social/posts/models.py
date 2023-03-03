@@ -64,8 +64,8 @@ class Post(models.Model):
 
     # get public id of post
     def get_public_id(self):
-        return self.url or self.id
-
+        return self.url or str(self.id)
+    
     # get comments url
     def get_comments_source(self):
         if self.url.endswith("/"):
@@ -89,6 +89,8 @@ class Post(models.Model):
         return self.get_absolute_url() + "/image"
 
     def get_absolute_url(self):
+        print("ID HERE", self.id)
+        print("ID HERE", str(self.id))
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
         return url[:-1] if url.endswith('/') else url 
     
