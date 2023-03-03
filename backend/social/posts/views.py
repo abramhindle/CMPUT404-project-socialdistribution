@@ -125,9 +125,10 @@ class ImageView(APIView):
             if 'image' not in post.contentType:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
+            # not properly base64 encoded yet
             post_content = post.contentType.split(';')[0]
-            image = base64.b64decode(post.content.strip("b'").strip("'"))
-            return Response(image, content_type=post_content, status=status.HTTP_200_OK)
+            # image = base64.b64decode(post.content.strip("b'").strip("'"))
+            return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)
 
         except Post.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
