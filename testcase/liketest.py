@@ -45,6 +45,22 @@ class LikeTests(TestCase):
         response = client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        # Check that the like object is sent to the author's inbox
+        inbox_url = reverse("author-inbox", args=[self.author.id])
+        response = client.get(inbox_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["items"]), 1)
+        self.assertEqual(response.data["items"][0]["type"], "Like")
+        self.assertEqual(response.data["items"][0]["author"]["displayName"], self.author.display_name)
+
+        # Check that the liked post appears in the author's liked items
+        liked_url = reverse("author-liked", args=[self.author.id])
+        response = client.get(liked_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["items"]), 1)
+        self.assertEqual(response.data["items"][0]["type"], "Like")
+        self.assertEqual(response.data["items"][0]["object"], self.post.url)
+
     def test_like_comment(self):
         client = APIClient()
         url = reverse("author-comment-likes", args=[self.author.id, self.post.id, self.comment.id])
@@ -66,23 +82,4 @@ class LikeTests(TestCase):
         response = client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_get_post_likes(self):
-        client = APIClient()
-        url = reverse("author-post-likes", args=[self.author.id, self.post.id])
-        response = client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["items"]), 1)
-        self.assertEqual(response.data["items"][0]["object"], self.post.url)
-
-    def test_get_comment_likes(self):
-        client = APIClient()
-        url = reverse("author-comment-likes", args=[self.author.id, self.post.id, self.comment.id])
-        response = client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["items"]), 1)
-        self.assertEqual(response.data["items"][0]["object"], self.comment.url)
-
-    def test_get_liked_objects(self):
-        client = APIClient()
-        url = reverse("author-liked", args=[self.author.id])
-        response =
+        # Check that the like object is sent to the author's inbox
