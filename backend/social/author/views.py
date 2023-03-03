@@ -28,7 +28,7 @@ def get_authors(request):
 class AuthorView(APIView):
     
     
-    serializer_class = AuthorSerializerr
+    serializer_class = AuthorSerializer
 
     def validate(self, data):
         if 'displayName' not in data:
@@ -37,14 +37,14 @@ class AuthorView(APIView):
 
     def get(self, request, pk_a):
         author = Author.objects.get(id=pk_a)
-        serializer = AuthorSerializerr(author,partial=True)
+        serializer = AuthorSerializer(author,partial=True)
         return  Response(serializer.data)
     def post(self, request, pk_a):
         author_id = pk_a
         
         
         
-        serializer = AuthorSerializerr(data=request.data,partial=True)
+        serializer = AuthorSerializer(data=request.data,partial=True)
         
         
         if serializer.is_valid():
@@ -55,7 +55,7 @@ class AuthorView(APIView):
             
             Author.objects.filter(id=author_id).update(**serializer.validated_data)
             author = Author.objects.get(id=pk_a)
-            serializer = AuthorSerializerr(author,partial=True)
+            serializer = AuthorSerializer(author,partial=True)
             #auth,created = Author.objects.update(**serializer.validated_data, id=author_id)
             
             return Response(serializer.data)
