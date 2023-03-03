@@ -33,42 +33,56 @@ function COMMENTS({ postobj }) {
 				// # ID of the Comment (UUID)
 				id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
 			},
+			{
+				type: "comment",
+				author: {
+					type: "author",
+					// ID of the Author (UUID)
+					id: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+					// # url to the authors information
+					url: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+					host: "http://127.0.0.1:5454/",
+					displayName: "Greg Johnson",
+					// # HATEOS url for Github API
+					github: "http://github.com/gjohnson",
+					// # Image from a public domain
+					profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
+				},
+				comment: "Sick Olde English",
+				contentType: "text/markdown",
+				// # ISO 8601 TIMESTAMP
+				published: "2015-03-09T13:07:04+00:00",
+				// # ID of the Comment (UUID)
+				id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+			},
 		],
 	};
 	const [new_comment, set_new_comment] = useState("");
 
 	return (
-		<div
-			style={
-				{
-					// display: "block",
-					// // height: "50vh",
-					// // borderLeft: "2px solid black",
-					// padding: "10px",
-				}
-			}
-		>
+		<div>
 			{commentOBj.comments.map((obj) => (
 				<div
 					style={{
 						width: "100%",
-						border: "2px solid lightgrey",
-						padding: "5px",
+						border: "0.5px solid lightgrey",
+						padding: "2px",
+						marginBottom: "2px",
 					}}
 				>
-					<h5
+					<text
 						style={{
 							marginLeft: "10px",
-							float: "left",
+							fontWeight: "bold",
 						}}
 					>
 						{obj["author"]["displayName"]}
-					</h5>
-					<p>{obj["comment"]}</p>
+					</text>
+					<text>: {obj["comment"]}</text>
 				</div>
 			))}
 
-			<InputGroup inside>
+			<InputGroup inside style={{ marginTop: "5px" }}>
 				<Input
 					onChange={(e) => set_new_comment(e)}
 					value={new_comment}
