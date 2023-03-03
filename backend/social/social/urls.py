@@ -21,15 +21,38 @@ from serveradmin.views import *
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 from . import views
+
+
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Social Distribution API",
+      default_version='v1',
+      description="The social network API would provide developers with access to various features and functionalities of the platform, such as user profiles, posts, comments, likes, and messages. It would also allow developers to authenticate users and perform actions on their behalf, such as posting on their timeline or sending messages.",
+      
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('posts.urls')),
     path('authors/', include('author.urls')),
+
+    path('',schema_view.with_ui('swagger',cache_timeout=0),name = 'schema-swagger-ui'),
+    
+    path("register", views.register.as_view(), name="register"),
+    path('redoc/', schema_view.with_ui('redoc',cache_timeout=0),name = 'schema-redoc'),
+
     path("register", views.register.as_view(), name="register"),
     path("login", views.login.as_view(), name="login")
+
 ]
 
 # adds the path to the media directory, we can put images in media/images/[filename] 
