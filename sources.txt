@@ -1,0 +1,1 @@
+django Register and login: https://ordinarycoders.com/blog/article/django-user-register-login-logout
