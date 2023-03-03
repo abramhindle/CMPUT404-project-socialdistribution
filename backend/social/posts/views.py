@@ -129,16 +129,16 @@ class post_detail(APIView, PageNumberPagination):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
-def get_comments(request, pk_a, pk):
-    """
-    Get the list of comments on our website
-    """
-    author = Author.objects.get(id=pk_a)
-    post = Post.objects.get(author=author, id=pk)
-    comments = Comment.objects.filter(author=author,post=post)
-    serializer = CommentSerializer(comments, many=True)
-    return Response(serializer.data)
+# @api_view(['GET'])
+# def get_comments(request, pk_a, pk):
+#     """
+#     Get the list of comments on our website
+#     """
+#     author = Author.objects.get(id=pk_a)
+#     post = Post.objects.get(author=author, id=pk)
+#     comments = Comment.objects.filter(author=author,post=post)
+#     serializer = CommentSerializer(comments, many=True)
+#     return Response(serializer.data)
 
 @api_view(['GET'])
 def get_likes(request, pk_a, pk):
@@ -219,3 +219,40 @@ class LikeView(APIView, PageNumberPagination):
         #     return Response(serializer.data, status=status.HTTP_201_CREATED)
         # else:
         #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentView(APIView, PageNumberPagination):
+    serializer_class = CommentSerializer
+    pagination_class = PostSetPagination
+
+    def get(self, request, pk_a, pk):
+        try:
+            author = Author.objects.get(id=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+            
+        post = Post.objects.get(author=author, id=pk)
+        comments = Comment.objects.filter(author=author,post=post)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, pk_a, pk):
+        post_id = uuid.uuid4
+        
+        try:
+            author = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CommentSerializer(data=request.data, context={'author_id': pk_a})
+        if serializer.is_valid():
+            serializer.validated_data.pop("author")
+            comment = Comment.objects.create(**serializer.validated_data, author=author, id=pk)
+            comment.update_fields_with_request(request)
+
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
