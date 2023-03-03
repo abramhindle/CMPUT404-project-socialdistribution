@@ -1,5 +1,5 @@
 import NewPost from '../../components/Posts/new-post';
-import PlainPost from '../../components/Posts/post-plain';
+import PlainPost from '../../components/Posts/post-text';
 import Sidebar from '../../components/Sidebar/sidebar';
 import './inbox.css';
 
@@ -24,8 +24,6 @@ function Inbox() {
         <p>
             This is now the inbox page
         </p>
-        <PlainPost post={pseudoPost}/>
-        <NewPost/>
       </div>
     </div>
   );
