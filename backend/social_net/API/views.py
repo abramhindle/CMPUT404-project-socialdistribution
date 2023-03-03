@@ -137,8 +137,9 @@ def PostsView(request, author_id):
         output = {"posts": posts_paginated}
         return JsonResponse(output, status = 200)
     elif request.method == 'POST':
-        PostsModel.objects.create(author=author_id, id=str(uuid.uuid4()))
-        return JsonResponse({"status":"success"}, status = 200)
+        pid=str(uuid.uuid4())
+        PostsModel.objects.create(author=author_id, id=pid)
+        return JsonResponse({"status":"success","id":pid}, status = 200)
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
 def PostsRetriveView(request, author_id, post_id):
