@@ -83,3 +83,18 @@ class LikeTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Check that the like object is sent to the author's inbox
+        inbox_url = reverse("author-inbox", args=[self.comment.author.id])
+        response = client.get(inbox_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["items"]), 1)
+        self.assertEqual(response.data["items"][0]["type"], "Like")
+        self.assertEqual(response.data["items"][0]["author"]["displayName"], self.author.display_name)
+
+        # Check that the liked comment appears in the author's liked items
+        liked_url = reverse("author-liked", args=[self.author.id])
+        response = client.get(liked_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["items"]), 1)
+        self.assertEqual(response.data["items"][0]["type"], "Like")
+        self.assertEqual(response.data["items"][0]["object"], self.comment.url)
+
