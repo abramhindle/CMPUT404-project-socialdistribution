@@ -9,6 +9,36 @@ import uuid
 def AuthorView(request, uid):
     """
     API endpoint that allows users to be viewed or edited.
+    ---
+    # YAML
+    
+    type:
+        name:
+            required:
+        type:
+    url:
+        required:
+        type:
+    created_at:
+        required:
+        type:
+        format:
+        
+    serializer:
+    omit_serializer: false
+    many:
+    
+    parameters_strategy: merge
+    omit_parameters:
+    parameters:
+    
+    responseMessage:
+        - code:
+        message:
+    
+    consumes:
+    
+    produces:
     """
     if request.method == 'GET':
         author_object = AuthorModel.objects.get(id=uid)
@@ -23,10 +53,41 @@ def AuthorView(request, uid):
         output = serialized_object.data
         return JsonResponse(output, status = 200)
     
+    
 @api_view(['GET'])
 def AuthorsView(request):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to be viewed.
+    ---
+    # YAML
+    
+    type:
+        name:
+            required:
+        type:
+    url:
+        required:
+        type:
+    created_at:
+        required:
+        type:
+        format:
+        
+    serializer:
+    omit_serializer: false
+    many:
+    
+    parameters_strategy: merge
+    omit_parameters:
+    parameters:
+    
+    responseMessage:
+        - code:
+        message:
+    
+    consumes:
+    
+    produces:
     """
     page = int(request.GET.get('page', '1'))
     size = int(request.GET.get('size', '5'))
