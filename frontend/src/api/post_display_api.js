@@ -22,10 +22,10 @@ export const post_api = async (authorId, post, successPost, successFollow) => {
 };
 
 export const send_api = async (followers, data) => {
-  console.log("Sending to api . . .");
+  console.log("Sending to api . . .", followers);
   for (var user in followers) {
-    console.log("sending to ", followers[user]["id"]);
-    await axios.post(`http://localhost:8000/authors/${followers[user]["id"]}/inbox`, data, head)
+    console.log("sending ", data, " to ", followers[user]["id"]);
+    await axios.post(`http://localhost:8000/authors/${followers[user]["id"]}/inbox/`, data, head)
     .catch(function (error) {
       console.log(error, "occured while sending a post");
     });

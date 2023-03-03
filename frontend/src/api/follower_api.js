@@ -9,7 +9,7 @@ export const get_followers_for_author = async (authorId, success) => {
       }
     }).then(function (response) {
       console.log("Followerlist res: ", response["data"]["items"]);
-      return (response["data"]["items"]);
+      success(response["data"]["items"]);
 
     })
     .catch(function (error) {
