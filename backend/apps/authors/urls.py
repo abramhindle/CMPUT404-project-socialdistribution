@@ -21,8 +21,8 @@ from .views import Author_Individual, Author_All, Author_Post
 
 urlpatterns = [
     path('', Author_All.as_view(), name="All Authors"),
-    path('<int:id>/posts/', Author_Post.as_view(), name="Author's posts"),
+    path('<str:author_id>/posts/', Author_Post.as_view(), name="Author's posts"),
     path('<str:author_id>/posts/', posts_paginated, name="Posts Paginated"),
-    path('<int:id>/', Author_Individual.as_view(), name="Single Author"),
+    path('<str:author_id>/', Author_Individual.as_view(), name="Single Author"),
 
 ]
