@@ -9,7 +9,7 @@ from apps.authors.models import Author
 class Post(models.Model):
 
     # Fields
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(primary_key=True, max_length=255)
     title = models.CharField(max_length=250, blank=True)
     source = models.CharField(max_length=50, blank=True)
     origin = models.CharField(max_length=50, blank=True)
@@ -60,8 +60,8 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    url = models.URLField(max_length=200)
+    id = models.CharField(primary_key=True, max_length=255)
+    url = models.URLField(max_length=250)
     host = models.CharField(max_length=100, blank=True)
     displayName = models.CharField(max_length=200)
     message: models.CharField(max_length=250)
@@ -84,7 +84,7 @@ class Friend(models.Model):
     follower is the id of the author who is following.
     owner is the id of the author who is being followed.
     """
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(primary_key=True, max_length=255)
     followers = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name='follower')
     dateTime = models.DateTimeField(auto_now_add=True)
@@ -97,7 +97,7 @@ class Inbox(models.Model):
     Here the author is the id of the author whos inbox is this
     Post is the post sent to the person's inbox. Pretty straightforward. 
     """
-    id = models.BigAutoField(primary_key=True)
+    id = models.CharField(primary_key=True, max_length=255)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     dateTime = models.DateTimeField(auto_now_add=True)

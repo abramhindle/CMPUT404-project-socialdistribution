@@ -4,8 +4,8 @@ from django.urls import reverse
 
 
 class Author(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    url = models.URLField(max_length=200, blank=True)
+    id = models.CharField(primary_key=True, max_length=255)
+    url = models.URLField(max_length=255, blank=True)
     host = models.CharField(max_length=200, blank=True)
     displayName = models.CharField(max_length=200, blank=True)
     github = models.CharField(max_length=100, blank=True)
