@@ -237,22 +237,31 @@ class CommentView(APIView, PageNumberPagination):
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
     
-    def post(self, request, pk_a, pk):
-        post_id = uuid.uuid4
-        
+    def post(self, request,pk_a, pk):
+        comment_id = uuid.uuid4
         try:
-            author = Author.objects.get(pk=pk_a)
+            author = Author.objects.get(pk=request.data["author_id"])
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        try: 
+            post = Post.objects.get(pk=request.data["post_id"])
+        except Post.DoesNotExist:
+            error_msg = "Post id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        
+        comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=request.data["comment"])
+        return Response(status=status.HTTP_200_OK)
 
-        serializer = CommentSerializer(data=request.data, context={'author_id': pk_a})
-        if serializer.is_valid():
-            serializer.validated_data.pop("author")
-            comment = Comment.objects.create(**serializer.validated_data, author=author, id=pk)
-            comment.update_fields_with_request(request)
+        # Able to create the comment but there is an issue with the serializer. 
+        # Only implement below when serializer is fixed and working
+        # Remove Lines 254 and 255 and uncomment everything below. save 254 and 255 in case not fixed. 
 
-            serializer = CommentSerializer(comment, many=False)
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # serializer = CommentSerializer(data=request.data, context={request.data["author_id"]})
+        # if serializer.is_valid():
+        #     text = request.data["comment"]
+        #     comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=text)
+        #     return Response(serializer.data)
+        # else:
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
