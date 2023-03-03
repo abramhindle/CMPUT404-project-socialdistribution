@@ -15,9 +15,16 @@ function App() {
           <Route path="/"
             element={
               <PrivateRoute>
-                <Main />
+                <Main filter="feed"/>
               </PrivateRoute>
             }>
+              <Route path="feed"
+                element={
+                  <PrivateRoute>
+                    <Main filter="feed" />
+                  </PrivateRoute>
+                }>
+                </Route>
               <Route path="foryou"/>
               <Route path="likes"/>
           </Route>
