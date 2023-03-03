@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Avatar, Panel, Dropdown, Uploader } from "rsuite";
+import { Input, Avatar, Panel, Dropdown, Uploader, Button } from "rsuite";
 // import { Scrollbars } from "react-custom-scrollbars-2";
 // Component Imports
 
@@ -21,27 +21,31 @@ function CREATEPOST() {
 
 		if (post_type === "Image") {
 			return (
-				<Uploader
-					action="//jsonplaceholder.typicode.com/posts/"
-					draggable
-					style={{
-						float: "left",
-						width: "100%",
-						margin: "auto",
-						paddingTop: "5px",
-					}}
-				>
-					<div
+				<div>
+					<Uploader
+						action="//jsonplaceholder.typicode.com/posts/"
+						draggable
 						style={{
-							height: "100px",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
+							float: "left",
+							width: "100%",
+							margin: "auto",
+							paddingTop: "5px",
 						}}
 					>
-						<span>Click or Drag files to this area to upload</span>
-					</div>
-				</Uploader>
+						<div
+							style={{
+								height: "100px",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<span>
+								Click or Drag files to this area to upload
+							</span>
+						</div>
+					</Uploader>
+				</div>
 			);
 		}
 	};
@@ -50,11 +54,11 @@ function CREATEPOST() {
 		<div
 			style={{
 				marginBottom: "5px",
-				display: "block",
 				height: "25vh",
 				border: "1px solid black",
 				borderRadius: "10px",
 				padding: "5px",
+				position: "relative",
 			}}
 		>
 			<Avatar
@@ -82,6 +86,9 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="Image">image</Dropdown.Item>
 			</Dropdown>
 			{input()}
+			<Button style={{ marginTop: "3px" }} appearance="primary" block>
+				Post
+			</Button>
 		</div>
 	);
 }
