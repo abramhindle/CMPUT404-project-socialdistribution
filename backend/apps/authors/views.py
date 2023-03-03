@@ -106,6 +106,19 @@ class Author_Individual(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    """
+    ALERT
+    When you POST author with the id, you have to pass the id inside the json. 
+
+    Example - 
+    url: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+    id: 9de17f29c12e8f97bcbbd34cc908f1baba40658e
+    """
+
+    # def post(self, request, author_id, format=None):
+    #     obj = Author_All
+    #     Author_All.post(request)
+
 
 class Author_Post(APIView):
 
@@ -121,4 +134,46 @@ class Author_Post(APIView):
         return Response(serializer.data)
 
     def post(self, request, author_id, format=None):
-        pass
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Author_Post_Single(APIView):
+
+    def get_object(self, author_id, post_id, format=None):
+        try:
+            query_set = Post.objects.get(id=post_id, author_id=author_id)
+            return query_set
+        except:
+            Post.DoesNotExist
+            return Http404
+
+    def get(self, request, author_id, post_id, format=None):
+        query_set = self.get_object(author_id, post_id)
+        serializer = PostSerializer(query_set)
+        return Response(serializer.data)
+
+    """
+    ALERT
+    For making a post, you have to pass all the ids in the json
+    """
+
+    # def post(self, request, author_id, post_id, format=None):
+    #     obj = Author_Post(APIView)
+    #     obj.post(request, author_id)
+
+    def put(self, request, author_id, post_id, format=None):
+        query_set = self.get_object(author_id, post_id)
+        serializer = PostSerializer(query_set, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, author_id, post_id, format=None):
+        query_set = self.get_object(author_id, post_id)
+        query_set.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

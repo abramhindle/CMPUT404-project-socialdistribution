@@ -16,7 +16,8 @@ class Post(models.Model):
     description = models.CharField(max_length=250, blank=True)
 
     CONTENT_CHOICES = (
-        ("MARKDOWN", "text/markdown"),
+        ("text/markdown", "text/markdown"),
+        ("plain/Text", "plain/Text"),
     )
     contentType = models.CharField(
         choices=CONTENT_CHOICES, max_length=20, blank=True)

@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import include, path
 from apps.posts.views import posts_paginated
 from apps.authors.views import all_authors, single_author
-from .views import Author_Individual, Author_All, Author_Post
+from .views import Author_Individual, Author_All, Author_Post, Author_Post_Single
 
 
 urlpatterns = [
@@ -24,5 +24,7 @@ urlpatterns = [
     path('<str:author_id>/posts/', Author_Post.as_view(), name="Author's posts"),
     path('<str:author_id>/posts/', posts_paginated, name="Posts Paginated"),
     path('<str:author_id>/', Author_Individual.as_view(), name="Single Author"),
+    path('<str:author_id>/posts/<post_id>/',
+         Author_Post_Single.as_view(), name="Single post from an Author")
 
 ]
