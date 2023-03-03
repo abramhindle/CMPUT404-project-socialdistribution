@@ -66,15 +66,14 @@ function CREATEPOST() {
 			author.id.length
 		);
 		const url = "posts/authors/" + author_id + "/posts/";
-		console.log(len);
-		console.log(url);
 		var params = {
 			title: title,
 			description: description,
 			content: text,
 			contentType: "text/plain",
-			author_id: localStorage.getItem("user"),
+			author: author,
 		};
+		console.log(JSON.stringify(params));
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
 				console.log(res);

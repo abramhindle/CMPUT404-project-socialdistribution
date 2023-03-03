@@ -31,9 +31,9 @@ export const unsetCurrentUser = () => {
 
 export const getCurrentUser = (author_id) => {
 	axios.get("authors/authors/" + author_id).then((response) => {
-		const user = {
-			id: response.data.id,
-		};
+		console.log(response.data);
+		const user = response.data;
+		console.log(user);
 		setCurrentUser(user);
 	});
 };
