@@ -93,13 +93,13 @@ class Author_Individual(APIView):
             Author.DoesNotExist
             return Http404
 
-    def get(self, request, id, format=None):
-        query = self.get_object(id)
+    def get(self, request, author_id, format=None):
+        query = self.get_object(author_id)
         serializer = AuthorSerializer(query)
         return Response(serializer.data)
 
-    def put(self, request, id, format=None):
-        query = self.get_object(id)
+    def put(self, request, author_id, format=None):
+        query = self.get_object(author_id)
         serializer = AuthorSerializer(query, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -115,7 +115,10 @@ class Author_Post(APIView):
             return query_set
         raise Http404
 
-    def get(self, request, id, format=None):
-        query = self.get_object(id)
+    def get(self, request, author_id, format=None):
+        query = self.get_object(author_id)
         serializer = PostSerializer(query, many=True)
         return Response(serializer.data)
+
+    def post(self, request, author_id, format=None):
+        pass
