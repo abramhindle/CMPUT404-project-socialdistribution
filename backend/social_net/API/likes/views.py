@@ -8,7 +8,7 @@ import uuid
 @api_view(['POST'])
 def InboxView(request, author_id):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to be viewed or edited.  
     """
     parameters = json.loads(request.body)["object"]
     liker_author_id = parameters["author"].split("/")[3]
@@ -39,7 +39,7 @@ def InboxView(request, author_id):
 @api_view(['GET'])
 def PostLikeView(request, author_id, post_id):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to be viewed or edited. for like function
     """
     post_likes_paginated = []
     object = "http://127.0.0.1:5454/authors/"+ author_id+ "/posts/"+ post_id + "/"
