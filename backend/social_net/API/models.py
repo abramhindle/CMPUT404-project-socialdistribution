@@ -36,3 +36,16 @@ class PostsModel(models.Model):
     
     class Meta:
         ordering = ['type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'comments', 'commentsSrc', 'published', 'visibility', 'unlisted']
+
+class CommentsModel(models.Model):
+    type = models.CharField(max_length=100, blank=False, default='comment')
+    author = models.CharField(max_length=100, primary_key=True)
+    comment = models.CharField(max_length=100, default=id)
+    host = models.CharField(max_length=100, blank=False, default='')
+    contentType = models.CharField(max_length=100, blank=False, default='')
+    published = models.DateTimeField(auto_now_add=True)
+    id = models.CharField(max_length=500, blank=False, default='')
+    post_id = models.CharField(max_length=100, blank=False, default='')
+    
+    class Meta:
+        ordering = ['type', 'author', 'comment', 'host', 'contentType', 'published', 'id', 'post_id']
