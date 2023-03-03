@@ -27,6 +27,7 @@ def get_authors(request):
 
 class AuthorView(APIView):
     
+    
     serializer_class = AuthorSerializerr
 
     def validate(self, data):
