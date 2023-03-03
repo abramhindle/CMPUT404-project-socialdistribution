@@ -80,7 +80,7 @@ class CommentSerializer(serializers.ModelSerializer):
         ]
 
 class LikeSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(default="Like",source="get_api_type",read_only=True)
+    type = serializers.CharField(default="like",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer()
     class Meta:
@@ -90,4 +90,5 @@ class LikeSerializer(serializers.ModelSerializer):
             "type",
             "author",
             "object",
+            "id",
         ]
