@@ -15,11 +15,10 @@ Including another URLconf
 """
 from django.urls import path
 # from apps.posts.views import all_posts, single_post
-from .views import Post_individual
-from apps.posts.views import All_Posts_By_Author
+from .views import Author_Post_Single, All_Posts_By_Author
 
 
 urlpatterns = [
     path('', All_Posts_By_Author.as_view(), name="All Posts By Author"),
-    path('<str:post_id>', Post_individual.as_view(), name="Single Post By Author"),
+    path('<str:post_id>', Author_Post_Single.as_view(), name="Single Post By Author"),
 ]

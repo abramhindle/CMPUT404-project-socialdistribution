@@ -68,7 +68,7 @@ class Author_All(APIView):
         """
         /authors/
 
-        POST (test): Used to create an author
+        POST (test): Used to create an author (put author_id in the json)
         """
         serializer = AuthorSerializer(data=request.data)
         if serializer.is_valid():
@@ -97,6 +97,9 @@ class Author_All(APIView):
 class Author_Individual(APIView):
 
     def get_object(self, id, format=None):
+        """
+        Gets a query from the database.
+        """
         try:
             return Author.objects.get(id=id)
         except:
@@ -125,5 +128,49 @@ class Author_Individual(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    """
+    ALERT
+    When you POST author with the id, you have to pass the id inside the json. 
+
+    Example - 
+    url: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+    id: 9de17f29c12e8f97bcbbd34cc908f1baba40658e
+    """
+
+    # def post(self, request, author_id, format=None):
+    #     obj = Author_All
+    #     Author_All.post(request)
+
+
+# class Author_Post(APIView):
+
+#     def get_object(self, id, format=None):
+#         """
+#         Gets a query from the database.
+#         """
+#         query_set = Post.objects.filter(author_id__pk=id)
+#         if query_set:
+#             return query_set
+#         raise Http404
+
+#     def get(self, request, author_id, format=None):
+#         """
+#         GET baseurl/authors/<author_id>/posts/
+#         """
+#         query = self.get_object(author_id)
+#         serializer = PostSerializer(query, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request, author_id, format=None):
+#         """
+#         POST baseurl/authors/<authors_id>/posts/
+#         You have to put the post_id in the json.
+#         """
+#         serializer = PostSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

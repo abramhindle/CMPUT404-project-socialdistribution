@@ -24,5 +24,4 @@ urlpatterns = [
     path('<str:author_id>/posts/', include('apps.posts.urls')),
     path('<str:author_id>/posts', posts_paginated, name="Posts Paginated"),
     path('<str:author_id>/', Author_Individual.as_view(), name="Single Author"),
-
 ]
