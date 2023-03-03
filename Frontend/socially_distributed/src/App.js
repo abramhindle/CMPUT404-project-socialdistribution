@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SIGN_IN from "./Components/SignIn/Sign_in";
-import INBOX from "./Components/Post/Inbox";
+import INBOX from "./Components/Post/inbox";
 import PROFILE from "./Components/Profile/Profile";
 
 function App() {
@@ -8,9 +8,9 @@ function App() {
 		<div className="App">
 			<BrowserRouter>
 				<Routes>
-					<Route path="/login" element={<SIGN_IN />} />
-					<Route path="/inbox" element={<INBOX />} />
-					<Route path="/profile" element={<PROFILE />} />
+					<Route path="/" exact element={<INBOX />} />
+					<Route path="/login" exact element={<SIGN_IN />} />
+					<Route path="/profile" exact element={<PROFILE />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
