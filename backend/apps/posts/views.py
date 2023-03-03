@@ -157,7 +157,8 @@ class Author_Post_Single(APIView):
             return query_set
         except:
             Post.DoesNotExist
-            return Http404
+
+            raise Http404
 
     def get(self, request, author_id, post_id, format=None):
         """

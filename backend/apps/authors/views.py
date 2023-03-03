@@ -104,7 +104,7 @@ class Author_Individual(APIView):
             return Author.objects.get(id=id)
         except:
             Author.DoesNotExist
-            return Http404
+            raise Http404
 
     def get(self, request, author_id, format=None):
         """
