@@ -15,7 +15,8 @@ export default function NewPost() {
     const [unlisted, setUnlisted] = useState(false);
     const [categories, setCategories] = useState([]);
 
-    const [success, setSucess] = useState(null);
+    const [followers, setFollowers] = useState([]);
+    const [posted, setPosted] = useState(null);
 
     const submit = async (e) => {
         console.log("Submitting ...");
@@ -29,26 +30,12 @@ export default function NewPost() {
 
         e.preventDefault();
         console.log(user, "is attempting to post", data);
-        let sendLink = await post_api(user, data, onSuccess, onFailure);
-        let followers = await get_followers_for_author(user, setSucess);
-        console.log("Starting to send ...");
-        await send_api(followers, sendLink)
-            .then(function (response) {
-                console.log("Sending complete");
-            })
-            .catch(function (error){
-                console.log(error);
-            });
-
+        post_api(user, data, setPosted, setFollowers);
+        send_api(followers, posted);
+        //let followers = get_followers_for_author(user, setSucess);
+        // console.log("Starting to send ...");
+        // send_api(followers, sendLink);
     };
-
-    //For confirmation dialogs
-    const onSuccess = () => {
-        setSucess(true);
-    }
-    const onFailure = () => {
-        setSucess(false);
-    }
 
     const handleCheckbox = (e) => {
         //console.log(e.target.checked);
