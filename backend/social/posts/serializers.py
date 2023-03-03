@@ -97,11 +97,14 @@ class LikeSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     image = Base64ImageField()
-    # later, visibility should be public by default for sharing
+    author = AuthorSerializer()
+    id = serializers.URLField(source="get_public_id",read_only=True)
     class Meta:
         model = Post
         fields = [
             "type",
+            "id",
+            "author",
             "image",
             "visibility",
         ]

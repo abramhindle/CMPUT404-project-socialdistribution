@@ -53,10 +53,6 @@ class Post(models.Model):
     # get visbility status
     def get_visilibility(self):
         return self.Visibility(self.visibility).label
-
-    # for some reason, this is throwing an error for me(column does not exist), so it's commented out for the time being. 
-
-    # content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
     
     # get content type
     def get_content_type(self):
@@ -84,9 +80,6 @@ class Post(models.Model):
             return
         self.url = request.build_absolute_uri(self.get_absolute_url())
         self.save()
-
-    def get_image_url(self):
-        return self.get_absolute_url() + "/image"
 
     def get_absolute_url(self):
         print("ID HERE", self.id)

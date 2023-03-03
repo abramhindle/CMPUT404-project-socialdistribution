@@ -45,7 +45,8 @@ class post_list(APIView, PageNumberPagination):
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-        if 'image' in request.data['content_type']:
+        # should do this a different way but for now, it should serialize as image
+        if 'image' in request.data:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
         else:
             serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
@@ -119,15 +120,23 @@ class ImageView(APIView):
         try:
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
+            
             # not image post
             if 'image' not in post.contentType:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                error_msg = {"message":"Post does not contain an image!"}
+                return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
 
-            # not properly base64 encoded yet
+            # no image included in post
+            if not post.image:
+                error_msg = {"message":"Post does not contain an image!"}
+                return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+            
+            # decode the image
             post_content = post.contentType.split(';')[0]
             image = base64.b64decode(post.content.strip("b'").strip("'"))
             return Response(image, content_type=post_content, status=status.HTTP_200_OK)
 
         except Post.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            error_msg = {"message":"Post does not exist!"}
+            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
