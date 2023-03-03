@@ -72,11 +72,18 @@ def single_author(request: Request, author_id: str):
 class Author_All(APIView):
 
     def get(self, request, format=None):
+        """
+        GET baseurl/authors/
+        """
         query_set = Author.objects.all()
         serializer = AuthorSerializer(query_set, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        """
+        POST baseurl/authors/
+        You have to put the author_id in the json. 
+        """
         serializer = AuthorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -87,6 +94,9 @@ class Author_All(APIView):
 class Author_Individual(APIView):
 
     def get_object(self, id, format=None):
+        """
+        Gets a query from the database.
+        """
         try:
             return Author.objects.get(id=id)
         except:
@@ -94,11 +104,17 @@ class Author_Individual(APIView):
             return Http404
 
     def get(self, request, author_id, format=None):
+        """
+        GET baseurl/authors/<author_id>/
+        """
         query = self.get_object(author_id)
         serializer = AuthorSerializer(query)
         return Response(serializer.data)
 
     def put(self, request, author_id, format=None):
+        """
+        PUT baseurl/authors/<author_id>/
+        """
         query = self.get_object(author_id)
         serializer = AuthorSerializer(query, data=request.data)
         if serializer.is_valid():
@@ -123,17 +139,27 @@ class Author_Individual(APIView):
 class Author_Post(APIView):
 
     def get_object(self, id, format=None):
+        """
+        Gets a query from the database.
+        """
         query_set = Post.objects.filter(author_id__pk=id)
         if query_set:
             return query_set
         raise Http404
 
     def get(self, request, author_id, format=None):
+        """
+        GET baseurl/authors/<author_id>/posts/
+        """
         query = self.get_object(author_id)
         serializer = PostSerializer(query, many=True)
         return Response(serializer.data)
 
     def post(self, request, author_id, format=None):
+        """
+        POST baseurl/authors/<authors_id>/posts/
+        You have to put the post_id in the json.
+        """
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -144,6 +170,9 @@ class Author_Post(APIView):
 class Author_Post_Single(APIView):
 
     def get_object(self, author_id, post_id, format=None):
+        """
+        Gets a query from the database.
+        """
         try:
             query_set = Post.objects.get(id=post_id, author_id=author_id)
             return query_set
@@ -152,6 +181,9 @@ class Author_Post_Single(APIView):
             return Http404
 
     def get(self, request, author_id, post_id, format=None):
+        """
+        GET baseurl/authors/<author_id>/posts/<posts_id>/
+        """
         query_set = self.get_object(author_id, post_id)
         serializer = PostSerializer(query_set)
         return Response(serializer.data)
@@ -166,6 +198,9 @@ class Author_Post_Single(APIView):
     #     obj.post(request, author_id)
 
     def put(self, request, author_id, post_id, format=None):
+        """
+        PUT baseurl/authors/<author_id>/posts/<posts_id>/
+        """
         query_set = self.get_object(author_id, post_id)
         serializer = PostSerializer(query_set, data=request.data)
         if serializer.is_valid():
@@ -174,6 +209,9 @@ class Author_Post_Single(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, author_id, post_id, format=None):
+        """
+        DELETE baseurl/authors/<author_id>/posts/<post_id>/
+        """
         query_set = self.get_object(author_id, post_id)
         query_set.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

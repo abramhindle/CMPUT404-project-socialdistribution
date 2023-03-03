@@ -85,6 +85,8 @@ def single_post(request: Request, author_id: str, post_id: str):
         return Response({"message": f"Creating single post {post_id} from author {author_id}"})
 
 
+# These are extra, for testing purposes only. --------------------------------
+
 class Post_All(APIView):
 
     """
@@ -137,3 +139,5 @@ class Post_individual(APIView):
         post_query_set = self.get_object(pk)
         post_query_set.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# -----------------------------------------------------------------------------
