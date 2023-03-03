@@ -37,6 +37,7 @@ function Inbox(filter) {
       return <div className='emptyList'><h3>Nothing to see here yet!</h3></div>
     }
     else{
+      console.log(post_list);
       return <PostList user_list={post_list}/>
     }
   };
