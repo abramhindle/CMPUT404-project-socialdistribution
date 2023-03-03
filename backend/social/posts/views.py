@@ -45,7 +45,11 @@ class post_list(APIView, PageNumberPagination):
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        if 'image' in request.data['content_type']:
+            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
+        else:
+            serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        
         if serializer.is_valid():
             # using raw create because we need custom id
             # print("original",serializer.validated_data.get('categories'))
@@ -97,7 +101,6 @@ class DetailView(generic.DetailView):
     template_name = 'posts/detail.html'
     
 class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
-
     model = Post
     template_name = 'posts/delete.html'
     context_object_name = 'post'
@@ -113,10 +116,6 @@ class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
 class ImageView(APIView):
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
-    def post(self):
-        # DO THIS
-        return
-
     def get(self, request, pk_a, pk):
         try:
             author = Author.objects.get(id=pk_a) 
@@ -127,8 +126,8 @@ class ImageView(APIView):
 
             # not properly base64 encoded yet
             post_content = post.contentType.split(';')[0]
-            # image = base64.b64decode(post.content.strip("b'").strip("'"))
-            return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)
+            image = base64.b64decode(post.content.strip("b'").strip("'"))
+            return Response(image, content_type=post_content, status=status.HTTP_200_OK)
 
         except Post.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
