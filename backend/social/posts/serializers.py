@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import *
 from author.serializers import AuthorSerializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
+# pip install drf-base64
+from drf_base64.fields import Base64ImageField
 
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
@@ -72,4 +74,16 @@ class LikeSerializer(serializers.ModelSerializer):
             "type",
             "author",
             "object",
+        ]
+
+class ImagePostSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="post",source="get_api_type",read_only=True)
+    image = Base64ImageField()
+    # later, visibility should be public by default for sharing
+    class Meta:
+        model = Post
+        fields = [
+            "type",
+            "image",
+            "visibility",
         ]

@@ -44,7 +44,7 @@ class Post(models.Model):
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
     
-    refImage = models.URLField(max_length=200, default="", blank=True)  # reference to an image post
+    image = models.ImageField(null=True,blank=True)  # reference to an image in the DB
 
     # make it pretty
     def __str__(self):
@@ -54,26 +54,25 @@ class Post(models.Model):
     def get_visilibility(self):
         return self.Visibility(self.visibility).label
 
-    content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
+    # for some reason, this is throwing an error for me(column does not exist), so it's commented out for the time being. 
+
+    #content_type = models.CharField(choices=content_types, default=PLAIN, max_length=20)
     
-    # you may need to pip install pillow
-    # for the post request, use <form method="post" enctype="multipart/form-data">
-    uploaded_img = models.ImageField(null=True, blank=True, upload_to='images/')
     # get content type
-    def get_content_type(self):
-        return self.ContentType(self.content_type).label
+    # def get_content_type(self):
+    #    return self.ContentType(self.content_type).label
 
     # get public id of post
     def get_public_id(self):
         return self.url or self.id
-    
+
     # get comments url
     def get_comments_source(self):
         if self.url.endswith("/"):
             return self.url + 'comments/'
         else:
             return self.url + '/comments/'
-        
+    
     def get_comment_count(self):
         return self.comments.count()
 
@@ -85,6 +84,9 @@ class Post(models.Model):
             return
         self.url = request.build_absolute_uri(self.get_absolute_url())
         self.save()
+
+    def get_image_url(self):
+        return self.get_absolute_url() + "/image"
 
     def get_absolute_url(self):
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
