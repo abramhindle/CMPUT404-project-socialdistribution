@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'social_net',
-    'API'
+    'API',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
 ]
 
 ROOT_URLCONF = 'social_net.urls'
@@ -86,11 +92,11 @@ WSGI_APPLICATION = 'social_net.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'social_net', 
-        'USER': 'postgres',
-        'PASSWORD': '102400',
-        'HOST': '127.0.0.1', 
-        'PORT': '5434',
+        'NAME': os.getenv('PG_DATABASE_NAME'), 
+        'USER': os.getenv('PG_DATABASE_USER'),
+        'PASSWORD': os.getenv('PG_DATABASE_PASSWORD'),
+        'HOST': os.getenv('PG_DATABASE_HOST'),
+        'PORT': os.getenv('PG_DATABASE_PORT'),
     }
 }
 

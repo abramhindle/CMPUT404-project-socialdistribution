@@ -5,39 +5,56 @@ from .serializers import PostsSerializer, AuthorSerializer, CommentsSerializer, 
 import json
 import uuid
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'PUT'])
 def AuthorView(request, uid):
     """
     API endpoint that allows users to be viewed or edited.
     """
     if request.method == 'GET':
-        author_object = AuthorModel.objects.get(id=uid)
-        serialized_object = AuthorSerializer(author_object)
-        output = serialized_object.data
-        return JsonResponse(output, status = 200)
-    elif request.method == 'POST':
-        author_object = AuthorModel.objects.get(id=uid)
-        serialized_object = AuthorSerializer(author_object)
-        parameters = json.loads(request.body)
-        serialized_object.update(author_object, parameters)
-        output = serialized_object.data
-        return JsonResponse(output, status = 200)
+        try:
+            author_object = AuthorModel.objects.get(id=uid)
+        except AuthorModel.DoesNotExist:
+            return JsonResponse({"Error": "Author does not exist"}, status = 404)
 
-@api_view(['GET'])
+        serialized_object = AuthorSerializer(author_object)
+
+        output = serialized_object.data
+        return JsonResponse(output, status = 200)
+    elif request.method == 'PUT':
+        parameters = json.loads(request.body)
+        AuthorModel.objects.filter(id=uid).update(**parameters)
+        return JsonResponse({
+            "success": True,
+        },status = 200)
+   
+
+@api_view(['GET', 'POST'])
 def AuthorsView(request):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    page = int(request.GET.get('page', '1'))
-    size = int(request.GET.get('size', '5'))
-    authors_list = AuthorModel.objects.order_by('-displayName')[page*size-5:page*size-1]
+    if request.method == 'GET':
+        page = int(request.GET.get('page', '1'))
+        size = int(request.GET.get('size', '5'))
+        authors_list = AuthorModel.objects.order_by('-displayName')[page*size-5:page*size-1]
     # print(authors_list)
-    serialized_authors_list = list([AuthorSerializer(author).data for author in authors_list])
-    output = {
-    "type": "authors",      
-    "items": serialized_authors_list,
-    }
-    return JsonResponse(output, status = 200)
+        serialized_authors_list = list([AuthorSerializer(author).data for author in authors_list])
+        output = {
+        "type": "authors",      
+        "items": serialized_authors_list,
+        }
+        return JsonResponse(output, status = 200)
+
+    elif request.method == 'POST':
+        parameters = json.loads(request.body)
+        AuthorModel.objects.create(
+            **parameters
+        )
+        
+        return JsonResponse({
+            "success": True,
+        },status = 200)
+   
 
 @api_view(['GET'])
 def AuthorFollowersView(request, uid):
@@ -130,14 +147,22 @@ def PostsView(request, author_id):
     #checks friendship
     posts_paginated = []
     if request.method == 'GET':
-        post_object = PostsModel.objects.filter(author=author_id).order_by('-published')[0:4] #TODO: pagination
+        page = int(request.GET.get('page', '0'))
+        count = int(request.GET.get('count', '10'))
+        count = max(count, 25)
+        post_object = PostsModel.objects.filter(author=author_id).order_by('-published')[page*count:page*count+count]
         for post in post_object:
             serialized_object = PostsSerializer(post)
-            posts_paginated.append(serialized_object.data)
+            author_data = AuthorModel.objects.get(id=post.author)
+            serialized_author = AuthorSerializer(author_data)
+            data = dict(serialized_object.data)
+            data['author'] = serialized_author.data
+            posts_paginated.append(data)
         output = {"posts": posts_paginated}
         return JsonResponse(output, status = 200)
     elif request.method == 'POST':
-        PostsModel.objects.create(author=author_id, id=str(uuid.uuid4()))
+        json_data = json.loads(request.body)
+        PostsModel.objects.create(author=author_id, id=str(uuid.uuid4()), **json_data)
         return JsonResponse({"status":"success"}, status = 200)
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
@@ -147,8 +172,12 @@ def PostsRetriveView(request, author_id, post_id):
     """
     if request.method == 'GET':
         post_object = PostsModel.objects.get(id=post_id)
+        author_data = AuthorModel.objects.get(id=post_object.author)
+        serialized_author = AuthorSerializer(author_data)
         serialized_object = PostsSerializer(post_object)
-        return JsonResponse(serialized_object.data, status = 200)
+        data = dict(serialized_object.data)
+        data['author'] = serialized_author.data
+        return JsonResponse(data, status = 200)
     elif request.method == 'POST':
         post_object = PostsModel.objects.get(id=post_id)
         serialized_object = PostsSerializer(post_object)
@@ -159,7 +188,8 @@ def PostsRetriveView(request, author_id, post_id):
         PostsModel.objects.filter(author=author_id, id=post_id).delete()
         return JsonResponse({"status":"success"}, status = 200)
     elif request.method == 'PUT':
-        PostsModel.objects.create(author=author_id, id=post_id)
+        json_data = json.loads(request.body)
+        PostsModel.objects.filter(author=author_id, id=post_id).update(**json_data)
         return JsonResponse({"status":"success"}, status = 200)
 
 @api_view(['GET', 'POST'])

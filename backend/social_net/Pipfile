@@ -8,6 +8,8 @@ django = "*"
 djangorestframework = "*"
 django-filter = "*"
 "backports.zoneinfo" = "==0.2.1"
+psycopg2 = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
