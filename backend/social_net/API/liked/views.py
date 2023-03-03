@@ -8,7 +8,7 @@ import uuid
 @api_view(['GET'])
 def LikedView(request, author_id):
     """
-    API endpoint that allows users to be viewed or edited.  liked view  for user after press like
+      liked view  for user after press like
     """
     liked_paginated = []
     liked_object = LikeModel.objects.filter(author=author_id)
