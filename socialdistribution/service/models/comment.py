@@ -10,9 +10,12 @@ class Comment(models.Model):
     comment = models.TextField()
 
     MARKDOWN = "MARKDOWN"
+    PLAIN = "text/plain"
+
 
     CONTENT_TYPES = (
         (MARKDOWN, "text/markdown"),
+        (PLAIN, "text/plain"),
     )
 
     contentType = models.CharField(max_length=64, choices=CONTENT_TYPES, default=MARKDOWN)
