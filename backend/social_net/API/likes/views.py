@@ -39,7 +39,7 @@ def InboxView(request, author_id):
 @api_view(['GET'])
 def PostLikeView(request, author_id, post_id):
     """
-    API endpoint that allows users to be viewed or edited. for like function
+    for post like function
     """
     post_likes_paginated = []
     object = "http://127.0.0.1:5454/authors/"+ author_id+ "/posts/"+ post_id + "/"
@@ -55,7 +55,7 @@ def PostLikeView(request, author_id, post_id):
 @api_view(['GET'])
 def CommentLikeView(request, author_id, post_id, comment_id):
     """
-    API endpoint that allows users to be viewed or edited.
+    for comment like function
     """
     comment_likes_paginated = []
     object = "http://127.0.0.1:5454/authors/"+ author_id+ "/posts/"+ post_id+ "/comments/"+ comment_id + "/"
