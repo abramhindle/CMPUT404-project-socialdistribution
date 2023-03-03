@@ -55,7 +55,7 @@ export default function PlainPost(data) {
           <div className="content-container">
             <h5>{data["post"]["title"]}</h5>
             {markdown && <ReactMarkdown className="content line">
-{data["post"]["content"]} {/* Mardown doesn't like leading whitespace */}
+{String(data["post"]["content"])} {/* Mardown doesn't like leading whitespace */}
                         </ReactMarkdown>}
                         {(!markdown) && <div className="content line">
                             {data["post"]["content"]}
