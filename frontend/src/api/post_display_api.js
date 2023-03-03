@@ -11,9 +11,8 @@ export const post_api = async (authorId, post, successPost, successFollow) => {
     .post(`http://localhost:8000/authors/${authorId}/posts/`, post, head)
     .then(function (response) {
       console.log("Post res: ", response["data"]);
-      successPost(response);
+      successPost(response["data"]);
       get_followers_for_author(authorId, successFollow);
-      
     })
     .catch(function (error) {
       console.log(error);
