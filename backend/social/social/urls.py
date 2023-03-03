@@ -27,6 +27,7 @@ from drf_yasg import openapi
 from . import views
 
 
+
 schema_view = get_schema_view(
    openapi.Info(
       title="Social Distribution API",
@@ -38,14 +39,20 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('posts.urls')),
     path('authors/', include('author.urls')),
+
     path('',schema_view.with_ui('swagger',cache_timeout=0),name = 'schema-swagger-ui'),
     
     path("register", views.register.as_view(), name="register"),
     path('redoc/', schema_view.with_ui('redoc',cache_timeout=0),name = 'schema-redoc'),
+
+    path("register", views.register.as_view(), name="register"),
+    path("login", views.login.as_view(), name="login")
+
 ]
 
 # adds the path to the media directory, we can put images in media/images/[filename] 

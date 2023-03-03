@@ -24,12 +24,8 @@ function PROFILE() {
 	const [curPage, setCurPage] = useState("profile");
 	let navigate = useNavigate();
 
-	const handleProfileClick = () => {
-		if (curPage !== "profile") {
-			console.log(curPage);
-			setCurPage("profile");
-			navigate("profile");
-		}
+	const handleInboxClick = () => {
+		navigate("/");
 	};
 
 	// make a get request to get author and every post the author made and comments on the posts
@@ -40,10 +36,10 @@ function PROFILE() {
 			<Navbar>
 				<Navbar.Brand>Socially Distrubted</Navbar.Brand>
 				<Nav pullRight>
-					<Nav.Item>Inbox</Nav.Item>
+					<Nav.Item onClick={handleInboxClick}>Inbox</Nav.Item>
 				</Nav>
 				<Nav pullRight>
-					<Nav.Item onClick={handleProfileClick}>Profile</Nav.Item>
+					<Nav.Item>Profile</Nav.Item>
 				</Nav>
 			</Navbar>
 			<Panel shaded>
