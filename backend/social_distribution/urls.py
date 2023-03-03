@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.schemas import get_schema_view
 from apps.authors.views import authors_paginated
+from apps.posts.views import Post_All
 
 
 urlpatterns = [
@@ -26,5 +27,6 @@ urlpatterns = [
     path('api-schema/', get_schema_view(), name='API Schema'),      # API schema endpoint (used for dynamic swagger docs generation)
     path('docs/', include('apps.docs.urls')),                       # Prefix for documentation pages (currently /docs/api/ only)
     path('authors/', include('apps.authors.urls')),                 # Pretty much every other URI starts with this author prefix
-    path('authors', authors_paginated, name='Authors Paginated')    # Project spec indicates there shouldn't be a trailing slash on paginated authors, so here it is
+    path('authors', authors_paginated, name='Authors Paginated'),   # Project spec indicates there shouldn't be a trailing slash on paginated authors, so here it is
+    path('posts/', Post_All.as_view(), name='TEST URL FOR POSTS')   # Test url for posts
 ]
