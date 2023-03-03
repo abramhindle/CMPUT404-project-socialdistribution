@@ -21,9 +21,6 @@ class PostSerializer(WritableNestedModelSerializer):
         return [category for category in categories_list]
     
     def update(self, instance, validated_data):
-        """
-        Update and return an existing `Post` instance, given the validated data
-        """
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.content = validated_data.get('content', instance.content)
