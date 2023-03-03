@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Input, Panel, InputGroup } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
+import axios from "axios";
 
 function LOGIN() {
 	const [username, set_username] = useState("");
@@ -10,6 +11,18 @@ function LOGIN() {
 
 	const handleChange = () => {
 		setVisible(!visible);
+	};
+
+	const handleLoginClick = () => {
+		var params = {
+			username: username,
+			password: password,
+		};
+		axios({ method: "post", url: "login", data: params })
+			.then((res) => {
+				console.log(res);
+			})
+			.catch((err) => console.log(err));
 	};
 
 	return (
@@ -39,6 +52,7 @@ function LOGIN() {
 					apperance="Primary"
 					block
 					style={{ width: "70%", margin: "auto", marginTop: 10 }}
+					onClick={handleLoginClick}
 				>
 					Login
 				</Button>
