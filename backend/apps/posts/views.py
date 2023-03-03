@@ -64,6 +64,9 @@ def posts_paginated(request: Request, author_id: str, page: int = 10, size: int 
 class All_Posts_By_Author(APIView):
 
     def get_object(self, id, format=None):
+        """
+        Gets a query from the database.
+        """
         query_set = Post.objects.filter(author_id__pk=id)
         if query_set:
             return query_set
@@ -84,8 +87,14 @@ class All_Posts_By_Author(APIView):
         /authors/{author_id}/posts/
 
         POST (local) create a new post but generate a new id
+
+        You have to put the post_id in the json.
         """
-        pass
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
