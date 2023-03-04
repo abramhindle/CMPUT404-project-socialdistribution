@@ -38,6 +38,16 @@ class Author(models.Model):
     def get_public_id(self):
         return self.url or self.id    
     
+    def follower_to_object(self):
+        return {"type":"author",
+            "id":self.id,
+            "url":self.url,
+            "host":self.host,
+            "displayName":self.displayName,
+            # "github":self.github
+            "profileImage":self.profileImage
+        } 
+    
 class Inbox(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
     author = models.ForeignKey(Author, related_name="inbox", on_delete=models.CASCADE)
