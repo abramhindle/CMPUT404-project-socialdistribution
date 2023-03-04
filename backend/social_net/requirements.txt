@@ -1,5 +1,8 @@
-psycopg2-binary
 django 
 djangorestframework
 django-filter
 backports.zoneinfo==0.2.1;python_version<"3.8"
+psycopg2-binary
+django-cors-headers
+django-rest-swagger
+drf-yasg
