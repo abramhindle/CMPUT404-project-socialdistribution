@@ -1,5 +1,5 @@
 
-FROM --platform=$BUILDPLATFORM python:3.9-alpine AS builder
+FROM --platform=$BUILDPLATFORM python:3.8-alpine AS builder
 EXPOSE 8000
 WORKDIR /app 
 COPY ./requirements.txt /app
