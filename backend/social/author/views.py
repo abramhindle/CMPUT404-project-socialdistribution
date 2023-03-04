@@ -94,3 +94,26 @@ class AuthorView(APIView):
    
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+ class FollowersView(APIView):
+    serializer_class = AuthorSerializerr
+
+    def get(self, request):
+        try:
+            author = Author.objects.get(id=request.data["author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        followers = author.friends
+
+        followers_list = []
+        for follower in followers:
+            try: 
+                author = Author.objects.get(id=request.data[follower])
+            except Author.DoesNotExist:
+                error_msg = "Follower id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
+            followers_list.append(author.follower_to_object())
+
+        return Response(followers_list)
