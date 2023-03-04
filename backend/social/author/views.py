@@ -95,25 +95,32 @@ class AuthorView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
- class FollowersView(APIView):
-    serializer_class = AuthorSerializerr
+class FollowersView(APIView):
+    serializer_class = AuthorSerializer
 
-    def get(self, request):
+    #Implement later after talking to group 
+    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Followers")
+    def get(self, request, pk_a):
+        # print(request.__dict__)
         try:
-            author = Author.objects.get(id=request.data["author_id"])
+            author = Author.objects.get(id=pk_a)
+            # author = Author.objects.get(id=request.data["author_id"])
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-        followers = author.friends
-
+        print(author.friends)
+        followers = author.friends.all()
+        print(followers)
         followers_list = []
         for follower in followers:
             try: 
-                author = Author.objects.get(id=request.data[follower])
+                follower_author = Author.objects.get(id=follower.id)
+                print (follower_author)
             except Author.DoesNotExist:
                 error_msg = "Follower id not found"
                 return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
-            followers_list.append(author.follower_to_object())
+            followers_list.append(follower_author.follower_to_object())
 
+        # print(followers_list)
         return Response(followers_list)
