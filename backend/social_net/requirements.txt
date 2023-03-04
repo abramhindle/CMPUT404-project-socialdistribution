@@ -1,7 +1,7 @@
 django 
 djangorestframework
 django-filter
-backports.zoneinfo==0.2.1;python_version<"3.8"
+backports.zoneinfo==0.2.1;python_version<"3.9"
 psycopg2-binary
 django-cors-headers
 django-rest-swagger
