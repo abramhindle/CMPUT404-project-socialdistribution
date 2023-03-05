@@ -37,17 +37,21 @@ class post_list(APIView, PageNumberPagination):
         return  self.get_paginated_response(serializer.data)
 
     def post(self, request, pk_a):
+        print("hello")
+        print(request.data)
         pk = str(uuid.uuid4())
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
             return Response("Author not found", status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
 
         # should do this a different fway but for now, it should serialize as image
-        if 'image' in request.data['contentType']:
-            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
-        else:
-            serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        # if 'image' in request.data['contentType']:
+        #     serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
+        # else:
+        #     serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
         
         if serializer.is_valid():
             # using raw create because we need custom id

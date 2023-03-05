@@ -65,12 +65,15 @@ function CREATEPOST() {
 			author.id.length - len,
 			author.id.length
 		);
-		const url = "posts/authors/" + author_id + "/posts/";
+		const url = `authors/authors/${author_id}/posts/`;
+		console.log(url);
 		var params = {
 			title: title,
 			description: description,
 			content: text,
 			contentType: "text/plain",
+			visiblity: post_status,
+
 			author: author,
 		};
 		console.log(JSON.stringify(params));
