@@ -21,8 +21,27 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import status
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
+
+
+response_schema_dict = {
+    "200": openapi.Response(
+        description="Successful Operation",
+        examples={
+            "application/json": {
+        "type": "author",
+        "id": "866ff975-bb49-4c75-8cc8-10e2a6af44a0",
+        "displayName": "Fahad",
+        "url": "",
+        "profileImage": ""
+    }
+        }
+    )}
+@swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Authors registered")
 @api_view(['GET'])
+
 def get_authors(request):
     """
     Get the list of authors on our website
@@ -30,6 +49,8 @@ def get_authors(request):
     authors = Author.objects
     serializer = AuthorSerializer(authors, many=True)
     return Response(serializer.data)
+
+
 
 class AuthorView(APIView):
     
@@ -40,11 +61,22 @@ class AuthorView(APIView):
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
         return data 
 
+
+    @swagger_auto_schema(responses=response_schema_dict,operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
+
+        """
+        Get a particular author searched by AuthorID
+        """
         author = Author.objects.get(id=pk_a)
         serializer = AuthorSerializer(author,partial=True)
         return  Response(serializer.data)
-    def post(self, request, pk_a):
+    
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Update a particular Authors profile")
+    def put(self, request, pk_a):
+        """
+        Update the authors profile
+        """
         author_id = pk_a
         
            
