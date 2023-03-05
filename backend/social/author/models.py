@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import uuid
-
+from django.db.models import Q
 from django.urls import reverse
 
 # Create your models here.
@@ -15,6 +15,8 @@ class Author(models.Model):
     profileImage = models.URLField(editable=True,blank=True, max_length=500) # profile image of author, optional
     url = models.URLField(editable=False, max_length=500)  # url of author profile
     host = models.URLField(editable=False, max_length=500)  # host server
+
+  
 
     # make it pretty
     def __str__(self):
@@ -52,4 +54,17 @@ class Inbox(models.Model):
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
+
+class FollowRequest(models.Model):
+    Type =models.CharField(max_length=255, blank=True)
+    actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
+    object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
+    Summary =models.CharField(max_length=255, blank=True)
+    accepted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('actor','object')
+
+    def __str__(self):
+        return f'{self.actor} follow {self.object}'
         
