@@ -137,13 +137,3 @@ class ViewRequests(APIView):
         serializer = FollowRequestSerializer(requests,many=True)
         return Response(serializer.data)
 
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def accept_friend_request(request):
-    from_user_id = request.data.get('from_user')
-    friend_request = get_object_or_404(FollowRequest, from_user_id=from_user_id, to_user=request.user, accepted=False)
-    friend_request.accepted = True
-    friend_request.save()
-    return Response({'success': True})
-
