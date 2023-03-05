@@ -98,10 +98,12 @@ class AuthorView(APIView):
 class FollowersView(APIView):
     serializer_class = AuthorSerializer
 
+    # The get function is called witha  get request. The function is called by using 
+    # ://authors/authors/{AUTHOR_ID}/followers/ to get a list of followers
+    # or call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/ to check if foriegn author is following author
     #Implement later after talking to group 
     # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Followers")
-    def get(self, request, pk_a):
-        # print(request.__dict__)
+    def get(self, request, pk_a, pk=None):
         try:
             author = Author.objects.get(id=pk_a)
             # author = Author.objects.get(id=request.data["author_id"])
@@ -109,18 +111,106 @@ class FollowersView(APIView):
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-        print(author.friends)
+        # If url is /authors/authors/author_id/followers/
+        if pk ==None:
+            followers = author.friends.all()
+            followers_list = []
+            for follower in followers:
+                try: 
+                    follower_author = Author.objects.get(id=follower.id)
+                    print (follower_author)
+                except Author.DoesNotExist:
+                    error_msg = "Follower id not found"
+                    return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
+                followers_list.append(follower_author.follower_to_object())
+
+            # print(followers_list)
+            return Response(followers_list)
+        # else If url is /authors/authors/author_id/followers/foreign_author_id    
+        else:
+            try:
+                follower = Author.objects.get(id=pk)
+            # follower = Author.objects.get(id=request.data["foreign_author_id"])
+            except Author.DoesNotExist:
+                error_msg = "Foreign Author id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+            friends = author.friends.all()
+            if follower in friends:
+                serializer = AuthorSerializer(follower,partial=True)
+                #returns the follower
+                return  Response(serializer.data)
+            else:
+                #if the follower is not apart of the followers lis return empty{}
+                return Response({})
+            
+
+    #For this we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id 
+    #Implement later after talking to group 
+    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="New Follower")
+    def put(self, request, pk_a, pk):
+        try:
+            author = Author.objects.get(id=pk_a)
+            # author = Author.objects.get(id=request.data["author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            new_follower = Author.objects.get(id=pk)
+            # new_follower = Author.objects.get(id=request.data["foreign_author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Follower id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        followers = author.friends
+        followers.add(new_follower)
+        author.save()
+
         followers = author.friends.all()
-        print(followers)
         followers_list = []
         for follower in followers:
             try: 
                 follower_author = Author.objects.get(id=follower.id)
-                print (follower_author)
             except Author.DoesNotExist:
                 error_msg = "Follower id not found"
                 return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
             followers_list.append(follower_author.follower_to_object())
 
-        # print(followers_list)
+        # return the new list of followers
+        return Response(followers_list)
+
+    #For the delete request we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id
+    #Implement later after talking to group 
+    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="Delete Follower")
+    def delete(self, request, pk_a, pk):
+        try:
+            author = Author.objects.get(id=pk_a)
+            # author = Author.objects.get(id=request.data["author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            removed_follower = Author.objects.get(id=pk)
+            # removed_follower = Author.objects.get(id=request.data["foreign_author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Follower id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        followers = author.friends
+        followers.remove(removed_follower)
+        author.save()
+
+        followers = author.friends.all()
+        followers_list = []
+        for follower in followers:
+            try: 
+                follower_author = Author.objects.get(id=follower.id)
+            except Author.DoesNotExist:
+                error_msg = "Follower id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
+            followers_list.append(follower_author.follower_to_object())
+        
+        # return the new list of followers
         return Response(followers_list)
