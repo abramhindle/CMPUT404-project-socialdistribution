@@ -146,6 +146,7 @@ class FollowersView(APIView):
             
 
     #For this we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id 
+    #call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/
     #Implement later after talking to group 
     # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="New Follower")
     def put(self, request, pk_a, pk):
