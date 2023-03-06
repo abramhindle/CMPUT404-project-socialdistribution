@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -y git
+RUN apt-get install -y git procps curl
 RUN git clone https://github.com/Sean-Meyers/CMPUT404-project-socialdistribution.git
 WORKDIR /CMPUT404-project-socialdistribution/backend/social_net
 RUN git pull

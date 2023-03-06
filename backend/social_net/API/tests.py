@@ -203,18 +203,18 @@ class PostEndpointTest(TestCase):
         jsons = []
         for i in range(num):
             uid = str(uuid.uuid4())
-            uids.push(uid)
+            uids.append(uid)
             rel_url = url_mid + uid
             url = cls.LOCAL_NODE_ADDR + rel_url
             host = cls.LOCAL_NODE_ADDR
             displayname=random.choice(cls.author_data['names'])
             profileimg=random.choice(cls.author_data['imagLinks'])
             github = 'http://github.com/' + displayname
-            links.push(rel_url)
+            links.append(rel_url)
             models.User.objects.create(type='author', id=uid, url=url,
                                               host=host, displayName=displayname,
                                               github=github, profileImage=profileimg)
-            jsons.push(cls.helper_generate_author_json(uid,host,displayname,url,github,profileimg))
+            jsons.append(cls.helper_generate_author_json(uid,host,displayname,url,github,profileimg))
         return links, uids, jsons
     
     
@@ -235,7 +235,7 @@ class PostEndpointTest(TestCase):
             pid = str(uuid.uuid4())
             url = url_base + pid
             content = random.choice(cls.post_data['content'])
-            links.push(rel_url)
+            links.append(rel_url)
             try:
                 origin = random.choice([url_base, cls.LOCAL_NODE_ADDR + '/service/authors/' + random.choice(uids)])
                 source = random.choice([url_base, cls.LOCAL_NODE_ADDR + '/service/authors/' + random.choice(uids)])
@@ -245,7 +245,7 @@ class PostEndpointTest(TestCase):
             description = random.choice(cls.post_data['description'])
             categories = []
             for i in range(random.randint(1,4)):
-                categories.push(random.choice(cls.post_data['categories']))
+                categories.append(random.choice(cls.post_data['categories']))
             visibility = random.choice([True, False])
             unlisted = random.choice([True, False])
             ctype = random.choice(['text/markdown', 'text/plain'])
@@ -258,7 +258,7 @@ class PostEndpointTest(TestCase):
                                              visibility=visibility,
                                              unlisted=unlisted, content=content,
                                              author=author_id, comments=commentslink)
-            jsons.push(cls.helper_generate_post_json(pid,author_id, DATE_TODO,
+            jsons.append(cls.helper_generate_post_json(pid,author_id, DATE_TODO,
                                                      title, source, origin,
                                                      description, ctype, content,
                                                      categories, 0, commentslink, None, visibility, unlisted))
