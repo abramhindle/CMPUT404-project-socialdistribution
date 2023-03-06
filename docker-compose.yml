@@ -18,13 +18,14 @@ services:
     image: postgres:14.1-alpine
     restart: always
     ports:
-      - 5434:5434
+      - 8001:5432
     environment:
       POSTGRES_PASSWORD: 102400
       POSTGRES_USER: postgres
       POSTGRES_DB: social_net
     volumes: 
       - db:/var/lib/postgresql/data
+
   
 volumes:
   db:
