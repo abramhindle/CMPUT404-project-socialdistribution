@@ -32,7 +32,7 @@ function PROFILE() {
 	// make a get request to get all the friends of an author
 
 	return (
-		<div style={{ width: "50%", margin: "auto" }}>
+		<div style={{ padding: "10px", width: "60%", margin: "auto" }}>
 			<Navbar>
 				<Navbar.Brand>Socially Distrubted</Navbar.Brand>
 				<Nav pullRight>
