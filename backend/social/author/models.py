@@ -26,7 +26,8 @@ class Author(models.Model):
         return 'author'
     
     def get_absolute_url(self):
-        url = 'http://authors/%s'.format(self.id)
+        # get the url for a single author
+        url = reverse('authors:detail', args=[str(self.id)])
         return url[:-1] if url.endswith('/') else url 
     
     def update_fields_with_request(self, request):
@@ -36,6 +37,8 @@ class Author(models.Model):
     
     # return the author public ID
     def get_public_id(self):
+        if not self.url:
+            self.url = self.get_absolute_url()
         return self.url or self.id    
     
 class Inbox(models.Model):

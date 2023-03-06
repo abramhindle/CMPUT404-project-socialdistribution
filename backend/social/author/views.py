@@ -54,13 +54,10 @@ def get_authors(request):
 
 class AuthorView(APIView):
     
-    serializer_class = AuthorSerializer
-
     def validate(self, data):
         if 'displayName' not in data:
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
         return data 
-
 
     @swagger_auto_schema(responses=response_schema_dict,operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
@@ -77,12 +74,10 @@ class AuthorView(APIView):
         """
         Update the authors profile
         """
-        author_id = pk_a
-        
+        author_id = pk_a 
            
         serializer = AuthorSerializer(data=request.data,partial=True)
-        
-        
+         
         if serializer.is_valid():
             display = Author.objects.filter(id=author_id).values('displayName')
             if request.data['displayName'] == '':
@@ -112,9 +107,9 @@ class InboxSerializerObjects:
         return serializer(item.content_object, context=context).data
     
     def serialize_inbox_objects(self, data, context={}):
-        if data.get('type') is None:
-            raise exceptions
         type = data.get('type')
+        if type is None:
+            raise exceptions
         if type == Post.get_api_type():
             serializer = PostSerializer
         elif type == Like.get_api_type():

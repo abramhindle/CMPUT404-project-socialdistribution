@@ -136,8 +136,12 @@ response_schema_dictComments = {
     )}
 
 class post_list(APIView, PageNumberPagination):
+
+    # for pagination
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
+    #
+    
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List of Posts for an Author")
     def get(self, request, pk_a):
         """

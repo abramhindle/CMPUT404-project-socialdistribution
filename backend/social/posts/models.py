@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 from author.models import Author, Inbox
 from django.contrib.contenttypes.fields import GenericRelation
-from django.utils import timezone
 import uuid
 
 # Create your models here.
@@ -44,7 +43,7 @@ class Post(models.Model):
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
     
-    image = models.ImageField(null=True,blank=True)  # reference to an image in the DB
+    image = models.ImageField(null=True,blank=True, default="")  # reference to an image in the DB
 
     # make it pretty
     def __str__(self):
