@@ -393,3 +393,113 @@ class PostEndpointTest(TestCase):
         response = self.client.delete(post_links[0])
         
         self.assertEqual(response.status_code, 404, "Status code is not 404")
+
+class LikeTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.author = User.objects.create(username='author', password='authorpassword')
+        self.author_profile_url = reverse('author_profile', kwargs={'pk': self.author.pk})
+        self.post = Post.objects.create(author=self.author, content='test post')
+        self.comment = Comment.objects.create(post=self.post, author=self.author, content='test comment')
+
+    def test_create_like_on_post(self):
+        like_data = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": "Lara Croft Likes your post",         
+            "type": "Like",
+            "author":{
+                "type":"author",
+                "id": self.author_profile_url,
+                "host": "http://testserver/",
+                "displayName": self.author.username,
+                "url": self.author_profile_url,
+                "github": "http://github.com/laracroft",
+                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            },
+            "object": reverse('post_detail', kwargs={'pk': self.post.pk})
+        }
+        response = self.client.post(reverse('post_likes', kwargs={'pk': self.post.pk}), like_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Like.objects.count(), 1)
+
+    def test_create_like_on_comment(self):
+        like_data = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": "Lara Croft Likes your comment",         
+            "type": "Like",
+            "author":{
+                "type":"author",
+                "id": self.author_profile_url,
+                "host": "http://testserver/",
+                "displayName": self.author.username,
+                "url": self.author_profile_url,
+                "github": "http://github.com/laracroft",
+                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            },
+            "object": reverse('comment_detail', kwargs={'post_pk': self.post.pk, 'pk': self.comment.pk})
+        }
+        response = self.client.post(reverse('comment_likes', kwargs={'post_pk': self.post.pk, 'pk': self.comment.pk}), like_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Like.objects.count(), 1)
+
+    def test_like_visibility_in_liked_list(self):
+        like_data = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": "Lara Croft Likes your post",         
+            "type": "Like",
+            "author":{
+                "type":"author",
+                "id": self.author_profile_url,
+                "host": "http://testserver/",
+                "displayName": self.author.username,
+                "url": self.author_profile_url,
+                "github": "http://github.com/laracroft",
+                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            },
+            "object": reverse('post_detail', kwargs={'pk': self.post.pk})
+        }
+        response = self.client.get(reverse('author_liked', kwargs={'pk': self.author.pk}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 1)
+        self.assertEqual(response.data['items'][0]['type'], 'Like')
+        self.assertEqual(response.data['items'][0]['object'], reverse('post_detail', kwargs={'pk': self.post.pk}))
+
+        # create another like on a comment and check if it is visible in the liked list
+        like_data = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": "Lara Croft Likes your comment",         
+            "type": "Like",
+            "author":{
+                "type":"author",
+                "id": self.author_profile_url,
+                "host": "http://testserver/",
+                "displayName": self.author.username,
+                "url": self.author_profile_url,
+                "github": "http://github.com/laracroft",
+                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            },
+            "object": reverse('comment_detail', kwargs={'post_pk': self.post.pk, 'pk': self.comment.pk})
+        }
+        response = self.client.post(reverse('comment_likes', kwargs={'post_pk': self.post.pk, 'pk': self.comment.pk}), like_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.get(reverse('author_liked', kwargs={'pk': self.author.pk}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['items']), 2)
+        self.assertEqual(response.data['items'][0]['type'], 'Like')
+        self.assertEqual(response.data['items'][0]['object'], reverse('comment_detail', kwargs={'post_pk': self.post.pk, 'pk': self.comment.pk}))
+        self.assertEqual(response.data['items'][1]['type'], 'Like')
+        self.assertEqual(response.data['items'][1]['object'], reverse('post_detail', kwargs={'pk': self.post.pk}))
+        '''
+This test case defines three tests:
+
+- `test_create_like_on_post`: tests the creation of a like object on a post.
+- `test_create_like_on_comment`: tests the creation of a like object on a comment.
+- `test_like_visibility_in_liked_list`: tests if the likes are visible in the author's liked list.
+
+Note that in the `setUp` method, we create a user, a post, and a comment object that we use in the tests. We also create an `APIClient` object that we use to make HTTP requests to our Django app.
+
+To run the tests, you can use the Django test runner by running the following command in your terminal:
+
+
+        '''
