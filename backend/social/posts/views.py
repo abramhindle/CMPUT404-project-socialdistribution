@@ -160,14 +160,21 @@ class post_list(APIView, PageNumberPagination):
         New post for an Author
         """
         pk = str(uuid.uuid4())
+        
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
-            return Response("Author not found", status=status.HTTP_404_NOT_FOUND)
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-        # should do this a different way but for now, it should serialize as image
-        if 'image' in request.data['contentType']:
-            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        if serializer.is_valid():
+            serializer.validated_data.pop("author")
+            post = Post.objects.create(**serializer.validated_data, author=author, id = pk)
+            post.update_fields_with_request(request)
+
+            serializer = PostSerializer(post, many=False)
+            return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -249,10 +256,6 @@ class post_detail(APIView, PageNumberPagination):
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
         if serializer.is_valid():
             # using raw create because we need custom id
-            # print("original",serializer.validated_data.get('categories'))
-            # categories = ' '.join(serializer.validated_data.get('categories'))
-            # print("categories", categories)
-            #serializer.validated_data.pop('categories')
             serializer.validated_data.pop("author")
             post = Post.objects.create(**serializer.validated_data, author=author, id=pk)
             post.update_fields_with_request(request)
@@ -261,8 +264,6 @@ class post_detail(APIView, PageNumberPagination):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 @swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
