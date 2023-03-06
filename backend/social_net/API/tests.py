@@ -576,3 +576,20 @@ class AuthorFollowersOperationsViewTest(TestCase):
             adding a follower to one author's list of followers, and removing a follower from one author's list of followers. 
             We test if the endpoints return the expected data and if the AuthorModel objects are updated accordingly.
         """
+    def test_post_comment(self):
+        data = {
+            'type': 'comment',
+            'author': str(self.author.id),
+            'post': str(self.post.id),
+            'content': 'New test comment'
+        }
+        response = self.client.post(f'/comments/{self.author.id}/{self.post.id}/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['type'], 'comments')
+        self.assertEqual(response.data['post'], str(self.post.id))
+        self.assertTrue('comments' in response.data)
+        self.assertEqual(len(response.data['comments']), 2)
+        self.assertEqual(response.data['comments'][0]['content'], 'New test comment')
+        '''
+        This test case for comment
+        '''
