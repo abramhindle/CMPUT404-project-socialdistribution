@@ -110,7 +110,7 @@ class FriendRequestView(APIView):
 
         if FollowRequest.objects.filter(actor=actor, object=objects).exists():
             return Response("You've already sent a request to this user", status=status.HTTP_400_BAD_REQUEST)
-        if actor==object:
+        if actor==objects:
             return Response("You cannot follow yourself!", status=status.HTTP_400_BAD_REQUEST)
         
         type = "Follow"
