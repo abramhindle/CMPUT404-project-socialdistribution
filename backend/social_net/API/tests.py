@@ -9,6 +9,17 @@ To run these tests, execute the following command from the command line:
 """
 
 # TODO: Add license, more endpoints.
+from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
+from django.contrib.auth.models import User
+
+# Use the User class here
+
+
+
+from .models import Post, Comment, Like , Author
 
 from django.test import TestCase, Client
 from . import models
@@ -503,3 +514,4 @@ To run the tests, you can use the Django test runner by running the following co
 
 
         '''
+
