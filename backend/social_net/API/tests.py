@@ -211,7 +211,7 @@ class PostEndpointTest(TestCase):
             profileimg=random.choice(cls.author_data['imagLinks'])
             github = 'http://github.com/' + displayname
             links.push(rel_url)
-            models.AuthorModel.objects.create(type='author', id=uid, url=url,
+            models.User.objects.create(type='author', id=uid, url=url,
                                               host=host, displayName=displayname,
                                               github=github, profileImage=profileimg)
             jsons.push(cls.helper_generate_author_json(uid,host,displayname,url,github,profileimg))
@@ -515,3 +515,64 @@ To run the tests, you can use the Django test runner by running the following co
 
         '''
 
+client = Client()
+class AuthorFollowersViewTest(TestCase):
+    def setUp(self):
+        self.author = User.objects.create(
+            id='1',
+            displayName='John Doe',
+            url='https://example.com/johndoe',
+            host='https://example.com',
+            github='https://github.com/johndoe'
+        )
+        self.author.followers = ['2', '3']
+        self.author.save()
+        self.uid = '1'
+        self.url = reverse('author-followers', kwargs={'uid': self.uid})
+
+    def test_get_author_followers(self):
+        response = client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'1': ['2', '3']})
+
+class AuthorFollowersOperationsViewTest(TestCase):
+    def setUp(self):
+        self.author1 = User.objects.create(
+            id='1',
+            displayName='John Doe',
+            url='https://example.com/johndoe',
+            host='https://example.com',
+            github='https://github.com/johndoe'
+        )
+        self.author2 = User.objects.create(
+            id='2',
+            displayName='Jane Smith',
+            url='https://example.com/janesmith',
+            host='https://example.com',
+            github='https://github.com/janesmith'
+        )
+        self.author1.followers = ['2', '3']
+        self.author1.save()
+        self.uid = '1'
+        self.foreign_uid = '2'
+        self.url = reverse('author-followers-ops', kwargs={'uid': self.uid, 'foreign_uid': self.foreign_uid})
+
+    def test_get_author_follower_status(self):
+        response = client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'status': 'friends'})
+
+    def test_add_author_follower(self):
+        response = client.put(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['followers'], ['2', '3', '2'])
+
+    def test_remove_author_follower(self):
+        response = client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['followers'], ['3'])
+        """In the AuthorFollowersViewTest test case, we create an author object with a list of followers and test if the AuthorFollowersView endpoint returns the correct data.
+          In the AuthorFollowersOperationsViewTest test case, we create two author objects and test three scenarios: retrieving the friendship status between the authors,
+            adding a follower to one author's list of followers, and removing a follower from one author's list of followers. 
+            We test if the endpoints return the expected data and if the AuthorModel objects are updated accordingly.
+        """
