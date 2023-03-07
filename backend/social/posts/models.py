@@ -131,7 +131,10 @@ class Like(models.Model):
 
     # get public id of like
     def get_public_id(self):
-        return self.url or self.id
+        if not self.url: 
+            self.url = APP_NAME + self.get_absolute_url()
+            self.save()
+        return (self.url) or str(self.id)
     
     @staticmethod
     def get_api_type():
