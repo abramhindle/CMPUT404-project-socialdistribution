@@ -107,6 +107,8 @@ class InboxSerializerObjects:
         return serializer(item.content_object, context=context).data
     
     def serialize_inbox_objects(self, data, pk_a):
+        ## TODO: Make it clearner, use object_model = item.content_type.model_class()
+        
         type = data.get('type')
         obj = None
         if type is None:
