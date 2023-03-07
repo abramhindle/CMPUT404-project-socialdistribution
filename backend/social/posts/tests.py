@@ -6,6 +6,7 @@ from .models import Author
 from PIL import Image
 from urllib import parse
 import json
+import base64
 test_image = Image.open(r"media/test_img/test_img.png")
 # Create your tests here.
 
@@ -19,7 +20,7 @@ class TestPosts(APITestCase):
         test_id = test_name[-1].strip(')')
         # get url for the user to make posts at
         url = reverse('posts:posts',kwargs={'pk_a':test_id})
-        # set up the test json object with that data
+        # set up the json object with that data
         author_data = {
             'id':test_id,
             'displayName':test_name[0].strip(),
@@ -31,19 +32,60 @@ class TestPosts(APITestCase):
             'description':'testing testy test',
             'contentType':'text/plain',
             'content':'test'
-            }
+        }
         
+        # test the post
         response = self.client.post(url,json.dumps(post_data),content_type="application/json")
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
 
-        response = self.client.get(url)
+        # TODO:extract the post ID from the response
+        post_id = "???"
+
+        # test the get
+        response = self.client.get(url+post_id+'/')
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"testing testy test")
     
     # as image posts share the same POST process up to the serializer,
     # but a different GET from views to render the image
     def test_image_posts(self):
-        
-        return
+        # create the author of the posts + extract the URL
+        create_author = Author.objects.create(displayName='sugon')
+        test_name = str(create_author).split('(')
+        test_id = test_name[-1].strip(')')
+        # get url for the user to make posts at
+        url = reverse('posts:posts',kwargs={'pk_a':test_id})
+        # test image converted to base64
+        with open("media/test_img/test_img.png", "rb") as png_image:
+            base64_image = base64.b64encode(png_image.read())
+        # set up the json object with that data
+        author_data = {
+            'id':test_id,
+            'displayName':test_name[0].strip(),
+        }
+        post_data = {
+            'author':author_data,
+            'type':'post',
+            'title':'test',
+            'description':'testing testy test',
+            'contentType':'image/png;base64',
+            'content':'test',
+            'image':base64_image
+        }
+        # test the POST to the posts URL, this time with an image in the object
+        response = self.client.post(url,json.dumps(post_data),content_type="application/json")
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"testing testy test")
+
+        # same post ID extraction step, 
+        post_id = '???'
+
+        # test the GET and make sure that the image is in there. if it's there, it's rendered
+        response = self.client.get(url+post_id+'/')
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"testing testy test")
+
 
     def test_comments(self):
         return
