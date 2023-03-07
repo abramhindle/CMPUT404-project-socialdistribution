@@ -452,6 +452,8 @@ class ShareView(APIView):
         
         #comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=request.data["comment"])
         
+'''for updating the Post model you need to figure out what urls go into it and how they get there.'''
+
         # serializer = PostSerializer(post, data=request.data, partial=True)
         # if serializer.is_valid():
         #     post = serializer.save()
