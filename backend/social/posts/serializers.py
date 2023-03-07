@@ -10,32 +10,33 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_public_id", read_only=True)
     count = serializers.IntegerField(source="count_comments", read_only=True)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
-    author = AuthorSerializer()
+    author = AuthorSerializer(required=False)
     # count = serializers.IntegerField(source='sget_comment_count')
-#    source = serializers.URLField(default="",max_length=500)  # source of post
-#    origin = serializers.URLField(default="",max_length=500)  # origin of post
-    categories = serializers.SerializerMethodField(read_only=True)
+    # source = serializers.URLField(default="",max_length=500)  # source of post
+    # origin = serializers.URLField(default="",max_length=500)  # origin of post
+    categories = serializers.SerializerMethodField()
         
     def get_categories(self, instance):
         categories_list = instance.categories.split(",")
         return [category for category in categories_list]
     
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
-        instance.content = validated_data.get('content', instance.content)
-        instance.contentType = validated_data.get('contentType', instance.contentType)
-        instance.published = validated_data.get('published', instance.published)
-        return instance
+
+    # update can be done automatically by serializer
     
-    def create(self, instance, validated_data):
-        instance.author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
-        instance.id = self.context["id"]
-        print("ID HERE",instance.id)
-        validated_data.pop("author")
-        post = Post.objects.create(validated_data, author=instance.author, id = instance.id)
-        post.update_fields_with_request(validated_data)
-        return instance
+    def create(self, validated_data):
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        id = self.context["id"]
+        print("ID HERE",id)
+        post = Post.objects.create(**validated_data, author = author, id = id)
+        return post
+    
+    def to_representation(self, instance):
+            id = instance.get_public_id()
+            id = id[:-1] if id.endswith('/') else id
+            return {
+                **super().to_representation(instance),
+                'id': id
+            }
     class Meta:
         model = Post
         fields = [

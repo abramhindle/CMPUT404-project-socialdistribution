@@ -7,13 +7,16 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     displayName = serializers.CharField(default = 'x')
+    
     @staticmethod
     def extract_and_upcreate_author(validated_data, author_id=None):
         validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
         try:
             if validated_author_data:
+                print("if case")
                 updated_author = AuthorSerializer._upcreate(validated_author_data)
             else:
+                print("else case")
                 updated_author = Author.objects.get(id=author_id)
             return updated_author
         except:

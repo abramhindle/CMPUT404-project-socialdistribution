@@ -141,6 +141,8 @@ class post_list(APIView, PageNumberPagination):
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
     #
+
+    # TODO: RESPONSE AND REQUESTS
     
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List of Posts for an Author")
     def get(self, request, pk_a):
@@ -158,6 +160,7 @@ class post_list(APIView, PageNumberPagination):
     def post(self, request, pk_a):
         """
         New post for an Author
+        
         """
         pk = str(uuid.uuid4())
         
@@ -166,9 +169,9 @@ class post_list(APIView, PageNumberPagination):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -183,31 +186,30 @@ class post_detail(APIView, PageNumberPagination):
         Get a particular post of an author
         """
         try: 
-            author = Author.objects.get(id=pk_a)
-            post = Post.objects.get(author=author, id = pk)
-            serializer = PostSerializer(post)
+            post = Post.objects.get(id = pk)
+            serializer = PostSerializer(post, many=False)
             return Response(serializer.data)
         except Post.DoesNotExist: 
             return self.put(request, pk_a, pk)
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a particular post of an author") 
+        
+    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Edit a particular post of an author") 
     def post(self, request, pk_a, pk):       
         
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
-            error_msg = "Author id not found"
+            error_msg = "Author not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
         try:
             post = Post.objects.get(pk=pk)
         except Post.DoesNotExist:
-            error_msg = "Post id not found"
+            error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
-            post = serializer.save()
-            post.update_fields_with_request(request)           
+            serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -225,7 +227,6 @@ class post_detail(APIView, PageNumberPagination):
             post.delete()
             post.save()
             print(post.title)
-            
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Post.DoesNotExist:
             return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
@@ -236,26 +237,19 @@ class post_detail(APIView, PageNumberPagination):
         """
         Updates the post given by the particular authorid and postid
         """
-
         try:
-            author = Author.objects.get(id=pk_a)
+            _ = Author.objects.get(id=pk_a)
             try:
                 _ = Post.objects.get(id=pk)
-                return Response("Post already exists", status=status.HTTP_400_NOT_FOUND)
+                return Response("Post already exists", status=status.HTTP_400_BAD_REQUEST)
             except Post.DoesNotExist:
                 pass
         except Author.DoesNotExist:
-            author = Author.objects.get(id=pk_a)
             Response("Author does not exist", status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
-            # using raw create because we need custom id
-            serializer.validated_data.pop("author")
-            post = Post.objects.create(**serializer.validated_data, author=author, id=pk)
-            post.update_fields_with_request(request)
-
-            serializer = PostSerializer(post, many=False)
+            serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -285,19 +279,6 @@ def get_likes(request, pk_a, pk):
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
-class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
-
-    model = Post
-    template_name = 'posts/delete.html'
-    context_object_name = 'post'
-    success_url = '/admin/'
-    
-    def test_func(self):
-        post = self.get_object()
-        print(post.title)
-        if self.request.user == post.author.user:
-            return True
-        return False
 
 class ImageView(APIView):
     renderer_classes = [JPEGRenderer, PNGRenderer]

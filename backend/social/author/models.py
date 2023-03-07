@@ -6,6 +6,8 @@ import uuid
 
 from django.urls import reverse
 
+APP_NAME = 'http://127.0.0.1:8000'
+
 # Create your models here.
 class Author(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
@@ -37,10 +39,14 @@ class Author(models.Model):
     
     # return the author public ID
     def get_public_id(self):
-        if not self.url:
+        if not self.url: 
             self.url = self.get_absolute_url()
-        return self.url or self.id    
+            self.save()
+        return (APP_NAME+self.url) or str(self.id)   
     
+    class Meta:
+        ordering = ['displayName']
+
 class Inbox(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
     author = models.ForeignKey(Author, related_name="inbox", on_delete=models.CASCADE)
