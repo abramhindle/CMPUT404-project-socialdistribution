@@ -78,7 +78,7 @@ class TestPosts(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
 
-        # same post ID extraction step, 
+        # TODO:same post ID extraction step as the above
         post_id = '???'
 
         # test the GET and make sure that the image is in there. if it's there, it's rendered
