@@ -42,7 +42,7 @@ class AuthorSerializer(serializers.ModelSerializer):
             'id', 
             #'host',
             'displayName',
-            'url',
+            #'url',
             #'github',
             'profileImage',
         ]

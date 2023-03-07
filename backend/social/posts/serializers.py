@@ -63,6 +63,13 @@ class CommentSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="comment",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer()
+    def to_representation(self, instance):
+        id = instance.get_public_id()
+        id = id[:-1] if id.endswith('/') else id
+        return {
+            **super().to_representation(instance),
+            'id': id
+        }
     class Meta:
         model = Comment
         fields = [

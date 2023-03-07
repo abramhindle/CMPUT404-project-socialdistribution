@@ -62,9 +62,9 @@ class Post(models.Model):
     # get public id of post
     def get_public_id(self):
         if not self.url: 
-            self.url = self.get_absolute_url()
+            self.url = APP_NAME + self.get_absolute_url()
             self.save()
-        return (APP_NAME+self.url) or str(self.id)
+        return (self.url) or str(self.id)
     
     # get comments url
     def get_comments_source(self):
@@ -100,7 +100,7 @@ class Comment(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of comment
     url = models.URLField(editable=False, max_length=500)  # URL of comment
     author = models.ForeignKey(Author, related_name = 'comments', on_delete=models.CASCADE)  # author of comment
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # post of the commen
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # post of the commenT
     comment = models.TextField()  # the comment
     published = models.DateTimeField(auto_now_add=True)  # date published
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
@@ -108,9 +108,9 @@ class Comment(models.Model):
     # get public id of comment
     def get_public_id(self):
         if not self.url: 
-            self.url = self.get_absolute_url()
+            self.url = APP_NAME + self.get_absolute_url()
             self.save()
-        return (APP_NAME+self.url) or str(self.id)
+        return (self.url) or str(self.id)
     
     @staticmethod
     def get_api_type():
