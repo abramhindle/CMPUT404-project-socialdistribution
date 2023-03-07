@@ -126,12 +126,12 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         author = get_object_or_404(Author,pk=pk_a)
         inbox_data = author.inbox.all()
         paginated_inbox_data = self.paginate_queryset(inbox_data, request)
-        return self.get_paginated_response([self.serialize_inbox_objects(obj) for obj in paginated_inbox_data])
+        return self.get_paginated_response([self.deserialize_inbox_objects(obj) for obj in paginated_inbox_data])
     
     def post(self, request, pk_a):
         author = Author.objects.get(pk=pk_a)
         serializer = self.serialize_inbox_objects(
-            self.request.data, context={'author_id': author})
+            self.request.data, context={'author_id': pk_a})
         if serializer.is_valid():
             print("VALIDATED", serializer.validated_data)
             item = serializer.save()

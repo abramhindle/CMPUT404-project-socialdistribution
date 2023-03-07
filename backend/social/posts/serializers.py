@@ -29,19 +29,13 @@ class PostSerializer(serializers.ModelSerializer):
         return instance
     
     def create(self, instance, validated_data):
-        updated_author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context.get('author_id'))
-        categories = ' '.join(validated_data.get('categories'))
-        print("categories", categories)
-        validated_data.pop('categories')
-        return Post.objects.create(**validated_data, categories = categories, author=updated_author)
-
-    def to_representation(self, instance):
-            id = instance.get_public_id()
-            id = id[:-1] if id.endswith('/') else id
-            return {
-                **super().to_representation(instance),
-                'id': id
-            }
+        instance.author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        instance.id = self.context["id"]
+        print("ID HERE",instance.id)
+        validated_data.pop("author")
+        post = Post.objects.create(validated_data, author=instance.author, id = instance.id)
+        post.update_fields_with_request(validated_data)
+        return instance
     class Meta:
         model = Post
         fields = [

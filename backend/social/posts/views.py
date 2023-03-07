@@ -167,13 +167,8 @@ class post_list(APIView, PageNumberPagination):
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
-            serializer.validated_data.pop("author")
-            post = Post.objects.create(**serializer.validated_data, author=author, id = pk)
-            post.update_fields_with_request(request)
-
-            serializer = PostSerializer(post, many=False)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
