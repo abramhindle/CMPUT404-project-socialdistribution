@@ -22,6 +22,7 @@ from rest_framework.renderers import (
                                         BrowsableAPIRenderer,
                                     )
 import base64
+import json
 from .image_renderer import JPEGRenderer, PNGRenderer
 
 response_schema_dictposts = {
@@ -164,8 +165,14 @@ class post_list(APIView, PageNumberPagination):
         # should do this a different way but for now, it should serialize as image
         if 'image' in request.data['contentType']:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
+            serializer.is_valid()
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+            serializer.is_valid()
+            print(serializer.data)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
 
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
@@ -331,10 +338,8 @@ class ImageView(APIView):
                 error_msg = {"message":"Post does not contain an image!"}
                 return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
             
-            # decode the image
             post_content = post.contentType.split(';')[0]
-            image = base64.b64decode(post.content.strip("b'").strip("'"))
-            return Response(image, content_type=post_content, status=status.HTTP_200_OK)
+            return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)
 
         except Post.DoesNotExist:
             error_msg = {"message":"Post does not exist!"}
