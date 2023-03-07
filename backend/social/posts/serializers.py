@@ -20,23 +20,24 @@ class PostSerializer(serializers.ModelSerializer):
         categories_list = instance.categories.split(",")
         return [category for category in categories_list]
     
-
     # update can be done automatically by serializer
     
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
-        id = self.context["id"]
+        id = validated_data.pop('id') if validated_data.get('id') else None
+        if not id:
+            id = self.context["id"]
         print("ID HERE",id)
         post = Post.objects.create(**validated_data, author = author, id = id)
         return post
     
     def to_representation(self, instance):
-            id = instance.get_public_id()
-            id = id[:-1] if id.endswith('/') else id
-            return {
-                **super().to_representation(instance),
-                'id': id
-            }
+        id = instance.get_public_id()
+        id = id[:-1] if id.endswith('/') else id
+        return {
+            **super().to_representation(instance),
+            'id': id
+        }
     class Meta:
         model = Post
         fields = [

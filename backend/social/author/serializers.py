@@ -9,8 +9,13 @@ class AuthorSerializer(serializers.ModelSerializer):
     displayName = serializers.CharField(default = 'x')
     
     @staticmethod
+    def _upcreate(validated_data):
+        author = Author.objects.create(**validated_data)   
+        return author
+    @staticmethod
     def extract_and_upcreate_author(validated_data, author_id=None):
         validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
+        print("validated",validated_author_data)
         try:
             if validated_author_data:
                 print("if case")
@@ -45,6 +50,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 class InboxSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     object = serializers.JSONField()
+    
 
     def get_author(self, data):
         author = self.context.get('author')

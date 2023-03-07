@@ -106,16 +106,23 @@ class InboxSerializerObjects:
         
         return serializer(item.content_object, context=context).data
     
-    def serialize_inbox_objects(self, data, context={}):
+    def serialize_inbox_objects(self, data, pk_a):
         type = data.get('type')
+        obj = None
         if type is None:
             raise exceptions
+        context={'author_id': pk_a}
         if type == Post.get_api_type():
+            obj = Post.objects.get(id=data["id"].split("/")[-1])
             serializer = PostSerializer
+            context={'author_id': pk_a,'id':data["id"]}
         elif type == Like.get_api_type():
+            obj = Like.objects.get(id=data["id"].split("/")[-1])
             serializer = LikeSerializer
         elif type == Comment.get_api_type():
+            obj = Comment.objects.get(id=data["id"].split("/")[-1])
             serializer = CommentSerializer
+        if obj: return obj
         return serializer(data=data, context=context)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
@@ -129,17 +136,25 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         return self.get_paginated_response([self.deserialize_inbox_objects(obj) for obj in paginated_inbox_data])
     
     def post(self, request, pk_a):
+        # author id is the id of the person who this notification comes from
+        creator_id = request.data["author"]["id"].split("/")[-1]
+        print("creator", creator_id)
         author = Author.objects.get(pk=pk_a)
         serializer = self.serialize_inbox_objects(
-            self.request.data, context={'author_id': pk_a})
-        if serializer.is_valid():
-            print("VALIDATED", serializer.validated_data)
-            item = serializer.save()
-            if hasattr(item, 'update_fields_with_request'):
-                item.update_fields_with_request(request)
-            inbox_item = Inbox(content_object=item, author=author)
+            self.request.data, pk_a)
+        try:
+            if serializer.is_valid():
+                item = serializer.save()
+                if hasattr(item, 'update_fields_with_request'):
+                    item.update_fields_with_request(request)
+                inbox_item = Inbox(content_object=item, context={'author':creator_id})
+                inbox_item.save()
+            else: 
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except AttributeError:
+            item = serializer     
+            inbox_item = Inbox(content_object=item, author = author)
             inbox_item.save()
-            return Response({'req': self.request.data, 'saved': model_to_dict(inbox_item)})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'req': self.request.data, 'saved': model_to_dict(inbox_item)})
 
 
