@@ -208,11 +208,7 @@ class PostEndpointTest(TestCase):
             displayname=random.choice(cls.author_data['names'])
             profileimg=random.choice(cls.author_data['imageLinks'])
             github = 'http://github.com/' + displayname
-<<<<<<< HEAD
             links.append(rel_url)
-=======
-            links.push(rel_url)
->>>>>>> parent of 8638bdb (test case for follower)
             models.AuthorModel.objects.create(type='author', id=uid, url=url,
                                               host=host, displayName=displayname,
                                               github=github, profileImage=profileimg)
@@ -521,7 +517,6 @@ To run the tests, you can use the Django test runner by running the following co
 
         '''
 
-<<<<<<< HEAD
 client = Client()
 class AuthorFollowersViewTest(TestCase):
     def setUp(self):
@@ -600,5 +595,3 @@ class AuthorFollowersOperationsViewTest(TestCase):
         '''
         This test case for comment
         '''
-=======
->>>>>>> parent of 8638bdb (test case for follower)
