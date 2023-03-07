@@ -73,7 +73,7 @@ const Edit: React.FC<createProps> = ({post}) => {
 			visibility: data.visibility === 'PUBLIC',
 			
 		})
-		await router.push(`/post/${post.id}`)
+		await router.push(`/posts/${post.id}`)
 		} catch (error) {
 			console.log(error)
 		}
