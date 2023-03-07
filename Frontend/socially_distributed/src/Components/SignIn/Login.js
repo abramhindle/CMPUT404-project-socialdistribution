@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useLayoutEffect } from "react";
 import { Button, Input, Panel, InputGroup } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
 import axios from "axios";
 import {
-	setAxiosAuthToken,
-	setToken,
+	getCsrfToken,
 	getCurrentUser,
 	setLoggedIn,
 	unsetCurrentUser,
@@ -21,7 +20,8 @@ function LOGIN() {
 
 	useEffect(() => {
 		unsetCurrentUser();
-	});
+		getCsrfToken();
+	}, []);
 
 	const handleChange = () => {
 		setVisible(!visible);
@@ -32,11 +32,15 @@ function LOGIN() {
 			username: username,
 			password: password,
 		};
+
+		// const token = localStorage.getItem("token");
+		// console.log(token);
+		// let reqInstance = axios.create({
+		// 	headers: { "X-CSRFToken": token },
+		// });
 		axios({ method: "post", url: "login", data: params })
 			.then((res) => {
-				// console.log(res);
-				setAxiosAuthToken(res.data["accessToken"]);
-				setToken(res.data["refreshToken"]);
+				getCsrfToken();
 				getCurrentUser(res.data["author_id"]);
 				setLoggedIn(true);
 				navigate("/");

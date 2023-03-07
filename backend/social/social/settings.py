@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -52,7 +53,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# change to https://app.example.com in production settings
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000']
 
 REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
@@ -63,7 +70,7 @@ ROOT_URLCONF = 'social.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':  [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,8 +82,9 @@ TEMPLATES = [
         },
     },
 ]
-
+ALLOWED_HOSTS = ['127.0.0.1',"localhost"]
 WSGI_APPLICATION = 'social.wsgi.application'
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', "http://127.0.0.1:8000/"]
 
 
 # Database
@@ -131,3 +139,6 @@ STATIC_URL = '/static/'
 # allows the server to host images
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'

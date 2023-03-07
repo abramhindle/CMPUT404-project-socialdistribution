@@ -26,10 +26,12 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),
     path('posts/', include('posts.urls')),
     path('authors/', include('author.urls')),
     path("register", views.register.as_view(), name="register"),
-    path("login", views.login.as_view(), name="login")
+    path("login", views.login.as_view(), name="login"),
+    path('csrf/', views.csrf),
 ]
 
 # adds the path to the media directory, we can put images in media/images/[filename] 

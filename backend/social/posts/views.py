@@ -205,7 +205,7 @@ class CommentView(APIView, PageNumberPagination):
         return Response(commentsObj)
     
     def post(self, request,pk_a, pk):
-        comment_id = uuid.uuid4
+        comment_id = uuid.uuid4()
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:

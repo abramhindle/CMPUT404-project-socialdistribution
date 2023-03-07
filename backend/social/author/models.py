@@ -42,7 +42,7 @@ class Inbox(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
     author = models.ForeignKey(Author, related_name="inbox", on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    object_id = models.CharField(max_length=55)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):

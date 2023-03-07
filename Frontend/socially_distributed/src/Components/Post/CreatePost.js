@@ -5,6 +5,7 @@ import { Input, Avatar, Panel, Dropdown, Uploader, Button } from "rsuite";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import MarkdownEditor from "@uiw/react-markdown-editor";
 
 function CREATEPOST() {
 	const [post_status, set_post_status] = useState("Public");
@@ -13,13 +14,41 @@ function CREATEPOST() {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [categories, setCategories] = useState("");
+	const [markdown, setMarkdown] = useState("");
 
 	const input = () => {
-		if (post_type === "text/plain" || post_type === "text/markdown") {
+		if (post_type === "text/plain") {
 			return (
 				<div>
 					<Input
-						style={{ float: "left", marginTop: "5px" }}
+						style={{
+							float: "left",
+							marginTop: "5px",
+							marginBottom: "5px",
+						}}
+						as="textarea"
+						rows={5}
+						placeholder="Text"
+						value={text}
+						onChange={(e) => setText(e)}
+					/>
+				</div>
+			);
+		}
+
+		if (post_type === "text/markdown") {
+			return (
+				<div>
+					{/* <MarkdownEditor
+						value="# This is a H1  \n## This is a H2  \n###### This is a H6"
+						onChange={(value, viewUpdate) => setMarkdown(value)}
+					></MarkdownEditor> */}
+					<Input
+						style={{
+							float: "left",
+							marginTop: "5px",
+							marginBottom: "5px",
+						}}
 						as="textarea"
 						rows={5}
 						placeholder="Text"
@@ -94,6 +123,9 @@ function CREATEPOST() {
 			author.id.length
 		);
 		const url = `posts/authors/${author_id}/posts/`;
+		// if (post_type === "text/markdown") {
+		// 	text = markdown;
+		// }
 		var params = {
 			title: title,
 			description: description,
@@ -102,7 +134,6 @@ function CREATEPOST() {
 			visiblity: post_status,
 			author: author,
 		};
-		console.log(params);
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
@@ -113,6 +144,7 @@ function CREATEPOST() {
 					setCategories("");
 					set_post_status("Public");
 					set_post_type("text/plain");
+					setMarkdown("");
 				} else {
 					console.log(res);
 					notifyFailedPost();

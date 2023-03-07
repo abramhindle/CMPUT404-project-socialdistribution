@@ -3,6 +3,7 @@ import { Panel, PanelGroup } from "rsuite";
 import COMMENTS from "../Post/Comment";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import POST from "../Post/Post";
 
 function AUTHORPOSTS() {
 	// make a get request to get author and every post the author made and comments on the posts
@@ -77,7 +78,7 @@ function AUTHORPOSTS() {
 		const url = `posts/authors/${author_id}/posts/`;
 		axios({ method: "get", url: url })
 			.then((res) => {
-				console.log(res.data);
+				console.log(res.data.results);
 				setPosts(res.data.results);
 			})
 			.catch((err) => console.log(err));
@@ -107,21 +108,7 @@ function AUTHORPOSTS() {
 				bordered
 				collapsible
 			>
-				<div style={{ padding: "5px" }}>
-					<h5
-						style={{
-							float: "left",
-						}}
-					>
-						{obj["description"]}
-					</h5>
-					<br />
-					<p>{JSON.stringify(obj)}</p>
-					<p>{body(obj)}</p>
-				</div>
-				<Panel bordered collapsible header="Comments">
-					<COMMENTS postobj={obj}></COMMENTS>
-				</Panel>
+				<POST postobj={obj}></POST>
 			</Panel>
 		);
 	};

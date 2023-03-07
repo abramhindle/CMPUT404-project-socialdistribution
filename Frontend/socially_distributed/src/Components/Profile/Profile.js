@@ -3,6 +3,7 @@ import { Avatar, ButtonGroup, Panel, Button, Navbar, Nav } from "rsuite";
 import FRIENDS from "./Friends";
 import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function PROFILE() {
 	const [posts, setPosts] = React.useState(true);
@@ -28,6 +29,16 @@ function PROFILE() {
 		navigate("/");
 	};
 
+	const handleLogoutClick = () => {
+		console.log(localStorage.getItem("token"));
+		const token = localStorage.getItem("token");
+
+		let reqInstance = axios.create({
+			headers: { "X-CSRFToken": token },
+		});
+		reqInstance.post("accounts/logout/").then((res) => navigate("/login"));
+	};
+
 	// make a get request to get author and every post the author made and comments on the posts
 	// make a get request to get all the friends of an author
 
@@ -35,6 +46,9 @@ function PROFILE() {
 		<div style={{ padding: "10px", width: "60%", margin: "auto" }}>
 			<Navbar>
 				<Navbar.Brand>Socially Distrubted</Navbar.Brand>
+				<Nav pullRight>
+					<Nav.Item onClick={handleLogoutClick}>Logout</Nav.Item>
+				</Nav>
 				<Nav pullRight>
 					<Nav.Item onClick={handleInboxClick}>Inbox</Nav.Item>
 				</Nav>
