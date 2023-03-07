@@ -35,8 +35,8 @@ class Post(models.Model):
     author = models.ForeignKey(Author, related_name="posts", on_delete=models.CASCADE)  # author of post
     categories = models.CharField(max_length=255, default="", blank=True)
     title = models.CharField(max_length=150)  # title of post
-    # source = models.URLField(default="",max_length=500)  # source of post
-    # origin = models.URLField(default="",max_length=500)  # origin of post
+    source = models.URLField(default="",max_length=500)  # source of post
+    origin = models.URLField(default="",max_length=500)  # origin of post
     description = models.CharField(blank=True, default="", max_length=200)  # brief description of post
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
     content = models.TextField(blank=False, default="")  # content of post

@@ -431,4 +431,31 @@ class CommentView(APIView, PageNumberPagination):
 
 
 class ShareView(APIView):
-    pass
+    def post(self, request, origin_author, post_id, author):       
+        
+        try:
+            author = Author.objects.get(pk=author)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            post = Post.objects.get(pk=post_id)
+        except Post.DoesNotExist:
+            error_msg = "Post id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+
+        #create new post object with different author but same origin
+        shared_post = Post.objects.create(request.data)
+        #update source, visibility,inbox,published,url,id
+        
+        #comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=request.data["comment"])
+        
+        # serializer = PostSerializer(post, data=request.data, partial=True)
+        # if serializer.is_valid():
+        #     post = serializer.save()
+        #     post.update_fields_with_request(request)           
+        #     return Response(serializer.data)
+        # else:
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
