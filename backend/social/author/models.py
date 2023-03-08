@@ -55,7 +55,7 @@ class Inbox(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
-        return self.tag
+        return self.id
     
     @staticmethod
     def get_api_type():

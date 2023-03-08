@@ -154,7 +154,7 @@ class post_list(APIView, PageNumberPagination):
         print("posts",posts)
         posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
-        return  self.get_paginated_response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
 
@@ -226,8 +226,7 @@ class post_detail(APIView, PageNumberPagination):
         try: 
             post = Post.objects.filter(id=pk)
             post.delete()
-            #post.save()
-            print(Post.objects.get(id=pk))
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Post.DoesNotExist:
             return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)

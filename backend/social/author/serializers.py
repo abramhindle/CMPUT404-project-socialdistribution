@@ -47,25 +47,38 @@ class AuthorSerializer(serializers.ModelSerializer):
             'profileImage',
         ]
         
+        
 class InboxSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer()
-    object = serializers.JSONField()
-    
+    type = serializers.CharField(default="like",source="get_api_type",read_only=True)
+    author = serializers.SerializerMethodField()
+    items = serializers.SerializerMethodField()
 
     def get_author(self, data):
-        author = self.context.get('author')
+        author = self.context["author"]
         validated_data = {
             'author': author,
             'object': data
         }
         return validated_data
-
+    
     def to_representation(self, instance):
-        return instance.object
+        return {
+            **super().to_representation(instance),
+        }
+
+    def get_items(self, instance):
+        print("INSTANCES",instances)
+        serialize = self.context["serializer"]
+        pk_a = self.context["author"]
+        return [serialize(instances)]
 
     def create(self, validated_data):
-        return Inbox.objects.create(**validated_data)
+        print("OBJECTS")
+        obj = Inbox.objects.create(**validated_data,many=True)
+        self.get_author(validated_data)
+        self.get_items(obj)
+        return  obj
     
     class Meta:
         model = Inbox
-        fields = ['author', 'object']
+        fields = ['type','author', 'items']
