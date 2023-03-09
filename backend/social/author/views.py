@@ -96,13 +96,13 @@ class AuthorView(APIView):
 class InboxSerializerObjects:
     def deserialize_inbox_objects(self, item, context={}):
         object_model = item.content_type.model_class()
+        print("CONTENT",item.content_object)
         if object_model is Post:
             serializer = PostSerializer
         elif object_model is Like:
             serializer = LikeSerializer
         elif object_model is Comment:
             serializer = CommentSerializer
-        
         return serializer(item.content_object, context=context).data
     
     def serialize_inbox_objects(self, data, pk_a):
@@ -114,7 +114,7 @@ class InboxSerializerObjects:
             raise exceptions
         context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
         if type == Post.get_api_type():
-            print(data["id"].split("/")[-1])
+            #print(data["id"].split("/")[-1])
             obj = Post.objects.get(id=(data["id"].split("/")[-1]))
             serializer = PostSerializer
         elif type == Like.get_api_type():
@@ -132,12 +132,12 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     def get(self, request, pk_a):
         author = get_object_or_404(Author,pk=pk_a)
         inbox_data = author.inbox.all()
-        print(inbox_data)
+        print("DATA HERE",inbox_data.values())
         serializer = InboxSerializer(data=inbox_data, context={'author':pk_a, 'serializer':self.deserialize_inbox_objects}, many=True)
-        print(serializer)
+        print("SERIALIZER HERE",serializer)
         if serializer.is_valid():
-            serializer .save()
-            print(serializer.data)
+            serializer.save()
+            print("SERIALIZER DATA",serializer.data)
         
         return Response(serializer.data)
         paginated_inbox_data = self.paginate_queryset(inbox_data, request)
@@ -147,7 +147,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     def post(self, request, pk_a):
         # author id is the id of the person who this notification comes from
         creator_id = request.data["author"]["id"].split("/")[-1]
-        print("creator", creator_id)
+        # print("creator", creator_id)
         author = Author.objects.get(pk=pk_a)
         serializer = self.serialize_inbox_objects(
             self.request.data, pk_a)

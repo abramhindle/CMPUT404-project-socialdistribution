@@ -47,7 +47,6 @@ class AuthorSerializer(serializers.ModelSerializer):
             'profileImage',
         ]
         
-        
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="like",source="get_api_type",read_only=True)
     author = serializers.SerializerMethodField()
@@ -63,21 +62,23 @@ class InboxSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         return {
-            **super().to_representation(instance),
+            **super().to_representation(instance)
         }
 
     def get_items(self, instance):
-        print("INSTANCES",instances)
+        print("INSTANCES",instance)
         serialize = self.context["serializer"]
         pk_a = self.context["author"]
-        return [serialize(instances)]
-
+        s = serialize(instance)
+        print(s)
+        return [s]
+    
     def create(self, validated_data):
         print("OBJECTS")
         obj = Inbox.objects.create(**validated_data,many=True)
         self.get_author(validated_data)
         self.get_items(obj)
-        return  obj
+        return obj
     
     class Meta:
         model = Inbox
