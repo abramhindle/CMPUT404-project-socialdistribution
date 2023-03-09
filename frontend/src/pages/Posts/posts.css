@@ -1,0 +1,20 @@
+div.Page {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  .Fragment {
+    background-color: #57534C;
+    text-align: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    position: static;
+    flex: 2;
+    float: right;
+  }
+
+.message {
+    justify-content: center;
+}

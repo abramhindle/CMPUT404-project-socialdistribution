@@ -11,3 +11,5 @@ CONTENT_TYPE_JSON = "application/json"
 
 #Encoding
 UTF8 = "utf-8"
+
+INBOX_TYPES = ["post", "comment", "like", "follow"]

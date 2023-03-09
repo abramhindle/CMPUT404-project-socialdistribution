@@ -7,10 +7,12 @@ from django.http import *
 import json
 from datetime import datetime, timezone
 from service.services.rest_service import RestService
+import uuid
 
 from service.models.comment import Comment
 from service.models.post import Post
 from service.models.author import Author
+from django.core.exceptions import ObjectDoesNotExist
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CommentView(View, RestService):
@@ -18,6 +20,11 @@ class CommentView(View, RestService):
     def get(self, request, *args, **kwargs):
         self.author_id = kwargs['author_id']
         self.post_id = kwargs['post_id']
+
+        try:
+            Post.objects.get(_id=self.post_id)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
 
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
@@ -36,7 +43,7 @@ class CommentView(View, RestService):
         comments = list()
 
         for comment in comment_page:
-            comments.append(comment.toJSON(host))
+            comments.append(comment.toJSON())
 
         comments_json = encode_list(comments, host, page, size, self.author_id, self.post_id)
 
@@ -58,6 +65,7 @@ class CommentView(View, RestService):
         comment = Comment()
 
         try:
+            comment._id = Comment.create_comment_id(self.author_id, self.post_id)
             comment.comment = body["comment"]
             comment.author = author
             comment.post = post
@@ -75,7 +83,9 @@ class CommentView(View, RestService):
 
         comment.save()
 
-        return HttpResponse(status=201)
+        comment_json = comment.toJSON()
+
+        return HttpResponse(json.dumps(comment_json), status=201, content_type = CONTENT_TYPE_JSON)
 
 def encode_list(comments, host, page, size, author_id, post_id):
     return {

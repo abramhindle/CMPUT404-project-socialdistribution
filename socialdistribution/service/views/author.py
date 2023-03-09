@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 import json
 
+import uuid
+
 from django.utils.decorators import method_decorator
 
 from django.views.decorators.csrf import csrf_exempt
@@ -21,11 +23,8 @@ class MultipleAuthors(View):
     
     def get(self, request: HttpRequest, *args, **kwargs):
         authors_queryset = Author.objects.all().order_by('displayName')
-        page = request.GET.get('page', '')
-        size = request.GET.get('size', '')
-
-        if not page or not size:
-            return HttpResponseBadRequest()
+        page = request.GET.get('page', 1)
+        size = request.GET.get('size', 5)
 
         paged_authors = Paginator(authors_queryset, size)
 
@@ -47,8 +46,9 @@ class SingleAuthor(View):
     http_method_names = ["get", "post"]
 
     def get(self, request, *args, **kwargs):
-        self.id = kwargs['id']
-        try: 
+        self.id = kwargs['author_id']
+
+        try:
             author = Author.objects.get(_id=self.id)
         except:
             author = None
@@ -60,11 +60,11 @@ class SingleAuthor(View):
 
         return HttpResponse(json.dumps(author_json), content_type = CONTENT_TYPE_JSON)
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request: HttpRequest, *args, **kwargs):
         body = request.body.decode(UTF8)
         body = json.loads(body)
 
-        self.id = kwargs['id']
+        self.id = kwargs['author_id']
 
         try:
             author = Author.objects.get(_id=self.id)

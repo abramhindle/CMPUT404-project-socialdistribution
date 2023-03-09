@@ -1,9 +1,8 @@
 from django.test import *
 from service.models.author import Author
-from service.models.follow import Followers
 from django.contrib.auth.models import User
 from service.views.author import *
-from service.views.follow import *
+from service.views.follower import *
 
 
 class FollowTests(TestCase):
@@ -24,11 +23,10 @@ class FollowTests(TestCase):
         self.author3 = Author.objects.create(displayName = "Hua", host = "http://localhost:8000", user = self.user3)
         self.author4 = Author.objects.create(displayName = "check", host = "http://localhost:8000", user = self.user4)
 
-
-        self.follows1 = Followers.objects.create(author = self.author1,follower=self.author2)
-        self.follows2 = Followers.objects.create(author = self.author1,follower=self.author3)
-        
-         
+        self.author1.followers.add(self.author2)
+        self.author1.followers.add(self.author3)
+        self.author1.save()
+    
         self.request_factory = RequestFactory()
     
     def tearDown(self):
@@ -36,6 +34,10 @@ class FollowTests(TestCase):
         self.user2.delete()
         self.user3.delete()
         self.user4.delete()
+        self.author1.delete()
+        self.author2.delete()
+        self.author3.delete()
+        self.author4.delete()
 
     def test_get_single_follower(self):
         request = HttpRequest()
@@ -43,7 +45,6 @@ class FollowTests(TestCase):
 
         follow_response = self.single_view.get(request, self.author1._id, self.author3._id)
         
-
         self.assertEqual(follow_response.status_code, 200)
 
         author = json.loads(follow_response.content)
@@ -64,9 +65,8 @@ class FollowTests(TestCase):
 
         get_response = self.single_view.get(request, self.author1._id, self.author4._id)
         author = json.loads(get_response.content)
+
         self.assertEqual(author["id"], str(self.author4._id))
-
-
 
     def test_followers(self):
         request = HttpRequest()
@@ -83,15 +83,15 @@ class FollowTests(TestCase):
 
         payload_type = json_paged["type"]
 
-        self.assertEqual(payload_type, "followers") #payload type should be marked as author
+        self.assertEqual(payload_type, "followers") #payload type should be marked as follower
 
         json_followers = json_paged["items"]
 
         self.assertTrue(len(json_followers), 2)
 
-        self.assertEqual(json_followers[0]["id"], str(self.author2._id))
-        self.assertEqual(json_followers[0]["displayName"], str(self.author2.displayName))
-        self.assertEqual(json_followers[1]["id"], str(self.author3._id))
-        self.assertEqual(json_followers[1]["displayName"], str(self.author3.displayName))
+        self.assertEqual(json_followers[0]["id"], str(self.author3._id))
+        self.assertEqual(json_followers[0]["displayName"], str(self.author3.displayName))
+        self.assertEqual(json_followers[1]["id"], str(self.author2._id))
+        self.assertEqual(json_followers[1]["displayName"], str(self.author2.displayName))
 
     

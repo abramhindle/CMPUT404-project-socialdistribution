@@ -45,7 +45,7 @@ class PostCreation(View, RestService):
         posts_json = encode_list(posts)
 
         return HttpResponse(json.dumps(posts_json), content_type = CONTENT_TYPE_JSON)
-    
+
     def post(self, request: HttpRequest, *args, **kwargs): #create a new post
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
@@ -62,7 +62,10 @@ class PostCreation(View, RestService):
         except:
             return HttpResponseNotFound()
 
+        post.author = author
+
         try:
+            post._id = Post.create_post_id(self.author_id) #NEW ID!!
             post.author = author
             post.title = body["title"]
             post.content = body["content"]
@@ -98,7 +101,9 @@ class PostCreation(View, RestService):
 
         post.save()
 
-        return HttpResponse(status=201)
+        post_json = post.toJSON()
+
+        return HttpResponse(json.dumps(post_json), status=201, content_type = CONTENT_TYPE_JSON)
 
 
 #Endpoints with post_id and author_id
@@ -124,7 +129,7 @@ class PostWithId(View, RestService):
     def post(self, request: HttpRequest, *args, **kwargs):
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
-        
+
         body = request.body.decode(UTF8)
         body = json.loads(body)
 
@@ -166,7 +171,9 @@ class PostWithId(View, RestService):
 
         post.save()
 
-        return HttpResponse(status=201)
+        post_json = post.toJSON()
+
+        return HttpResponse(json.dumps(post_json), status=201, content_type = CONTENT_TYPE_JSON)
 
     #DELETE
     def delete(self, request: HttpRequest, *args, **kwargs):
