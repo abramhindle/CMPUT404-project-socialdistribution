@@ -24,7 +24,7 @@ class Author(models.Model):
             "id": self._id,
             "host": self.host,
             "displayName": self.displayName,
-            "url": f"{self.host}/authors/{self._id}", #generated here
+            "url": self.url,
             "github": self.github,
             "profileImage": self.profileImage,
     }
