@@ -28,22 +28,6 @@ div.Page {
   display: inline;
 }
 
-.followers {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.followers li {
-  border: grey;
-  background-color: lightgrey;
-  padding: 1em;
-  margin-inline: 1em;
-  margin-bottom: 1em;
-  border-style: solid;
-  border-width: 0.5pt;
-}
-
 .emptyList {
   color: black;
 }
