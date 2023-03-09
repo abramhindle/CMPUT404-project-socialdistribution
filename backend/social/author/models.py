@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import uuid
-
+from django.db.models import Q
 from django.urls import reverse
 
 APP_NAME = 'http://127.0.0.1:8000'
@@ -13,10 +13,13 @@ class Author(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)  #1-1 with django user
     friends = models.ManyToManyField('self',blank=True, symmetrical=True)  # M-M with django
+    #friends = models.ManyToManyField(User,blank=True, symmetrical=True)
     displayName = models.CharField(max_length=50, blank=False)  # displayed name of author
     profileImage = models.URLField(editable=True,blank=True, max_length=500) # profile image of author, optional
     url = models.URLField(editable=False, max_length=500)  # url of author profile
     host = models.URLField(editable=False, max_length=500)  # host server
+
+  
 
     # make it pretty
     def __str__(self):
@@ -44,9 +47,16 @@ class Author(models.Model):
             self.save()
         return (APP_NAME+self.url) or str(self.id)   
     
-    class Meta:
-        ordering = ['displayName']
-
+    def follower_to_object(self):
+        return {"type":"author",
+            "id":self.id,
+            "url":self.url,
+            "host":self.host,
+            "displayName":self.displayName,
+            # "github":self.github
+            "profileImage":self.profileImage
+        } 
+    
 class Inbox(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
     author = models.ForeignKey(Author, related_name="inbox", on_delete=models.CASCADE)
@@ -65,4 +75,17 @@ class Inbox(models.Model):
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
+
+class FollowRequest(models.Model):
+    Type =models.CharField(max_length=255, blank=True)
+    actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
+    object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
+    Summary =models.CharField(max_length=255, blank=True)
+    accepted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('actor','object')
+
+    def __str__(self):
+        return f'{self.actor} follow {self.object}'
         

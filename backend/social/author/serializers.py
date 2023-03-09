@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework import serializers, exceptions
 from .models import *
 
+
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
@@ -46,6 +47,16 @@ class AuthorSerializer(serializers.ModelSerializer):
             #'github',
             'profileImage',
         ]
+
+class FollowRequestSerializer(serializers.ModelSerializer):
+    #to_user = serializers.CharField(default = 'x')
+    
+    actor = AuthorSerializer()
+    object = AuthorSerializer()
+
+    class Meta:
+        model = FollowRequest
+        fields = ['Type','Summary','actor', 'object']
         
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="like",source="get_api_type",read_only=True)
@@ -80,6 +91,7 @@ class InboxSerializer(serializers.ModelSerializer):
         self.get_items(obj)
         return obj
     
+
     class Meta:
         model = Inbox
         fields = ['type','author', 'items']

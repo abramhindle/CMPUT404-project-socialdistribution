@@ -36,8 +36,8 @@ class Post(models.Model):
     author = models.ForeignKey(Author, related_name="posts", on_delete=models.CASCADE)  # author of post
     categories = models.CharField(max_length=255, default="", blank=True)
     title = models.CharField(max_length=150)  # title of post
-    # source = models.URLField(default="",max_length=500)  # source of post
-    # origin = models.URLField(default="",max_length=500)  # origin of post
+    source = models.URLField(default="",max_length=500)  # source of post IE the url of where the post is located
+    origin = models.URLField(default="",max_length=500)  # origin of post IE the url of where the originl post is located if shared.
     description = models.CharField(blank=True, default="", max_length=200)  # brief description of post
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
     content = models.TextField(blank=False, default="")  # content of post
@@ -88,6 +88,14 @@ class Post(models.Model):
     def get_absolute_url(self):
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
         return url[:-1] if url.endswith('/') else url 
+
+    def get_source(self):
+        #set post source (URL to source)
+        return self.url
+        
+    def get_origin(self):
+        #set post origin (URL to origin)
+        return self.url
     
     @staticmethod
     def get_api_type():

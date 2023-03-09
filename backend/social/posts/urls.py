@@ -12,4 +12,5 @@ urlpatterns = [
   path('authors/<str:pk_a>/posts/<str:pk>/likes/', views.get_likes, name='get_likes'),
   path('authors/<str:pk_a>/posts/<str:pk>/image/', ImageView.as_view()),
   path('authors/<str:pk_a>/inbox/', views.LikeView.as_view(), name = "likes"),
+  path('authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>', views.ShareView.as_view, name='share'),
 ]
