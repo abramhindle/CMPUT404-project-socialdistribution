@@ -440,7 +440,7 @@ class ShareView(APIView):
     def post(self, request, origin_author, post_id, author):       
         
         try:
-            author = Author.objects.get(pk=author)
+            sharing_author = Author.objects.get(pk=author)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
@@ -452,21 +452,29 @@ class ShareView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
 
-        #create new post object with different author but same origin
-        shared_post = Post.objects.create(request.data)
+        # create new post object with different author but same origin
         #new URL 
         current_url = request.build_aboslute_url
-        origin = current_url.split('share')[0]
-        #update source, visibility,inbox,published,url,id
+        source = current_url.split('share')[0]
+        origin = post.origin
         
-        #comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=request.data["comment"])
-        
-'''for updating the Post model you need to figure out what urls go into it and how they get there.'''
+        new_post = Post(
+        title=post.title,
+        description=post.description,
+        content=post.content,
+        contentType=post.contentType,
+        author=post.author,
+        categories=post.categories,
+        published=post.published,
+        visibility=post.visibility,
+        )
 
-        # serializer = PostSerializer(post, data=request.data, partial=True)
-        # if serializer.is_valid():
-        #     post = serializer.save()
-        #     post.update_fields_with_request(request)           
-        #     return Response(serializer.data)
-        # else:
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # update the source and origin fields
+        new_post.source = source
+        new_post.origin = origin
+
+        # save the new post
+        new_post.save()
+        serializer = PostSerializer(new_post)
+        return Response(serializer.data)
+        
