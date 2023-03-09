@@ -46,9 +46,11 @@ class TestPosts(APITestCase):
         response = self.client.get(url+post_id+'/')
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
-    
+
+       
     # as image posts share the same POST process up to the serializer,
     # but a different GET from views to render the image
+    # might need to add auth cases later on...
     def test_image_posts(self):
         # create the author of the posts + extract the URL
         create_author = Author.objects.create(displayName='sugon')
@@ -86,10 +88,12 @@ class TestPosts(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
 
+        # TODO: test private posts
+    
 
     def test_comments(self):
         return
-    
+
     def test_likes(self):
         return
     

@@ -98,6 +98,8 @@ class ImageSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     author = AuthorSerializer()
     id = serializers.URLField(source="get_public_id",read_only=True)
+    # visibility is public by default
+    visibility = serializers.ChoiceField(choices=visbility_choices,default="PUBLIC")
     class Meta:
         model = Post
         fields = [

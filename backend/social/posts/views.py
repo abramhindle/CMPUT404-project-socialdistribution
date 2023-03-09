@@ -327,7 +327,9 @@ class ImageView(APIView):
         try:
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
-            
+            # authenticated_user is the user we pass in once auth is
+            # set up properly
+            authenticated_user = "jeff"
             # not image post
             if 'image' not in post.contentType:
                 error_msg = {"message":"Post does not contain an image!"}
@@ -338,6 +340,23 @@ class ImageView(APIView):
                 error_msg = {"message":"Post does not contain an image!"}
                 return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
             
+            # image privacy settings
+            # if it is private or friends, only continue if author is trying to access it:
+            if "PRIVATE" in post.visibility:
+                # check if the author is not the one accessing it:
+                if post.author != authenticated_user:
+                    error_msg = {"message":"You do not have access to this image!"}
+                    return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
+
+            # otherwise, handle it for friends:
+            elif "FRIENDS" in post.visibility:
+                # if the author or friends are trying to access it:
+                # this line will likely be bugged until auth is set up ┐(´～｀)┌
+                if post.author not in authenticated_user.friends and post.author != authenticated_user:
+                    error_msg = {"message":"You do not have access to this image!"}
+                    return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
+            
+            # return the image!
             post_content = post.contentType.split(';')[0]
             return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)
 
