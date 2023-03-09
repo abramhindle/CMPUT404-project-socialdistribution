@@ -165,6 +165,7 @@ class post_list(APIView, PageNumberPagination):
         if 'image' in request.data['contentType']:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
         else:
+            serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class post_detail(APIView, PageNumberPagination):
@@ -183,6 +184,11 @@ class post_detail(APIView, PageNumberPagination):
             return Response(serializer.data)
         except Post.DoesNotExist: 
             return self.put(request, pk_a, pk)
+    
+    #content for creating a new post object
+    #{
+    # Title, Description, Content type, Content, Categories, Visibility
+    # }
     @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a particular post of an author") 
     def post(self, request, pk_a, pk):       
         
@@ -429,7 +435,7 @@ class CommentView(APIView, PageNumberPagination):
         #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+# post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
 class ShareView(APIView):
     def post(self, request, origin_author, post_id, author):       
         
@@ -448,6 +454,9 @@ class ShareView(APIView):
 
         #create new post object with different author but same origin
         shared_post = Post.objects.create(request.data)
+        #new URL 
+        current_url = request.build_aboslute_url
+        origin = current_url.split('share')[0]
         #update source, visibility,inbox,published,url,id
         
         #comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=request.data["comment"])
