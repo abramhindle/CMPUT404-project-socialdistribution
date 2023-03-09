@@ -186,6 +186,244 @@
           }
         }
       }
+    },
+    "/{author_id}/posts/{post_id}/comments/": {
+      "get": {
+        "tags": ["comments"],
+        "summary": "Get comments for a post",
+        "operationId": "getPostComments",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties":{
+                    "type":{
+                        "type": "string"
+                    },
+                    "page":{
+                      "type": "integer"
+                    },
+                    "size":{
+                      "type":"integer"
+                    },
+                    "post": {
+                      "type":"url",
+                      "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+                    },
+                    "id": {
+                      "type":"url",
+                      "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e/comments"
+                    },
+                    "items":{
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Comment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["comments"],
+        "summary": "Create comment for a post",
+        "operationId": "createPostComment",
+        "requestBody": {
+          "description": "Create Comment for a post",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Badly formed post object"
+          },
+          "404": {
+            "description": "Post or Author doesn't exist"
+          }
+        }
+      }
+    },
+    "/{author_id}/followers/{foreign_author_id}": {
+      "get": {
+        "tags": ["followers"],
+        "summary": "Check if foreign author is a follower of author",
+        "operationId": "getFollower",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Followers"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Foreign author is not a follower of author"
+          }
+        }
+      },
+      "put": {
+        "tags": ["followers"],
+        "summary": "Add foreign author as a follower of author",
+        "operationId": "addFollower",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "An author was not found"
+          },
+          "409": {
+            "description": "Foreign author is already a follower of author"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["followers"],
+        "summary": "Delete foreign author as a follower of author",
+        "operationId": "deleteFollower",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "Author was not found"
+        }
+      }
+    }
+  },
+  "/{author_id}/followers": {
+    "get": {
+      "tags": ["followers"],
+      "summary": "Get followers for an author",
+      "operationId": "getFollower",
+      "responses": {
+        "200": {
+          "description": "Successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "type":{
+                    "type": "string",
+                    "example": "followers"
+                  },
+                  "items":{
+                    "type": "array",
+                    "items":{
+                      "type": "object",
+                      "$ref": "#/components/schemas/Followers"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Author doesn't exist"
+        }
+      }
+    }
+  },
+  "/{author_id}/inbox": {
+    "put": {
+      "tags": ["inbox"],
+      "summary": "Add item to an author's inbox",
+      "operationId": "updateInbox",
+      "requestBody": {
+        "description": "Create Comment for a post",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Comment"
+                },
+                {
+                  "$ref": "#/components/schemas/Post"
+                },
+                {
+                  "$ref": "#/components/schemas/Follow"
+                }
+              ]
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful operation"
+          }
+        }
+      },
+      "get": {
+        "tags": ["inbox"],
+        "summary": "Get an author's inbox",
+        "operationId": "getInbox",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Inbox"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Author not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": ["inbox"],
+          "summary": "Clears an author's inbox",
+          "operationId": "clearInbox",
+          "responses": {
+            "202": {
+              "description": "Accepted"
+              },
+              "404": {
+                "description": "Author not found"
+              }
+            }
+        }
     }
   },
   "components": {
@@ -327,8 +565,41 @@
             "description": "id of the author"
           },
           "items": {
-            "type": "objects",
-            "description": "list of the objects (post, comment, follow request and like)"
+            "type": "array",
+            "items":{
+              "type": "object",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Comment"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Post"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Follow"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Follow": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "Follow"
+          },
+          "actor": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
+          },
+          "object": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
           }
         }
       }
