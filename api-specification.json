@@ -5,8 +5,266 @@
       "version":"1.0"
     },
     "servers": [
-      {"url":"https://ourwebsite/v1"}
+      {"url":"https://authors"}
+    ],
+    "tags": [
+      {
+        "name": "authors"
+      },
+      {
+        "name": "posts"
+      }
     ],
     "paths": {
+      "/": {
+
+        "get": {
+          "tags": ["authors"],
+          "summary": "Get all Authors",
+          "operationId": "getAuthors",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Author"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/{author_id}": {
+        "get": {
+          "tags": ["authors"],
+          "summary": "Get all Authors",
+          "operationId": "getAuthorsById",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/{author_id}/posts": {
+        "get": {
+          "tags": ["posts"],
+          "summary": "Get an author's posts",
+          "operationId": "getAuthorPosts",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not Found"
+            }
+          }
+        },
+        "post": {
+          "tags": ["posts"],
+          "summary": "Create a post",
+          "operationId": "createAuthorPost",
+          "requestBody": {
+            "description": "Create Post for an author",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Badly formed post object",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/{author_id}/posts/{post_id}": {
+        "get": {
+          "tags": ["posts"],
+          "summary": "Get a post",
+          "operationId": "getAuthorPosts",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Post"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not Found"
+            }
+          }
+        },
+        "post": {
+          "tags": ["posts"],
+          "summary": "Create a post with an existing ID",
+          "operationId": "createAuthorPost",
+          "requestBody": {
+            "description": "Create Post for an author",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Badly formed post object",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Author":{
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "id": {
+              "type": "url",
+              "example": "http://localhost/authors/"
+            },
+            "displayName": {
+             "type": "string",
+             "example": "Joe"
+            },
+            "url": {
+             "type": "url",
+             "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
+            },
+            "github": {
+             "type": "url",
+             "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
+            },
+            "profileImage": {
+             "type": "url",
+             "example": "http://google.com/funnyanimalpic"
+            }
+          }
+      },
+      "Post":{
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "id": {
+            "type": "url",
+            "example": "http://localhost/authors/11f6bdd5-a60b-4ca0-a395-1fba77f1ede8/posts/b2920040-9c7f-4ad7-bdc2-2ecb61a94217"
+          },
+          "source": {
+           "type": "url",
+           "example": "http://localhost"
+          },
+          "origin": {
+           "type": "url",
+           "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
+          },
+          "description": {
+           "type": "string"
+          },
+          "contentType": {
+           "type": "string",
+           "example": "text/markdown"
+          },
+          "content": {
+            "type": "string",
+            "example": "hello world!"
+          },
+          "author": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
+          },
+          "categories": {
+            "type":"array",
+            "items":{
+              "type": "string",
+              "example": "web"
+            }
+          },
+          "published":{
+            "type": "string",
+            "example": "2023-03-09 00:36:00.795000+00:00"
+          },
+          "visibility":{
+            "type": "string",
+            "example": "PUBLIC"
+          },
+          "unlisted":{
+            "type": "boolean"
+          }
+        }
+    },
     }
   }
+}
