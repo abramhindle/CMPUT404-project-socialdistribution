@@ -320,6 +320,7 @@ class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
             return True
         return False
 
+# hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
@@ -327,8 +328,8 @@ class ImageView(APIView):
         try:
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
-            # authenticated_user is the user we pass in once auth is
-            # set up properly
+            # authenticated_user is the user we pass in from the frontend
+            # I just used a random name for testing purposes
             authenticated_user = "jeff"
             # not image post
             if 'image' not in post.contentType:
@@ -406,7 +407,7 @@ class LikeView(APIView, PageNumberPagination):
         # else:
         #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
     serializer_class = CommentSerializer
     pagination_class = PostSetPagination
@@ -417,10 +418,25 @@ class CommentView(APIView, PageNumberPagination):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-            
+        
         post = Post.objects.get(author=author, id=pk)
-        comments = Comment.objects.filter(author=author,post=post)
+        # changed to filter for all comments on the post, it was filtering
+        # the comments by the author of the post on the post otherwise.
+        # comments = Comment.objects.filter(author=author,post=post)
+        comments = Comment.objects.filter(post=post)
+
+        # just change this to whoever is authed
+        authenticated_user = "joe"
+        
+        # on private posts, friends' comments will only be available to me.
+        if "PRIVATE" in post.visibility:
+            # so here, when authed user != author, the comments of the friends
+            # of the author are filtered out
+            if post.author != authenticated_user:
+                comments = comments.exclude(author=post.author.friends)
+                
         serializer = CommentSerializer(comments, many=True)
+
         return Response(serializer.data)
     
     def post(self, request,pk_a, pk):
@@ -435,7 +451,6 @@ class CommentView(APIView, PageNumberPagination):
         except Post.DoesNotExist:
             error_msg = "Post id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        
         
         comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=request.data["comment"])
         return Response(status=status.HTTP_200_OK)
