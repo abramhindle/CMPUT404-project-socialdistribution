@@ -1,7 +1,7 @@
 import uuid
 from django.urls import reverse
 from rest_framework import serializers, exceptions
-from .models import Author
+from .models import *
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -39,4 +39,14 @@ class AuthorSerializer(serializers.ModelSerializer):
             #'github',
             'profileImage',
         ]
+
+class FollowRequestSerializer(serializers.ModelSerializer):
+    #to_user = serializers.CharField(default = 'x')
+    
+    actor = AuthorSerializer()
+    object = AuthorSerializer()
+
+    class Meta:
+        model = FollowRequest
+        fields = ['Type','Summary','actor', 'object']
         

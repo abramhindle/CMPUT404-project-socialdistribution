@@ -11,12 +11,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import *
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializers import *
 from rest_framework.views import APIView
 from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -76,7 +78,7 @@ class AuthorView(APIView):
         
         
         
-        serializer = AuthorSerializer(data=request.data,partial=True)
+        #serializer = AuthorSerializer(data=request.data,partial=True)
         
         
         if serializer.is_valid():
@@ -88,9 +90,50 @@ class AuthorView(APIView):
             Author.objects.filter(id=author_id).update(**serializer.validated_data)
             author = Author.objects.get(id=pk_a)
             serializer = AuthorSerializer(author,partial=True)
-            #auth,created = Author.objects.update(**serializer.validated_data, id=author_id)
+            auth,created = Author.objects.update(**serializer.validated_data, id=author_id)
             
             return Response(serializer.data)
    
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class FriendRequestView(APIView):
+    serializer_class = FollowRequestSerializer
+    
+    def post(self,request,pk_a):
+        
+        actor = Author.objects.get(id=pk_a)
+        displaynameto = request.data['object.displayName']
+        displaynamefrom=actor.displayName
+        objects = Author.objects.filter(displayName = displaynameto)[0]
+
+        if FollowRequest.objects.filter(actor=actor, object=objects).exists():
+            return Response("You've already sent a request to this user", status=status.HTTP_400_BAD_REQUEST)
+        if actor==objects:
+            return Response("You cannot follow yourself!", status=status.HTTP_400_BAD_REQUEST)
+        
+        type = "Follow"
+        summary = displaynamefrom + " wants to follow " + displaynameto
+        follow = FollowRequest(Type = type,Summary=summary,actor=actor, object=objects)
+        follow.save()
+        serializer = FollowRequestSerializer(follow)
+        return Response(serializer.data)
+    
+class ViewRequests(APIView):
+    serializer_class = FollowRequestSerializer
+    @permission_classes([IsAuthenticated])
+    def get(self,request,pk_a):
+        """
+        Get the list of Follow requests for the current Author
+        """
+
+        Object = Author.objects.get(id=pk_a)
+        displaynamefrom=Object.displayName
+        print(53646456456456)
+        print(FollowRequest.objects.filter(object = Object))
+
+        requests = FollowRequest.objects.filter(object = Object)
+        serializer = FollowRequestSerializer(requests,many=True)
+        return Response(serializer.data)
+

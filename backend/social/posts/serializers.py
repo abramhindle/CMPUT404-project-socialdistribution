@@ -13,8 +13,8 @@ class PostSerializer(WritableNestedModelSerializer):
     comments = serializers.URLField(source="get_comments_source", read_only=True)
     author = AuthorSerializer()
     # count = serializers.IntegerField(source='sget_comment_count')
-#    source = serializers.URLField(default="",max_length=500)  # source of post
-#    origin = serializers.URLField(default="",max_length=500)  # origin of post
+    source = serializers.URLField(default="get_source",max_length=500)  # source of post
+    origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
     categories = serializers.SerializerMethodField(read_only=True)
         
     def get_categories(self, instance):
@@ -49,8 +49,8 @@ class PostSerializer(WritableNestedModelSerializer):
             'type', 
             'title', 
             'id', 
-            #'source', 
-            #'origin', 
+            'source', 
+            'origin', 
             'description',
             'contentType',
             'content',

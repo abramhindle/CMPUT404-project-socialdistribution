@@ -169,10 +169,8 @@ class post_list(APIView, PageNumberPagination):
         else:
             serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
             serializer.is_valid()
-            print(serializer.data)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
 
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
@@ -190,6 +188,11 @@ class post_detail(APIView, PageNumberPagination):
             return Response(serializer.data)
         except Post.DoesNotExist: 
             return self.put(request, pk_a, pk)
+    
+    #content for creating a new post object
+    #{
+    # Title, Description, Content type, Content, Categories, Visibility
+    # }
     @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a particular post of an author") 
     def post(self, request, pk_a, pk):       
         
@@ -437,17 +440,20 @@ class CommentView(APIView, PageNumberPagination):
                 
         serializer = CommentSerializer(comments, many=True)
 
-        return Response(serializer.data)
+        commentsObj = {}
+        commentsObj['comments'] = serializer.data
+        return Response(commentsObj)
+
     
     def post(self, request,pk_a, pk):
-        comment_id = uuid.uuid4
+        comment_id = uuid.uuid4()
         try:
-            author = Author.objects.get(pk=request.data["author_id"])
+            author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         try: 
-            post = Post.objects.get(pk=request.data["post_id"])
+            post = Post.objects.get(pk=pk)
         except Post.DoesNotExist:
             error_msg = "Post id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
@@ -466,3 +472,48 @@ class CommentView(APIView, PageNumberPagination):
         #     return Response(serializer.data)
         # else:
         #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
+class ShareView(APIView):
+    def post(self, request, origin_author, post_id, author):       
+        
+        try:
+            sharing_author = Author.objects.get(pk=author)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            post = Post.objects.get(pk=post_id)
+        except Post.DoesNotExist:
+            error_msg = "Post id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+
+        # create new post object with different author but same origin
+        #new URL 
+        current_url = request.build_aboslute_url
+        source = current_url.split('share')[0]
+        origin = post.origin
+        
+        new_post = Post(
+        title=post.title,
+        description=post.description,
+        content=post.content,
+        contentType=post.contentType,
+        author=post.author,
+        categories=post.categories,
+        published=post.published,
+        visibility=post.visibility,
+        )
+
+        # update the source and origin fields
+        new_post.source = source
+        new_post.origin = origin
+
+        # save the new post
+        new_post.save()
+        serializer = PostSerializer(new_post)
+        return Response(serializer.data)
+        
