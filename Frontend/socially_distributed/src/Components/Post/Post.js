@@ -4,6 +4,7 @@ import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import ShareIcon from "@rsuite/icons/legacy/Reply";
 import COMMENTS from "./Comment";
 import "./Post.css";
+import ReactMarkdown from "react-markdown";
 // Component Imports
 
 function POST({ postobj }) {
@@ -13,6 +14,14 @@ function POST({ postobj }) {
 	const body = () => {
 		if (post["contentType"] === "text/plain") {
 			return <p style={{ padding: "5px" }}>{post["content"]}</p>;
+		}
+
+		if (post["contentType"] === "text/markdown") {
+			return (
+				<ReactMarkdown style={{ padding: "5px", height: "100px" }}>
+					{post["content"]}
+				</ReactMarkdown>
+			);
 		}
 
 		// Peter you just need to return the image here

@@ -37,3 +37,18 @@ export const getCurrentUser = (author_id) => {
 		setCurrentUser(user);
 	});
 };
+
+export async function getCsrfToken() {
+	let _csrfToken = null;
+	const API_HOST = "http://localhost:8000";
+	if (_csrfToken === null) {
+		const response = await fetch(`${API_HOST}/csrf/`, {
+			credentials: "include",
+		});
+		const data = await response.json();
+		_csrfToken = data.csrfToken;
+	}
+	console.log(_csrfToken);
+	setToken(_csrfToken);
+	return _csrfToken;
+}

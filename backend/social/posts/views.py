@@ -397,17 +397,19 @@ class CommentView(APIView, PageNumberPagination):
         post = Post.objects.get(author=author, id=pk)
         comments = Comment.objects.filter(author=author,post=post)
         serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+        commentsObj = {}
+        commentsObj['comments'] = serializer.data
+        return Response(commentsObj)
     
     def post(self, request,pk_a, pk):
-        comment_id = uuid.uuid4
+        comment_id = uuid.uuid4()
         try:
-            author = Author.objects.get(pk=request.data["author_id"])
+            author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         try: 
-            post = Post.objects.get(pk=request.data["post_id"])
+            post = Post.objects.get(pk=pk)
         except Post.DoesNotExist:
             error_msg = "Post id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
