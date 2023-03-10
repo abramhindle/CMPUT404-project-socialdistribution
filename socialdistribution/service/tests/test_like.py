@@ -4,11 +4,23 @@ from django.contrib.auth.models import User
 from service.models.author import Author
 from service.models.post import Post
 from service.models.comment import Comment
+from django.test import *
+from service.models.author import Author
+from django.contrib.auth.models import User
+from service.views.author import *
+from service.views.follower import *
+from service.views.liked import *
 import json
+
+from django.urls import reverse
 
 class LikesTests(TestCase):
 
     def setUp(self):
+
+        self.liked_view = LikedView()
+        self.likes_view = LikesView()
+
         self.user1_password = "12345"
         self.user1 = User.objects.create_user("joeguy", "joeguy@email.com", self.user1_password)
         self.user2_password = "1234"
@@ -33,5 +45,44 @@ class LikesTests(TestCase):
         self.comment1.delete()
 
 
-    def test_post_likes(self):
-        pass
+    def test_get_author_likes_empty(self):
+
+        request = HttpRequest()
+        request.method = "get"
+
+        get_response = self.liked_view.get(request, self.author1._id)
+        self.assertEqual(get_response.status_code, 200)
+        content = get_response.data
+
+        self.assertEqual(content["items"], [])
+
+    def test_get_author_likes(self):
+
+        request = HttpRequest()
+        request.method = "get"
+
+        like = Like()
+        like.author=self.author2
+        like.object=self.post1._id
+        like.save()
+
+        get_response = self.liked_view.get(request, self.author2._id)
+        self.assertEqual(get_response.status_code, 200)
+        content = get_response.data
+
+        self.assertEqual(content["items"][0], like.toJSON())
+
+    def test_get_post_likes(self):
+        request = HttpRequest()
+        request.method = "get"
+
+        like = Like()
+        like.author=self.author2
+        like.object=self.post1._id
+        like.save()
+
+        get_response = self.likes_view.get(request, self.author1._id, self.post1._id) #this one gets from a post
+        self.assertEqual(get_response.status_code, 200)
+        content = get_response.data
+
+        self.assertEqual(content["items"][0], like.toJSON())

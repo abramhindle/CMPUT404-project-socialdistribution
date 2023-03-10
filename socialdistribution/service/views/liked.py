@@ -30,21 +30,12 @@ class LikesView(APIView):
             return Response({"error": "No author exists!"}, status=404)
         if not Post.objects.filter(_id=post_id).exists(): 
             return Response({"error": "No post exists!"}, status=404)        
-        print(post_id)
 
         post_likes = list(Like.objects.filter(object=post_id).all())
 
         json_likes = list()
         for like in post_likes:
             json_likes.append(like.toJSON())
-
-        # if not comment:
-        #     likes_query = Likes.objects.filter(object = post_id)
-        # else:
-        #     if Comment.objects.filter(_id=comment).exists():
-        #         likes_query = Likes.objects.filter(object = comment)
-        #     else:
-        #         return Response({"error": "No comment exists!"}, status=404)
 
         return Response(encode_list(json_likes), status=200)
 
