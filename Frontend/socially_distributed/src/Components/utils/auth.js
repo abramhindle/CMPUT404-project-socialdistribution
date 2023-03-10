@@ -30,12 +30,15 @@ export const unsetCurrentUser = () => {
 };
 
 export const getCurrentUser = (author_id) => {
-	axios.get("authors/authors/" + author_id).then((response) => {
-		console.log(response.data);
-		const user = response.data;
-		console.log(user);
-		setCurrentUser(user);
-	});
+	axios
+		.get(`authors/${author_id}`)
+		.then((response) => {
+			console.log(response.data);
+			const user = response.data;
+			console.log(user);
+			setCurrentUser(user);
+		})
+		.catch((res) => console.log(res));
 };
 
 export async function getCsrfToken() {

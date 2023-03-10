@@ -3,8 +3,11 @@ import React, { useEffect, useState } from "react";
 import POST from "./Post";
 import CREATEPOST from "./CreatePost";
 import LIKE from "./Like";
-import { Navbar, Nav, Panel } from "rsuite";
+import { Navbar, Nav, Panel, Modal, Button, InputGroup, Input } from "rsuite";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import SearchIcon from "@rsuite/icons/Search";
+
 
 function INBOX() {
 	const inbox = {
@@ -108,6 +111,7 @@ function INBOX() {
 	// useEffect();
 
 	const [curPage, setCurPage] = useState("inbox");
+	const [open, setOpen] = useState(false);
 	let navigate = useNavigate();
 
 	useEffect(() => {
@@ -124,10 +128,36 @@ function INBOX() {
 		}
 	};
 
+	const handleLogoutClick = () => {
+		const token = localStorage.getItem("token");
+
+		let reqInstance = axios.create({
+			headers: { "X-CSRFToken": token },
+		});
+		reqInstance.post("accounts/logout/").then((res) => {
+			if (res.status === 200) {
+				navigate("/login");
+			}
+		});
+	};
+
+	const handleAddFriendClick = () => {};
+
+	const handleOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+
 	return (
 		<div style={{ padding: "10px", width: "60%", margin: "auto" }}>
 			<Navbar>
 				<Navbar.Brand>Socially Distrubted</Navbar.Brand>
+				<Nav pullRight>
+					<Nav.Item onClick={handleLogoutClick}>Logout</Nav.Item>
+				</Nav>
 				<Nav pullRight>
 					<Nav.Menu title="Inbox">
 						<Nav.Item style={{ color: "red" }}>
@@ -138,11 +168,32 @@ function INBOX() {
 				<Nav pullRight>
 					<Nav.Item onClick={handleProfileClick}>Profile</Nav.Item>
 				</Nav>
+				<Nav pullRight>
+					<Nav.Item onClick={handleOpen}>Add Friend</Nav.Item>
+				</Nav>
 			</Navbar>
 			<Panel bordered header="New Post" collapsible>
 				<CREATEPOST></CREATEPOST>
 			</Panel>
 			{inbox.items.map((obj) => item(obj))}
+			<Modal open={open} onClose={handleClose}>
+				<Modal.Header>
+					<h3>Add Friend</h3>
+				</Modal.Header>
+				<Modal.Body>
+					<InputGroup>
+						<Input placeholder={"JhonDoe"} />
+						<InputGroup.Addon>
+							<SearchIcon />
+						</InputGroup.Addon>
+					</InputGroup>
+				</Modal.Body>
+				<Modal.Footer>
+					<Button onClick={handleAddFriendClick} appearance="primary">
+						Add Friend
+					</Button>
+				</Modal.Footer>
+			</Modal>
 		</div>
 	);
 }

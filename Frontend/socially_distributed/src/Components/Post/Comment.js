@@ -34,6 +34,7 @@ function COMMENTS({ postobj }) {
 
 	const handleSubmitClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
+		console.log(author);
 		const len = 36;
 		const author_id = author.id.slice(
 			author.id.length - len,

@@ -41,9 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'rest_framework',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders'
-    'django.contrib.staticfiles',  # required for serving swagger ui's css/js files
+    'django.contrib.staticfiles', # required for serving swagger ui's css/js files
+    'corsheaders', 
     'drf_yasg',
     'rest_framework_swagger',
 ]
