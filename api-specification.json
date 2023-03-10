@@ -506,7 +506,8 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string"
+            "type": "string",
+            "default": "author"
           },
           "id": {
             "type": "url",
@@ -548,7 +549,8 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string"
+            "type": "string",
+            "default": "post"
           },
           "id": {
             "type": "url",
@@ -654,6 +656,10 @@
                 {
                   "type": "object",
                   "$ref": "#/components/schemas/Follow"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Like"
                 }
               ]
             }
@@ -680,16 +686,16 @@
       "Like": {
         "type": "object",
         "properties": {
+          "type": {
+            "type": "string",
+            "default": "Like"
+          },
           "context": {
             "type": "string"
           },
           "summary": {
             "type": "string",
             "example": "Joe liked your post"
-          },
-          "type": {
-            "type": "string",
-            "default": "Like"
           },
           "author": {
             "type": "object",
