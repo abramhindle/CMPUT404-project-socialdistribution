@@ -167,10 +167,7 @@ class post_list(APIView, PageNumberPagination):
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
             serializer.is_valid()
         else:
-            serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
-            serializer.is_valid()
-            
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
@@ -417,7 +414,7 @@ class CommentView(APIView, PageNumberPagination):
 
     def get(self, request, pk_a, pk):
         try:
-            author = Author.objects.get(id=pk_a)
+            author = Author.objects.get(id=request.data["author_id"])
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
