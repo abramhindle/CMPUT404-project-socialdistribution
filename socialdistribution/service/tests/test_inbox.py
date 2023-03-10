@@ -34,8 +34,7 @@ class InboxTests(TestCase):
         self.post1.delete()
         self.comment1.delete()
 
-
-    def test_author_inbox_get_404(self):
+    def test_author_inbox_empty_get_200(self):
         self.kwargs = {
             'author_id': self.author1._id
         }
@@ -47,7 +46,7 @@ class InboxTests(TestCase):
 
         inbox_response = self.inbox_view.get(get_request, author_id=self.author1._id)
 
-        self.assertEqual(inbox_response.status_code, 404) #No posts!
+        self.assertEqual(inbox_response.status_code, 200) #No posts, but author exists, so we should get an empty list
 
     def test_author_inbox_post_post_202_get_200(self):
         self.kwargs = {

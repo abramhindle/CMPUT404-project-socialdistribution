@@ -1,5 +1,5 @@
 from django.contrib import admin
-from service.models import author, post, comment, likes, inbox, follow
+from service.models import author, post, comment, like, inbox, follow
 
 # Register your models here.
 

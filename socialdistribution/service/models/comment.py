@@ -2,6 +2,7 @@ from django.db import models
 from service.models.author import Author
 from service.models.post import Post
 from django.conf import settings
+from datetime import datetime, timezone
 import uuid
 
 class Comment(models.Model):
@@ -21,6 +22,10 @@ class Comment(models.Model):
     contentType = models.CharField(max_length=64, choices=CONTENT_TYPES, default=MARKDOWN)
     published = models.DateTimeField()
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        self.published = datetime.now(timezone.utc)
+        super(Comment, self).save(*args, **kwargs)
 
     def toJSON(self):
         return {
