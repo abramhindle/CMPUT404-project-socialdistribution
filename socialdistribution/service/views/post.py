@@ -82,10 +82,6 @@ class PostCreation(View, RestService):
 
             categories = create_categories(body["categories"])
 
-            print(categories)
-
-            #post.categories.set(categories)
-
             post.published = datetime.now(timezone.utc)
 
             #this should be handled by some sort of enum system
@@ -100,8 +96,6 @@ class PostCreation(View, RestService):
 
         except KeyError as error:
             return HttpResponseBadRequest()
-
-        print(post.toJSON())
 
         post.save()
 
@@ -174,7 +168,6 @@ class PostWithId(View, RestService):
             post.unlisted = bool(body["unlisted"])
 
         except KeyError as error:
-            print(error.args[0])
             return HttpResponseBadRequest() #should probably include the error
 
         post.save()
