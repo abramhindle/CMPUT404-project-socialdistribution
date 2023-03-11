@@ -11,7 +11,7 @@ class PostSerializer(WritableNestedModelSerializer):
     id = serializers.CharField(source="get_public_id", read_only=True)
     count = serializers.IntegerField(source="count_comments", read_only=True)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
-    author = AuthorSerializer()
+    author = AuthorSerializer(required=False)
     # count = serializers.IntegerField(source='sget_comment_count')
     source = serializers.URLField(default="get_source",max_length=500)  # source of post
     origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
@@ -21,20 +21,14 @@ class PostSerializer(WritableNestedModelSerializer):
         categories_list = instance.categories.split(",")
         return [category for category in categories_list]
     
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
-        instance.content = validated_data.get('content', instance.content)
-        instance.contentType = validated_data.get('contentType', instance.contentType)
-        instance.published = validated_data.get('published', instance.published)
-        return instance
-    
-    def create(self, instance, validated_data):
-        updated_author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context.get('author_id'))
-        categories = ' '.join(validated_data.get('categories'))
-        print("categories", categories)
-        validated_data.pop('categories')
-        return Post.objects.create(**validated_data, categories = categories, author=updated_author)
+    def create(self, validated_data):
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        id = validated_data.pop('id') if validated_data.get('id') else None
+        if not id:
+            id = self.context["id"]
+        print("ID HERE",id)
+        post = Post.objects.create(**validated_data, author = author, id = id)
+        return post
 
     def to_representation(self, instance):
         id = instance.get_public_id()
