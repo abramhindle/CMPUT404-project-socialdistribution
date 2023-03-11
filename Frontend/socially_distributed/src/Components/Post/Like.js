@@ -26,10 +26,19 @@ function LIKE({ likeobj }) {
 	// };
 
 	const handleSubmitClick = () => {
-		
-
-
-	}
+		const author = JSON.parse(localStorage.getItem("user"));
+		const len = 36
+		const author_id = author.id.slice(
+			author.id.length - len,
+			author.id.length
+		);
+		const post_id = postObj.id.slice(
+			postObj.id.length - len,
+			postObj.id.length
+		);
+		//const params = { ? };
+		const url = `posts/authors/${author_id}/inbox`;
+	};
 	// const handleSubmitClick = () => {
 	// 	const author = JSON.parse(localStorage.getItem("user"));
 	// 	const len = 36;

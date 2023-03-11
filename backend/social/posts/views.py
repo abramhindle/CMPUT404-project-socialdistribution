@@ -341,11 +341,14 @@ class ImageView(APIView):
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
 class LikeView(APIView, PageNumberPagination):
+
+    #Check for if the user has already liked the object then 
+    #return something that says user already liked the object...
     serializer_class = LikeSerializer
     pagination_class = PostSetPagination
     
-    def post(self, request, pk_a):
-        post_id = uuid.uuid4
+    def post(self, request, pk_a, pk):
+        like_id = uuid.uuid4
         
         try:
             author = Author.objects.get(pk=pk_a)
@@ -361,7 +364,7 @@ class LikeView(APIView, PageNumberPagination):
             # print("categories", categories)
             #serializer.validated_data.pop('categories')
             serializer.validated_data.pop("author")
-            like = Like.objects.create(**serializer.validated_data, author=author, id=post_id)
+            like = Like.objects.create(**serializer.validated_data, author=author, id=like_id, )
             like.update_fields_with_request(request)
 
             serializer = LikeSerializer(like, many=False)
