@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from django.shortcuts import render
 
 # Create your views here.
@@ -8,12 +9,17 @@ from django.urls import reverse,reverse_lazy
 from django.views import generic
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from author.pagination import InboxSetPagination
+from posts.serializers import *
 from .models import *
+from .serializers import *
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import *
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import status
 from drf_yasg import openapi
@@ -47,17 +53,12 @@ def get_authors(request):
     return Response(serializer.data)
 
 
-
 class AuthorView(APIView):
     
-    
-    serializer_class = AuthorSerializer
-
     def validate(self, data):
         if 'displayName' not in data:
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
         return data 
-
 
     @swagger_auto_schema(responses=response_schema_dict,operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
@@ -74,13 +75,10 @@ class AuthorView(APIView):
         """
         Update the authors profile
         """
-        author_id = pk_a
-        
-        
-        
-        #serializer = AuthorSerializer(data=request.data,partial=True)
-        
-        
+        author_id = pk_a 
+           
+        serializer = AuthorSerializer(data=request.data,partial=True)
+         
         if serializer.is_valid():
             display = Author.objects.filter(id=author_id).values('displayName')
             if request.data['displayName'] == '':
@@ -256,4 +254,80 @@ class ViewRequests(APIView):
         requests = FollowRequest.objects.filter(object = Object)
         serializer = FollowRequestSerializer(requests,many=True)
         return Response(serializer.data)
+
+
+
+class InboxSerializerObjects:
+    def deserialize_inbox_objects(self, item, context={}):
+        object_model = item.content_type.model_class()
+        print("CONTENT",item.content_object)
+        if object_model is Post:
+            serializer = PostSerializer
+        elif object_model is Like:
+            serializer = LikeSerializer
+        elif object_model is Comment:
+            serializer = CommentSerializer
+        return serializer(item.content_object, context=context).data
+    
+    def serialize_inbox_objects(self, data, pk_a):
+        ## TODO: Make it clearner, use object_model = item.content_type.model_class()
+
+        type = data.get('type')
+        obj = None
+        if type is None:
+            raise exceptions
+        context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+        if type == Post.get_api_type():
+            #print(data["id"].split("/")[-1])
+            obj = Post.objects.get(id=(data["id"].split("/")[-1]))
+            serializer = PostSerializer
+        elif type == Like.get_api_type():
+            obj = Like.objects.get(id=data["id"].split("/")[-1])
+            serializer = LikeSerializer
+        elif type == Comment.get_api_type():
+            serializer = CommentSerializer
+        if obj: return obj
+        return serializer(data=data, context=context)
+
+class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
+    serializer_class = InboxSerializer
+    pagination_class = InboxSetPagination
+
+    def get(self, request, pk_a):
+        author = get_object_or_404(Author,pk=pk_a)
+        inbox_data = author.inbox.all()
+        print("DATA HERE",inbox_data.values())
+        serializer = InboxSerializer(data=inbox_data, context={'author':pk_a, 'serializer':self.deserialize_inbox_objects}, many=True)
+        print("SERIALIZER HERE",serializer)
+        if serializer.is_valid():
+            serializer.save()
+            print("SERIALIZER DATA",serializer.data)
+        
+        return Response(serializer.data)
+        paginated_inbox_data = self.paginate_queryset(inbox_data, request)
+        return self.get_paginated_response([self.deserialize_inbox_objects(obj) for obj in paginated_inbox_data])
+        return
+    
+    def post(self, request, pk_a):
+        # author id is the id of the person who this notification comes from
+        creator_id = request.data["author"]["id"].split("/")[-1]
+        # print("creator", creator_id)
+        author = Author.objects.get(pk=pk_a)
+        serializer = self.serialize_inbox_objects(
+            self.request.data, pk_a)
+        try:
+            if serializer.is_valid():
+                item = serializer.save()
+                if hasattr(item, 'update_fields_with_request'):
+                    item.update_fields_with_request(request)
+                inbox_item = Inbox(content_object=item, author=author)
+                inbox_item.save()
+            else: 
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except AttributeError:
+            item = serializer   
+            inbox_item = Inbox(content_object=item, author = author)
+            inbox_item.save()
+        return Response({'req': self.request.data, 'saved': model_to_dict(inbox_item)})
+
 
