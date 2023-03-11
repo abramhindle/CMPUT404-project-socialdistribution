@@ -98,7 +98,7 @@ function AUTHORPOSTS() {
 	const item = (obj) => {
 		return (
 			<Panel
-				header={<h4>{obj["title"]}</h4>}
+				header={<div>{obj["title"]}</div>}
 				style={{
 					// height: "50px",
 					// border: "0.5px solid lightgrey",

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Panel } from "rsuite";
 // Component Imports
 
-function LIKE({ likeobj }) {
+function LIKEINBOX({ likeobj }) {
 	const [like, set_like] = useState(likeobj);
 
 	return (
@@ -12,9 +12,18 @@ function LIKE({ likeobj }) {
 				circle
 				src="https://avatars.githubusercontent.com/u/12592949"
 			></Avatar>
-			<h4 style={{ marginLeft: "50px" }}>{like["summary"]}</h4>
+			<div
+				style={{
+					marginLeft: "50px",
+					fontFamily: "Times New Roman",
+					fontWeight: "bold",
+					fontSize: "20px",
+				}}
+			>
+				{like["summary"]}
+			</div>
 		</Panel>
 	);
 }
 
-export default LIKE;
+export default LIKEINBOX;

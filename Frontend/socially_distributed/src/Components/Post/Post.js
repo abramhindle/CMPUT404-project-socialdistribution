@@ -44,14 +44,14 @@ function POST({ postobj }) {
 				circle
 				src="https://avatars.githubusercontent.com/u/12592949"
 			></Avatar>
-			<h4
+			<div
 				style={{
 					marginLeft: "10px",
 					float: "left",
 				}}
 			>
 				{post["author"]["displayName"]}
-			</h4>
+			</div>
 			<IconButton
 				style={{ float: "right", marginRight: "10px" }}
 				appearance="subtle"
@@ -74,8 +74,26 @@ function POST({ postobj }) {
 			}}
 		>
 			<div style={{ height: "auto" }}>
-				<h3>{post["title"]}</h3>
-				<h5>{post["description"]}</h5>
+				<div
+					style={{
+						marginLeft: "5px",
+						fontFamily: "Times New Roman",
+						fontWeight: "bold",
+						fontSize: "20px",
+					}}
+				>
+					{post["title"]}
+				</div>
+				<div
+					style={{
+						marginLeft: "5px",
+						fontFamily: "Times New Roman",
+						fontWeight: "bold",
+						fontSize: "15px",
+					}}
+				>
+					{post["description"]}
+				</div>
 				{body()}
 			</div>
 			<Panel bordered collapsible header="Comments">

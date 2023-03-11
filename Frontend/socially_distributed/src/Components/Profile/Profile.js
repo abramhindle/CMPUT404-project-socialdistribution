@@ -1,20 +1,9 @@
 import React, { useState } from "react";
-import {
-	Avatar,
-	ButtonGroup,
-	Panel,
-	Button,
-	Navbar,
-	Nav,
-	InputGroup,
-	Input,
-	Modal,
-} from "rsuite";
+import { Avatar, ButtonGroup, Panel, Button, Navbar, Nav } from "rsuite";
 import FRIENDS from "./Friends";
 import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import SearchIcon from "@rsuite/icons/Search";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
 
 function PROFILE() {
@@ -57,13 +46,12 @@ function PROFILE() {
 
 	// make a get request to get author and every post the author made and comments on the posts
 	// make a get request to get all the friends of an author
-	const handleAddFriendClick = () => {};
 
 	const handleOpen = () => {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleModalClose = () => {
 		setOpen(false);
 	};
 
@@ -114,6 +102,7 @@ function PROFILE() {
 				</ButtonGroup>
 				{posts ? <AUTHORPOSTS /> : <FRIENDS />}
 			</Panel>
+			<ADD_FRIEND_MODAL open={open} handleClose={handleModalClose} />
 		</div>
 	);
 }

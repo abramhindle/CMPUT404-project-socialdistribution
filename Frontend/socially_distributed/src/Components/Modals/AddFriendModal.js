@@ -1,15 +1,10 @@
 import React, { useState } from "react";
-import { Avatar } from "rsuite";
+import { Avatar, Button, Modal, Input, InputGroup } from "rsuite";
+import SearchIcon from "@rsuite/icons/Search";
 
-function ADD_FRIEND_MODAL() {
-	// make a get request to get author and every post the author made and comments on the posts
-	// make a get request to get all the friends of an author
-	cosnt[(open, setOpen)] = useState(false);
-
-	const handleAddFriendClick = () => {};
-
-	const handleClose = () => {
-		setOpen(false);
+function ADD_FRIEND_MODAL({ open, handleClose }) {
+	const handleAddFriendClick = () => {
+		handleClose();
 	};
 
 	return (
@@ -19,7 +14,7 @@ function ADD_FRIEND_MODAL() {
 			</Modal.Header>
 			<Modal.Body>
 				<InputGroup>
-					<Input placeholder={"JhonDoe"} />
+					<Input placeholder={"display name"} />
 					<InputGroup.Addon>
 						<SearchIcon />
 					</InputGroup.Addon>

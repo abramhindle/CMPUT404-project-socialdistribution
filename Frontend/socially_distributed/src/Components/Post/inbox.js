@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 // Component Imports
 import POST from "./Post";
 import CREATEPOST from "./CreatePost";
-import LIKE from "./Like";
+import LIKEINBOX from "./LikeInbox";
 import { Navbar, Nav, Panel, Modal, Button, InputGroup, Input } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import SearchIcon from "@rsuite/icons/Search";
-
+import FOLLOWREQ from "./FollowReq";
+import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
 
 function INBOX() {
 	const inbox = {
@@ -39,6 +39,34 @@ function INBOX() {
 				published: "2015-03-09T13:07:04+00:00",
 				visibility: "FRIENDS",
 				unlisted: false,
+			},
+			{
+				type: "Follow",
+				summary: "Greg wants to follow Lara",
+				actor: {
+					type: "author",
+					id: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+					url: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+					host: "http://127.0.0.1:5454/",
+					displayName: "Greg Johnson",
+					github: "http://github.com/gjohnson",
+					profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
+				},
+				object: {
+					type: "author",
+					// # ID of the Author
+					id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+					// # the home host of the author
+					host: "http://127.0.0.1:5454/",
+					// # the display name of the author
+					displayName: "Lara Croft",
+					// # url to the authors profile
+					url: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+					// # HATEOS url for Github API
+					github: "http://github.com/laracroft",
+					// # Image from a public domain
+					profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
+				},
 			},
 			{
 				"@context": "https://www.w3.org/ns/activitystreams",
@@ -100,10 +128,13 @@ function INBOX() {
 
 	const item = (obj) => {
 		if (obj.type === "post") {
-			return <POST postobj={obj}></POST>;
+			return <POST postobj={obj} />;
 		}
 		if (obj.type === "Like") {
-			return <LIKE likeobj={obj}>like</LIKE>;
+			return <LIKEINBOX likeobj={obj} />;
+		}
+		if (obj.type === "Follow") {
+			return <FOLLOWREQ obj={obj} />;
 		}
 	};
 
@@ -141,13 +172,11 @@ function INBOX() {
 		});
 	};
 
-	const handleAddFriendClick = () => {};
-
 	const handleOpen = () => {
 		setOpen(true);
 	};
 
-	const handleClose = () => {
+	const handleModalClose = () => {
 		setOpen(false);
 	};
 
@@ -176,9 +205,9 @@ function INBOX() {
 				<CREATEPOST></CREATEPOST>
 			</Panel>
 			{inbox.items.map((obj) => item(obj))}
-			<Modal open={open} onClose={handleClose}>
+			{/* <Modal open={open} onClose={handleClose}>
 				<Modal.Header>
-					<h3>Add Friend</h3>
+					<div>Add Friend</div>
 				</Modal.Header>
 				<Modal.Body>
 					<InputGroup>
@@ -193,7 +222,8 @@ function INBOX() {
 						Add Friend
 					</Button>
 				</Modal.Footer>
-			</Modal>
+			</Modal> */}
+			<ADD_FRIEND_MODAL open={open} handleClose={handleModalClose} />
 		</div>
 	);
 }
