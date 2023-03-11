@@ -2,6 +2,7 @@ FROM node:16-alpine AS deps
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
+COPY .env ./
 COPY package.json ./
 COPY yarn.lock  ./
 
@@ -14,7 +15,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 
 COPY . .
-
 RUN yarn build
  
 
@@ -22,6 +22,7 @@ RUN yarn build
 FROM node:16-alpine AS runner
 WORKDIR /app
 COPY --from=builder /app/public ./public
+COPY .env ./
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder /app/.next ./.next
