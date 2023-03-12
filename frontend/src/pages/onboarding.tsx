@@ -32,7 +32,7 @@ const Create: React.FC<createProps> = ({}) => {
         data.host = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
         data.url = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000' + '/authors/' + user?.id
         try {
-            await axios.post('/authors', data)	// FIXME: "/authors/"
+            await axios.post('/authors/', data)	// CHANGED: "/authors" to "/authors/"
             router.push('/')
         } catch (error) {
             console.log(error)

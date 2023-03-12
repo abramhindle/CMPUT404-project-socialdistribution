@@ -73,7 +73,7 @@ const Edit: React.FC<createProps> = ({post}) => {
 			visibility: data.visibility === 'PUBLIC',
 			
 		})
-		await router.push(`/post/${post.id}`)	// FIXME: Shouldn't it be `/posts/...`? note the plural
+		await router.push(`/posts/${post.id}`)	// CHANGED: "/post/" to "/posts/"... Shouldn't it be `/posts/...`? note the plural
 		} catch (error) {
 			console.log(error)
 		}
@@ -198,7 +198,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-    let post = await axios.get(`authors/${user.id}/posts/${context.params?.slug}`)		// FIXME: Shouldn't it be "/authors/" Note the '/' at the beginning of the url
+    let post = await axios.get(`/authors/${user.id}/posts/${context.params?.slug}`)		// CHANGED: "authors/" to "/authors/"... Shouldn't it be "/authors/" Note the '/' at the beginning of the url
   
 	return {
 	  props: {

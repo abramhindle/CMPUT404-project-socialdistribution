@@ -37,7 +37,7 @@ const Post: React.FC<PostProps> = ({title, description, contentType, content, so
 									<Link onClick={
 										async () => {
 											await axios.delete(`/authors/${author.id}/posts/${id}`)
-											if (router.pathname === `/post/${id}`) {		// FIXME: Shouldn't this be /posts/ (plural)
+											if (router.pathname === `/posts/${id}`) {		// CHANGED: "/post/" to "/posts/"... Shouldn't this be /posts/ (plural)
 												router.push('/')
 											} else  {
 												router.reload()

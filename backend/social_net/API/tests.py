@@ -197,7 +197,7 @@ class PostEndpointTest(TestCase):
         """
         links = []
         uids = []
-        url_mid = '/service/authors/'
+        url_mid = 'service/authors/'
         jsons = []
         for i in range(num):
             uid = str(uuid.uuid4())
@@ -228,17 +228,17 @@ class PostEndpointTest(TestCase):
         for i in range(num):
             author_id = random.choice(uids)
             author = [user for user in authors if author_id in user['id']][0]
-            rel_url = '/services/authors/' + author_id + '/posts/'       # FIXME: it should be 'service' and not 'services', but urls.py has it as 'services'. Changing this will probably break other code, so do with care. Other groups will expect 'service' unless they also misread the spec.
+            rel_url = 'service/authors/' + author_id + '/posts/'       # THEORETICALLY FIXED: it should be 'service' and not 'services', but urls.py has it as 'services'. Changing this will probably break other code, so do with care. Other groups will expect 'service' unless they also misread the spec.
             url_base = cls.LOCAL_NODE_ADDR + rel_url
             pid = str(uuid.uuid4())
             print('pid:', pid)
             url = url_base + pid
             print('url:', url)
             content = random.choice(cls.post_data['content'])
-            links.append(rel_url)
+            links.append(url)
             try:
-                origin = random.choice([url_base, cls.LOCAL_NODE_ADDR + '/service/authors/' + random.choice(uids)])
-                source = random.choice([url_base, cls.LOCAL_NODE_ADDR + '/service/authors/' + random.choice(uids)])
+                origin = random.choice([url_base, cls.LOCAL_NODE_ADDR + 'service/authors/' + random.choice(uids)])
+                source = random.choice([url_base, cls.LOCAL_NODE_ADDR + 'service/authors/' + random.choice(uids)])
             except IndexError:
                 origin = url_base
                 source = url_base
@@ -296,6 +296,7 @@ class PostEndpointTest(TestCase):
         
         response = self.client.get(self.post_links[0])
         print('link: ', self.post_links[0])
+        print(self.post_jsons[0])
         print(response)
         json_data = response.json()
         
