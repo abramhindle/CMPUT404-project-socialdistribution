@@ -29,8 +29,9 @@ function COMMENTS({ postobj }) {
 			postObj.id.length - len,
 			postObj.id.length
 		);
-		const url = `posts/authors/${author_id}/posts/${post_id}/comments`;
-		getComments(url);
+		console.log(post_id);
+		// const url = ;
+		getComments(`posts/authors/${author_id}/posts/${post_id}/comments`);
 	}, []);
 
 	const handleSubmitClick = () => {

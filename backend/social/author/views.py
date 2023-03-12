@@ -110,7 +110,7 @@ class FollowersView(APIView):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-
+        # print(pk_a, pk)
         # If url is /authors/authors/author_id/followers/
         if pk ==None:
             followers = author.friends.all()
@@ -220,9 +220,8 @@ class FriendRequestView(APIView):
     serializer_class = FollowRequestSerializer
     
     def post(self,request,pk_a):
-        
         actor = Author.objects.get(id=pk_a)
-        displaynameto = request.data['object.displayName']
+        displaynameto = request.data['displayName']
         displaynamefrom=actor.displayName
         objects = Author.objects.filter(displayName = displaynameto)[0]
 
@@ -240,7 +239,7 @@ class FriendRequestView(APIView):
     
 class ViewRequests(APIView):
     serializer_class = FollowRequestSerializer
-    @permission_classes([IsAuthenticated])
+    # @permission_classes([IsAuthenticated])
     def get(self,request,pk_a):
         """
         Get the list of Follow requests for the current Author

@@ -7,26 +7,35 @@ import { getAuthorId } from "../utils/auth";
 
 function ADD_FRIEND_MODAL({ open, handleClose }) {
 	const [displayName, setName] = useState("");
-	const [foreign_author_id, setId] = useState("");
+	const [foreign_author, setForeign] = useState({});
 	const [isFriends, setIsFriends] = useState("");
 
-	const handleAddFriendClick = () => {
+	async function handleAddFriendClick() {
 		// url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}/`;
 		// axios({ method: "put", url: url });
 		const url = `authors/${displayName}`;
 		const AUTHOR_ID = getAuthorId();
-		axios({ method: "get", url: url }).then((res) => {
+		await axios({ method: "get", url: url }).then((res) => {
 			if (res.status === 200) {
-				console.log(res.data);
-				setId(res.data);
+				setForeign(res.data);
 			}
 		});
-		if (checkFriends(foreign_author_id, AUTHOR_ID)) {
-			notifyAlreadyFriends();
-		}
+		const url2 = `authors/${AUTHOR_ID}/sendreq/`;
+		await axios({ method: "post", url: url2, data: foreign_author }).then(
+			(res) => {
+				console.log(res);
+			}
+		);
+
+		// if (!checkFriends(foreign_author_id, AUTHOR_ID)) {
+		// 	url = ``
+		// 	await axios({ method: "post", url: url });
+		// } else {
+		// 	notifyAlreadyFriends();
+		// }
 
 		handleClose();
-	};
+	}
 
 	const notifyAlreadyFriends = () =>
 		toast.success("success", {
@@ -40,18 +49,18 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 			theme: "light",
 		});
 
-	const checkFriends = (AUTHOR_ID, foreign_author_id) => {
+	async function checkFriends(AUTHOR_ID, foreign_author_id) {
 		const data = "";
 		console.log(AUTHOR_ID);
-		const url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}/`;
-		axios({ method: "get", url: url }).then((res) => {
+		const url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}`;
+		await axios({ method: "get", url: url }).then((res) => {
 			if (Object.keys(res.data).length === 0) {
 				return false;
 			} else {
 				return true;
 			}
 		});
-	};
+	}
 
 	return (
 		<Modal open={open} onClose={handleClose}>
