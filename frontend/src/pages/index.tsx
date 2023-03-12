@@ -93,7 +93,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-	  let resPosts = await axios.get(`/authors/${user.id}/posts`, {
+	  let resPosts = await axios.get(`/authors/${user.id}/posts`, {		// FIXME: "/posts/"
 		params: {
 			following: true
 		}

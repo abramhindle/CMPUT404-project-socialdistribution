@@ -65,7 +65,7 @@ const Edit: React.FC<createProps> = ({post}) => {
 		data.categories = data.categories.split(',')
 
 		try {
-			await axios.put(`/authors/${user?.id}/posts/${post.id}`, {
+			await axios.put(`/authors/${user?.id}/posts/${post.id}`, {		// FIXME: I'm assuming this is the code that is supposed to update an existing post, but the PUT method is for creating new posts: https://github.com/Sean-Meyers/CMPUT404-project-socialdistribution/wiki/Objects#post
 			...data,
 			source: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 			origin: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
@@ -73,7 +73,7 @@ const Edit: React.FC<createProps> = ({post}) => {
 			visibility: data.visibility === 'PUBLIC',
 			
 		})
-		await router.push(`/post/${post.id}`)
+		await router.push(`/post/${post.id}`)	// FIXME: Shouldn't it be `/posts/...`? note the plural
 		} catch (error) {
 			console.log(error)
 		}
@@ -198,7 +198,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-    let post = await axios.get(`authors/${user.id}/posts/${context.params?.slug}`)
+    let post = await axios.get(`authors/${user.id}/posts/${context.params?.slug}`)		// FIXME: Shouldn't it be "/authors/" Note the '/' at the beginning of the url
   
 	return {
 	  props: {

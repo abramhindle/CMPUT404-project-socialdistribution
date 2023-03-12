@@ -228,10 +228,12 @@ class PostEndpointTest(TestCase):
         for i in range(num):
             author_id = random.choice(uids)
             author = [user for user in authors if author_id in user['id']][0]
-            rel_url = '/services/authors/' + author_id + '/posts'       # FIXME: it should be 'service' and not 'services', but urls.py has it as 'services'. Changing this will probably break other code, so do with care. Other groups will expect 'service' unless they also misread the spec.
+            rel_url = '/services/authors/' + author_id + '/posts/'       # FIXME: it should be 'service' and not 'services', but urls.py has it as 'services'. Changing this will probably break other code, so do with care. Other groups will expect 'service' unless they also misread the spec.
             url_base = cls.LOCAL_NODE_ADDR + rel_url
             pid = str(uuid.uuid4())
+            print('pid:', pid)
             url = url_base + pid
+            print('url:', url)
             content = random.choice(cls.post_data['content'])
             links.append(rel_url)
             try:
@@ -275,7 +277,8 @@ class PostEndpointTest(TestCase):
 
         This method populates the db full of authors and posts, as well as setting
         up the client to make HTTP requests.
-        """        
+        """
+        self.maxDiff = None
         self.author_links, uids, self.author_jsons = self.helper_populate_authors()
         self.post_links, self.post_jsons = self.helper_populate_posts(uids, self.author_jsons)
         
@@ -297,7 +300,7 @@ class PostEndpointTest(TestCase):
         json_data = response.json()
         
         self.assertEqual(response.status_code, 200, "Status code is not 200")
-        self.assertJSONEqual(json_data, self.post_jsons[0],
+        self.assertEqual(json_data, self.post_jsons[0],
                                        "response json does not match expected.")
         
     

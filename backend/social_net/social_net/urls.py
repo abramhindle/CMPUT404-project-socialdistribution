@@ -23,7 +23,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     # path('', include(router.urls)),
-    path('services/', include('API.urls')),
+    path('services/', include('API.urls')),     # FIXME: "service/" (singular, not plural)
     path('admin/', admin.site.urls),
     # path('^activity/', include('actstream.urls')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

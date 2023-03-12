@@ -52,7 +52,7 @@ const Create: React.FC<createProps> = ({}) => {
 		data.categories = data.categories.split(',')
 
 		try {
-			await axios.post(`/authors/${user?.id}/posts`, {
+			await axios.post(`/authors/${user?.id}/posts`, {	// FIXME: "/posts/"
 			...data,
 			source: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 			origin: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
