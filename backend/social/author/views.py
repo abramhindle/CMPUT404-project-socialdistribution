@@ -296,14 +296,15 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     def get(self, request, pk_a):
         author = get_object_or_404(Author,pk=pk_a)
         inbox_data = author.inbox.all()
+        # Query Sey of inbox objects: [{'id': 'inbox id', 'author_id': 'author id', 'content_type_id': 1, 'object_id': '4cf1fb31-cc70-469c-97ff-4a6a28e483a8'}]
         print("DATA HERE",inbox_data.values())
-        serializer = InboxSerializer(data=inbox_data, context={'author':pk_a, 'serializer':self.deserialize_inbox_objects}, many=True)
+        serializer = InboxSerializer(data=inbox_data, context={'author':author, 'serializer':self.deserialize_inbox_objects}, many=False)
         print("SERIALIZER HERE",serializer)
-        if serializer.is_valid():
-            serializer.save()
-            print("SERIALIZER DATA",serializer.data)
-        
+        serializer.is_valid()
+        #serializer.save()
         return Response(serializer.data)
+        
+        return Response("No posts", status=status.HTTP_404_NOT_FOUND)
         paginated_inbox_data = self.paginate_queryset(inbox_data, request)
         return self.get_paginated_response([self.deserialize_inbox_objects(obj) for obj in paginated_inbox_data])
         return

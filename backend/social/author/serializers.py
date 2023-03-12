@@ -59,39 +59,31 @@ class FollowRequestSerializer(serializers.ModelSerializer):
         fields = ['Type','Summary','actor', 'object']
         
 class InboxSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(default="like",source="get_api_type",read_only=True)
-    author = serializers.SerializerMethodField()
+    type = serializers.CharField(default="inbox",source="get_api_type",read_only=True)
+    author = AuthorSerializer()
     items = serializers.SerializerMethodField()
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance),
+        return rep
 
-    def get_author(self, data):
+    def get_items(self, validated_data):
+        print("INSTANCES",validated_data)
+        serialize = self.context["serializer"]
+        s = serialize(validated_data["objects"])
+        print("Instance is here", s)
+        return [s]
+    
+    def create(self, data):
+        print("Creating...")
         author = self.context["author"]
         validated_data = {
             'author': author,
             'object': data
         }
-        return validated_data
+        print("OBJECTS create here")
+        self.get_items(validated_data)
     
-    def to_representation(self, instance):
-        return {
-            **super().to_representation(instance)
-        }
-
-    def get_items(self, instance):
-        print("INSTANCES",instance)
-        serialize = self.context["serializer"]
-        pk_a = self.context["author"]
-        s = serialize(instance)
-        print(s)
-        return [s]
-    
-    def create(self, validated_data):
-        print("OBJECTS")
-        obj = Inbox.objects.create(**validated_data,many=True)
-        self.get_author(validated_data)
-        self.get_items(obj)
-        return obj
-    
-
     class Meta:
         model = Inbox
         fields = ['type','author', 'items']
