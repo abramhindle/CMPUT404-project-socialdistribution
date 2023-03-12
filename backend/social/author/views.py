@@ -258,7 +258,7 @@ class ViewRequests(APIView):
 
 
 class InboxSerializerObjects:
-    def deserialize_inbox_objects(self, item, context={}):
+    def serialize_inbox_objects(self, item, context={}):
         object_model = item.content_type.model_class()
         print("CONTENT",item.content_object)
         if object_model is Post:
@@ -269,7 +269,7 @@ class InboxSerializerObjects:
             serializer = CommentSerializer
         return serializer(item.content_object, context=context).data
     
-    def serialize_inbox_objects(self, data, pk_a):
+    def serialize_objects(self, data, pk_a):
         ## TODO: Make it clearner, use object_model = item.content_type.model_class()
 
         type = data.get('type')
@@ -289,6 +289,18 @@ class InboxSerializerObjects:
         if obj: return obj
         return serializer(data=data, context=context)
 
+def getItems(data):
+    print(data)
+    dict = {"type":"inbox", "author": "" }
+    items = []
+    for item in data:
+        items.append(item["content_object"])
+
+    dict["items"] = items
+    print(dict)
+    return(dict) 
+        
+
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     serializer_class = InboxSerializer
     pagination_class = InboxSetPagination
@@ -296,24 +308,22 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     def get(self, request, pk_a):
         author = get_object_or_404(Author,pk=pk_a)
         inbox_data = author.inbox.all()
+        # Query Sey of inbox objects: [{'id': 'inbox id', 'author_id': 'author id', 'content_type_id': 1, 'object_id': '4cf1fb31-cc70-469c-97ff-4a6a28e483a8'}]
         print("DATA HERE",inbox_data.values())
-        serializer = InboxSerializer(data=inbox_data, context={'author':pk_a, 'serializer':self.deserialize_inbox_objects}, many=True)
+        serializer = InboxSerializer(data=inbox_data, context={'author':author, 'serializer':self.serialize_inbox_objects}, many=True)
         print("SERIALIZER HERE",serializer)
-        if serializer.is_valid():
-            serializer.save()
-            print("SERIALIZER DATA",serializer.data)
-        
-        return Response(serializer.data)
-        paginated_inbox_data = self.paginate_queryset(inbox_data, request)
-        return self.get_paginated_response([self.deserialize_inbox_objects(obj) for obj in paginated_inbox_data])
-        return
+        serializer.is_valid()
+        #serializer.save()
+        data = getItems(serializer.data)
+        return Response(data)
+
     
     def post(self, request, pk_a):
         # author id is the id of the person who this notification comes from
         creator_id = request.data["author"]["id"].split("/")[-1]
         # print("creator", creator_id)
         author = Author.objects.get(pk=pk_a)
-        serializer = self.serialize_inbox_objects(
+        serializer = self.serialize_objects(
             self.request.data, pk_a)
         try:
             if serializer.is_valid():
