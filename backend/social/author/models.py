@@ -19,7 +19,6 @@ class Author(models.Model):
     url = models.URLField(editable=False, max_length=500)  # url of author profile
     host = models.URLField(editable=False, max_length=500)  # host server
 
-  
 
     # make it pretty
     def __str__(self):

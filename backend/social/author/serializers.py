@@ -60,7 +60,7 @@ class FollowRequestSerializer(serializers.ModelSerializer):
         
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="inbox",source="get_api_type",read_only=True)
-    author = AuthorSerializer()
+    author = serializers.CharField(source="get_author")
     items = serializers.SerializerMethodField()
     
     def to_representation(self, instance):

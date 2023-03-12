@@ -258,7 +258,7 @@ class ViewRequests(APIView):
 
 
 class InboxSerializerObjects:
-    def deserialize_inbox_objects(self, item, context={}):
+    def serialize_inbox_objects(self, item, context={}):
         object_model = item.content_type.model_class()
         print("CONTENT",item.content_object)
         if object_model is Post:
@@ -269,7 +269,7 @@ class InboxSerializerObjects:
             serializer = CommentSerializer
         return serializer(item.content_object, context=context).data
     
-    def serialize_inbox_objects(self, data, pk_a):
+    def serialize_objects(self, data, pk_a):
         ## TODO: Make it clearner, use object_model = item.content_type.model_class()
 
         type = data.get('type')
@@ -298,7 +298,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         inbox_data = author.inbox.all()
         # Query Sey of inbox objects: [{'id': 'inbox id', 'author_id': 'author id', 'content_type_id': 1, 'object_id': '4cf1fb31-cc70-469c-97ff-4a6a28e483a8'}]
         print("DATA HERE",inbox_data.values())
-        serializer = InboxSerializer(data=inbox_data, context={'author':author, 'serializer':self.deserialize_inbox_objects}, many=False)
+        serializer = InboxSerializer(data=inbox_data, context={'author':author, 'serializer':self.serialize_inbox_objects}, many=False)
         print("SERIALIZER HERE",serializer)
         serializer.is_valid()
         #serializer.save()
@@ -314,7 +314,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         creator_id = request.data["author"]["id"].split("/")[-1]
         # print("creator", creator_id)
         author = Author.objects.get(pk=pk_a)
-        serializer = self.serialize_inbox_objects(
+        serializer = self.serialize_objects(
             self.request.data, pk_a)
         try:
             if serializer.is_valid():
