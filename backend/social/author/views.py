@@ -125,7 +125,7 @@ class FollowersView(APIView):
                 followers_list.append(follower_author.follower_to_object())
 
             # print(followers_list)
-            return Response(followers_list)
+            return Response({"items":followers_list})
         # else If url is /authors/authors/author_id/followers/foreign_author_id    
         else:
             try:
@@ -329,5 +329,11 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             inbox_item = Inbox(content_object=item, author = author)
             inbox_item.save()
         return Response({'req': self.request.data, 'saved': model_to_dict(inbox_item)})
+    
+@api_view(['GET'])
+def getAuthor(request, displayName):
+    author = Author.objects.get(displayName=displayName)
+    serializer = AuthorSerializer(author,partial=True)
+    return  Response(serializer.data)
 
 

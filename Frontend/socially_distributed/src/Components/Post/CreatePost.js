@@ -6,6 +6,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MarkdownEditor from "@uiw/react-markdown-editor";
+import { getAuthorId } from "../utils/auth";
 
 function CREATEPOST() {
 	const [post_status, set_post_status] = useState("Public");
@@ -117,11 +118,7 @@ function CREATEPOST() {
 
 	const handlePostClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const author_id = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
+		const author_id = getAuthorId();
 		const url = `posts/authors/${author_id}/posts/`;
 		// if (post_type === "text/markdown") {
 		// 	text = markdown;

@@ -5,6 +5,7 @@ import ShareIcon from "@rsuite/icons/legacy/Reply";
 import COMMENTS from "./Comment";
 import "./Post.css";
 import ReactMarkdown from "react-markdown";
+import LIKE from "./Like";
 // Component Imports
 
 function POST({ postobj }) {
@@ -57,11 +58,7 @@ function POST({ postobj }) {
 				appearance="subtle"
 				icon={<ShareIcon />}
 			/>
-			<IconButton
-				style={{ float: "right", marginRight: "10px" }}
-				appearance="subtle"
-				icon={<ThumbsUpIcon />}
-			/>
+			<LIKE />
 		</div>
 	);
 

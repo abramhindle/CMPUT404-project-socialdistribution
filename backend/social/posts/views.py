@@ -400,7 +400,7 @@ class CommentView(APIView, PageNumberPagination):
 
     def get(self, request, pk_a, pk):
         try:
-            author = Author.objects.get(id=request.data["author_id"])
+            author = Author.objects.get(id=pk_a)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)

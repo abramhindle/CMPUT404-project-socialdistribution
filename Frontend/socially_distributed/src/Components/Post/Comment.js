@@ -10,6 +10,7 @@ function COMMENTS({ postobj }) {
 	const [new_comment, set_new_comment] = useState("");
 
 	const getComments = (url) => {
+		console.log(url);
 		axios({ method: "get", url: url })
 			.then((res) => {
 				setCommentObj(res.data);
