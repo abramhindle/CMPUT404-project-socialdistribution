@@ -28,8 +28,6 @@ content_types = [
     (IMAGE_JPEG, 'image/jpeg;base64'),
 ]
 
-APP_NAME = 'http://127.0.0.1:8000'
-
 class Post(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
     url = models.URLField(editable=False, max_length=255)  # url of post
@@ -116,7 +114,7 @@ class Comment(models.Model):
     # get public id of comment
     def get_public_id(self):
         if not self.url: 
-            self.url = APP_NAME + self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
     
@@ -140,7 +138,7 @@ class Like(models.Model):
     # get public id of like
     def get_public_id(self):
         if not self.url: 
-            self.url = APP_NAME + self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
     

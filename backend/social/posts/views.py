@@ -145,14 +145,13 @@ class post_list(APIView, PageNumberPagination):
 
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List of Posts for an Author")
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
     def get(self, request, pk_a):
         """
         Get the list of posts on our website
         """
         author = Author.objects.get(id=pk_a)
         posts = Post.objects.filter(author=author)
-        print("posts",posts)
         posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
@@ -162,7 +161,7 @@ class post_list(APIView, PageNumberPagination):
     def post(self, request, pk_a):
         """
         New post for an Author
-        
+        Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         pk = str(uuid.uuid4())
         
@@ -205,9 +204,11 @@ class post_detail(APIView, PageNumberPagination):
     #{
     # Title, Description, Content type, Content, Categories, Visibility
     # }
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a particular post of an author") 
+    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Update a particular post of an author") 
     def post(self, request, pk_a, pk):       
-        
+        """
+        Request: only include fields you want to update, not including id or author.
+        """        
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -244,10 +245,10 @@ class post_detail(APIView, PageNumberPagination):
             return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
       
 
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Update a particular post of an author") 
+    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a post of an author whose id is the specified post id") 
     def put(self, request, pk_a, pk):
         """
-        Updates the post given by the particular authorid and postid
+        Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         try:
             _ = Author.objects.get(id=pk_a)
@@ -290,21 +291,6 @@ def get_likes(request, pk_a, pk):
     likes = Like.objects.filter(object=post.id)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
-
-
-class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
-
-    model = Post
-    template_name = 'posts/delete.html'
-    context_object_name = 'post'
-    success_url = '/admin/'
-    
-    def test_func(self):
-        post = self.get_object()
-        print(post.title)
-        if self.request.user == post.author.user:
-            return True
-        return False
 
 # hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
