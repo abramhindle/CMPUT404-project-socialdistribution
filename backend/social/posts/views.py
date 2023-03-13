@@ -336,33 +336,51 @@ class ImageView(APIView):
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
 class LikeView(APIView, PageNumberPagination):
+
+    #Check for if the user has already liked the object then 
+    #return something that says user already liked the object...
     serializer_class = LikeSerializer
     pagination_class = PostSetPagination
     
-    def post(self, request, pk_a):
-        post_id = uuid.uuid4
-        
+    def post(self, request, pk_a, pk):
+        like_id = uuid.uuid4
+        # url = request.data
+        # url 
+        post_url = request.data['object']
+        author = request.data['author']
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        try: 
+            #setup the URL and check to see if it exists already
+            #like = Like.object.get(author = pk_a, object = url)
+            like = Like.objects.get(auhtor=author, object=post_url )
+            return Response('Already Liked')
+        except Like.DoesNotExist:
+             #find a way to get inbox of author and put inbox into data that goes in serializer
+            try:
+                inbox = Inbox.object.get(author=author)
+            except Inbox.DoesNotExist:
+                return Response("Inbox does not exist", status=status.HTTP_400_BAD_REQUEST)
+            all_data = request.data
+            all_data['inbox'] = inbox 
+            serializer = LikeSerializer(data=all_data, context={'author_id': pk_a})
+            if serializer.is_valid():
+                # using raw create because we need custom id
+                # print("original",serializer.validated_data.get('categories'))
+                # categories = ' '.join(serializer.validated_data.get('categories'))
+                # print("categories", categories)
+                #serializer.validated_data.pop('categories')
+                serializer.validated_data.pop("author")
+                like = Like.objects.create(**serializer.validated_data, author=author, id=like_id, )
+                like.update_fields_with_request(request)
 
-        serializer = LikeSerializer(data=request.data, context={'author_id': pk_a})
-        if serializer.is_valid():
-            # using raw create because we need custom id
-            # print("original",serializer.validated_data.get('categories'))
-            # categories = ' '.join(serializer.validated_data.get('categories'))
-            # print("categories", categories)
-            #serializer.validated_data.pop('categories')
-            serializer.validated_data.pop("author")
-            like = Like.objects.create(**serializer.validated_data, author=author, id=post_id)
-            like.update_fields_with_request(request)
-
-            serializer = LikeSerializer(like, many=False)
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                serializer = LikeSerializer(like, many=False)
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # try:
         #     author = Author.objects.get(id=pk_a)
         # except Author.DoesNotExist:

@@ -85,6 +85,7 @@ class LikeSerializer(serializers.ModelSerializer):
             "author",
             "object",
             "id",
+            "inbox",
         ]
 
 class ImageSerializer(serializers.ModelSerializer):
