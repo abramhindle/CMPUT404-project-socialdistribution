@@ -62,13 +62,13 @@ class AuthorTests(TestCase):
         comments = comments_paged["items"]
 
         self.assertEqual(len(comments), 2)
-        self.assertEqual(comments[0]["type"], "comment")
-        self.assertEqual(comments[0]["comment"], self.comment1.comment)
-        self.assertEqual(comments[0]["author"]["id"], str(self.comment1.author._id))
-
         self.assertEqual(comments[1]["type"], "comment")
-        self.assertEqual(comments[1]["comment"], self.comment2.comment)
-        self.assertEqual(comments[1]["author"]["id"], str(self.comment2.author._id))
+        self.assertEqual(comments[1]["comment"], self.comment1.comment)
+        self.assertEqual(comments[1]["author"]["id"], str(self.comment1.author._id))
+
+        self.assertEqual(comments[0]["type"], "comment")
+        self.assertEqual(comments[0]["comment"], self.comment2.comment)
+        self.assertEqual(comments[0]["author"]["id"], str(self.comment2.author._id))
 
     def test_post_comment(self):
         self.kwargs = {

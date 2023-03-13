@@ -35,7 +35,7 @@ class AuthorTests(TestCase):
 
         self.assertEqual(author["id"], str(self.author1._id))
         self.assertEqual(author["displayName"], self.author1.displayName)
-        self.assertEqual(author["url"], f"{self.author1.host}/authors/{self.author1._id}")
+        self.assertEqual(author["url"], str(self.author1._id))
 
     def test_post_single_author(self):
 

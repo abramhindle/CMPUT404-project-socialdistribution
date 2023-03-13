@@ -4,6 +4,7 @@ from service.models.inbox import Inbox
 from service.models.post import Post
 from service.models.comment import Comment
 from service.models.follow import Follow
+from service.models.like import Like
 from service.service_constants import *
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -52,8 +53,9 @@ class InboxView(View):
         posts = self.inbox.posts.all()
         comments = self.inbox.comments.all()
         follow_requests = self.inbox.follow_requests.all()
+        likes = self.inbox.likes.all()
 
-        inbox_items = list(posts) + list(comments) + list(follow_requests)
+        inbox_items = list(posts) + list(comments) + list(follow_requests) + list(likes)
 
         inbox_items.sort(key=lambda x: x.published, reverse=True) #TODO: this needs to be optimized
 
@@ -101,8 +103,9 @@ class InboxView(View):
             elif body["type"] == "follow": #TODO: fill these in once the objects are done
                 id = Follow.create_follow_id(body["object"]["id"], body["actor"]["id"])
                 self.handle_follow(inbox, id, body, self.author)
-            elif body["type"] == "like":
-                pass
+            elif body["type"] == "Like":
+                id = Like.create_like_id(body["author"]["id"], body["object"])
+                self.handle_like(inbox, id, body, self.author)
             else:
                 return HttpResponseBadRequest()
 
@@ -165,6 +168,7 @@ class InboxView(View):
 
         comment = Comment.objects.get(_id=id)
         inbox.comments.add(comment)
+        inbox.save()
 
     def handle_follow(self, inbox: Inbox, id, body, author: Author): #we actually create the follow request here
         follow_req = inbox.follow_requests.all().filter(_id=id)
@@ -180,6 +184,38 @@ class InboxView(View):
         except ObjectDoesNotExist: #only create request if they are NOT already being followed
             follow_request = Follow.objects.create(actor=foreign_author, object=author)
             inbox.follow_requests.add(follow_request)
+
+    def handle_like(self, inbox: Inbox, id, body, author: Author):
+        like = inbox.likes.all().filter(_id=id)
+
+        if like.exists():
+            raise ConflictException
+        
+        foreign_author = Author()
+        foreign_author.toObject(body["author"])
+
+        try:
+            Author.objects.get(_id=foreign_author._id)
+        except ObjectDoesNotExist:
+            foreign_author.save()
+
+        try:
+            like = Like.objects.get(_id=id)
+        except ObjectDoesNotExist:
+            like = Like()
+            like._id=id
+            like.context=body["context"]
+            like.summary= f"{foreign_author.displayName} likes your post"
+            like.author=foreign_author
+            like.object=body["object"]
+            like.published
+            like.save()
+
+        inbox.likes.add(like)
+        inbox.save()
+
+
+
     
 
 class ConflictException(Exception):

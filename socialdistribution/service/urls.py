@@ -6,8 +6,7 @@ from service.views.post import PostCreation, PostWithId
 from service.views.inbox import InboxView
 #from .views.follower_views import FollowerAPIView, FollowersAPIView
 from service.views.comment import CommentView
-from service.views.likes import LikesView
-from service.views.liked import LikedView
+from service.views.liked import LikedView, LikesView
 
 
 #this shit is hell, but django freaks out trying to parse nested urls otherwise
@@ -24,7 +23,7 @@ urlpatterns = [
     re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/posts/(?P<post_id>{POST_ID})/likes/', LikesView.as_view(), name='post_likes'),
     re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/posts/(?P<post_id>{POST_ID})/comments/$', CommentView.as_view(), name='comment_view'),
     re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/posts/(?P<post_id>{POST_ID})/$', PostWithId.as_view(), name='post_with_id'),
-    re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/liked/', LikedView.as_view(), name='author_likes'),
+    re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/liked/', LikedView.as_view(), name='author_likes'),
     re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/posts/$', PostCreation.as_view(), name='post_creation'),
     re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/inbox/$', InboxView.as_view(), name='inbox_view'),
     re_path(rf'^(?P<author_id>{AUTHOR_ID_REGEX})/$', SingleAuthor.as_view()),

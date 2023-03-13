@@ -20,6 +20,9 @@
     },
     {
       "name": "inbox"
+    },
+    {
+      "name": "likes"
     }
   ],
   "paths": {
@@ -377,6 +380,9 @@
                 },
                 {
                   "$ref": "#/components/schemas/Follow"
+                },
+                {
+                  "$ref": "#/components/schemas/Like"
                 }
               ]
             }
@@ -424,7 +430,75 @@
               }
             }
         }
-    }
+    },
+    "/{author_id}/posts/{post_id}/likes": {
+        "get": {
+          "tags": ["likes"],
+          "summary": "Get all the likes on an author's post",
+          "operationId": "getPostLikes",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "type":{
+                        "type": "string",
+                        "default": "liked"
+                      },
+                      "items":{
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "$ref": "#/components/schemas/Like"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "Author or post not found"
+              }
+            }
+          }
+      },
+      "/{author_id}/liked/": {
+        "get": {
+          "tags": ["likes"],
+          "summary": "Get an author's likes",
+          "operationId": "getAuthorLikes",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "type":{
+                        "type": "string",
+                        "default": "liked"
+                      },
+                      "items":{
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "$ref": "#/components/schemas/Like"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "Author not found"
+              }
+            }
+          }
+      }
   },
   "components": {
     "schemas": {
@@ -432,7 +506,8 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string"
+            "type": "string",
+            "default": "author"
           },
           "id": {
             "type": "url",
@@ -474,7 +549,8 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string"
+            "type": "string",
+            "default": "post"
           },
           "id": {
             "type": "url",
@@ -580,6 +656,10 @@
                 {
                   "type": "object",
                   "$ref": "#/components/schemas/Follow"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Like"
                 }
               ]
             }
@@ -600,6 +680,30 @@
           "object": {
             "type": "object",
             "$ref": "#/components/schemas/Author"
+          }
+        }
+      },
+      "Like": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "Like"
+          },
+          "context": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string",
+            "example": "Joe liked your post"
+          },
+          "author": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
+          },
+          "object": {
+            "type": "url",
+            "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
           }
         }
       }
