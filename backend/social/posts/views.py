@@ -349,13 +349,18 @@ class LikeView(APIView, PageNumberPagination):
     
     def post(self, request, pk_a, pk):
         like_id = uuid.uuid4
-        
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-
+        try: 
+            #setup the URL and check to see if it exists already
+            #like = Like.object.get(author = pk_a, object = url)
+            pass
+        except Like.DoesNotExist:
+            #do something here
+            pass
         serializer = LikeSerializer(data=request.data, context={'author_id': pk_a})
         if serializer.is_valid():
             # using raw create because we need custom id
