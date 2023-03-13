@@ -3,6 +3,8 @@ from django.urls import reverse
 from author.models import Author, Inbox
 from django.contrib.contenttypes.fields import GenericRelation
 import uuid
+from django.conf import settings
+
 
 # Create your models here.
 
@@ -60,7 +62,7 @@ class Post(models.Model):
     # get public id of post
     def get_public_id(self):
         if not self.url: 
-            self.url = APP_NAME + self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
     
