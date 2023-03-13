@@ -137,9 +137,15 @@ response_schema_dictComments = {
     )}
 
 class post_list(APIView, PageNumberPagination):
+
+    # for pagination
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List of Posts for an Author")
+    #
+
+    # TODO: RESPONSE AND REQUESTS
+    
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
     def get(self, request, pk_a):
         """
         Get the list of posts on our website
@@ -148,24 +154,33 @@ class post_list(APIView, PageNumberPagination):
         posts = Post.objects.filter(author=author)
         posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
-        return  self.get_paginated_response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
 
     def post(self, request, pk_a):
         """
         New post for an Author
+        Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         pk = str(uuid.uuid4())
+        
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
-            return Response("Author not found", status=status.HTTP_404_NOT_FOUND)
-
-        # should do this a different way but for now, it should serialize as image
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         if 'image' in request.data['contentType']:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
-            serializer.is_valid()
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else: 
+               return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST) 
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -179,9 +194,8 @@ class post_detail(APIView, PageNumberPagination):
         Get a particular post of an author
         """
         try: 
-            author = Author.objects.get(id=pk_a)
-            post = Post.objects.get(author=author, id = pk)
-            serializer = PostSerializer(post)
+            post = Post.objects.get(id = pk)
+            serializer = PostSerializer(post, many=False)
             return Response(serializer.data)
         except Post.DoesNotExist: 
             return self.put(request, pk_a, pk)
@@ -190,25 +204,26 @@ class post_detail(APIView, PageNumberPagination):
     #{
     # Title, Description, Content type, Content, Categories, Visibility
     # }
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a particular post of an author") 
+    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Update a particular post of an author") 
     def post(self, request, pk_a, pk):       
-        
+        """
+        Request: only include fields you want to update, not including id or author.
+        """        
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
-            error_msg = "Author id not found"
+            error_msg = "Author not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
         try:
             post = Post.objects.get(pk=pk)
         except Post.DoesNotExist:
-            error_msg = "Post id not found"
+            error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
-            post = serializer.save()
-            post.update_fields_with_request(request)           
+            serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -222,50 +237,35 @@ class post_detail(APIView, PageNumberPagination):
         # TODO: check permissions 
 
         try: 
-            post = Post.objects.get(id=pk)
+            post = Post.objects.filter(id=pk)
             post.delete()
-            post.save()
-            print(post.title)
-            
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Post.DoesNotExist:
             return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
       
 
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Update a particular post of an author") 
+    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a post of an author whose id is the specified post id") 
     def put(self, request, pk_a, pk):
         """
-        Updates the post given by the particular authorid and postid
+        Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
-
         try:
-            author = Author.objects.get(id=pk_a)
+            _ = Author.objects.get(id=pk_a)
             try:
                 _ = Post.objects.get(id=pk)
-                return Response("Post already exists", status=status.HTTP_400_NOT_FOUND)
+                return Response("Post already exists", status=status.HTTP_400_BAD_REQUEST)
             except Post.DoesNotExist:
                 pass
         except Author.DoesNotExist:
-            author = Author.objects.get(id=pk_a)
             Response("Author does not exist", status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PostSerializer(data=request.data, context={'author_id': pk_a})
+        serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
-            # using raw create because we need custom id
-            # print("original",serializer.validated_data.get('categories'))
-            # categories = ' '.join(serializer.validated_data.get('categories'))
-            # print("categories", categories)
-            #serializer.validated_data.pop('categories')
-            serializer.validated_data.pop("author")
-            post = Post.objects.create(**serializer.validated_data, author=author, id=pk)
-            post.update_fields_with_request(request)
-
-            serializer = PostSerializer(post, many=False)
+            serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 @swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
@@ -291,34 +291,6 @@ def get_likes(request, pk_a, pk):
     likes = Like.objects.filter(object=post.id)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
-
-class IndexView(generic.ListView):
-    template_name = 'posts/index.html'
-    context_object_name = 'latest_posts'
-
-    def get_queryset(self):
-        """Return the last five published posts."""
-        return Post.objects.order_by('title')[:5]
-
-class DetailView(generic.DetailView):
-    model = Post
-    context_object_name = 'postt'
-    template_name = 'posts/detail.html'
-    
-
-class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
-
-    model = Post
-    template_name = 'posts/delete.html'
-    context_object_name = 'post'
-    success_url = '/admin/'
-    
-    def test_func(self):
-        post = self.get_object()
-        print(post.title)
-        if self.request.user == post.author.user:
-            return True
-        return False
 
 # hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
