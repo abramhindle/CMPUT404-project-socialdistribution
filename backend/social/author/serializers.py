@@ -8,13 +8,21 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     displayName = serializers.CharField(default = 'x')
+    
+    @staticmethod
+    def _upcreate(validated_data):
+        author = Author.objects.create(**validated_data)   
+        return author
     @staticmethod
     def extract_and_upcreate_author(validated_data, author_id=None):
         validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
+        print("validated",validated_author_data)
         try:
             if validated_author_data:
+                print("if case")
                 updated_author = AuthorSerializer._upcreate(validated_author_data)
             else:
+                print("else case")
                 updated_author = Author.objects.get(id=author_id)
             return updated_author
         except:
@@ -35,7 +43,7 @@ class AuthorSerializer(serializers.ModelSerializer):
             'id', 
             #'host',
             'displayName',
-            'url',
+            #'url',
             #'github',
             'profileImage',
         ]
@@ -45,8 +53,19 @@ class FollowRequestSerializer(serializers.ModelSerializer):
     
     actor = AuthorSerializer()
     object = AuthorSerializer()
-
     class Meta:
         model = FollowRequest
         fields = ['Type','Summary','actor', 'object']
         
+class InboxSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="inbox",source="get_api_type",read_only=True)
+
+    def to_representation(self, instance):
+        serializer = self.context["serializer"]
+        rep = super().to_representation(instance)
+        rep['content_object'] = serializer(instance)
+        return rep
+
+    class Meta:
+        model = Inbox
+        fields = ['type', 'author', 'content_type', 'object_id' ,'content_object']
