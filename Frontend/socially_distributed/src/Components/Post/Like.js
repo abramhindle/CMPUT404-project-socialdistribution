@@ -31,9 +31,7 @@ function LIKE({ likeobj }) {
 	//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })
 				.then((res) => {
-					if (res.status === 200) {
-						getLikes(url);
-					}
+					console.log(res.data)
 				})
 				.catch((err) => console.log(err));
 	};
