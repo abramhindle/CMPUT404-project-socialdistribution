@@ -349,6 +349,8 @@ class LikeView(APIView, PageNumberPagination):
     
     def post(self, request, pk_a, pk):
         like_id = uuid.uuid4
+        url = request.data
+        url 
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
