@@ -153,14 +153,16 @@ class FollowersView(APIView):
             for follower in followers:
                 try: 
                     follower_author = Author.objects.get(id=follower.id)
-                    print (follower_author)
                 except Author.DoesNotExist:
                     error_msg = "Follower id not found"
                     return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
                 followers_list.append(follower_author.follower_to_object())
 
-            # print(followers_list)
-            return Response(followers_list)
+            results = {"type": "followers",
+                    "items": followers_list
+            }
+
+            return Response(results, status=200)
         # else If url is /authors/authors/author_id/followers/foreign_author_id    
         else:
             try:
