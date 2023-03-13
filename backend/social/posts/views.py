@@ -365,7 +365,10 @@ class LikeView(APIView, PageNumberPagination):
             return Response('Already Liked')
         except Like.DoesNotExist:
              #find a way to get inbox of author and put inbox into data that goes in serializer
-            serializer = LikeSerializer(data=request.data, context={'author_id': pk_a})
+            inbox = Inbox.object.get(author=author)
+            all_data = request.data
+            all_data['inbox'] = inbox 
+            serializer = LikeSerializer(data=all_data, context={'author_id': pk_a})
             if serializer.is_valid():
                 # using raw create because we need custom id
                 # print("original",serializer.validated_data.get('categories'))
