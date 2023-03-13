@@ -25,8 +25,7 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
-
-
+from django.conf import settings
 
 response_schema_dict = {
     "200": openapi.Response(
@@ -41,6 +40,42 @@ response_schema_dict = {
     }
         }
     )}
+
+response_schema_dict = {
+    "200": openapi.Response(
+        description="Successful Operation",
+        examples={
+            "application/json": {
+            "type": "inbox",
+            "author": "http://127.0.0.1:8000/authors/a1",
+            "items": [
+                {
+                    "type": "post",
+                    "title": "A post title about a post about web dev",
+                    "id": "http://127.0.0.1:8000/posts/authors/a2/posts/p2",
+                    "source": "",
+                    "origin": "",
+                    "description": "This post discusses stuff -- brief",
+                    "contentType": "text/plain",
+                    "content": "Example content",
+                    "author": {
+                        "type": "author",
+                        "id": "http://127.0.0.1:8000/authors/a2",
+                        "displayName": "NewLeen",
+                        "profileImage": ""
+                    },
+                    "categories": [
+                        ""
+                    ],
+                    "comments": "http://127.0.0.1:8000/posts/authors/a2/posts/p2/comments/",
+                    "published": "2023-03-07T14:07:52.316462-07:00",
+                    "visibility": "PUBLIC"
+                },
+                ]
+            }
+        }
+    )}
+
 @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Authors registered")
 @api_view(['GET'])
 
@@ -259,6 +294,7 @@ class ViewRequests(APIView):
 
 class InboxSerializerObjects:
     def serialize_inbox_objects(self, item, context={}):
+        # return the serializer data of all objects in inbox
         object_model = item.content_type.model_class()
         print("CONTENT",item.content_object)
         if object_model is Post:
@@ -269,9 +305,8 @@ class InboxSerializerObjects:
             serializer = CommentSerializer
         return serializer(item.content_object, context=context).data
     
-    def serialize_objects(self, data, pk_a):
-        ## TODO: Make it clearner, use object_model = item.content_type.model_class()
-
+    def deserialize_objects(self, data, pk_a):
+        # return serializer of objects to be added to inbox (so we get the object)
         type = data.get('type')
         obj = None
         if type is None:
@@ -286,58 +321,65 @@ class InboxSerializerObjects:
             serializer = LikeSerializer
         elif type == Comment.get_api_type():
             serializer = CommentSerializer
-        if obj: return obj
-        return serializer(data=data, context=context)
-
-def getItems(data):
-    print(data)
-    dict = {"type":"inbox", "author": "" }
-    items = []
-    for item in data:
-        items.append(item["content_object"])
-
-    dict["items"] = items
-    print(dict)
-    return(dict) 
-        
+        return obj or serializer(data=data, context=context)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
+    """
+        URL: author/auhor_id/inbox
+    """
+
     serializer_class = InboxSerializer
     pagination_class = InboxSetPagination
 
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Get all the objects in the inbox")
     def get(self, request, pk_a):
+        # GET all objects in inbox, only need auth in request
+
         author = get_object_or_404(Author,pk=pk_a)
         inbox_data = author.inbox.all()
-        # Query Sey of inbox objects: [{'id': 'inbox id', 'author_id': 'author id', 'content_type_id': 1, 'object_id': '4cf1fb31-cc70-469c-97ff-4a6a28e483a8'}]
-        print("DATA HERE",inbox_data.values())
-        serializer = InboxSerializer(data=inbox_data, context={'author':author, 'serializer':self.serialize_inbox_objects}, many=True)
-        print("SERIALIZER HERE",serializer)
+        inbox_data = self.paginate_queryset(inbox_data,request)
+        serializer = InboxSerializer(data=inbox_data, context = {"serializer":self.serialize_inbox_objects}, many=True)
         serializer.is_valid()
-        #serializer.save()
-        data = getItems(serializer.data)
-        return Response(data)
-
+        data = self.get_items(pk_a, serializer.data)
+        # TODO: Fix pagination
+        return self.get_paginated_response(data)
     
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Post a new object to the inbox")
     def post(self, request, pk_a):
-        # author id is the id of the person who this notification comes from
-        creator_id = request.data["author"]["id"].split("/")[-1]
-        # print("creator", creator_id)
-        author = Author.objects.get(pk=pk_a)
-        serializer = self.serialize_objects(
+        """
+            POST a new object to inbox
+            request: 
+            1. If the object is from a foreign author and not in database: a full object (Like, Author, Comment) with mandatory fields required, TYPE, id, author.
+            2. If object in database: TYPE, id.
+        """
+
+        author = get_object_or_404(Author,pk=pk_a)
+        serializer = self.deserialize_objects(
             self.request.data, pk_a)
+        # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
         try:
             if serializer.is_valid():
                 item = serializer.save()
                 if hasattr(item, 'update_fields_with_request'):
                     item.update_fields_with_request(request)
-                inbox_item = Inbox(content_object=item, author=author)
-                inbox_item.save()
             else: 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Case 2: author is within the server
         except AttributeError:
             item = serializer   
-            inbox_item = Inbox(content_object=item, author = author)
-            inbox_item.save()
-        return Response({'req': self.request.data, 'saved': model_to_dict(inbox_item)})
+        inbox_item = Inbox(content_object=item, author=author)
+        inbox_item.save()
+        return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
+    
+    def get_items(self,pk_a,data):
+        # helper function 
 
+        dict = {"type":"inbox", "author": settings.APP_NAME + 'authors/' + pk_a }
+        items = []
+        for item in data:
+            print("content", item["content_object"])
+            items.append(item["content_object"])
 
+        dict["items"] = items
+        return(dict) 
+        
