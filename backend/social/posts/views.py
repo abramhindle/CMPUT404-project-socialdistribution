@@ -179,7 +179,11 @@ class post_list(APIView, PageNumberPagination):
                return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST) 
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
-            serializer.save()
+            post = serializer.save()
+            print(author.friends.all())
+            for friend in author.friends.all():
+                inbox = Inbox(content_object=post,  author=friend)
+                inbox.save()
             return Response(serializer.data)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
