@@ -31,8 +31,6 @@ function PostDetail() {
     }
   };
 
-  console.log(commentPage);
-
   const submitComment = () => {
     if (comment) {
       post_comment(data.author.id, data.id, commentType, comment, user.id);
@@ -54,7 +52,7 @@ function PostDetail() {
     setCommentsInfo(commentData);
   };
 
-  console.log(commentsInfo);
+  console.log(likeInfo);
 
   useEffect(() => {
     get_post(data.author.id, data.id, successPost);
@@ -111,6 +109,7 @@ function PostDetail() {
           </div>
         </div>
         <div className="Social">
+          {likeInfo && <div>{likeInfo.items.length} Liked this post</div>}
           <button>Like</button>
           {shareable && (
             <div className="share">
@@ -119,6 +118,7 @@ function PostDetail() {
             </div>
           )}
         </div>
+
         <div className="comment-input-form">
           <input
             type="radio"
@@ -144,9 +144,12 @@ function PostDetail() {
           />
           <button onClick={submitComment}>Submit</button>
         </div>
+
         <div className="comments">
           {commentsInfo &&
-            commentsInfo.items.map((comment) => <div>{comment.comment}</div>)}
+            commentsInfo.items.map((comment) => (
+              <div key={comment.id}>{comment.comment}</div>
+            ))}
           <button onClick={prevCommentPage}>prev</button>
           <button onClick={nextCommentPage}>next</button>
         </div>
