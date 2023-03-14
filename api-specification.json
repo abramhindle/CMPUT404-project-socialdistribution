@@ -1,12 +1,712 @@
 {
-    "openapi":"3.0.2",
-    "info": {
-      "title":"Social Distribution API Specification",
-      "version":"1.0"
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Social Distribution API Specification",
+    "version": "1.0"
+  },
+  "servers": [{ "url": "https://authors" }],
+  "tags": [
+    {
+      "name": "authors"
     },
-    "servers": [
-      {"url":"https://ourwebsite/v1"}
-    ],
-    "paths": {
+    {
+      "name": "posts"
+    },
+    {
+      "name": "comments"
+    },
+    {
+      "name": "followers"
+    },
+    {
+      "name": "inbox"
+    },
+    {
+      "name": "likes"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["authors"],
+        "summary": "Get all Authors",
+        "operationId": "getAuthors",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{author_id}": {
+      "get": {
+        "tags": ["authors"],
+        "summary": "Get all Authors",
+        "operationId": "getAuthorsById",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{author_id}/posts": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get an author's posts",
+        "operationId": "getAuthorPosts",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Author"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["posts"],
+        "summary": "Create a post",
+        "operationId": "createAuthorPost",
+        "requestBody": {
+          "description": "Create Post for an author",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Author"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Badly formed post object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{author_id}/posts/{post_id}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get a post",
+        "operationId": "getAuthorPosts",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["posts"],
+        "summary": "Create a post with an existing ID",
+        "operationId": "createAuthorPost",
+        "requestBody": {
+          "description": "Create Post for an author",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Badly formed post object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{author_id}/posts/{post_id}/comments/": {
+      "get": {
+        "tags": ["comments"],
+        "summary": "Get comments for a post",
+        "operationId": "getPostComments",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties":{
+                    "type":{
+                        "type": "string"
+                    },
+                    "page":{
+                      "type": "integer"
+                    },
+                    "size":{
+                      "type":"integer"
+                    },
+                    "post": {
+                      "type":"url",
+                      "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+                    },
+                    "id": {
+                      "type":"url",
+                      "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e/comments"
+                    },
+                    "items":{
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Comment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["comments"],
+        "summary": "Create comment for a post",
+        "operationId": "createPostComment",
+        "requestBody": {
+          "description": "Create Comment for a post",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Badly formed post object"
+          },
+          "404": {
+            "description": "Post or Author doesn't exist"
+          }
+        }
+      }
+    },
+    "/{author_id}/followers/{foreign_author_id}": {
+      "get": {
+        "tags": ["followers"],
+        "summary": "Check if foreign author is a follower of author",
+        "operationId": "getFollower",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Followers"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Foreign author is not a follower of author"
+          }
+        }
+      },
+      "put": {
+        "tags": ["followers"],
+        "summary": "Add foreign author as a follower of author",
+        "operationId": "addFollower",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "An author was not found"
+          },
+          "409": {
+            "description": "Foreign author is already a follower of author"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["followers"],
+        "summary": "Delete foreign author as a follower of author",
+        "operationId": "deleteFollower",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "Author was not found"
+        }
+      }
+    }
+  },
+  "/{author_id}/followers": {
+    "get": {
+      "tags": ["followers"],
+      "summary": "Get followers for an author",
+      "operationId": "getFollower",
+      "responses": {
+        "200": {
+          "description": "Successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "type":{
+                    "type": "string",
+                    "example": "followers"
+                  },
+                  "items":{
+                    "type": "array",
+                    "items":{
+                      "type": "object",
+                      "$ref": "#/components/schemas/Followers"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Author doesn't exist"
+        }
+      }
+    }
+  },
+  "/{author_id}/inbox": {
+    "put": {
+      "tags": ["inbox"],
+      "summary": "Add item to an author's inbox",
+      "operationId": "updateInbox",
+      "requestBody": {
+        "description": "Create Comment for a post",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/Comment"
+                },
+                {
+                  "$ref": "#/components/schemas/Post"
+                },
+                {
+                  "$ref": "#/components/schemas/Follow"
+                },
+                {
+                  "$ref": "#/components/schemas/Like"
+                }
+              ]
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful operation"
+          }
+        }
+      },
+      "get": {
+        "tags": ["inbox"],
+        "summary": "Get an author's inbox",
+        "operationId": "getInbox",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Inbox"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Author not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": ["inbox"],
+          "summary": "Clears an author's inbox",
+          "operationId": "clearInbox",
+          "responses": {
+            "202": {
+              "description": "Accepted"
+              },
+              "404": {
+                "description": "Author not found"
+              }
+            }
+        }
+    },
+    "/{author_id}/posts/{post_id}/likes": {
+        "get": {
+          "tags": ["likes"],
+          "summary": "Get all the likes on an author's post",
+          "operationId": "getPostLikes",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "type":{
+                        "type": "string",
+                        "default": "liked"
+                      },
+                      "items":{
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "$ref": "#/components/schemas/Like"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "Author or post not found"
+              }
+            }
+          }
+      },
+      "/{author_id}/liked/": {
+        "get": {
+          "tags": ["likes"],
+          "summary": "Get an author's likes",
+          "operationId": "getAuthorLikes",
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "type":{
+                        "type": "string",
+                        "default": "liked"
+                      },
+                      "items":{
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "$ref": "#/components/schemas/Like"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "Author not found"
+              }
+            }
+          }
+      }
+  },
+  "components": {
+    "schemas": {
+      "Author": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "author"
+          },
+          "id": {
+            "type": "url",
+            "example": "http://localhost/authors/"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Joe"
+          },
+          "url": {
+            "type": "url",
+            "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
+          },
+          "github": {
+            "type": "url",
+            "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
+          },
+          "profileImage": {
+            "type": "url",
+            "example": "http://google.com/funnyanimalpic"
+          }
+        }
+      },
+      "Followers": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "followers"
+          },
+          "items": {
+            "type": "objects",
+            "$ref": "#/components/schemas/Author",
+            "description": "list of the author objects"
+          }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "post"
+          },
+          "id": {
+            "type": "url",
+            "example": "http://localhost/authors/11f6bdd5-a60b-4ca0-a395-1fba77f1ede8/posts/b2920040-9c7f-4ad7-bdc2-2ecb61a94217"
+          },
+          "source": {
+            "type": "url",
+            "example": "http://localhost"
+          },
+          "origin": {
+            "type": "url",
+            "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
+          },
+          "description": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string",
+            "example": "text/markdown"
+          },
+          "content": {
+            "type": "string",
+            "example": "hello world!"
+          },
+          "author": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "web"
+            }
+          },
+          "published": {
+            "type": "string",
+            "example": "2023-03-09 00:36:00.795000+00:00"
+          },
+          "visibility": {
+            "type": "string",
+            "example": "PUBLIC"
+          },
+          "unlisted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "comment"
+          },
+          "id": {
+            "type": "url",
+            "example": "http://localhost/authors/11f6bdd5-a60b-4ca0-a395-1fba77f1ede8/posts/b2920040-9c7f-4ad7-bdc2-2ecb61a94217/comments/317bb454-6b52-457a-a97b-cf7b4e24e42f"
+          },
+          "author": {
+            "type": "url",
+            "$ref": "#/components/schemas/Author"
+          },
+          "comment": {
+            "type": "string",
+            "description": "content of the comment"
+          },
+          "contentType": {
+            "type": "string",
+            "example": "text/markdown | text/plain"
+          },
+          "published": {
+            "type": "string",
+            "example": "2023-03-09 00:36:00.795000+00:00"
+          }
+        }
+      },
+      "Inbox": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "inbox"
+          },
+          "author": {
+            "type": "url",
+            "example": "http://localhost/authors/11f6bdd5-a60b-4ca0-a395-1fba77f1ede8",
+            "description": "id of the author"
+          },
+          "items": {
+            "type": "array",
+            "items":{
+              "type": "object",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Comment"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Post"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Follow"
+                },
+                {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Like"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Follow": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "Follow"
+          },
+          "actor": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
+          },
+          "object": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
+          }
+        }
+      },
+      "Like": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "Like"
+          },
+          "context": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string",
+            "example": "Joe liked your post"
+          },
+          "author": {
+            "type": "object",
+            "$ref": "#/components/schemas/Author"
+          },
+          "object": {
+            "type": "url",
+            "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+          }
+        }
+      }
     }
   }
+}
