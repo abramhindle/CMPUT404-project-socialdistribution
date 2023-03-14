@@ -6,6 +6,9 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MarkdownEditor from "@uiw/react-markdown-editor";
+// allows the frontend to convert the file to base64 before passing 
+// it into the backend
+import FileBase4 from 'react-file-base64';
 
 function CREATEPOST() {
 	const [post_status, set_post_status] = useState("Public");
@@ -59,11 +62,13 @@ function CREATEPOST() {
 			);
 		}
 
+		// should convert image to base64 before posting here
 		if (post_type === "Image") {
 			return (
 				<div>
 					<Uploader
 						action="post/authors/{AUTHOR_ID}/posts/"
+						accept=".png, .jpg"
 						autoUpload={false}
 						draggable
 						style={{

@@ -7,6 +7,8 @@ from PIL import Image
 from urllib import parse
 import json
 import base64
+
+# i need to pass this image in and then ocnvert it to base64
 test_image = Image.open(r"media/test_img/test_img.png")
 # Create your tests here.
 

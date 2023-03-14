@@ -162,7 +162,7 @@ class post_list(APIView, PageNumberPagination):
         except Author.DoesNotExist:
             return Response("Author not found", status=status.HTTP_404_NOT_FOUND)
 
-        # should do this a different way but for now, it should serialize as image
+        # if the request contains 'image', send the data to the serializer (the image will be base64 encoded)
         if 'image' in request.data['contentType']:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
             serializer.is_valid()
@@ -323,7 +323,6 @@ class PostDeleteView(UserPassesTestMixin,LoginRequiredMixin,DeleteView):
             return True
         return False
 
-# hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
@@ -353,7 +352,6 @@ class ImageView(APIView):
             # otherwise, handle it for friends:
             elif "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
-                # this line will likely be bugged until auth is set up ┐(´～｀)┌
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
                     error_msg = {"message":"You do not have access to this image!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
