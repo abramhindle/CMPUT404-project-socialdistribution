@@ -8,6 +8,6 @@ from service.models.follow import Follow
 class Inbox(models.Model):
     author = models.OneToOneField(Author, primary_key=True, on_delete=models.CASCADE)
 
-    posts = models.ManyToManyField(Post)
-    comments = models.ManyToManyField(Comment)
-    follow_requests = models.ManyToManyField(Follow)
+    posts = models.ManyToManyField(Post, blank=True)
+    comments = models.ManyToManyField(Comment, blank=True)
+    follow_requests = models.ManyToManyField(Follow, blank=True)
