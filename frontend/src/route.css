@@ -1,0 +1,15 @@
+div.Page {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.Element {
+  background-color: #57534c;
+  text-align: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  position: static;
+  flex: 1;
+  float: right;
+}

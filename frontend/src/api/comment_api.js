@@ -9,7 +9,7 @@ export const post_comment = async (
   comment,
   commentAuthorId
 ) => {
-  console.log("Attempting to post comment for", { postId });
+  console.log("Attempting to post a comment for", { postId });
   const data = { contentType: type, comment: comment };
 
   const res = await axios.post(
@@ -23,9 +23,38 @@ export const post_comment = async (
     }
   );
   console.log(res);
-  if (res.status == 201) {
+  if (res.status === 201) {
     post_inbox(postAuthorId, res.data);
     console.log("Success!");
+  } else {
+    console.log("Error Occured");
+  }
+};
+
+export const get_post_comments = async (
+  authorId,
+  postId,
+  success,
+  page,
+  size
+) => {
+  console.log("Attempting to get comments for", { postId });
+  const data = { page: page, size: size };
+
+  const res = await axios.get(
+    `http://localhost:8000/authors/${authorId}/posts/${postId}/comments/`,
+    data,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  console.log(res);
+  if (res.status === 200) {
+    console.log("Success!");
+    success(res.data);
   } else {
     console.log("Error Occured");
   }
