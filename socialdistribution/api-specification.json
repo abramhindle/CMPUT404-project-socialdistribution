@@ -4,7 +4,7 @@
     "title": "Social Distribution API Specification",
     "version": "1.0"
   },
-  "servers": [{ "url": "https://authors" }],
+  "servers": [{ "url": "http://localhost:8000/authors" }],
   "tags": [
     {
       "name": "authors"

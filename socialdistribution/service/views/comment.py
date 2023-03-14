@@ -13,10 +13,11 @@ from service.models.comment import Comment
 from service.models.post import Post
 from service.models.author import Author
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.views import APIView
 
 @method_decorator(csrf_exempt, name='dispatch')
-class CommentView(View, RestService):
-    ["get", "post"]
+class CommentView(APIView):
+    http_method_names = ["get", "post"]
     def get(self, request, *args, **kwargs):
         self.author_id = kwargs['author_id']
         self.post_id = kwargs['post_id']

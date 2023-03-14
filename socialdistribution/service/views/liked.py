@@ -1,18 +1,17 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from service.models.author import Author
 from service.models.like import Like
 from service.models.post import Post
-from service.service_constants import *
-import json
 
 
 class LikedView(APIView):
 
     def get(self, request, author_id):
         try:
-            author_query = Author.objects.get(_id = author_id)
-            liked = Like.objects.filter(author=author_query) # would be better to add author_id field into Liked model, so it takes less resources to querying
+            author_query = Author.objects.get(_id=author_id)
+            liked = Like.objects.filter(author=author_query)
         except:
             return Response(status=404)
         

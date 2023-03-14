@@ -32,7 +32,7 @@ class FollowersAPI(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowerAPI(View):
     """ GET if is a follower PUT a new follower DELETE an existing follower"""
-    http_method_names = ['get','put','delete']
+    http_method_names = ['get', 'put', 'delete']
     
     def delete(self, request, author_id, foreign_author_id):
         author = Author.objects.get(_id=author_id)

@@ -1,39 +1,34 @@
-from django.http import *
-from service.models.post import Post, Category
-from service.models.author import Author
-from service.service_constants import *
-from django.views import View
+import json
 from datetime import datetime, timezone
+
+from django.core.paginator import Paginator
+from django.http import *
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+
+from service.models.author import Author
+from service.models.post import Post, Category
+from service.service_constants import *
 from service.services.rest_service import RestService
 
-import uuid
-
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-import json
-
-from django.utils.decorators import method_decorator
-
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
-
-#endpoints with just author_id
+# endpoints with just author_id
 @method_decorator(csrf_exempt, name='dispatch')
-class PostCreation(View, RestService):
+class PostCreation(APIView, RestService):
     http_method_names = ['get', 'post']
 
-    def get(self, request: HttpRequest, *args, **kwargs): #get all recent posts for author_id
-        self.author_id = kwargs['author_id']
+    def get(self, request: HttpRequest, *args, **kwargs): # get all recent posts for author_id
+        author_id = kwargs['author_id']
 
         page = request.GET.get('page', '')
         size = request.GET.get('size', '')
 
-        post_queryset = Post.objects.all().filter(author=self.author_id).order_by('-published') #only get posts from author_id in the URL, order by the published date
+        post_queryset = Post.objects.all().filter(author=author_id).order_by('-published') # only get posts from author_id in the URL, order by the published date
 
-        paged_posts = Paginator(post_queryset, size or 5) #default to size 5
+        paged_posts = Paginator(post_queryset, size or 5) # default to size 5
 
         try:
-            page = paged_posts.page(page or 1) #default to page 1
+            page = paged_posts.page(page or 1) # default to page 1
         except:
             page = list()
 
@@ -53,27 +48,27 @@ class PostCreation(View, RestService):
         body = request.body.decode(UTF8)
         body = json.loads(body)
 
-        self.author_id = kwargs['author_id']
+        author_id = kwargs['author_id']
 
         post = Post()
 
         try:
-            author = Author.objects.get(_id=self.author_id)
+            author = Author.objects.get(_id=author_id)
         except:
             return HttpResponseNotFound()
 
         post.author = author
 
         try:
-            post._id = Post.create_post_id(self.author_id) #NEW ID!!
+            post._id = Post.create_post_id(author_id)
             post.author = author
             post.title = body["title"]
             post.content = body["content"]
             post.description = body["description"]
-            post.source = request.build_absolute_uri() #use the local server ast he source and origin, since this is a BRAND NEW post
+            post.source = request.build_absolute_uri() # use the local server ast he source and origin, since this is a BRAND NEW post
             post.origin = request.build_absolute_uri()
 
-            is_valid = self.valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
+            is_valid = self.valid_choice(body["contentType"], Post.CONTENT_TYPES) # we might not need this, but good to have just in case
 
             if not is_valid:
                 return HttpResponseBadRequest()
@@ -84,8 +79,7 @@ class PostCreation(View, RestService):
 
             post.published = datetime.now(timezone.utc)
 
-            #this should be handled by some sort of enum system
-
+            # TODO: this should be handled by some sort of enum system
             is_valid = self.valid_choice(body["visibility"], Post.VISIBILITY_CHOICES)
 
             if not is_valid:
@@ -99,7 +93,7 @@ class PostCreation(View, RestService):
 
         post.save()
 
-        #need to do this here since postgres looks for the post id in the post table before it can add the relation
+        # need to do this here since postgres looks for the post id in the post table before it can add the relation
 
         for item in categories:
             post.categories.add(item)
@@ -109,18 +103,17 @@ class PostCreation(View, RestService):
         return HttpResponse(json.dumps(post_json), status=201, content_type = CONTENT_TYPE_JSON)
 
 
-#Endpoints with post_id and author_id
+# endpoints with post_id and author_id
 @method_decorator(csrf_exempt, name='dispatch')
-class PostWithId(View, RestService):
+class PostWithId(APIView, RestService):
     http_method_names = ['get', 'post', 'delete', 'put']
 
-    #GET
     def get(self, request: HttpRequest, *args, **kwargs):
-        self.post_id = kwargs["post_id"]
-        self.author_id = kwargs["author_id"]
+        post_id = kwargs["post_id"]
+        author_id = kwargs["author_id"]  # TODO: check author_id against current user
 
         try:
-            post = Post.objects.get(_id=self.post_id)
+            post = Post.objects.get(_id=post_id)
         except:
             return HttpResponseNotFound()
 
@@ -128,7 +121,6 @@ class PostWithId(View, RestService):
 
         return HttpResponse(json.dumps(post_json), content_type = CONTENT_TYPE_JSON)
 
-    #POST
     def post(self, request: HttpRequest, *args, **kwargs):
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
@@ -136,11 +128,11 @@ class PostWithId(View, RestService):
         body = request.body.decode(UTF8)
         body = json.loads(body)
 
-        self.post_id = kwargs["post_id"]
-        self.author_id = kwargs["author_id"]
+        post_id = kwargs["post_id"]
+        author_id = kwargs["author_id"]
 
         try:
-            post = Post.objects.get(_id=self.post_id)
+            post = Post.objects.get(_id=post_id)
         except:
             return HttpResponseNotFound()
 
@@ -149,14 +141,14 @@ class PostWithId(View, RestService):
             post.content = body["content"]
             post.description = body["description"]
 
-            is_valid = self.valid_choice(body["contentType"], Post.CONTENT_TYPES) #we might not need this, but good to have just in case
+            is_valid = self.valid_choice(body["contentType"], Post.CONTENT_TYPES)  # we might not need this, but good to have just in case
 
             if not is_valid:
                 return HttpResponseBadRequest()
 
             post.contentType = body["contentType"]
 
-            is_valid = self.valid_choice(body["visibility"], Post.VISIBILITY_CHOICES) #we might not need this, but good to have just in case
+            is_valid = self.valid_choice(body["visibility"], Post.VISIBILITY_CHOICES)  # we might not need this, but good to have just in case
 
             if not is_valid:
                 return HttpResponseBadRequest()
@@ -168,7 +160,7 @@ class PostWithId(View, RestService):
             post.unlisted = bool(body["unlisted"])
 
         except KeyError as error:
-            return HttpResponseBadRequest() #should probably include the error
+            return HttpResponseBadRequest()  # should probably include the error
 
         post.save()
 
@@ -177,19 +169,19 @@ class PostWithId(View, RestService):
 
         post_json = post.toJSON()
 
-        return HttpResponse(json.dumps(post_json), status=201, content_type = CONTENT_TYPE_JSON)
+        return HttpResponse(json.dumps(post_json), status=201, content_type=CONTENT_TYPE_JSON)
 
     #DELETE
     def delete(self, request: HttpRequest, *args, **kwargs):
-        self.post_id = kwargs["post_id"]
-        self.author_id = kwargs["author_id"]
+        post_id = kwargs["post_id"]
+        author_id = kwargs["author_id"]
 
         try:
-            post = Post.objects.get(_id=self.post_id)
+            post = Post.objects.get(_id=post_id)
         except:
             return HttpResponseNotFound()
 
-        if post.author._id != self.author_id: #cannot delete a post for an author that didn't write it
+        if post.author._id != author_id: # cannot delete a post for an author that didn't write it
             return HttpResponseNotFound()
 
         post.delete()
@@ -198,7 +190,6 @@ class PostWithId(View, RestService):
 
     #PUT
     def put(self, request: HttpRequest, *args, **kwargs):
-
         return HttpResponse(status=405) # we will do this later, not super useful as a local API without multiple hosts
 
 
