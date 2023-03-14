@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Input, InputGroup, Panel } from "rsuite";
-import { Scrollbars } from "react-custom-scrollbars-2";
+import { IconButton } from "rsuite";
+import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import axios from "axios";
 
 // Component Imports
 
-function LIKE({ likeobj }) {
-	const [like, set_like] = useState(likeobj);
-	const [postObj, setPostObj] = useState(postobj);
+function LIKE({ postObj }) {
+	// const [like, set_like] = useState(likeobj);
 	const [new_like, set_new_like] = useState("");
 	const postObjUrl = postObj.url;
 

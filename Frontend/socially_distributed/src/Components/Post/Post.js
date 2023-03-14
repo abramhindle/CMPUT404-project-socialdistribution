@@ -58,7 +58,7 @@ function POST({ postobj }) {
 				appearance="subtle"
 				icon={<ShareIcon />}
 			/>
-			<LIKE />
+			<LIKE postObj={postobj} />
 		</div>
 	);
 
