@@ -39,11 +39,9 @@ export const get_post_comments = async (
   size
 ) => {
   console.log("Attempting to get comments for", { postId });
-  const data = { page: page, size: size };
 
   const res = await axios.get(
-    `http://localhost:8000/authors/${authorId}/posts/${postId}/comments/`,
-    data,
+    `http://localhost:8000/authors/${authorId}/posts/${postId}/comments/?page=${page}&size=${size}`,
     {
       headers: {
         Accept: "application/json",

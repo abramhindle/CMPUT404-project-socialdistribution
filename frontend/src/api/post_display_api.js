@@ -72,7 +72,8 @@ export const get_inbox_posts = async (authorInbox, page, success) => {
 };
 
 export const get_post = async (authorId, postId, success) => {
-  console.log("Attempting to get post", { authorId });
+  console.log("Attempting to get post", { postId });
+
   await axios
     .get(`http://localhost:8000/authors/${authorId}/posts/${postId}`, {
       headers: {
@@ -80,7 +81,7 @@ export const get_post = async (authorId, postId, success) => {
       },
     })
     .then(function (response) {
-      console.log("get_inbox_posts res: ", response.data);
+      console.log("Success");
       success(response.data);
     })
     .catch(function (error) {

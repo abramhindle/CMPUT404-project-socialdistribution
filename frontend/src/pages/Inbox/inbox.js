@@ -33,7 +33,7 @@ function Inbox(filter) {
   }, []);
 
   const populateList = () => {
-    if (post_list.items.length == 0) {
+    if (post_list.items.length === 0) {
       return (
         <div className="emptyList">
           <h3>Nothing to see here yet!</h3>
@@ -50,9 +50,9 @@ function Inbox(filter) {
   };
 
   const page_buttons = () => {
-    if (post_list.items.length < 5 && page == 1) {
+    if (post_list.items.length < 5 && page === 1) {
       return;
-    } else if (page == 1) {
+    } else if (page === 1) {
       return <button onClick={forward_page}>Next Page</button>; //only 1 button
     } else if (post_list.items.length < 5) {
       return <button onClick={back_page}>Prev Page</button>;
