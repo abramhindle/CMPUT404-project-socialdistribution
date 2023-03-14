@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 from author.models import Author, Inbox
 from django.contrib.contenttypes.fields import GenericRelation
-from django.utils import timezone
 import uuid
 
 # Create your models here.
@@ -60,7 +59,10 @@ class Post(models.Model):
 
     # get public id of post
     def get_public_id(self):
-        return self.url or str(self.id)
+        if not self.url: 
+            self.url = APP_NAME + self.get_absolute_url()
+            self.save()
+        return (self.url) or str(self.id)
     
     # get comments url
     def get_comments_source(self):
@@ -96,19 +98,25 @@ class Post(models.Model):
     @staticmethod
     def get_api_type():
         return 'post'
-
+    
+    class Meta:
+        ordering = ['published']
+        
 class Comment(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of comment
     url = models.URLField(editable=False, max_length=500)  # URL of comment
     author = models.ForeignKey(Author, related_name = 'comments', on_delete=models.CASCADE)  # author of comment
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # post of the commen
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # post of the commenT
     comment = models.TextField()  # the comment
     published = models.DateTimeField(auto_now_add=True)  # date published
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
 
     # get public id of comment
     def get_public_id(self):
-        return self.url or self.id
+        if not self.url: 
+            self.url = settings.APP_NAME + self.get_absolute_url()
+            self.save()
+        return (self.url) or str(self.id)
     
     @staticmethod
     def get_api_type():
@@ -129,7 +137,10 @@ class Like(models.Model):
 
     # get public id of like
     def get_public_id(self):
-        return self.url or self.id
+        if not self.url: 
+            self.url = settings.APP_NAME + self.get_absolute_url()
+            self.save()
+        return (self.url) or str(self.id)
     
     @staticmethod
     def get_api_type():

@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from django.shortcuts import render
 
 # Create your views here.
@@ -8,19 +9,23 @@ from django.urls import reverse,reverse_lazy
 from django.views import generic
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from author.pagination import InboxSetPagination
+from posts.serializers import *
 from .models import *
+from .serializers import *
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import *
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
-
-
+from django.conf import settings
 
 response_schema_dict = {
     "200": openapi.Response(
@@ -35,6 +40,42 @@ response_schema_dict = {
     }
         }
     )}
+
+response_schema_dict = {
+    "200": openapi.Response(
+        description="Successful Operation",
+        examples={
+            "application/json": {
+            "type": "inbox",
+            "author": "http://127.0.0.1:8000/authors/a1",
+            "items": [
+                {
+                    "type": "post",
+                    "title": "A post title about a post about web dev",
+                    "id": "http://127.0.0.1:8000/posts/authors/a2/posts/p2",
+                    "source": "",
+                    "origin": "",
+                    "description": "This post discusses stuff -- brief",
+                    "contentType": "text/plain",
+                    "content": "Example content",
+                    "author": {
+                        "type": "author",
+                        "id": "http://127.0.0.1:8000/authors/a2",
+                        "displayName": "NewLeen",
+                        "profileImage": ""
+                    },
+                    "categories": [
+                        ""
+                    ],
+                    "comments": "http://127.0.0.1:8000/posts/authors/a2/posts/p2/comments/",
+                    "published": "2023-03-07T14:07:52.316462-07:00",
+                    "visibility": "PUBLIC"
+                },
+                ]
+            }
+        }
+    )}
+
 @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Authors registered")
 @api_view(['GET'])
 
@@ -47,17 +88,12 @@ def get_authors(request):
     return Response(serializer.data)
 
 
-
 class AuthorView(APIView):
     
-    
-    serializer_class = AuthorSerializer
-
     def validate(self, data):
         if 'displayName' not in data:
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
         return data 
-
 
     @swagger_auto_schema(responses=response_schema_dict,operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
@@ -74,13 +110,10 @@ class AuthorView(APIView):
         """
         Update the authors profile
         """
-        author_id = pk_a
-        
-        
-        
-        #serializer = AuthorSerializer(data=request.data,partial=True)
-        
-        
+        author_id = pk_a 
+           
+        serializer = AuthorSerializer(data=request.data,partial=True)
+         
         if serializer.is_valid():
             display = Author.objects.filter(id=author_id).values('displayName')
             if request.data['displayName'] == '':
@@ -97,6 +130,126 @@ class AuthorView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+class FollowersView(APIView):
+    serializer_class = AuthorSerializer
+
+    # The get function is called witha  get request. The function is called by using 
+    # ://authors/authors/{AUTHOR_ID}/followers/ to get a list of followers
+    # or call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/ to check if foriegn author is following author
+    #Implement later after talking to group 
+    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Followers")
+    def get(self, request, pk_a, pk=None):
+        try:
+            author = Author.objects.get(id=pk_a)
+            # author = Author.objects.get(id=request.data["author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        # If url is /authors/authors/author_id/followers/
+        if pk ==None:
+            followers = author.friends.all()
+            followers_list = []
+            for follower in followers:
+                try: 
+                    follower_author = Author.objects.get(id=follower.id)
+                    print (follower_author)
+                except Author.DoesNotExist:
+                    error_msg = "Follower id not found"
+                    return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
+                followers_list.append(follower_author.follower_to_object())
+
+            # print(followers_list)
+            return Response(followers_list)
+        # else If url is /authors/authors/author_id/followers/foreign_author_id    
+        else:
+            try:
+                follower = Author.objects.get(id=pk)
+            # follower = Author.objects.get(id=request.data["foreign_author_id"])
+            except Author.DoesNotExist:
+                error_msg = "Foreign Author id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+            friends = author.friends.all()
+            if follower in friends:
+                serializer = AuthorSerializer(follower,partial=True)
+                #returns the follower
+                return  Response(serializer.data)
+            else:
+                #if the follower is not apart of the followers lis return empty{}
+                return Response({})
+            
+
+    #For this we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id 
+    #call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/
+    #Implement later after talking to group 
+    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="New Follower")
+    def put(self, request, pk_a, pk):
+        try:
+            author = Author.objects.get(id=pk_a)
+            # author = Author.objects.get(id=request.data["author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            new_follower = Author.objects.get(id=pk)
+            # new_follower = Author.objects.get(id=request.data["foreign_author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Follower id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        followers = author.friends
+        followers.add(new_follower)
+        author.save()
+
+        followers = author.friends.all()
+        followers_list = []
+        for follower in followers:
+            try: 
+                follower_author = Author.objects.get(id=follower.id)
+            except Author.DoesNotExist:
+                error_msg = "Follower id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
+            followers_list.append(follower_author.follower_to_object())
+
+        # return the new list of followers
+        return Response(followers_list)
+
+    #For the delete request we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id
+    #Implement later after talking to group 
+    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="Delete Follower")
+    def delete(self, request, pk_a, pk):
+        try:
+            author = Author.objects.get(id=pk_a)
+            # author = Author.objects.get(id=request.data["author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            removed_follower = Author.objects.get(id=pk)
+            # removed_follower = Author.objects.get(id=request.data["foreign_author_id"])
+        except Author.DoesNotExist:
+            error_msg = "Follower id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
+        followers = author.friends
+        followers.remove(removed_follower)
+        author.save()
+
+        followers = author.friends.all()
+        followers_list = []
+        for follower in followers:
+            try: 
+                follower_author = Author.objects.get(id=follower.id)
+            except Author.DoesNotExist:
+                error_msg = "Follower id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
+            followers_list.append(follower_author.follower_to_object())
+        
+        # return the new list of followers
+        return Response(followers_list)
 
 class FriendRequestView(APIView):
     serializer_class = FollowRequestSerializer
@@ -137,3 +290,96 @@ class ViewRequests(APIView):
         serializer = FollowRequestSerializer(requests,many=True)
         return Response(serializer.data)
 
+
+
+class InboxSerializerObjects:
+    def serialize_inbox_objects(self, item, context={}):
+        # return the serializer data of all objects in inbox
+        object_model = item.content_type.model_class()
+        print("CONTENT",item.content_object)
+        if object_model is Post:
+            serializer = PostSerializer
+        elif object_model is Like:
+            serializer = LikeSerializer
+        elif object_model is Comment:
+            serializer = CommentSerializer
+        return serializer(item.content_object, context=context).data
+    
+    def deserialize_objects(self, data, pk_a):
+        # return serializer of objects to be added to inbox (so we get the object)
+        type = data.get('type')
+        obj = None
+        if type is None:
+            raise exceptions
+        context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+        if type == Post.get_api_type():
+            #print(data["id"].split("/")[-1])
+            obj = Post.objects.get(id=(data["id"].split("/")[-1]))
+            serializer = PostSerializer
+        elif type == Like.get_api_type():
+            obj = Like.objects.get(id=data["id"].split("/")[-1])
+            serializer = LikeSerializer
+        elif type == Comment.get_api_type():
+            serializer = CommentSerializer
+        return obj or serializer(data=data, context=context)
+
+class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
+    """
+        URL: author/auhor_id/inbox
+    """
+
+    serializer_class = InboxSerializer
+    pagination_class = InboxSetPagination
+
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Get all the objects in the inbox")
+    def get(self, request, pk_a):
+        # GET all objects in inbox, only need auth in request
+
+        author = get_object_or_404(Author,pk=pk_a)
+        inbox_data = author.inbox.all()
+        inbox_data = self.paginate_queryset(inbox_data,request)
+        serializer = InboxSerializer(data=inbox_data, context = {"serializer":self.serialize_inbox_objects}, many=True)
+        serializer.is_valid()
+        data = self.get_items(pk_a, serializer.data)
+        # TODO: Fix pagination
+        return self.get_paginated_response(data)
+    
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Post a new object to the inbox")
+    def post(self, request, pk_a):
+        """
+            POST a new object to inbox
+            request: 
+            1. If the object is from a foreign author and not in database: a full object (Like, Author, Comment) with mandatory fields required, TYPE, id, author.
+            2. If object in database: TYPE, id.
+        """
+
+        author = get_object_or_404(Author,pk=pk_a)
+        serializer = self.deserialize_objects(
+            self.request.data, pk_a)
+        # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
+        try:
+            if serializer.is_valid():
+                item = serializer.save()
+                if hasattr(item, 'update_fields_with_request'):
+                    item.update_fields_with_request(request)
+            else: 
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Case 2: author is within the server
+        except AttributeError:
+            item = serializer   
+        inbox_item = Inbox(content_object=item, author=author)
+        inbox_item.save()
+        return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
+    
+    def get_items(self,pk_a,data):
+        # helper function 
+
+        dict = {"type":"inbox", "author": settings.APP_NAME + 'authors/' + pk_a }
+        items = []
+        for item in data:
+            print("content", item["content_object"])
+            items.append(item["content_object"])
+
+        dict["items"] = items
+        return(dict) 
+        
