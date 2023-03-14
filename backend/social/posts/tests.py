@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 from .models import Post
-from .models import Author
+from .models import Author,Post
 from PIL import Image
 from urllib import parse
 import json
@@ -40,12 +40,16 @@ class TestPosts(APITestCase):
         self.assertContains(response,"testing testy test")
 
         # TODO:extract the post ID from the response
-        post_id = "???"
+        
+        post_id = str(Post.objects.all()[0].id)
 
         # test the get
         response = self.client.get(url+post_id+'/')
+        
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
+
+    
 
        
     # as image posts share the same POST process up to the serializer,

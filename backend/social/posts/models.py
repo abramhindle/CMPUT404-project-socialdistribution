@@ -3,6 +3,8 @@ from django.urls import reverse
 from author.models import Author, Inbox
 from django.contrib.contenttypes.fields import GenericRelation
 import uuid
+from django.conf import settings
+
 
 # Create your models here.
 
@@ -27,8 +29,6 @@ content_types = [
     (IMAGE_PNG, 'image/png;base64'),
     (IMAGE_JPEG, 'image/jpeg;base64'),
 ]
-
-APP_NAME = 'http://127.0.0.1:8000'
 
 class Post(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
@@ -62,7 +62,7 @@ class Post(models.Model):
     # get public id of post
     def get_public_id(self):
         if not self.url: 
-            self.url = APP_NAME + self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
     
@@ -116,7 +116,7 @@ class Comment(models.Model):
     # get public id of comment
     def get_public_id(self):
         if not self.url: 
-            self.url = APP_NAME + self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
     
@@ -140,7 +140,7 @@ class Like(models.Model):
     # get public id of like
     def get_public_id(self):
         if not self.url: 
-            self.url = APP_NAME + self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
     

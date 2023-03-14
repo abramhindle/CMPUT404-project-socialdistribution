@@ -71,6 +71,7 @@ function AUTHORPOSTS() {
 	useEffect(() => {
 		const author = JSON.parse(localStorage.getItem("user"));
 		const len = 36;
+		console.log(author);
 		const author_id = author.id.slice(
 			author.id.length - len,
 			author.id.length

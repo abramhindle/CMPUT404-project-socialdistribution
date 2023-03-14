@@ -18,9 +18,9 @@ export const setToken = (token) => {
 	localStorage.setItem("token", token);
 };
 
-export const setCurrentUser = (user) => {
-	localStorage.setItem("user", JSON.stringify(user));
-};
+export async function setCurrentUser(user) {
+	return localStorage.setItem("user", JSON.stringify(user));
+}
 
 export const unsetCurrentUser = () => {
 	setAxiosAuthToken(null);
@@ -29,17 +29,18 @@ export const unsetCurrentUser = () => {
 	localStorage.removeItem("loggedIn");
 };
 
-export const getCurrentUser = (author_id) => {
-	axios
+export async function getCurrentUser(author_id) {
+	return await axios
 		.get(`authors/${author_id}`)
 		.then((response) => {
-			console.log(response.data);
+			// console.log(response.data);
 			const user = response.data;
-			console.log(user);
+			// console.log(user);
 			setCurrentUser(user);
+			console.log("getUser");
 		})
 		.catch((res) => console.log(res));
-};
+}
 
 export async function getCsrfToken() {
 	let _csrfToken = null;

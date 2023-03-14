@@ -27,7 +27,7 @@ class register(APIView):
         try:
             user = User.objects.create_user(username=display_name, email=email, password=password)
             user.save()
-            url = 'http://127.0.0.1:8000/authors/authors/'+id_
+            url = 'authors/'+id_
             author = Author(user=user, id = id_, displayName= display_name, url=url)
             author.save()
             return(Response(id_, status=status.HTTP_201_CREATED))
@@ -51,11 +51,11 @@ class login(APIView):
         params = {}
         # params['user'] = UserSerializer(user)
         # params['token'] = get_token()
-        params['author_id'] = author.id
+        params = AuthorSerializer(author)
 
         if not user:
             return Response("user not registered", status=status.HTTP_401_UNAUTHORIZED)
-        return Response(params, status=status.HTTP_202_ACCEPTED)
+        return Response(params.data, status=status.HTTP_202_ACCEPTED)
     
 
 def csrf(request):

@@ -53,40 +53,19 @@ class FollowRequestSerializer(serializers.ModelSerializer):
     
     actor = AuthorSerializer()
     object = AuthorSerializer()
-
     class Meta:
         model = FollowRequest
         fields = ['Type','Summary','actor', 'object']
         
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="inbox",source="get_api_type",read_only=True)
-    # author = serializers.CharField(source="get_author")
-    # items = serializers.SerializerMethodField()
-    
+
     def to_representation(self, instance):
         serializer = self.context["serializer"]
         rep = super().to_representation(instance)
-        print("HERE MF",serializer(instance))
         rep['content_object'] = serializer(instance)
         return rep
 
-    # def get_items(self, validated_data):
-    #     print("INSTANCES",validated_data)
-    #     serialize = self.context["serializer"]
-    #     s = serialize(validated_data["objects"])
-    #     print("Instance is here", s)
-    #     return [s]
-    
-    # def create(self, data):
-    #     print("Creating...")
-    #     author = self.context["author"]
-    #     validated_data = {
-    #         'author': author,
-    #         'object': data
-    #     }
-    #     print("OBJECTS create here")
-    #     self.get_items(validated_data)
-    
     class Meta:
         model = Inbox
-        fields = ['type','author', 'content_type', 'object_id' ,'content_object']
+        fields = ['type', 'author', 'content_type', 'object_id' ,'content_object']
