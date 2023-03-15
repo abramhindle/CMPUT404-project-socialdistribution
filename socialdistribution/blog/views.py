@@ -55,9 +55,6 @@ class ManageToken(APIView):
         username = data["username"]
         password = data["password"]
 
-        print(username)
-        print(password)
-
         user = auth.authenticate(username=username, password=password)
         if user:
             token = Token.objects.get_or_create(user=user)
