@@ -4,7 +4,6 @@ from service.models.follow import Follow
 from service.service_constants import *
 from django.views import View
 import json
-from djongo.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.decorators import method_decorator
