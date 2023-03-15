@@ -138,6 +138,7 @@ GitHub.sublime-settings
 
 # Database
 /mongo/
+/sql/
 
 # Other
 .DS_Store

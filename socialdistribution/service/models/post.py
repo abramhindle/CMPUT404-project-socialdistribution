@@ -2,9 +2,12 @@ from django.db import models
 from django import forms
 from service.models.author import Author
 import uuid
+from datetime import datetime, timezone
 from django.conf import settings
 
-#Djongo freaks out if we don't define the meta values for the ArrayField CharField. This solves that problem
+def get_current_date():
+    datetime.now(timezone.utc)
+
 class Category(models.Model):
     data = models.CharField(max_length=32, primary_key=True)
 
@@ -35,7 +38,7 @@ class Post(models.Model):
 
     categories = models.ManyToManyField(Category)
 
-    published = models.DateTimeField()
+    published = models.DateTimeField(default=get_current_date)
 
     PUBLIC = "PUBLIC"
     FRIENDS = "FRIENDS"
@@ -47,6 +50,10 @@ class Post(models.Model):
 
     visibility = models.CharField(max_length=7, choices=VISIBILITY_CHOICES)
     unlisted = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        self.published = datetime.now(timezone.utc)
+        super(Post, self).save(*args, **kwargs)
 
     def toJSON(self):
         return {

@@ -82,8 +82,6 @@ class PostCreation(View, RestService):
 
             categories = create_categories(body["categories"])
 
-            post.categories.set(categories)
-
             post.published = datetime.now(timezone.utc)
 
             #this should be handled by some sort of enum system
@@ -96,10 +94,15 @@ class PostCreation(View, RestService):
             post.visibility = body["visibility"]
             post.unlisted = body["unlisted"]
 
-        except KeyError:
+        except KeyError as error:
             return HttpResponseBadRequest()
 
         post.save()
+
+        #need to do this here since postgres looks for the post id in the post table before it can add the relation
+
+        for item in categories:
+            post.categories.add(item)
 
         post_json = post.toJSON()
 
@@ -161,15 +164,16 @@ class PostWithId(View, RestService):
             post.visibility = body["visibility"]
 
             categories = create_categories(body["categories"])
-
-            post.categories.set(categories)
             
             post.unlisted = bool(body["unlisted"])
 
-        except KeyError:
-            return HttpResponseBadRequest()
+        except KeyError as error:
+            return HttpResponseBadRequest() #should probably include the error
 
         post.save()
+
+        for item in categories:
+            post.categories.add(item)
 
         post_json = post.toJSON()
 

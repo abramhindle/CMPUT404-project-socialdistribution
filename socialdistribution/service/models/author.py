@@ -1,4 +1,4 @@
-from djongo import models
+from django.db import models
 from django.contrib.auth.models import User
 import uuid
 from django.conf import settings
@@ -24,7 +24,7 @@ class Author(models.Model):
             "id": self._id,
             "host": self.host,
             "displayName": self.displayName,
-            "url": f"{self.host}/authors/{self._id}", #generated here
+            "url": self._id, #dont really know what this is for...
             "github": self.github,
             "profileImage": self.profileImage,
     }
