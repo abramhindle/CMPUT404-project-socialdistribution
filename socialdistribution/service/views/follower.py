@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 
+
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -28,6 +29,24 @@ class FollowersAPI(View):
 
         followers_json = encode_Follower_list(followers_list)
         return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)
+
+class Follower_API(View):
+    # for follower page   
+    http_method_names = ['get']
+    def get(self, request, author_id):
+        authors = Author.objects.all().order_by('displayName')
+        followers = list()
+
+        for author in authors:
+            for follower in list(author.followers.all().order_by('displayName')):
+                if follower._id == author_id:
+                    followers.append(author.toJSON())
+
+        followers_json = encode_Follower_list(followers)
+
+        return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)
+
+
         
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowerAPI(View):
@@ -73,7 +92,34 @@ class FollowerAPI(View):
         
         follower_json = follower.toJSON()
         return HttpResponse(json.dumps(follower_json), content_type = CONTENT_TYPE_JSON)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class FriendAPI(View):
+      # for friend page
+      http_method_names = ['get']
+
+      def get(self, request, author_id): 
+        authors = Author.objects.all().order_by('displayName')
+        followers = list()
+        for author in authors:
+            for follower in list(author.followers.all().order_by('displayName')):
+                if follower._id == author_id:
+                    followers.append(author.toJSON())
+
+
+        author = Author.objects.get(_id = author_id)
+        followed = list()
+        for follower in list(author.followers.all().order_by('displayName')):
+            followed.append(follower.toJSON())
         
+        friends = list()
+        for person in followers:
+            if person in followed:
+                friends.append(person)
+
+
+        friends_json = encode_Follower_list(friends)
+        return HttpResponse(json.dumps(friends_json), content_type = CONTENT_TYPE_JSON)
 
 def encode_Follower_list(authors):
     return {

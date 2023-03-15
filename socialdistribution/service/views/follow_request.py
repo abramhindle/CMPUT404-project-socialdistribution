@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 
 from django.views.decorators.csrf import csrf_exempt
 
+@method_decorator(csrf_exempt, name='dispatch')
 class AuthorFollowRequests(View):
     """ GET an Authors's follow requests -> where they are being followed"""
 
@@ -25,14 +26,48 @@ class AuthorFollowRequests(View):
 
         requests_json = list()
 
-        for request in list(follow_requests):
-            requests_json.append(request.toJSON())
+        for r in list(follow_requests):
+            requests_json.append(r.toJSON())
 
         encoded_json = encode_follow_request_list(requests_json)
 
         return HttpResponse(json.dumps(encoded_json), content_type = CONTENT_TYPE_JSON)
 
 #TODO: maybe an endpoint to delete a follow request?
+@method_decorator(csrf_exempt, name='dispatch')
+class FollowRequests(View):
+    http_method_names = ['put', 'delete']
+
+    def post(self, request, author_id, foreign_author_id):
+        #if request.user.is_authenticated:
+        follow_requests = Follow.objects.all().filter(object=author_id)
+        if author_id == foreign_author_id:
+            return HttpResponseBadRequest() #can't follow yourself!
+
+        author = Author.objects.get(_id = author_id)
+        follower = Author.objects.get(_id = foreign_author_id)
+
+        try:
+            author.followers.get(_id=foreign_author_id)
+        except ObjectDoesNotExist:
+            r = Follow()
+            r.actor = follower
+            r.object = author
+            r.save()
+
+            return HttpResponse(status=200)
+
+        return HttpResponse(status=409)
+
+    def delete(self, request, author_id, foreign_author_id):
+        follow_requests = Follow.objects.all().filter(object=author_id)
+        for r in follow_requests:
+            if r.actor._id == foreign_author_id:
+                follow_requests.remove(r)
+                follow_requests.save()
+
+        return HttpResponse(status=200)
+
 
 def encode_follow_request_list(authors):
     return {

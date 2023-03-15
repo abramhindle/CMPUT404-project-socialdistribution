@@ -1,10 +1,14 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
-import SignIn from "./pages/Login/Signin"
-import Friends from "./pages/Friends/friends"
+import SignIn from "./pages/Login/Signin";
+import Friends from "./pages/Friends/friends";
+import Followed from "./pages/Friends/followed";
+import Followers from "./pages/Friends/followers";
+import Request from "./pages/Friends/request";
 import Posts from "./pages/Posts/new-post-page";
 import Main from "./pages/Main";
 import Profile from "./pages/Profile/profile";
+import Realfriends from "./pages/Friends/realfriends";
 
 function App() {
   return (
@@ -34,12 +38,34 @@ function App() {
               <PrivateRoute>
                 <Friends />
               </PrivateRoute>
-            }>
-              <Route path="requests"/>
-              <Route path="true"/>
-              <Route path="followed"/>
-              <Route path="followers"/>
-            </Route>
+            }/>
+              <Route path="/friends/requests"
+                element={
+                  <PrivateRoute>
+                    <Request />
+                  </PrivateRoute>
+              }/>
+              <Route path="/friends/true"
+                element={
+                  <PrivateRoute>
+                    <Realfriends />
+                  </PrivateRoute>
+            }
+              />
+            <Route path="/friends/followed"
+              element={
+                <PrivateRoute>
+                  <Followed />
+                </PrivateRoute>
+            }/>
+              <Route path="/friends/followers"
+              element={
+                <PrivateRoute>
+                  <Followers />
+                </PrivateRoute>
+            }/>
+          
+            
           {/* Posting */}
           <Route path="/posts"
             element={
