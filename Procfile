@@ -1,2 +1,2 @@
-worker: cd socialdistribution && python3 manage.py runserver
+worker: cd socialdistribution && gunicorn mysite.wsgi
 web: cd frontend && npm start
