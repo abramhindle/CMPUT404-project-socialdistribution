@@ -1,2 +1,2 @@
-worker: cd socialdistribution && gunicorn mysite.wsgi
+worker: cd socialdistribution && gunicorn socialdistribution.wsgi
 web: cd frontend && npm start
