@@ -145,3 +145,5 @@ GitHub.sublime-settings
 .idea
 
 /socialdistribution/build
+/socialdistribution/staticfiles
+/socialdistribution/static

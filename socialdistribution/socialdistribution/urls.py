@@ -14,12 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
+from django.shortcuts import render
+
+def render_react(request):
+    return render(request, "index.html")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
     path('api/', include("blog.urls")),
-    path('', TemplateView.as_view(template_name='index.html')),
+    re_path(r"^(?:.*)/?$", render_react),
 ]
+
