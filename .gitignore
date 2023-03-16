@@ -143,3 +143,5 @@ GitHub.sublime-settings
 # Other
 .DS_Store
 .idea
+
+/socialdistribution/build

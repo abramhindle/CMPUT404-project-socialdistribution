@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
     path('api/', include("blog.urls")),
-    path('', TemplateView.as_view(template_name='index.html')),
+    #path('', TemplateView.as_view(template_name='index.html')),
 ]
