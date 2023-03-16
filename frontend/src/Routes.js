@@ -47,7 +47,12 @@ function App() {
                 <Posts />
               </PrivateRoute>
             }>
-            <Route path="new"/>
+            <Route path="new"
+            element={
+              <PrivateRoute>
+                <Posts />
+              </PrivateRoute>
+            }/>
             <Route path="sent"/>
           </Route>
           <Route path="user/:author_id"
