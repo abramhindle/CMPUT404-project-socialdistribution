@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH='./../socialdistribution/' react-scripts build",
+    "build": "BUILD_PATH='./../socialdistribution/build/' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
