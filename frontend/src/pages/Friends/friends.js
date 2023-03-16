@@ -1,4 +1,5 @@
 //import './friends.css';
+import '../pages.css'
 import { get_author }from '../../api/author_api'
 import { get_all_authors }from '../../api/author_api'
 import { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Sidebar from '../../components/Sidebar/sidebar';
 
 
 
@@ -61,11 +63,11 @@ function Friends() {
 
     /*  need fix here! */
  
-        if (follow_list.items.length < 5 && page == 1)
+        if (follow_list.items.length < 5 && page === 1)
         {
           return;
         }
-        if (page == 1)
+        if (page === 1)
         {
             return (<button onClick={forward_page}>Next Page</button>);
         } 
@@ -104,6 +106,8 @@ function Friends() {
     return (
         
         <>
+        <Sidebar/>
+        <div className="page-content">
         <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
@@ -155,6 +159,7 @@ function Friends() {
       </TableContainer>
       <div style={{ width: "100%", textAlign: "center", paddingTop: 16 }}>
           {page_buttons()}
+      </div>
       </div>
       
 

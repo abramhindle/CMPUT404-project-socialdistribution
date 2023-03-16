@@ -1,4 +1,5 @@
 import Sidebar from '../../components/Sidebar/sidebar';
+import '../pages.css'
 import './inbox.css';
 import  { get_inbox_posts } from '../../api/post_display_api';
 import { useEffect, useState } from "react";

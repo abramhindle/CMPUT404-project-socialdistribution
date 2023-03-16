@@ -1,4 +1,5 @@
 import Sidebar from "../../components/Sidebar/sidebar";
+import '../pages.css'
 import "./profile.css";
 import { get_author } from "../../api/author_api";
 import { useEffect, useState } from "react";
@@ -107,7 +108,7 @@ function Profile() {
       <div>
         <Sidebar />
       </div>
-      <div className="myprofile">
+      <div className="myprofile page-content">
         <div className="profileHead">
           <h1>{author.displayName}</h1>
           GitHub: {author.github}
