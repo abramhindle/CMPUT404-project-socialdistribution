@@ -22,12 +22,12 @@ export const post_api = async (authorId, post, successPost, successFollow) => {
 };
 
 export const send_api = async (followers, data) => {
-  console.log("Sending to api . . .", followers);
-  for (var user in followers) {
-    console.log("sending ", data, " to ", followers[user]["id"]);
+  console.log("Sending to api . . .", followers.items);
+  for (var user in followers.items) {
+    console.log("sending ", data, " to ", followers.items[user]["id"]);
     await axios
       .post(
-        `http://localhost:8000/authors/${followers[user]["id"]}/inbox/`,
+        `http://localhost:8000/authors/${followers.items[user]["id"]}/inbox/`,
         data,
         head
       )
