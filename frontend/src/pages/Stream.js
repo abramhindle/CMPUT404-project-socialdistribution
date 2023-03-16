@@ -6,7 +6,6 @@ function Stream(filter) {
 
   return (
     <div>
-      Main Stream! Welcome {user.displayName}
       <Inbox filter={filter}/>
     </div>
   );

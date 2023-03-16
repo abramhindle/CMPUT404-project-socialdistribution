@@ -53,13 +53,12 @@
     max-width: fit-content;
     display: flex;
     flex-direction: column;
-    align-items: left;
-    justify-content: left;
     font-size: calc(10px + 2vmin);
     background-color: #37342F;
     margin: 0;
     padding: 0;
     position: fixed;
+    flex: 1;
 }
 
 .Sidebar li {
