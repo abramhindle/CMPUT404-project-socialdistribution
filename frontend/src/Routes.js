@@ -3,7 +3,7 @@ import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
 import SignIn from "./pages/Login/Signin"
 import Friends from "./pages/Friends/friends"
 import Posts from "./pages/Posts/new-post-page";
-import Main from "./pages/Main";
+import Stream from "./pages/Stream";
 import Profile from "./pages/Profile/profile";
 
 function App() {
@@ -15,13 +15,13 @@ function App() {
           <Route path="/"
             element={
               <PrivateRoute>
-                <Main filter="feed"/>
+                <Stream filter="stream"/>
               </PrivateRoute>
             }>
-              <Route path="feed"
+              <Route path="inbox"
                 element={
                   <PrivateRoute>
-                    <Main filter="feed" />
+                    <Stream filter="inbox" />
                   </PrivateRoute>
                 }>
                 </Route>

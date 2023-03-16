@@ -13,6 +13,15 @@
     margin: 0.2em;
 }
 
+.Profile a {
+    text-decoration: none;
+    color: inherit;
+}
+
+    .Profile a:hover {
+        color: #25CED1;
+    }
+
 .Profile img.profile-pic {
     height: 23vh;
     width: 23vh;
@@ -26,6 +35,19 @@
     font-size: medium;
 }
 
+.Sidebar .Profile button {
+    color: #37342F;
+    font-size: x-small;
+    size: 1em;
+    background-color: #FCEDE3;
+    max-width: fit-content;
+}
+
+.Sidebar .Profile button:hover {
+    background-color: #FF4242;
+    color: white;
+}
+
 .Sidebar {
     min-height: 100vh;
     max-width: fit-content;
@@ -34,15 +56,17 @@
     align-items: left;
     justify-content: left;
     font-size: calc(10px + 2vmin);
-    background-color: #FF8A5B;
+    background-color: #37342F;
     margin: 0;
     padding: 0;
+    position: fixed;
 }
 
 .Sidebar li {
     display: block;
     width: 100%;
-    margin: 0;
+    margin: 0.2em;
+    margin-left: 0;
     padding: 0;
 }
 
@@ -53,12 +77,13 @@
     height: 100%;
     width: 100%;
     padding: 0.5em;
-
+    border-bottom-right-radius: 0.4em;
+    border-top-right-radius: 0.4em;
+    box-shadow: 5px 5px 5px #292724;
 }
 
 /* Page Menu */
 .Sidebar menu {
-    background-color: #FF8A5B;
     list-style: none;
     width: 100%;
     height: 100%;
@@ -76,17 +101,13 @@
     margin: 0;
 }
 
-    /* Display Options bar when item active */
-    .Sidebar li:hover ul.Options-bar {
-        display: block;
-    }
-
 /* Page Buttons */
 .Sidebar button.Page {
     font-weight: bold;
     border-style: none;
     background-color: #FF8A5B;
     text-align: left;
+    max-width: 88%;
 }
 
     .Sidebar button.Page:hover {
@@ -98,13 +119,13 @@
     font-size: medium;
     border-style: none;
     background-color: #25CED1;
+    max-width: 80%;
 }
 
     .Sidebar button.Options:hover {
         background-color: #1C9AB0;
     }
 
-
-.Sidebar a{
-    color: inherit;
-    }
+.current {
+    background-color: #FF4242;
+}
