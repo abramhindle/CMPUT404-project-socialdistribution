@@ -15,14 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path, re_path
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
+import os
+from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.static import static
-
-def render_react(request):
-    return render(request, "index.html")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
