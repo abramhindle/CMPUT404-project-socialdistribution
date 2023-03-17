@@ -410,7 +410,7 @@ class CommentView(APIView, PageNumberPagination):
         comments = Comment.objects.filter(post=post)
 
         # just change this to whoever is authed
-        authenticated_user = Author.objects.get(id=request.data.author.id)
+        #authenticated_user = Author.objects.get(id=request.data.author.id)
         
         # on private posts, friends' comments will only be available to me.
         if "PRIVATE" in post.visibility:

@@ -61,6 +61,7 @@ class Inbox(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(blank=True, null=True,max_length=255)
     content_object = GenericForeignKey('content_type', 'object_id')
+    published = models.DateTimeField(auto_now_add=True, editable=False)  # date published
 
     def __str__(self):
         return self.id
@@ -73,6 +74,7 @@ class Inbox(models.Model):
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
+        ordering = ['published']
 
 class FollowRequest(models.Model):
     type =models.CharField(max_length=255, blank=True)
