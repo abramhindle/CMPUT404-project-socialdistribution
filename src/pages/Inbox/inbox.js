@@ -11,7 +11,6 @@ function Inbox(filter) {
   //Get user info
   let id = useSelector((state) => state.user).id;
   const author_id = `${id}/inbox`
-  console.log(author_id);
   const [author, setAuthor] = useState({});
   const [post_list, setList] = useState({"items": []});
 
@@ -30,7 +29,7 @@ function Inbox(filter) {
 
   useEffect(() => { //only runs once
     get_inbox_posts(author_id, page, setList);
-  }, []);
+  }, [author_id]);
 
   const populateList = () =>{
     if (post_list?.items.length == 0){
