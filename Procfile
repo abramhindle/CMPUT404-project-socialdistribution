@@ -1,2 +1,3 @@
 release: python ./socialdistribution/manage.py migrate
-web: cd socialdistribution && gunicorn socialdistribution.wsgi
+api: cd socialdistribution && gunicorn socialdistribution.wsgi
+web: cd frontend && npm install && npm start
