@@ -442,7 +442,7 @@ class CommentView(APIView, PageNumberPagination):
         serializer = CommentSerializer(data=request.data, context={"author_id":pk_a,"post":post,"id":comment_id}, partial=True)
         if serializer.is_valid():
             comment = serializer.save()
-            inbox_item = Inbox(content_object=comment, author=author)
+            inbox_item = Inbox(content_object=comment, author=post.author)
             inbox_item.save()
             return Response(serializer.data)
         else:
