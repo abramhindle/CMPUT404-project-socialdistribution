@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Avatar, Button, Modal, Input, InputGroup } from "rsuite";
+import {
+	Avatar,
+	Button,
+	Modal,
+	Input,
+	InputGroup,
+	useToaster,
+	Message,
+} from "rsuite";
 import { ToastContainer, toast } from "react-toastify";
 import SearchIcon from "@rsuite/icons/Search";
 import axios from "axios";
@@ -9,7 +17,9 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 	const [displayName, setName] = useState("");
 	const [foreign_author, setForeign] = useState({});
 	const [isFriends, setIsFriends] = useState("");
+	const toaster = useToaster();
 
+	// This function gets the author info and sends the friend req to the author
 	async function handleAddFriendClick() {
 		// url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}/`;
 		// axios({ method: "put", url: url });
@@ -21,46 +31,32 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 			}
 		});
 		const url2 = `authors/${AUTHOR_ID}/sendreq/`;
-		await axios({ method: "post", url: url2, data: foreign_author }).then(
-			(res) => {
-				console.log(res);
-			}
-		);
-
-		// if (!checkFriends(foreign_author_id, AUTHOR_ID)) {
-		// 	url = ``
-		// 	await axios({ method: "post", url: url });
-		// } else {
-		// 	notifyAlreadyFriends();
-		// }
-
+		await axios({ method: "post", url: url2, data: foreign_author })
+			.then((res) => {
+				toaster.push(
+					<Message type="success">Friend Request Sent</Message>,
+					{
+						placement: "topEnd",
+						duration: 3000,
+					}
+				);
+			})
+			.catch((err) => console.log(err.data));
 		handleClose();
 	}
 
-	const notifyAlreadyFriends = () =>
-		toast.success("success", {
-			position: "top-right",
-			autoClose: 5000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: "light",
-		});
-
-	async function checkFriends(AUTHOR_ID, foreign_author_id) {
-		const data = "";
-		console.log(AUTHOR_ID);
-		const url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}`;
-		await axios({ method: "get", url: url }).then((res) => {
-			if (Object.keys(res.data).length === 0) {
-				return false;
-			} else {
-				return true;
-			}
-		});
-	}
+	// async function checkFriends(AUTHOR_ID, foreign_author_id) {
+	// 	const data = "";
+	// 	console.log(AUTHOR_ID);
+	// 	const url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}`;
+	// 	await axios({ method: "get", url: url }).then((res) => {
+	// 		if (Object.keys(res.data).length === 0) {
+	// 			return false;
+	// 		} else {
+	// 			return true;
+	// 		}
+	// 	});
+	// }
 
 	return (
 		<Modal open={open} onClose={handleClose}>
@@ -83,20 +79,6 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 				<Button onClick={handleAddFriendClick} appearance="primary">
 					Add Friend
 				</Button>
-				<ToastContainer
-					position="top-right"
-					autoClose={5000}
-					hideProgressBar={false}
-					newestOnTop={false}
-					closeOnClick
-					rtl={false}
-					pauseOnFocusLoss
-					draggable
-					pauseOnHover
-					theme="light"
-				/>
-				{/* Same as */}
-				<ToastContainer />
 			</Modal.Footer>
 		</Modal>
 	);

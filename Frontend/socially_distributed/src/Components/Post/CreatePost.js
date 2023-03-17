@@ -119,9 +119,6 @@ function CREATEPOST() {
 		const author = JSON.parse(localStorage.getItem("user"));
 		const author_id = getAuthorId();
 		const url = `posts/authors/${author_id}/posts/`;
-		// if (post_type === "text/markdown") {
-		// 	text = markdown;
-		// }
 		var params = {
 			title: title,
 			description: description,

@@ -301,7 +301,7 @@ class ImageView(APIView):
         try:
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
-            authenticated_user = Author.objects.get(id=request.data.author.id)
+            authenticated_user = Author.objects.get(id=pk_a)
             # not image post
             if 'image' not in post.contentType:
                 error_msg = {"message":"Post does not contain an image!"}
@@ -410,7 +410,7 @@ class CommentView(APIView, PageNumberPagination):
         comments = Comment.objects.filter(post=post)
 
         # just change this to whoever is authed
-        authenticated_user = Author.objects.get(id=request.data.author.id)
+        authenticated_user = Author.objects.get(id=pk_a)
         
         # on private posts, friends' comments will only be available to me.
         if "PRIVATE" in post.visibility:

@@ -14,7 +14,7 @@ function FRIENDS() {
 			author.id.length - len,
 			author.id.length
 		);
-		const url = `authors/authors/${AUTHOR_ID}/followers/`;
+		const url = `authors/${AUTHOR_ID}/followers/`;
 		axios({
 			method: "get",
 			url: url,

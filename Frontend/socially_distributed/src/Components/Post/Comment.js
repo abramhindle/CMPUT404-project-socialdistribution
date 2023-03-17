@@ -10,7 +10,6 @@ function COMMENTS({ postobj }) {
 	const [new_comment, set_new_comment] = useState("");
 
 	const getComments = (url) => {
-		console.log(url);
 		axios({ method: "get", url: url })
 			.then((res) => {
 				setCommentObj(res.data);
@@ -30,13 +29,11 @@ function COMMENTS({ postobj }) {
 			postObj.id.length
 		);
 		console.log(post_id);
-		// const url = ;
 		getComments(`posts/authors/${author_id}/posts/${post_id}/comments`);
 	}, []);
 
 	const handleSubmitClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
-		console.log(author);
 		const len = 36;
 		const author_id = author.id.slice(
 			author.id.length - len,
@@ -52,6 +49,7 @@ function COMMENTS({ postobj }) {
 			.then((res) => {
 				if (res.status === 200) {
 					getComments(url);
+					set_new_comment("");
 				}
 			})
 			.catch((err) => console.log(err));
@@ -61,6 +59,7 @@ function COMMENTS({ postobj }) {
 		<div>
 			{commentObj.comments.map((obj) => (
 				<div
+					key={obj.id}
 					style={{
 						width: "100%",
 						border: "0.5px solid lightgrey",
