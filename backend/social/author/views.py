@@ -296,6 +296,8 @@ class InboxSerializerObjects:
             serializer = LikeSerializer
         elif object_model is Comment:
             serializer = CommentSerializer
+        elif object_model is FollowRequest:
+            serializer = FollowRequestSerializer
         return serializer(item.content_object, context=context).data
     
     def deserialize_objects(self, data, pk_a):
@@ -314,6 +316,8 @@ class InboxSerializerObjects:
             serializer = LikeSerializer
         elif type == Comment.get_api_type():
             serializer = CommentSerializer
+        elif type == FollowRequest.get_api_type():
+            serializer = FollowRequestSerializer
         return obj or serializer(data=data, context=context)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
