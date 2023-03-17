@@ -398,12 +398,12 @@ class CommentView(APIView, PageNumberPagination):
 
     def get(self, request, pk_a, pk):
         try:
-            author = Author.objects.get(id=request.data["author_id"])
+            author = Author.objects.get(id=pk_a)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
-        post = Post.objects.get(author=author, id=pk)
+        post = Post.objects.get(id=pk)
         # changed to filter for all comments on the post, it was filtering
         # the comments by the author of the post on the post otherwise.
         # comments = Comment.objects.filter(author=author,post=post)
@@ -439,20 +439,14 @@ class CommentView(APIView, PageNumberPagination):
             error_msg = "Post id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
-        comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=request.data["comment"])
-        return Response(status=status.HTTP_200_OK)
-
-        # Able to create the comment but there is an issue with the serializer. 
-        # Only implement below when serializer is fixed and working
-        # Remove Lines 254 and 255 and uncomment everything below. save 254 and 255 in case not fixed. 
-
-        # serializer = CommentSerializer(data=request.data, context={request.data["author_id"]})
-        # if serializer.is_valid():
-        #     text = request.data["comment"]
-        #     comment = Comment.objects.create(author=author, post=post, id=comment_id, comment=text)
-        #     return Response(serializer.data)
-        # else:
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = CommentSerializer(data=request.data, context={"author_id":pk_a,"post":post,"id":comment_id}, partial=True)
+        if serializer.is_valid():
+            comment = serializer.save()
+            inbox_item = Inbox(content_object=comment, author=author)
+            inbox_item.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'

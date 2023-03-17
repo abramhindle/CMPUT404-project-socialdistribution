@@ -119,7 +119,11 @@ class Comment(models.Model):
         if not self.url: 
             self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
-        return (self.url) or str(self.id)
+        return (self.url) + "/" + str(self.id) or str(self.id)
+    
+    def get_absolute_url(self):
+        url = reverse('posts:comments', args=[str(self.author.id), str(self.post.id)])
+        return url[:-1] if url.endswith('/') else url 
     
     @staticmethod
     def get_api_type():

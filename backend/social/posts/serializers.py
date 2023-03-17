@@ -63,6 +63,14 @@ class CommentSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="comment",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer()
+
+    def create(self, validated_data):
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        id = validated_data.pop('id') if validated_data.get('id') else None
+        if not id:
+            id = self.context["id"]
+        return Comment.objects.create(**validated_data, author = author, id = id, post=self.context["post"])
+
     class Meta:
         model = Comment
         fields = [
