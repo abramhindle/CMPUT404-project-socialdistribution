@@ -344,7 +344,7 @@ class LikeView(APIView, PageNumberPagination):
     pagination_class = PostSetPagination
     
     def post(self, request, pk_a, pk):
-        like_id = uuid.uuid4
+        like_id = uuid.uuid4()
         # url = request.data
         # url 
         post_url = request.data['object']
