@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 
-APP_NAME = 'http://127.0.0.1:8000/'
+APP_NAME = 'http://127.0.0.1:8000'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'rest_framework',
     'django.contrib.messages',
-    'corsheaders',
-    'django.contrib.staticfiles',  # required for serving swagger ui's css/js files
+    'django.contrib.staticfiles', # required for serving swagger ui's css/js files
+    'corsheaders', 
     'drf_yasg',
     'rest_framework_swagger',
 ]

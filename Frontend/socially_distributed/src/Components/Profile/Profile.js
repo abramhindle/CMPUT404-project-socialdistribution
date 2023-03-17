@@ -4,6 +4,8 @@ import FRIENDS from "./Friends";
 import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
+import { getCsrfToken } from "../utils/auth";
 
 function PROFILE() {
 	const [posts, setPosts] = React.useState(true);
@@ -11,6 +13,7 @@ function PROFILE() {
 		posts: "primary",
 		friends: "ghost",
 	});
+	const [open, setOpen] = useState(false);
 
 	const handlePostsBtnClick = () => {
 		setPosts(true);
@@ -29,18 +32,30 @@ function PROFILE() {
 		navigate("/");
 	};
 
-	const handleLogoutClick = () => {
-		console.log(localStorage.getItem("token"));
+	async function handleLogoutClick() {
+		await getCsrfToken();
 		const token = localStorage.getItem("token");
 
 		let reqInstance = axios.create({
 			headers: { "X-CSRFToken": token },
 		});
-		reqInstance.post("accounts/logout/").then((res) => navigate("/login"));
-	};
+		reqInstance.post("accounts/logout/").then((res) => {
+			if (res.status === 200) {
+				navigate("/login");
+			}
+		});
+	}
 
 	// make a get request to get author and every post the author made and comments on the posts
 	// make a get request to get all the friends of an author
+
+	const handleOpen = () => {
+		setOpen(true);
+	};
+
+	const handleModalClose = () => {
+		setOpen(false);
+	};
 
 	return (
 		<div style={{ padding: "10px", width: "60%", margin: "auto" }}>
@@ -54,6 +69,9 @@ function PROFILE() {
 				</Nav>
 				<Nav pullRight>
 					<Nav.Item>Profile</Nav.Item>
+				</Nav>
+				<Nav pullRight>
+					<Nav.Item onClick={handleOpen}>Add Friend</Nav.Item>
 				</Nav>
 			</Navbar>
 			<Panel shaded>
@@ -86,6 +104,7 @@ function PROFILE() {
 				</ButtonGroup>
 				{posts ? <AUTHORPOSTS /> : <FRIENDS />}
 			</Panel>
+			<ADD_FRIEND_MODAL open={open} handleClose={handleModalClose} />
 		</div>
 	);
 }

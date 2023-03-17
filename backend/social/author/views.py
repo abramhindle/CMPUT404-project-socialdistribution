@@ -110,23 +110,14 @@ class AuthorView(APIView):
         """
         Update the authors profile
         """
-        author_id = pk_a 
+
+        author = Author.objects.get(pk=pk_a)
            
-        serializer = AuthorSerializer(data=request.data,partial=True)
+        serializer = AuthorSerializer(author,data=request.data,partial=True)
          
         if serializer.is_valid():
-            display = Author.objects.filter(id=author_id).values('displayName')
-            if request.data['displayName'] == '':
-                request.data._mutable = True
-                request.data['displayName'] = display
-            
-            Author.objects.filter(id=author_id).update(**serializer.validated_data)
-            author = Author.objects.get(id=pk_a)
-            serializer = AuthorSerializer(author,partial=True)
-            auth,created = Author.objects.update(**serializer.validated_data, id=author_id)
-            
-            return Response(serializer.data)
-   
+            serializer.save()
+            return Response(serializer.data)                
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -145,7 +136,7 @@ class FollowersView(APIView):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-
+        # print(pk_a, pk)
         # If url is /authors/authors/author_id/followers/
         if pk ==None:
             followers = author.friends.all()
@@ -257,9 +248,8 @@ class FriendRequestView(APIView):
     serializer_class = FollowRequestSerializer
     
     def post(self,request,pk_a):
-        
         actor = Author.objects.get(id=pk_a)
-        displaynameto = request.data['object.displayName']
+        displaynameto = request.data['displayName']
         displaynamefrom=actor.displayName
         objects = Author.objects.filter(displayName = displaynameto)[0]
 
@@ -277,7 +267,7 @@ class FriendRequestView(APIView):
     
 class ViewRequests(APIView):
     serializer_class = FollowRequestSerializer
-    @permission_classes([IsAuthenticated])
+    # @permission_classes([IsAuthenticated])
     def get(self,request,pk_a):
         """
         Get the list of Follow requests for the current Author
@@ -298,13 +288,14 @@ class InboxSerializerObjects:
     def serialize_inbox_objects(self, item, context={}):
         # return the serializer data of all objects in inbox
         object_model = item.content_type.model_class()
-        print("CONTENT",item.content_object)
         if object_model is Post:
             serializer = PostSerializer
         elif object_model is Like:
             serializer = LikeSerializer
         elif object_model is Comment:
             serializer = CommentSerializer
+        elif object_model is FollowRequest:
+            serializer = FollowRequestSerializer
         return serializer(item.content_object, context=context).data
     
     def deserialize_objects(self, data, pk_a):
@@ -313,17 +304,22 @@ class InboxSerializerObjects:
         obj = None
         if type is None:
             raise exceptions
-        context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+        
         if type == Post.get_api_type():
-            #print(data["id"].split("/")[-1])
             obj = Post.objects.get(id=(data["id"].split("/")[-1]))
             serializer = PostSerializer
+            context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
         elif type == Like.get_api_type():
-            obj = Like.objects.get(id=data["id"].split("/")[-1])
+            # TODO: Add a check to see if the author liked that object before, then just return obj
             serializer = LikeSerializer
+            context={'author_id': data["author"]}
         elif type == Comment.get_api_type():
             serializer = CommentSerializer
-        return obj or serializer(data=data, context=context)
+            context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+        elif type == FollowRequest.get_api_type():
+            serializer = FollowRequestSerializer
+            context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+        return obj or serializer(data=data, context=context, partial=True)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     """
@@ -361,13 +357,17 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
         try:
             if serializer.is_valid():
+                print("if")
                 item = serializer.save()
+                print("item",item)
                 if hasattr(item, 'update_fields_with_request'):
                     item.update_fields_with_request(request)
             else: 
+                print("else here")
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Case 2: author is within the server
-        except AttributeError:
+        except AttributeError as e:
+            print(e)
             item = serializer   
         inbox_item = Inbox(content_object=item, author=author)
         inbox_item.save()
@@ -379,7 +379,6 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         dict = {"type":"inbox", "author": settings.APP_NAME + 'authors/' + pk_a }
         items = []
         for item in data:
-            print("content", item["content_object"])
             items.append(item["content_object"])
 
         dict["items"] = items

@@ -71,6 +71,7 @@ function AUTHORPOSTS() {
 	useEffect(() => {
 		const author = JSON.parse(localStorage.getItem("user"));
 		const len = 36;
+		console.log(author);
 		const author_id = author.id.slice(
 			author.id.length - len,
 			author.id.length
@@ -78,7 +79,7 @@ function AUTHORPOSTS() {
 		const url = `posts/authors/${author_id}/posts/`;
 		axios({ method: "get", url: url })
 			.then((res) => {
-				console.log(res.data.results);
+				console.log(res.data);
 				setPosts(res.data.results);
 			})
 			.catch((err) => console.log(err));
@@ -98,7 +99,7 @@ function AUTHORPOSTS() {
 	const item = (obj) => {
 		return (
 			<Panel
-				header={<h4>{obj["title"]}</h4>}
+				header={<div>{obj["title"]}</div>}
 				style={{
 					// height: "50px",
 					// border: "0.5px solid lightgrey",

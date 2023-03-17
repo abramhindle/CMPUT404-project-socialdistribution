@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Input, InputGroup, Panel } from "rsuite";
-import { Scrollbars } from "react-custom-scrollbars-2";
+import { IconButton } from "rsuite";
+import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import axios from "axios";
 
 // Component Imports
 
-function LIKE({ likeobj }) {
-	const [like, set_like] = useState(likeobj);
-	const [postObj, setPostObj] = useState(postobj);
+function LIKE({ postObj }) {
+	// const [like, set_like] = useState(likeobj);
 	const [new_like, set_new_like] = useState("");
 	const postObjUrl = postObj.url;
-	
-	//Confirm the name of the button 
+
+	//Confirm the name of the button
 	const handleSubmitClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
 		const len = 36;
@@ -24,30 +23,30 @@ function LIKE({ likeobj }) {
 			postObj.id.length - len,
 			postObj.id.length
 		);
-		const message = author_name + " Liked your post."
-		const params = {author: author_id, object: postObjUrl, summary: message};
+		const message = author_name + " Liked your post.";
+		const params = {
+			author: author_id,
+			object: postObjUrl,
+			summary: message,
+		};
 		const url = `posts/authors/${author_id}/inbox`;
 
-	//Confirm what to add into the params and send inbox
+		//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })
-				.then((res) => {
-					console.log(res.data)
-				})
-				.catch((err) => console.log(err));
+			.then((res) => {
+				console.log(res.data);
+			})
+			.catch((err) => console.log(err));
 	};
 
-
-
 	return (
-		<Panel bordered style={{ marginBottom: "5px" }}>
-			<Avatar
-				style={{ float: "left", marginBotton: "5px" }}
-				circle
-				src="https://avatars.githubusercontent.com/u/12592949"
-			></Avatar>
-			<h4 style={{ marginLeft: "50px" }}>{like["summary"]}</h4>
-		</Panel>
+		<IconButton
+			style={{ float: "right", marginRight: "10px" }}
+			appearance="subtle"
+			icon={<ThumbsUpIcon />}
+			onClick={handleSubmitClick}
+		/>
 	);
-};
+}
 
 export default LIKE;

@@ -55,7 +55,7 @@ class FollowRequestSerializer(serializers.ModelSerializer):
     object = AuthorSerializer()
     class Meta:
         model = FollowRequest
-        fields = ['Type','Summary','actor', 'object']
+        fields = ['type','Summary','actor', 'object']
         
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="inbox",source="get_api_type",read_only=True)

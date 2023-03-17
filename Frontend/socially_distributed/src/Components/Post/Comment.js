@@ -28,8 +28,8 @@ function COMMENTS({ postobj }) {
 			postObj.id.length - len,
 			postObj.id.length
 		);
-		const url = `posts/authors/${author_id}/posts/${post_id}/comments`;
-		getComments(url);
+		console.log(post_id);
+		getComments(`posts/authors/${author_id}/posts/${post_id}/comments`);
 	}, []);
 
 	const handleSubmitClick = () => {
@@ -49,6 +49,7 @@ function COMMENTS({ postobj }) {
 			.then((res) => {
 				if (res.status === 200) {
 					getComments(url);
+					set_new_comment("");
 				}
 			})
 			.catch((err) => console.log(err));
@@ -58,6 +59,7 @@ function COMMENTS({ postobj }) {
 		<div>
 			{commentObj.comments.map((obj) => (
 				<div
+					key={obj.id}
 					style={{
 						width: "100%",
 						border: "0.5px solid lightgrey",

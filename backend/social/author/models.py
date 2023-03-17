@@ -5,8 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 from django.db.models import Q
 from django.urls import reverse
-
-APP_NAME = 'http://127.0.0.1:8000'
+from django.conf import settings
 
 # Create your models here.
 class Author(models.Model):
@@ -44,7 +43,7 @@ class Author(models.Model):
         if not self.url: 
             self.url = self.get_absolute_url()
             self.save()
-        return (APP_NAME+self.url) or str(self.id)   
+        return (settings.APP_NAME+self.url) or str(self.id)   
     
     def follower_to_object(self):
         return {"type":"author",
@@ -62,6 +61,7 @@ class Inbox(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(blank=True, null=True,max_length=255)
     content_object = GenericForeignKey('content_type', 'object_id')
+    published = models.DateTimeField(auto_now_add=True, editable=False)  # date published
 
     def __str__(self):
         return self.id
@@ -74,9 +74,10 @@ class Inbox(models.Model):
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
+        ordering = ['published']
 
 class FollowRequest(models.Model):
-    Type =models.CharField(max_length=255, blank=True)
+    type =models.CharField(max_length=255, blank=True)
     actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
     object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
     Summary =models.CharField(max_length=255, blank=True)

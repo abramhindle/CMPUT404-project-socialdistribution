@@ -1,32 +1,28 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { Avatar } from "rsuite";
+import axios from "axios";
 
 function FRIENDS() {
 	// make a get request to get author and every post the author made and comments on the posts
 	// make a get request to get all the friends of an author
-	const friends = {
-		type: "followers",
-		items: [
-			{
-				type: "author",
-				id: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-				url: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-				host: "http://127.0.0.1:5454/",
-				displayName: "Greg Johnson",
-				github: "http://github.com/gjohnson",
-				profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
-			},
-			{
-				type: "author",
-				id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-				host: "http://127.0.0.1:5454/",
-				displayName: "Lara Croft",
-				url: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-				github: "http://github.com/laracroft",
-				profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
-			},
-		],
-	};
+	const [friends, setFriends] = useState({ items: [] });
+
+	useLayoutEffect(() => {
+		const author = JSON.parse(localStorage.getItem("user"));
+		const len = 36;
+		const AUTHOR_ID = author.id.slice(
+			author.id.length - len,
+			author.id.length
+		);
+		const url = `authors/${AUTHOR_ID}/followers/`;
+		axios({
+			method: "get",
+			url: url,
+		}).then((res) => {
+			console.log(res.data);
+			setFriends(res.data);
+		});
+	}, []);
 
 	const item = (obj) => {
 		return (

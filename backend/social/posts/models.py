@@ -112,13 +112,18 @@ class Comment(models.Model):
     comment = models.TextField()  # the comment
     published = models.DateTimeField(auto_now_add=True)  # date published
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
+    inbox = GenericRelation(Inbox, related_query_name='comment')  # inbox in which post is in
 
     # get public id of comment
     def get_public_id(self):
         if not self.url: 
             self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
-        return (self.url) or str(self.id)
+        return (self.url) + "/" + str(self.id) or str(self.id)
+    
+    def get_absolute_url(self):
+        url = reverse('posts:comments', args=[str(self.author.id), str(self.post.id)])
+        return url[:-1] if url.endswith('/') else url 
     
     @staticmethod
     def get_api_type():
