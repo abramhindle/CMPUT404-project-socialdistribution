@@ -23,6 +23,7 @@ class PostSerializer(WritableNestedModelSerializer):
         return [category for category in categories_list]
     
     def create(self, validated_data):
+        print(self.context["author_id"])
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
         id = validated_data.pop('id') if validated_data.get('id') else None
         if not id:

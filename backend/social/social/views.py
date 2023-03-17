@@ -27,7 +27,7 @@ class register(APIView):
         try:
             user = User.objects.create_user(username=display_name, email=email, password=password)
             user.save()
-            url = id_
+            url = "/" + id_
             author = Author(user=user, id = id_, displayName= display_name, url=url)
             author.save()
             return(Response(id_, status=status.HTTP_201_CREATED))
@@ -39,7 +39,6 @@ class register(APIView):
 class login(APIView):
     def post(self, request):
         """deals with user auth"""
-        print(request.data)
         username = request.data['username']
         password = request.data['password']
         auth = AllowAllUsersModelBackend()
@@ -51,11 +50,11 @@ class login(APIView):
         params = {}
         # params['user'] = UserSerializer(user)
         # params['token'] = get_token()
-        params['author_id'] = author.id
+        params = AuthorSerializer(author)
 
         if not user:
             return Response("user not registered", status=status.HTTP_401_UNAUTHORIZED)
-        return Response(params, status=status.HTTP_202_ACCEPTED)
+        return Response(params.data, status=status.HTTP_202_ACCEPTED)
     
 
 def csrf(request):
