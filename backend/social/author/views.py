@@ -111,8 +111,10 @@ class AuthorView(APIView):
         Update the authors profile
         """
         author_id = pk_a 
+
+        author = Author.objects.get(pk=pk_a)
            
-        serializer = AuthorSerializer(data=request.data,partial=True)
+        serializer = AuthorSerializer(author,data=request.data,partial=True)
          
         if serializer.is_valid():
             display = Author.objects.filter(id=author_id).values('displayName')
@@ -120,13 +122,9 @@ class AuthorView(APIView):
                 request.data._mutable = True
                 request.data['displayName'] = display
             
-            Author.objects.filter(id=author_id).update(**serializer.validated_data)
-            author = Author.objects.get(id=pk_a)
-            serializer = AuthorSerializer(author,partial=True)
-            auth,created = Author.objects.update(**serializer.validated_data, id=author_id)
-            
-            return Response(serializer.data)
-   
+            serializer.save()
+            return Response(serializer.data)                
+               
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
