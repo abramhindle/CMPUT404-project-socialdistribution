@@ -5,6 +5,7 @@ from author.serializers import AuthorSerializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 # pip install drf-base64
 from drf_base64.fields import Base64ImageField
+import uuid 
 
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
@@ -63,6 +64,14 @@ class CommentSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="comment",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer()
+
+    def create(self, validated_data):
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        id = validated_data.pop('id') if validated_data.get('id') else None
+        if not id:
+            id = self.context["id"]
+        return Comment.objects.create(**validated_data, author = author, id = id, post=self.context["post"])
+
     class Meta:
         model = Comment
         fields = [
@@ -76,8 +85,14 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="like",source="get_api_type",read_only=True)
-    id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer()
+
+    def create(self, validated_data):
+        id = str(uuid.uuid4())
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        print("ID HERE",id)
+        return Like.objects.create(**validated_data, author = author, id = id)
+
     class Meta:
         model = Like
         fields = [
@@ -85,8 +100,6 @@ class LikeSerializer(serializers.ModelSerializer):
             "type",
             "author",
             "object",
-            "id",
-            "inbox",
         ]
 
 class ImageSerializer(serializers.ModelSerializer):
