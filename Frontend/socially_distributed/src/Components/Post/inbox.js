@@ -3,11 +3,12 @@ import React, { useEffect, useState, useLayoutEffect } from "react";
 import POST from "./Post";
 import CREATEPOST from "./CreatePost";
 import LIKEINBOX from "./LikeInbox";
-import { Navbar, Nav, Panel, Modal, Button, InputGroup, Input } from "rsuite";
+import { Navbar, Nav, Panel, useToaster, Message } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FOLLOWREQ from "./FollowReq";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
+import { getCsrfToken } from "../utils/auth";
 
 function INBOX() {
 	// const inbox = {
@@ -175,7 +176,8 @@ function INBOX() {
 		}
 	};
 
-	const handleLogoutClick = () => {
+	async function handleLogoutClick() {
+		await getCsrfToken();
 		const token = localStorage.getItem("token");
 		let reqInstance = axios.create({
 			headers: { "X-CSRFToken": token },
@@ -185,7 +187,7 @@ function INBOX() {
 				navigate("/login");
 			}
 		});
-	};
+	}
 
 	const handleOpen = () => {
 		setOpen(true);

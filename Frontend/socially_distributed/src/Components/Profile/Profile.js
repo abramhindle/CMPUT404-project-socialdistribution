@@ -5,6 +5,7 @@ import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
+import { getCsrfToken } from "../utils/auth";
 
 function PROFILE() {
 	const [posts, setPosts] = React.useState(true);
@@ -31,7 +32,8 @@ function PROFILE() {
 		navigate("/");
 	};
 
-	const handleLogoutClick = () => {
+	async function handleLogoutClick() {
+		await getCsrfToken();
 		const token = localStorage.getItem("token");
 
 		let reqInstance = axios.create({
@@ -42,7 +44,7 @@ function PROFILE() {
 				navigate("/login");
 			}
 		});
-	};
+	}
 
 	// make a get request to get author and every post the author made and comments on the posts
 	// make a get request to get all the friends of an author

@@ -79,7 +79,7 @@ function AUTHORPOSTS() {
 		const url = `posts/authors/${author_id}/posts/`;
 		axios({ method: "get", url: url })
 			.then((res) => {
-				console.log(res.data.results);
+				console.log(res.data);
 				setPosts(res.data.results);
 			})
 			.catch((err) => console.log(err));

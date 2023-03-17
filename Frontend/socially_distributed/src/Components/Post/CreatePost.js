@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Input, Avatar, Panel, Dropdown, Uploader, Button } from "rsuite";
+import {
+	Input,
+	Avatar,
+	useToaster,
+	Message,
+	Dropdown,
+	Uploader,
+	Button,
+} from "rsuite";
 // import { Scrollbars } from "react-custom-scrollbars-2";
 // Component Imports
 import axios from "axios";
@@ -16,6 +24,7 @@ function CREATEPOST() {
 	const [description, setDescription] = useState("");
 	const [categories, setCategories] = useState("");
 	const [markdown, setMarkdown] = useState("");
+	const toaster = useToaster();
 
 	const input = () => {
 		if (post_type === "text/plain") {
@@ -92,29 +101,19 @@ function CREATEPOST() {
 		}
 	};
 
-	const notifySuccessPost = () =>
-		toast.success("success", {
-			position: "top-right",
-			autoClose: 5000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: "light",
+	const notifySuccessPost = () => {
+		toaster.push(<Message type="success">Successful post</Message>, {
+			placement: "topEnd",
+			duration: 3000,
 		});
+	};
 
-	const notifyFailedPost = () =>
-		toast.error("failure", {
-			position: "top-right",
-			autoClose: 5000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: "light",
+	const notifyFailedPost = (error) => {
+		toaster.push(<Message type="error">{error}</Message>, {
+			placement: "topEnd",
+			duration: 3000,
 		});
+	};
 
 	const handlePostClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
@@ -143,8 +142,8 @@ function CREATEPOST() {
 					set_post_type("text/plain");
 					setMarkdown("");
 				} else {
-					console.log(res);
-					notifyFailedPost();
+					console.log(res.data);
+					notifyFailedPost(res.data);
 				}
 			})
 			.catch((err) => console.log(err));
@@ -220,20 +219,6 @@ function CREATEPOST() {
 			>
 				Post
 			</Button>
-			<ToastContainer
-				position="top-right"
-				autoClose={5000}
-				hideProgressBar={false}
-				newestOnTop={false}
-				closeOnClick
-				rtl={false}
-				pauseOnFocusLoss
-				draggable
-				pauseOnHover
-				theme="light"
-			/>
-			{/* Same as */}
-			<ToastContainer />
 		</div>
 	);
 }
