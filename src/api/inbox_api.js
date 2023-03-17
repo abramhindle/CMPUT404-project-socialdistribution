@@ -4,7 +4,7 @@ export const post_inbox = async (authorId, object, success) => {
   console.log("Attempting to post", { object }, "to", { authorId });
 
   const res = await axios.post(
-    `http://localhost:8000/authors/${authorId}/inbox/`,
+    `http://localhost/authors/${authorId}/inbox/`,
     object,
     {
       headers: {
