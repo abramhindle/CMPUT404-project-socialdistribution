@@ -112,6 +112,7 @@ class Comment(models.Model):
     comment = models.TextField()  # the comment
     published = models.DateTimeField(auto_now_add=True)  # date published
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
+    inbox = GenericRelation(Inbox, related_query_name='comment')  # inbox in which post is in
 
     # get public id of comment
     def get_public_id(self):

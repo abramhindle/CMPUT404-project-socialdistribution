@@ -369,11 +369,6 @@ class LikeView(APIView, PageNumberPagination):
             all_data['inbox'] = inbox 
             serializer = LikeSerializer(data=all_data, context={'author_id': pk_a})
             if serializer.is_valid():
-                # using raw create because we need custom id
-                # print("original",serializer.validated_data.get('categories'))
-                # categories = ' '.join(serializer.validated_data.get('categories'))
-                # print("categories", categories)
-                #serializer.validated_data.pop('categories')
                 serializer.validated_data.pop("author")
                 like = Like.objects.create(**serializer.validated_data, author=author, id=like_id, )
                 like.update_fields_with_request(request)
