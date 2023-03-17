@@ -24,11 +24,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework import routers
 
-router = routers.DefaultRouter()    
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
     path('api/', include("blog.urls")),
+    re_path('.*', TemplateView.as_view(template_name='index.html'))
 ]
 
