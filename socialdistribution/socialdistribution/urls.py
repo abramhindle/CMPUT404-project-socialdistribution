@@ -17,6 +17,9 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from django.shortcuts import render
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf import settings
+from django.conf.urls.static import static
 
 def render_react(request):
     return render(request, "index.html")
@@ -26,5 +29,5 @@ urlpatterns = [
     path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
     path('api/', include("blog.urls")),
     #path("", render_react),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
