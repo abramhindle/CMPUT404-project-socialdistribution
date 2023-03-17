@@ -4,13 +4,15 @@ from rest_framework import serializers
 from service.models.author import Author
 from django.contrib import auth
 from rest_framework.authtoken.models import Token
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 import json
-        
+
 class SignInSerializerForm(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class SignInView(APIView):
     permission_classes = ()
     serializer_class = SignInSerializerForm
@@ -29,13 +31,15 @@ class SignInView(APIView):
                 author = Author.objects.get(user=user)
                 auth.login(request, user)
                 return Response({"success": "User authenticated", "author": author.toJSON()}, status=200)
-            except:             
+            except:
                 return Response({"error": "Error Authenticating"}, status=401)
         
         return Response({"error": "Error Authenticating"}, status=401)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class SignOutView(APIView):
     permission_classes = ()
+
     def post(self, request, format=None):
         try:
             auth.logout(request)
@@ -43,11 +47,10 @@ class SignOutView(APIView):
         except:
             return Response({ 'error': 'Something went wrong when logging out' }, status=401)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class ManageToken(APIView):
     permission_classes = ()
     def post(self, request):
-        print("HERE")
         try:
             data = json.loads(request.data)
         except:
