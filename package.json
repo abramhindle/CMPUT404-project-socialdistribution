@@ -1,5 +1,6 @@
 {
   "name": "frontend",
+  "homepage": ".",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -21,6 +22,10 @@
     "react-scripts": "5.0.1",
     "redux-persist": "^6.0.0",
     "web-vitals": "^2.1.4"
+  },
+  "engines": {
+    "node": "14.6.0",
+    "npm": "6.14.9"
   },
   "scripts": {
     "start": "react-scripts start",
