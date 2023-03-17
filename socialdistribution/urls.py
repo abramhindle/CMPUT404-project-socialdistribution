@@ -30,5 +30,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
     path('api/', include("blog.urls")),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
+]
 

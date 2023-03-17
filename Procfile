@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: gunicorn socialdistribution.wsgi
+web: gunicorn socialdistribution.wsgi --log-file -

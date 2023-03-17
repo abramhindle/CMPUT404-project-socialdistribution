@@ -9,3 +9,7 @@ pytz==2022.7.1
 sqlparse==0.2.4
 django-on-heroku
 gunicorn
+pip~=23.0.1
+wheel~=0.38.4
+docutils~=0.19
+setuptools~=67.2.0
