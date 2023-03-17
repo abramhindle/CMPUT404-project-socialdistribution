@@ -5,8 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 from django.db.models import Q
 from django.urls import reverse
-
-APP_NAME = 'http://127.0.0.1:8000'
+from django.conf import settings
 
 # Create your models here.
 class Author(models.Model):
@@ -44,7 +43,7 @@ class Author(models.Model):
         if not self.url: 
             self.url = self.get_absolute_url()
             self.save()
-        return (APP_NAME+self.url) or str(self.id)   
+        return (settings.APP_NAME+self.url) or str(self.id)   
     
     def follower_to_object(self):
         return {"type":"author",
