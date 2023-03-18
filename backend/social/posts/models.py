@@ -137,7 +137,7 @@ class Comment(models.Model):
     
 class Like(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of like
-    summary = models.CharField (max_length=100)
+    summary = models.CharField (max_length=100, default='')
     author = models.ForeignKey(Author, related_name = 'likes', on_delete=models.CASCADE)  # author of like
     object = models.URLField(max_length=500)  # URL of liked object
     inbox = GenericRelation(Inbox, related_query_name='like')  # inbox in which like is in

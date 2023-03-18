@@ -312,7 +312,7 @@ class InboxSerializerObjects:
         elif type == Like.get_api_type():
             # TODO: Add a check to see if the author liked that object before, then just return obj
             serializer = LikeSerializer
-            context={'author_id': data["author"]}
+            context={'author_id': data["author_id"]}
         elif type == Comment.get_api_type():
             serializer = CommentSerializer
             context={'author_id': pk_a,'id':data["id"].split("/")[-1]}

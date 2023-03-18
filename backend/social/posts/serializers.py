@@ -66,7 +66,7 @@ class CommentSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
 
     def create(self, validated_data):
-        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        author = AuthorSerializer.extract_and_upcreate_author(author_id=self.context["author_id"])
         id = validated_data.pop('id') if validated_data.get('id') else None
         if not id:
             id = self.context["id"]
@@ -85,13 +85,14 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="like",source="get_api_type",read_only=True)
-    author = AuthorSerializer()
+    author = AuthorSerializer(required=True)
 
     def create(self, validated_data):
         id = str(uuid.uuid4())
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
-        print("ID HERE",id)
-        return Like.objects.create(**validated_data, author = author, id = id)
+        print(author)
+        print(validated_data)
+        return Like.objects.create(**validated_data, author=author, id = id)
 
     class Meta:
         model = Like
