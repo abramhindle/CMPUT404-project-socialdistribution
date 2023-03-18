@@ -17,7 +17,7 @@ class Author(models.Model):
     profileImage = models.URLField(editable=True,blank=True, max_length=500) # profile image of author, optional
     url = models.URLField(editable=False, max_length=500)  # url of author profile
     host = models.URLField(editable=False, max_length=500)  # host server
-
+    github = models.URLField(max_length=500, default="", blank=True)  # Github url field
 
     # make it pretty
     def __str__(self):
@@ -51,7 +51,7 @@ class Author(models.Model):
             "url":self.url,
             "host":self.host,
             "displayName":self.displayName,
-            # "github":self.github
+            "github":self.github,
             "profileImage":self.profileImage
         } 
     

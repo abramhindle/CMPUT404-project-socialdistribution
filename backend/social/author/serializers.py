@@ -38,10 +38,9 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = [
             'type', 
             'id', 
-            #'host',
+            'host',
             'displayName',
-            #'url',
-            #'github',
+            'github',
             'profileImage',
         ]
 
