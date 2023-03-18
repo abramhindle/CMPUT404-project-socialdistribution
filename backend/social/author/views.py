@@ -26,7 +26,6 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
-from posts.serializers import AlreadyLikedException
 
 response_schema_dict = {
     "200": openapi.Response(

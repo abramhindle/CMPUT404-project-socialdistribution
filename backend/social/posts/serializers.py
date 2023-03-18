@@ -7,10 +7,6 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from drf_base64.fields import Base64ImageField
 import uuid 
 
-class AlreadyLikedException(Exception):
-    "Liked already"
-    pass
-
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     id = serializers.CharField(source="get_public_id", read_only=True)
@@ -97,10 +93,10 @@ class LikeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
-        try: 
-            _ = Like.objects.filter(author=author, object=validated_data.get("object"))
+        like = Like.objects.filter(author=author, object=validated_data.get("object"))
+        if like: 
             return "already liked"
-        except: 
+        else: 
             id = str(uuid.uuid4())
             return Like.objects.create(**validated_data, author=author, id = id)
 

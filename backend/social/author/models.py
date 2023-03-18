@@ -41,9 +41,9 @@ class Author(models.Model):
     # return the author public ID
     def get_public_id(self):
         if not self.url: 
-            self.url = self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
-        return (settings.APP_NAME+self.url) or str(self.id)   
+        return (self.url) or str(self.id)   
     
     def follower_to_object(self):
         return {"type":"author",
