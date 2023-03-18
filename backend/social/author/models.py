@@ -80,7 +80,7 @@ class FollowRequest(models.Model):
     type =models.CharField(max_length=255, blank=True)
     actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
     object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
-    Summary =models.CharField(max_length=255, blank=True)
+    Summary = models.CharField(max_length=255, blank=True)
     accepted = models.BooleanField(default=False)
 
     class Meta:

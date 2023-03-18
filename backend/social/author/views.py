@@ -372,6 +372,18 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         inbox_item.save()
         return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
     
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Delete all the objects in the inbox")
+    def delete(self, request, pk_a):
+        # GET all objects in inbox, only need auth in request
+        try: 
+            author = get_object_or_404(Author,pk=pk_a)
+            author.inbox.all().delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Post.DoesNotExist:
+            return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
+    
+    
     def get_items(self,pk_a,data):
         # helper function 
 

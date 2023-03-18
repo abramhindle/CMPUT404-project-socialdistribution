@@ -16,13 +16,10 @@ class AuthorSerializer(serializers.ModelSerializer):
     @staticmethod
     def extract_and_upcreate_author(validated_data, author_id=None):
         validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
-        print("validated",validated_author_data)
         try:
             if validated_author_data:
-                print("if case")
                 updated_author = AuthorSerializer._upcreate(validated_author_data)
             else:
-                print("else case")
                 updated_author = Author.objects.get(id=author_id)
             return updated_author
         except:
