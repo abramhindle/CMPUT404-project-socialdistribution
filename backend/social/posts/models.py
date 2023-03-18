@@ -148,7 +148,10 @@ class Like(models.Model):
             self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
-    
+
+    def get_summary(self):
+        return self.author.displayName + " Likes your post"
+
     @staticmethod
     def get_api_type():
         return 'Like'

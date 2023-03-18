@@ -86,8 +86,10 @@ class CommentSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="like",source="get_api_type",read_only=True)
     author = AuthorSerializer(required=True)
+    summary = serializers.CharField(source="get_summary", read_only=True)
 
     def create(self, validated_data):
+        
         id = str(uuid.uuid4())
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
         print(author)
