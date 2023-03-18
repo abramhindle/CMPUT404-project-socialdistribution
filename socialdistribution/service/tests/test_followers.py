@@ -51,7 +51,7 @@ class FollowTests(TestCase):
 
         self.assertEqual(author["id"], str(self.author3._id))
         self.assertEqual(author["displayName"], self.author3.displayName)
-        self.assertEqual(author["url"], f"{self.author3.host}/authors/{self.author3._id}")
+        self.assertEqual(author["host"], self.author3.host)
 
     def test_put_follower(self):
         request = HttpRequest()

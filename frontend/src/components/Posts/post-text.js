@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown'
 import { post_comment } from "../../api/comment_api";
 
 export default function PlainPost(data) {
+  console.log(typeof(data["post"]["content"]));
   const user = useSelector((state) => state.user);
   //Check if markdown
   let markdown = data["post"]["contentType"] === "text/markdown" ? true : false;
@@ -54,8 +55,8 @@ export default function PlainPost(data) {
           {/* Will need to handle other post types here, plain for now */}
           <div className="content-container">
             <h5>{data["post"]["title"]}</h5>
-            {markdown && <ReactMarkdown className="content line">
-{String(data["post"]["content"])} {/* Mardown doesn't like leading whitespace */}
+            {markdown && <ReactMarkdown className="content line" children={data["post"]["content"]}>
+{/* Mardown doesn't like leading whitespace */}
                         </ReactMarkdown>}
                         {(!markdown) && <div className="content line">
                             {data["post"]["content"]}

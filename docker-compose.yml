@@ -1,11 +1,23 @@
 version: '3.1'
 
 services:
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:latest
+  postgresql:
+    container_name: postgresql
+    image: postgres:latest
     restart: always
     volumes:
-      - ./mongo/data/:/data/db
+      - ./sql/data/:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=admin
     ports:
-      - 27017:27017
+      - 5432:5432
+
+  # mongo-db:
+  #   container_name: mongo-db
+  #   image: mongo:latest
+  #   restart: always
+  #   volumes:
+  #     - ./mongo/data/:/data/db
+  #   ports:
+  #     - 27017:27017

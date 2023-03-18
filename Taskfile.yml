@@ -8,9 +8,9 @@ tasks:
 
   down:
     cmds:
-      - 'docker stop mongo-db'
-      - 'docker rm mongo-db'
+      - 'docker stop postgresql'
+      - 'docker rm postgresql'
 
   remove-db:
     cmds:
-      - rm -rf mongo/
+      - rm -rf sql/
