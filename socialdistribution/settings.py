@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from datetime import timedelta
 import os
 import django_on_heroku
 import dj_database_url
@@ -27,9 +26,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-dybliy2*u14hioctad94q0woplw9gz0oeqt+22xcyw=qr7bkg3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'http://localhost:8000',
+    'http://localhost:3000',        
+]
+
+CORS_SUPPORTS_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = "access-control-allow-origin"
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'https://social-distribution-w23-t17.herokuapp.com',
+    'http://127.0.0.1:3000',
+    'http://localhost:8000',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 
 # Application definition
 
@@ -49,10 +67,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,17 +101,6 @@ WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'admin',
-#         'PASSWORD': 'password',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
-#     }
-# }
 
 DATABASES = {
     'default': {
@@ -166,10 +173,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ],
 }
-
-CORS_ORIGIN_ALLOW_ALL = True 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-]
 
 django_on_heroku.settings(locals())

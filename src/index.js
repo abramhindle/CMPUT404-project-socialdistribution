@@ -10,7 +10,6 @@ import axios from 'axios';
 
 const production  = "https://social-distribution-w23-t17.herokuapp.com/";
 const development = 'http://localhost:8000/';
-//axios.defaults.baseURL = (process.env.NODE_ENV ? production : development);
 
 if (process.env.NODE_ENV == "production"){
   axios.defaults.baseURL = production;
@@ -19,6 +18,11 @@ else
 {
   axios.defaults.baseURL = development;
 }
+
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
+axios.defaults.xsrfCookieName = "csrftoken";
+
+axios.defaults.withCredentials = true;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

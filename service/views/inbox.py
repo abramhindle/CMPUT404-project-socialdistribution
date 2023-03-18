@@ -13,6 +13,7 @@ from service.models.inbox import Inbox
 from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
+from rest_framework.views import APIView
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
 
@@ -20,7 +21,7 @@ from service.service_constants import *
 # -> POST post for {author_id} -> for {follower_author_id} of {author_id} of post (POST Inbox {follower author Id})
 
 @method_decorator(csrf_exempt, name='dispatch')
-class InboxView(View):
+class InboxView(APIView):
     http_method_names = ["get", "post", "delete"]
 
     def get(self, request: HttpRequest, *args, **kwargs):

@@ -11,6 +11,7 @@ export const post_inbox = async (authorId, object, success) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      withCredentials: true
     }
   );
   console.log(res);
