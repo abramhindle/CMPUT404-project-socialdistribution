@@ -44,6 +44,8 @@ class Post(models.Model):
     visibility = models.CharField(choices=visbility_choices, default=PUBLIC, max_length=20)  # visibility status of post
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
+    count = models.PositiveIntegerField(default=0)
+    commentsSrc = models.CharField(max_length=255, default="", blank=True)
     
     image = models.ImageField(null=True,blank=True, default="")  # reference to an image in the DB
 
@@ -72,10 +74,7 @@ class Post(models.Model):
             return self.url + 'comments/'
         else:
             return self.url + '/comments/'
-    
-    def get_comment_count(self):
-        return self.comments.count()
-
+        
     def get_likes_count(self):
         return self.likes.count()
     
@@ -137,7 +136,7 @@ class Comment(models.Model):
     
 class Like(models.Model):
     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)  # ID of like
-    summary = models.CharField (max_length=100)
+    summary = models.CharField (max_length=100, default='')
     author = models.ForeignKey(Author, related_name = 'likes', on_delete=models.CASCADE)  # author of like
     object = models.URLField(max_length=500)  # URL of liked object
     inbox = GenericRelation(Inbox, related_query_name='like')  # inbox in which like is in
@@ -148,7 +147,10 @@ class Like(models.Model):
             self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
         return (self.url) or str(self.id)
-    
+
+    def get_summary(self):
+        return self.author.displayName + " Likes your post"
+
     @staticmethod
     def get_api_type():
         return 'Like'

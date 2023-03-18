@@ -17,7 +17,7 @@ class Author(models.Model):
     profileImage = models.URLField(editable=True,blank=True, max_length=500) # profile image of author, optional
     url = models.URLField(editable=False, max_length=500)  # url of author profile
     host = models.URLField(editable=False, max_length=500)  # host server
-
+    github = models.URLField(max_length=500, default="", blank=True)  # Github url field
 
     # make it pretty
     def __str__(self):
@@ -51,7 +51,7 @@ class Author(models.Model):
             "url":self.url,
             "host":self.host,
             "displayName":self.displayName,
-            # "github":self.github
+            "github":self.github,
             "profileImage":self.profileImage
         } 
     
@@ -80,12 +80,16 @@ class FollowRequest(models.Model):
     type =models.CharField(max_length=255, blank=True)
     actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
     object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
-    Summary =models.CharField(max_length=255, blank=True)
+    Summary = models.CharField(max_length=255, blank=True)
     accepted = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('actor','object')
-
+    
+    @staticmethod
+    def get_api_type():
+        return 'Follow'
+    
     def __str__(self):
         return f'{self.actor} follow {self.object}'
         
