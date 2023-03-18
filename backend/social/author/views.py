@@ -26,6 +26,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+from posts.serializers import AlreadyLikedException
 
 response_schema_dict = {
     "200": openapi.Response(
@@ -136,7 +137,6 @@ class FollowersView(APIView):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        # print(pk_a, pk)
         # If url is /authors/authors/author_id/followers/
         if pk ==None:
             followers = author.friends.all()
@@ -282,8 +282,6 @@ class ViewRequests(APIView):
         serializer = FollowRequestSerializer(requests,many=True)
         return Response(serializer.data)
 
-
-
 class InboxSerializerObjects:
     def serialize_inbox_objects(self, item, context={}):
         # return the serializer data of all objects in inbox
@@ -354,20 +352,21 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         author = get_object_or_404(Author,pk=pk_a)
         serializer = self.deserialize_objects(
             self.request.data, pk_a)
+        
         # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
         try:
             if serializer.is_valid():
-                print("if")
                 item = serializer.save()
-                print("item",item)
+                if item=="already liked":
+                    return Response("Post Already Liked!")
                 if hasattr(item, 'update_fields_with_request'):
                     item.update_fields_with_request(request)
             else: 
-                print("else here")
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Case 2: author is within the server
+        except AlreadyLikedException as e:
+            return Response("Post Already Liked!")
         except AttributeError as e:
-            print(e)
             item = serializer   
         inbox_item = Inbox(content_object=item, author=author)
         inbox_item.save()
