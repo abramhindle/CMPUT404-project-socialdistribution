@@ -6,7 +6,7 @@ export const signIn_api = async (username, password, success) => {
     password: password,
   };
   const res = await axios.post(
-    "http://localhost:8000/api/signin/",
+    "api/signin/",
     user,
     {
       headers: {
@@ -25,7 +25,7 @@ export const signIn_api = async (username, password, success) => {
 };
 
 export const signOut_api = async (success) => {
-  const res = await axios.post("http://localhost:8000/api/signout/", {
+  const res = await axios.post("api/signout/", {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",

@@ -13,7 +13,7 @@ export const post_comment = async (
   const data = { contentType: type, comment: comment };
 
   const res = await axios.post(
-    `http://localhost:8000/authors/${commentAuthorId}/posts/${postId}/comments/`,
+    `authors/${commentAuthorId}/posts/${postId}/comments/`,
     data,
     {
       headers: {

@@ -8,7 +8,7 @@ let head = { headers: {
 
 export const post_api = async (authorId, post, successPost, successFollow) => {
   await axios
-    .post(`http://localhost:8000/authors/${authorId}/posts/`, post, head)
+    .post(`authors/${authorId}/posts/`, post, head)
     .then(function (response) {
       console.log("Post res: ", response["data"]);
       successPost(response["data"]);
@@ -24,7 +24,7 @@ export const send_api = async (followers, data) => {
   console.log("Sending to api . . .", followers);
   for (var user in followers) {
     console.log("sending ", data, " to ", followers[user]["id"]);
-    await axios.post(`http://localhost:8000/authors/${followers[user]["id"]}/inbox/`, data, head)
+    await axios.post(`authors/${followers[user]["id"]}/inbox/`, data, head)
     .catch(function (error) {
       console.log(error, "occured while sending a post");
     });
@@ -35,7 +35,7 @@ export const send_api = async (followers, data) => {
 export const get_author_posts = async (authorId, page, success) => {
   console.log("Attempting to retrieve author info for", { authorId });
   await axios
-    .get(`http://localhost:8000/authors/${authorId}/posts/?page=${page}`, {
+    .get(`authors/${authorId}/posts/?page=${page}`, {
       headers: {
         Accept: "application/json",
       },
@@ -51,7 +51,7 @@ export const get_author_posts = async (authorId, page, success) => {
 
 export const get_inbox_posts = async (authorInbox, page, success) => {
   console.log("Attempting to retrieve inbox info for", {authorInbox});
-  await axios.get(`https://social-distribution-w23-t17.herokuapp.com/authors/${authorInbox}?page=${page}`,
+  await axios.get(`authors/${authorInbox}/?page=${page}`,
   {
     headers: {
       Accept: "application/json"

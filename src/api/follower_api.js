@@ -3,7 +3,7 @@ import axios from "axios";
 export const get_followers_for_author = async (authorId, success) => {
   console.log("Attempting to retrieve follower list for", { authorId });
   await axios
-    .get(`http://localhost:8000/authors/${authorId}/followers/`, {
+    .get(`authors/${authorId}/followers/`, {
       headers: {
         Accept: "application/json",
       },
@@ -20,7 +20,7 @@ export const get_followers_for_author = async (authorId, success) => {
 export const add_followers_for_author = async (authorId, followId, success) => {
   console.log("Adding follower", { followId });
   await axios
-    .put(`http://localhost:8000/authors/${authorId}/followers/${followId}`, {
+    .put(`authors/${authorId}/followers/${followId}`, {
       headers: {
         Accept: "application/json",
       },

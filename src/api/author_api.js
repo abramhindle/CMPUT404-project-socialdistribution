@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const get_author = async (authorId, success) => {
   console.log("Attempting to retrieve author info for", {authorId});
-  await axios.get(`http://localhost:8000/authors/${authorId}`,
+  await axios.get(`authors/${authorId}`,
   {
     headers: {
       Accept: "application/json"
@@ -18,7 +18,7 @@ export const get_author = async (authorId, success) => {
 
 export const get_all_authors = async (page, success) => {
   console.log("Attempting to retrieve all authors");
-  await axios.get(`http://localhost:8000/authors/?page=${page}`,
+  await axios.get(`authors/?page=${page}`,
   {
     headers: {
       Accept: "application/json"

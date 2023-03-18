@@ -6,6 +6,9 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./reducer/store";
+import axios from 'axios';
+
+axios.defaults.baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8000";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -20,3 +23,4 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+

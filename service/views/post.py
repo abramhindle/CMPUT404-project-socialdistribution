@@ -45,8 +45,7 @@ class PostCreation(APIView, RestService):
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
         
-        body = request.body.decode(UTF8)
-        body = json.loads(body)
+        body = request.data
 
         author_id = kwargs['author_id']
 
@@ -125,8 +124,7 @@ class PostWithId(APIView, RestService):
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
 
-        body = request.body.decode(UTF8)
-        body = json.loads(body)
+        body = request.data
 
         post_id = kwargs["post_id"]
         author_id = kwargs["author_id"]

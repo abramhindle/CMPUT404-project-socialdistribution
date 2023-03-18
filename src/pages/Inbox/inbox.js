@@ -32,7 +32,7 @@ function Inbox(filter) {
   }, [author_id]);
 
   const populateList = () =>{
-    if (post_list?.items.length == 0){
+    if (!post_list || !post_list.items || post_list.items.length == 0){
       return <div className='emptyList'><h3>Nothing to see here yet!</h3></div>
     }
     else{
@@ -45,7 +45,11 @@ function Inbox(filter) {
   };
 
   const page_buttons = () => {
-    if (post_list?.items.length < 5 && page == 1)
+    if (!post_list){
+      return;
+    }
+
+    if (post_list.items.length < 5 && page == 1)
     {
       return;
     } 
@@ -53,7 +57,7 @@ function Inbox(filter) {
     {
         return (<button onClick={forward_page}>Next Page</button>);//only 1 button
     } 
-    else if (post_list?.items.length < 5)
+    else if (post_list.items.length < 5)
     {
       return <button onClick={back_page}>Prev Page</button>
     } 
