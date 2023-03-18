@@ -37,7 +37,7 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 					<Message type="success">Friend Request Sent</Message>,
 					{
 						placement: "topEnd",
-						duration: 3000,
+						duration: 5000,
 					}
 				);
 			})

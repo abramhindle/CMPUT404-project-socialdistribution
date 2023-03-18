@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FOLLOWREQ from "./FollowReq";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
-import { getCsrfToken } from "../utils/auth";
+import { getAuthorId, getCsrfToken } from "../utils/auth";
 import COMMENTINBOX from "./CommentInbox";
 
 function INBOX() {
@@ -19,17 +19,15 @@ function INBOX() {
 
 	// Get the inbox
 	useEffect(() => {
-		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const author_id = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
-		const url = `authors/${author_id}/inbox`;
-		axios({ method: "get", url: url }).then((res) => {
-			setInbox(res.data.results);
-			console.log(res.data.results);
-		});
+		if (!localStorage.getItem("loggedIn")) {
+			navigate("/login");
+		} else {
+			const author_id = getAuthorId();
+			const url = `authors/${author_id}/inbox`;
+			axios({ method: "get", url: url }).then((res) => {
+				setInbox(res.data.results);
+			});
+		}
 	}, []);
 
 	const item = (obj) => {
