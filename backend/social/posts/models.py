@@ -45,7 +45,7 @@ class Post(models.Model):
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
     count = models.PositiveIntegerField(default=0)
-    comments = models.CharField(max_length=255, default="", blank=True)
+    commentsSrc = models.CharField(max_length=255, default="", blank=True)
     
     image = models.ImageField(null=True,blank=True, default="")  # reference to an image in the DB
 
@@ -74,10 +74,7 @@ class Post(models.Model):
             return self.url + 'comments/'
         else:
             return self.url + '/comments/'
-    
-    def get_count(self):
-        return self.comments.count()
-
+        
     def get_likes_count(self):
         return self.likes.count()
     

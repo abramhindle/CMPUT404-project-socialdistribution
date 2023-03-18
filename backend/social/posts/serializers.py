@@ -14,10 +14,11 @@ class AlreadyLikedException(Exception):
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     id = serializers.CharField(source="get_public_id", read_only=True)
-    count = serializers.IntegerField(source="count_comments", read_only=True)
+    count = serializers.IntegerField(read_only=True)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
+    commentsSrc = serializers.JSONField(read_only=True)
     author = AuthorSerializer(required=False)
-    #count = serializers.IntegerField(source='get_count')
+    count = serializers.IntegerField()
     source = serializers.URLField(default="get_source",max_length=500)  # source of post
     origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
     categories = serializers.CharField(max_length=300)
@@ -35,12 +36,13 @@ class PostSerializer(WritableNestedModelSerializer):
         id = id[:-1] if id.endswith('/') else id
         categories_list = instance.categories.split(",")
         comments_list = Comment.objects.filter(post=instance)
-
+        commentsSrc = [CommentSerializer(comment,many=False).data for comment in comments_list]
         return {
             **super().to_representation(instance),
             'id': id,
             'categories':[category for category in categories_list],
-            'comments': [CommentSerializer(comment,many=False).data for comment in comments_list]
+            'commentsSrc': commentsSrc,
+            'count': len(commentsSrc)
         }
             
     class Meta:
@@ -58,6 +60,7 @@ class PostSerializer(WritableNestedModelSerializer):
             'categories',
             'count',
             'comments',
+            'commentsSrc',
             'published',
             'visibility',
             #'unlisted',
