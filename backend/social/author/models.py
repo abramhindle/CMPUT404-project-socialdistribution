@@ -85,7 +85,11 @@ class FollowRequest(models.Model):
 
     class Meta:
         unique_together = ('actor','object')
-
+    
+    @staticmethod
+    def get_api_type():
+        return 'Follow'
+    
     def __str__(self):
         return f'{self.actor} follow {self.object}'
         
