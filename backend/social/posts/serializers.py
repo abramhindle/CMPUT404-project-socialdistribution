@@ -19,8 +19,8 @@ class PostSerializer(WritableNestedModelSerializer):
     commentsSrc = serializers.JSONField(read_only=True)
     author = AuthorSerializer(required=False)
     count = serializers.IntegerField()
-    source = serializers.URLField(default="get_source",max_length=500)  # source of post
-    origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
+    source = serializers.URLField(source="get_source", read_only=True, max_length=500)  # source of post
+    origin = serializers.URLField(source="get_origin", read_only=True, max_length=500)  # origin of post
     categories = serializers.CharField(max_length=300)
     
     def create(self, validated_data):
