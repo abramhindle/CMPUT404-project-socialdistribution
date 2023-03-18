@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar/sidebar";
 import "./post-detail.css";
 import { get_post_comments, post_comment } from "../../api/comment_api";
-import { get_post_like } from "../../api/like_api";
+import { get_post_like } from "../../api/like_api.js";
 
 function PostDetail() {
   const { data } = useLocation().state;
