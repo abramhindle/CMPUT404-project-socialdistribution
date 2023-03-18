@@ -20,11 +20,7 @@ class PostSerializer(WritableNestedModelSerializer):
     # count = serializers.IntegerField(source='sget_comment_count')
     source = serializers.URLField(default="get_source",max_length=500)  # source of post
     origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
-    categories = serializers.SerializerMethodField(read_only=True)
-        
-    def get_categories(self, instance):
-        categories_list = instance.categories.split(",")
-        return [category for category in categories_list]
+    categories = serializers.CharField(max_length=300)
     
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
@@ -37,9 +33,11 @@ class PostSerializer(WritableNestedModelSerializer):
     def to_representation(self, instance):
         id = instance.get_public_id()
         id = id[:-1] if id.endswith('/') else id
+        categories_list = instance.categories.split(",")
         return {
             **super().to_representation(instance),
-            'id': id
+            'id': id,
+            'categories':[category for category in categories_list]
         }
     class Meta:
         model = Post

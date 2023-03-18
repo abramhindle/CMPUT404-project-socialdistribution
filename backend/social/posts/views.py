@@ -234,7 +234,6 @@ class post_detail(APIView, PageNumberPagination):
         """
         Deletes the post given by the particular authorid and postid
         """
-
         # TODO: check permissions 
 
         try: 
@@ -303,7 +302,7 @@ class ImageView(APIView):
             post = Post.objects.get(author=author, id=pk)
             authenticated_user = Author.objects.get(id=pk_a)
             # not image post
-            if 'image' not in post.contentType:
+            if post.contentType and 'image' not in post.contentType:
                 error_msg = {"message":"Post does not contain an image!"}
                 return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
 
