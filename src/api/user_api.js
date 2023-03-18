@@ -18,6 +18,7 @@ export const signIn_api = async (username, password, success) => {
   );
   if (res.status === 200) {
     console.log("success");
+    axios.defaults.headers.post["X-CSRF-Token"] = res.data.CSRFToken;
     success(res);
   } else {
     console.log("failed");
