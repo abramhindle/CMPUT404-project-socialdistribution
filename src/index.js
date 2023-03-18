@@ -8,7 +8,9 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./reducer/store";
 import axios from 'axios';
 
-axios.defaults.baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8000";
+const production  = "https://social-distribution-w23-t17.herokuapp.com/";
+const development = 'http://localhost:8000/';
+axios.defaults.baseURL = (process.env.NODE_ENV ? production : development);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
