@@ -11,9 +11,7 @@ import {
 // import { Scrollbars } from "react-custom-scrollbars-2";
 // Component Imports
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import MarkdownEditor from "@uiw/react-markdown-editor";
 import { getAuthorId } from "../utils/auth";
 
 function CREATEPOST() {
@@ -49,10 +47,6 @@ function CREATEPOST() {
 		if (post_type === "text/markdown") {
 			return (
 				<div>
-					{/* <MarkdownEditor
-						value="# This is a H1  \n## This is a H2  \n###### This is a H6"
-						onChange={(value, viewUpdate) => setMarkdown(value)}
-					></MarkdownEditor> */}
 					<Input
 						style={{
 							float: "left",
@@ -104,14 +98,14 @@ function CREATEPOST() {
 	const notifySuccessPost = () => {
 		toaster.push(<Message type="success">Successful post</Message>, {
 			placement: "topEnd",
-			duration: 3000,
+			duration: 5000,
 		});
 	};
 
 	const notifyFailedPost = (error) => {
 		toaster.push(<Message type="error">{error}</Message>, {
 			placement: "topEnd",
-			duration: 3000,
+			duration: 5000,
 		});
 	};
 
@@ -139,7 +133,6 @@ function CREATEPOST() {
 					set_post_type("text/plain");
 					setMarkdown("");
 				} else {
-					console.log(res.data);
 					notifyFailedPost(res.data);
 				}
 			})

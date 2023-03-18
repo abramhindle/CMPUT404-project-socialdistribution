@@ -28,7 +28,6 @@ function COMMENTS({ postobj }) {
 			postObj.id.length - len,
 			postObj.id.length
 		);
-		console.log(post_id);
 		getComments(`posts/authors/${author_id}/posts/${post_id}/comments`);
 	}, []);
 

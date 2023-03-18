@@ -30,16 +30,20 @@ export const unsetCurrentUser = () => {
 };
 
 export async function getCurrentUser(author_id) {
-	return await axios
-		.get(`authors/${author_id}`)
-		.then((response) => {
-			// console.log(response.data);
-			const user = response.data;
-			// console.log(user);
-			setCurrentUser(user);
-			console.log("getUser");
-		})
-		.catch((res) => console.log(res));
+	if (!localStorage.getItem("user")) {
+		return await axios
+			.get(`authors/${author_id}`)
+			.then((response) => {
+				// console.log(response.data);
+				const user = response.data;
+				// console.log(user);
+				setCurrentUser(user);
+				console.log("getUser");
+			})
+			.catch((res) => console.log(res));
+	} else {
+		return localStorage.getItem("user");
+	}
 }
 
 export async function getCsrfToken() {

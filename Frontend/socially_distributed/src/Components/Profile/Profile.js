@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, ButtonGroup, Panel, Button, Navbar, Nav } from "rsuite";
 import FRIENDS from "./Friends";
 import AUTHORPOSTS from "./AuthorPosts";
@@ -13,7 +13,17 @@ function PROFILE() {
 		posts: "primary",
 		friends: "ghost",
 	});
+	const [author, setAuthor] = useState({});
+	let navigate = useNavigate();
 	const [open, setOpen] = useState(false);
+
+	useEffect(() => {
+		if (!localStorage.getItem("loggedIn")) {
+			navigate("/login");
+		} else {
+			setAuthor(localStorage.getItem("user"));
+		}
+	}, []);
 
 	const handlePostsBtnClick = () => {
 		setPosts(true);
@@ -26,7 +36,6 @@ function PROFILE() {
 	};
 
 	const [curPage, setCurPage] = useState("profile");
-	let navigate = useNavigate();
 
 	const handleInboxClick = () => {
 		navigate("/");
@@ -81,7 +90,9 @@ function PROFILE() {
 					src="https://avatars.githubusercontent.com/u/12592949"
 					size="lg"
 				></Avatar>
-				<h2 style={{ marginLeft: "10px", float: "left" }}>Author</h2>
+				<h2 style={{ marginLeft: "10px", float: "left" }}>
+					{author["displayName"]}
+				</h2>
 
 				<ButtonGroup
 					justified
