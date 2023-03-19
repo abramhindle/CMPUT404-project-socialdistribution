@@ -184,6 +184,9 @@ class post_list(APIView, PageNumberPagination):
             for friend in author.friends.all():
                 inbox_item = Inbox(content_object=post, author=friend)
             inbox_item.save()
+            for friend in author.friends.all():
+                inbox_item = Inbox(content_object=post, author=friend)
+                inbox_item.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

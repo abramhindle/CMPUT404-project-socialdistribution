@@ -12,7 +12,7 @@ function FRIENDS() {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
 		} else {
-			const AUTHOR_ID = getAuthorId();
+			const AUTHOR_ID = getAuthorId(null);
 			const url = `authors/${AUTHOR_ID}/followers/`;
 			axios({
 				method: "get",

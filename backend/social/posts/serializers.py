@@ -98,7 +98,6 @@ class LikeSerializer(serializers.ModelSerializer):
         else: 
             id = str(uuid.uuid4())
             return Like.objects.create(**validated_data, author=author, id = id)
-
     class Meta:
         model = Like
         fields = [

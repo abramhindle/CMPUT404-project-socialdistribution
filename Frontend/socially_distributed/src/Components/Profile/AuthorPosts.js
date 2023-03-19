@@ -15,7 +15,7 @@ function AUTHORPOSTS() {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
 		} else {
-			const author_id = getAuthorId();
+			const author_id = getAuthorId(null);
 			const url = `posts/authors/${author_id}/posts/`;
 			axios({ method: "get", url: url })
 				.then((res) => {
