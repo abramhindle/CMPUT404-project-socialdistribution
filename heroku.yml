@@ -10,4 +10,4 @@ build:
     backend: backend/social_net/Dockerfile 
 run:
   frontend: yarn start
-  backend: python3 manage.py runserver 0.0.0.0:8000
+  backend: gunicorn social_net.wsgi # python3 manage.py runserver 0.0.0.0:8000
