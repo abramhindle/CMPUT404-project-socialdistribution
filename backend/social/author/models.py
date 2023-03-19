@@ -77,10 +77,10 @@ class Inbox(models.Model):
         ordering = ['-published']
 
 class FollowRequest(models.Model):
-    type =models.CharField(max_length=255, blank=True)
+    #type =models.CharField(max_length=255, blank=True)
     actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
     object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
-    Summary = models.CharField(max_length=255, blank=True)
+    Summary = models.CharField(max_length=255, default = '')
     accepted = models.BooleanField(default=False)
 
     class Meta:
@@ -89,6 +89,10 @@ class FollowRequest(models.Model):
     @staticmethod
     def get_api_type():
         return 'Follow'
+    
+    def get_summary(self):
+        summary  = self.actor.displayName + " wants to follow " + self.object.displayName
+        return summary
     
     def __str__(self):
         return f'{self.actor} follow {self.object}'

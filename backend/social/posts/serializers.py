@@ -14,8 +14,8 @@ class PostSerializer(WritableNestedModelSerializer):
     comments = serializers.URLField(source="get_comments_source", read_only=True)
     commentsSrc = serializers.JSONField(read_only=True)
     author = AuthorSerializer(required=False)
-    source = serializers.URLField(default="get_source",max_length=500)  # source of post
-    origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
+    source = serializers.URLField(source="get_source", read_only=True, max_length=500)  # source of post
+    origin = serializers.URLField(source="get_origin", read_only=True, max_length=500)  # origin of post
     categories = serializers.CharField(max_length=300, default="")
     
     def create(self, validated_data):
@@ -94,11 +94,14 @@ class LikeSerializer(serializers.ModelSerializer):
     summary = serializers.CharField(source="get_summary", read_only=True)
 
     def create(self, validated_data):
+        print("VALI DATAs")
+        print(validated_data)
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
-        like = Like.objects.filter(author=author, object=validated_data.get("object"))
-        if like: 
+       
+        if not Like.objects.filter(author=author, object=validated_data.get("object")):
+
             return "already liked"
-        else: 
+        else:
             id = str(uuid.uuid4())
             return Like.objects.create(**validated_data, author=author, id = id)
 
