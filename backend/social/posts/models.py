@@ -129,7 +129,7 @@ class Comment(models.Model):
         return 'comment'
     
     class Meta:
-        ordering = ['published']
+        ordering = ['-published']
 
     def __str__(self):
         return 'Comment by {}'.format(self.author)
