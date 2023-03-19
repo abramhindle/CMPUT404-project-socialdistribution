@@ -317,6 +317,7 @@ class LikedView(APIView):
     def get(self, request, pk_a):
         """
         Get the liked objects by author
+        TODO: make sure objects are public
         """
         try:
             author = Author.objects.get(pk=pk_a)
