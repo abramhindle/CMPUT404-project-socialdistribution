@@ -117,7 +117,6 @@ function CREATEPOST() {
 			content: text,
 			contentType: post_type,
 			visiblity: post_status,
-			author: author,
 			categories: categories,
 			count: 0,
 		};

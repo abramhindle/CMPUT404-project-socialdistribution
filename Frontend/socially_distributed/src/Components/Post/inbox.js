@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FOLLOWREQ from "./FollowReq";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
-import { getAuthorId, getCsrfToken } from "../utils/auth";
+import { getAuthorId, getCsrfToken, unsetCurrentUser } from "../utils/auth";
 import COMMENTINBOX from "./CommentInbox";
 
 function INBOX() {
@@ -60,6 +60,7 @@ function INBOX() {
 		});
 		reqInstance.post("accounts/logout/").then((res) => {
 			if (res.status === 200) {
+				unsetCurrentUser();
 				navigate("/login");
 			}
 		});

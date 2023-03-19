@@ -26,6 +26,7 @@ function LIKE({ postObj }) {
 		//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
+				console.log(res.data);
 				toaster.push(
 					<Message type="success">Successful Like</Message>,
 					{
