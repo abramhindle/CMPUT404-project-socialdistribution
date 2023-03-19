@@ -6,11 +6,16 @@ import COMMENTS from "./Comment";
 import "./Post.css";
 import ReactMarkdown from "react-markdown";
 import LIKE from "./Like";
+import EditIcon from "@rsuite/icons/Edit";
+import TrashIcon from "@rsuite/icons/Trash";
+import EDITPOSTMODAL from "../Modals/EditPostModal";
 // Component Imports
 
-function POST({ postobj }) {
+function POST({ postobj, edit }) {
 	const [post, set_post] = useState(postobj);
 	const [comment, set_comment] = useState("");
+	const [authorPosts, set_authorPosts] = useState(edit);
+	const [open, setOpen] = useState(false);
 
 	const body = () => {
 		if (post["contentType"] === "text/plain") {
@@ -30,6 +35,22 @@ function POST({ postobj }) {
 			return <p>{}</p>;
 		}
 	};
+
+	const delEditBtn = (
+		<div>
+			<IconButton
+				style={{ float: "right", marginRight: "10px" }}
+				appearance="subtle"
+				onClick={handleOpen}
+				icon={<EditIcon />}
+			/>
+			<IconButton
+				style={{ float: "right", marginRight: "10px" }}
+				appearance="subtle"
+				icon={<TrashIcon />}
+			/>
+		</div>
+	);
 
 	// need to make a get request to get the post obj and set post obj to that.
 
@@ -59,44 +80,60 @@ function POST({ postobj }) {
 				icon={<ShareIcon />}
 			/>
 			<LIKE postObj={postobj} />
+			{edit ? delEditBtn : <div />}
 		</div>
 	);
 
+	const handleOpen = () => {
+		setOpen(true);
+	};
+
+	const handleModalClose = () => {
+		setOpen(false);
+	};
+
 	return (
-		<Panel
-			bordered
-			header={header}
-			style={{
-				marginBottom: "5px",
-			}}
-		>
-			<div style={{ height: "auto" }}>
-				<div
-					style={{
-						marginLeft: "5px",
-						fontFamily: "Times New Roman",
-						fontWeight: "bold",
-						fontSize: "20px",
-					}}
-				>
-					{post["title"]}
+		<div>
+			<Panel
+				bordered
+				header={header}
+				style={{
+					marginBottom: "5px",
+				}}
+			>
+				<div style={{ height: "auto" }}>
+					<div
+						style={{
+							marginLeft: "5px",
+							fontFamily: "Times New Roman",
+							fontWeight: "bold",
+							fontSize: "20px",
+						}}
+					>
+						{post["title"]}
+					</div>
+					<div
+						style={{
+							marginLeft: "5px",
+							fontFamily: "Times New Roman",
+							fontWeight: "bold",
+							fontSize: "15px",
+						}}
+					>
+						{post["description"]}
+					</div>
+					{body()}
 				</div>
-				<div
-					style={{
-						marginLeft: "5px",
-						fontFamily: "Times New Roman",
-						fontWeight: "bold",
-						fontSize: "15px",
-					}}
-				>
-					{post["description"]}
-				</div>
-				{body()}
-			</div>
-			<Panel bordered collapsible header="Comments">
-				<COMMENTS postobj={postobj}></COMMENTS>
+				<Panel bordered collapsible header="Comments">
+					<COMMENTS postobj={postobj}></COMMENTS>
+				</Panel>
 			</Panel>
-		</Panel>
+			<EDITPOSTMODAL
+				open={open}
+				obj={postobj}
+				handleClose={handleModalClose}
+			/>
+		</div>
 	);
 }
 

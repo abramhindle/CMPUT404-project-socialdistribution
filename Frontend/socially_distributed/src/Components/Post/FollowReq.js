@@ -5,6 +5,8 @@ import axios from "axios";
 function FOLLOWREQ({ obj }) {
 	const [follow, setFollow] = useState(obj);
 
+	
+
 	return (
 		<Panel
 			bordered

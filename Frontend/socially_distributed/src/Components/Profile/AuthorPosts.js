@@ -4,6 +4,8 @@ import COMMENTS from "../Post/Comment";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import POST from "../Post/Post";
+import EditIcon from "@rsuite/icons/Edit";
+import TrashIcon from "@rsuite/icons/Trash";
 import { getAuthorId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -47,7 +49,7 @@ function AUTHORPOSTS() {
 				bordered
 				collapsible
 			>
-				<POST postobj={obj}></POST>
+				<POST postobj={obj} edit={true}></POST>
 			</Panel>
 		);
 	};

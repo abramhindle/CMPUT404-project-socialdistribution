@@ -367,7 +367,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
         try:
             if serializer.is_valid():
-                print(99999999999999999999999999999999999999)
+                # print(99999999999999999999999999999999999999)
                 item = serializer.save()
                 if item=="already liked":
                     return Response("Post Already Liked!")
@@ -409,4 +409,12 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
 
         dict["items"] = items
         return(dict) 
-        
+
+@api_view(['GET'])
+def getAuthor(request, displayName):
+    """
+    Get the list of comments on our website
+    """
+    author = Author.objects.get(displayName=displayName)
+    serializer = AuthorSerializer(author,partial=True)
+    return Response(serializer.data)

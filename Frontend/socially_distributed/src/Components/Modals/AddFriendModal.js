@@ -19,16 +19,19 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 	const toaster = useToaster();
 
 	async function sendreq(id) {
+		console.log("id");
 		console.log(id);
 		const AUTHOR_ID = getAuthorId(null);
-		const url2 = `authors/${id}/inbox`;
+		const faid = getAuthorId(id);
+		const url2 = `authors/${faid}/inbox`;
+		console.log(url2);
 		const params = {
 			type: "Follow",
 			actor: {
 				id: AUTHOR_ID,
 			},
 			object: {
-				id: foreign_author,
+				id: faid,
 			},
 		};
 		return axios({ method: "post", url: url2, data: params })
