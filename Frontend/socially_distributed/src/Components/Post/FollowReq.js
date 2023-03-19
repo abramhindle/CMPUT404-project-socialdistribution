@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Button, Avatar, Panel } from "rsuite";
 import axios from "axios";
+import PROFILEIMAGE from "../Profile/ProfileImage";
 
 function FOLLOWREQ({ obj }) {
 	const [follow, setFollow] = useState(obj);
-
-	
 
 	return (
 		<Panel
@@ -18,7 +17,7 @@ function FOLLOWREQ({ obj }) {
 				<Avatar
 					style={{ float: "left", marginBotton: "5px" }}
 					circle
-					src="https://avatars.githubusercontent.com/u/12592949" //{follow[actor][profileImage]} replace this with the actors profile image url
+					src={follow["actor"]["profileImage"]} //{follow[actor][profileImage]} replace this with the actors profile image url
 				/>
 				<div
 					style={{

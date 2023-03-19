@@ -26,10 +26,14 @@ function EDITPOSTMODAL({ open, obj, handleClose }) {
 				<h3>Edit Post</h3>
 			</Modal.Header>
 			<Modal.Body>
-				<EDITPOST obj={obj}> </EDITPOST>
+				<EDITPOST obj={obj} handleClose={handleClose}>
+					{" "}
+				</EDITPOST>
 			</Modal.Body>
 			<Modal.Footer>
-				<Button appearance="primary">Confirm Edit</Button>
+				<Button appearance="primary" onClick={handleClose}>
+					Close
+				</Button>
 			</Modal.Footer>
 		</Modal>
 	);

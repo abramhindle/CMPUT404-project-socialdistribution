@@ -19,12 +19,9 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 	const toaster = useToaster();
 
 	async function sendreq(id) {
-		console.log("id");
-		console.log(id);
 		const AUTHOR_ID = getAuthorId(null);
 		const faid = getAuthorId(id);
 		const url2 = `authors/${faid}/inbox`;
-		console.log(url2);
 		const params = {
 			type: "Follow",
 			actor: {
@@ -36,7 +33,6 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 		};
 		return axios({ method: "post", url: url2, data: params })
 			.then((res) => {
-				console.log(res.data);
 				toaster.push(
 					<Message type="success">Friend Request Sent</Message>,
 					{
@@ -60,19 +56,6 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 		});
 		handleClose();
 	}
-
-	// async function checkFriends(AUTHOR_ID, foreign_author_id) {
-	// 	const data = "";
-	// 	console.log(AUTHOR_ID);
-	// 	const url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}`;
-	// 	await axios({ method: "get", url: url }).then((res) => {
-	// 		if (Object.keys(res.data).length === 0) {
-	// 			return false;
-	// 		} else {
-	// 			return true;
-	// 		}
-	// 	});
-	// }
 
 	return (
 		<Modal open={open} onClose={handleClose}>

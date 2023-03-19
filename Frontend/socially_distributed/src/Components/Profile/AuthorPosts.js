@@ -21,7 +21,6 @@ function AUTHORPOSTS() {
 			const url = `posts/authors/${author_id}/posts/`;
 			axios({ method: "get", url: url })
 				.then((res) => {
-					console.log(res.data);
 					setPosts(res.data.results);
 				})
 				.catch((err) => console.log(err));
@@ -42,6 +41,7 @@ function AUTHORPOSTS() {
 	const item = (obj) => {
 		return (
 			<Panel
+				key={obj.id}
 				header={<div>{obj["title"]}</div>}
 				style={{
 					marginTop: "5px",

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Panel } from "rsuite";
+import PROFILEIMAGE from "../Profile/ProfileImage";
 // Component Imports
 
 function LIKEINBOX({ likeobj }) {
@@ -7,11 +8,7 @@ function LIKEINBOX({ likeobj }) {
 
 	return (
 		<Panel bordered style={{ marginBottom: "5px" }}>
-			<Avatar
-				style={{ float: "left", marginBotton: "5px" }}
-				circle
-				src="https://avatars.githubusercontent.com/u/12592949"
-			></Avatar>
+			<PROFILEIMAGE size="md" />
 			<div
 				style={{
 					marginLeft: "50px",

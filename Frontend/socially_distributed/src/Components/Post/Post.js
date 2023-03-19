@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, Panel, IconButton } from "rsuite";
+import { Avatar, Panel, IconButton, Message, useToaster } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import ShareIcon from "@rsuite/icons/legacy/Reply";
 import COMMENTS from "./Comment";
@@ -9,6 +9,9 @@ import LIKE from "./Like";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
 import EDITPOSTMODAL from "../Modals/EditPostModal";
+import { getAuthorId } from "../utils/auth";
+import axios from "axios";
+import PROFILEIMAGE from "../Profile/ProfileImage";
 // Component Imports
 
 function POST({ postobj, edit }) {
@@ -16,6 +19,7 @@ function POST({ postobj, edit }) {
 	const [comment, set_comment] = useState("");
 	const [authorPosts, set_authorPosts] = useState(edit);
 	const [open, setOpen] = useState(false);
+	const toaster = useToaster();
 
 	const body = () => {
 		if (post["contentType"] === "text/plain") {
@@ -36,6 +40,46 @@ function POST({ postobj, edit }) {
 		}
 	};
 
+	const handleOpen = () => {
+		setOpen(true);
+	};
+
+	const handleModalClose = () => {
+		setOpen(false);
+	};
+
+	const notifySuccessPost = () => {
+		toaster.push(
+			<Message type="success">Successful Edited this post</Message>,
+			{
+				placement: "topEnd",
+				duration: 5000,
+			}
+		);
+	};
+
+	const notifyFailedPost = (error) => {
+		toaster.push(<Message type="error">{error}</Message>, {
+			placement: "topEnd",
+			duration: 5000,
+		});
+	};
+
+	async function handleDeletePost() {
+		const author_id = getAuthorId(null);
+		const post_id = getAuthorId(postobj.id);
+		const url = `posts/authors/${author_id}/posts/${post_id}/`;
+		axios({ method: "delete", url: url })
+			.then((res) => {
+				if (res.status === 204) {
+					notifySuccessPost();
+				} else {
+					notifyFailedPost(res.data);
+				}
+			})
+			.catch((err) => console.log(err));
+	}
+
 	const delEditBtn = (
 		<div>
 			<IconButton
@@ -47,6 +91,7 @@ function POST({ postobj, edit }) {
 			<IconButton
 				style={{ float: "right", marginRight: "10px" }}
 				appearance="subtle"
+				onClick={handleDeletePost}
 				icon={<TrashIcon />}
 			/>
 		</div>
@@ -61,11 +106,7 @@ function POST({ postobj, edit }) {
 				borderBottom: "0.5px solid grey",
 			}}
 		>
-			<Avatar
-				style={{ float: "left" }}
-				circle
-				src="https://avatars.githubusercontent.com/u/12592949"
-			></Avatar>
+			<PROFILEIMAGE size="md" />
 			<div
 				style={{
 					marginLeft: "10px",
@@ -83,14 +124,6 @@ function POST({ postobj, edit }) {
 			{edit ? delEditBtn : <div />}
 		</div>
 	);
-
-	const handleOpen = () => {
-		setOpen(true);
-	};
-
-	const handleModalClose = () => {
-		setOpen(false);
-	};
 
 	return (
 		<div>

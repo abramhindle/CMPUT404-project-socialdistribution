@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { getAuthorId } from "../utils/auth";
+import PROFILEIMAGE from "../Profile/ProfileImage";
 
 function CREATEPOST() {
 	const [post_status, set_post_status] = useState("Public");
@@ -149,11 +150,7 @@ function CREATEPOST() {
 				position: "relative",
 			}}
 		>
-			<Avatar
-				style={{ float: "left" }}
-				circle
-				src="https://avatars.githubusercontent.com/u/12592949"
-			/>
+			<PROFILEIMAGE size="md" />
 			<Dropdown
 				title={post_status}
 				activeKey={post_status}
