@@ -1,3 +1,6 @@
+ARG NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+
 FROM node:16-alpine AS deps
 RUN apk add --no-cache libc6-compat
 
@@ -18,6 +21,10 @@ RUN yarn build
  
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 WORKDIR /app
 COPY --from=builder /app/public ./public
 # Automatically leverage output traces to reduce image size
