@@ -25,7 +25,7 @@ def PostsView(request, author_id):
         return JsonResponse({"status":"success","id":pid}, status = 200)
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
-def PostsRetriveView(request, author_id, post_id):
+def PostsRetrieveView(request, author_id, post_id):
     """
     API endpoint that allows users to be viewed or edited.
     """

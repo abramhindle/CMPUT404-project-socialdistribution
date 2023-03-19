@@ -1,4 +1,6 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from ..models import AuthorModel, PostsModel, CommentsModel, LikeModel
 from ..serializers import PostsSerializer, AuthorSerializer, CommentsSerializer, LikeSerializer
@@ -53,8 +55,10 @@ def AuthorView(request, uid):
         output = serialized_object.data
         return JsonResponse(output, status = 200)
     
-    
+
 @api_view(['GET'])
+# @authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])    
 def AuthorsView(request):
     """
     API endpoint that allows users to be viewed.
