@@ -141,7 +141,7 @@ class post_list(APIView, PageNumberPagination):
     # for pagination
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
-    #
+    
 
     # TODO: RESPONSE AND REQUESTS
     
@@ -154,6 +154,22 @@ class post_list(APIView, PageNumberPagination):
         posts = Post.objects.filter(author=author)
         posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+class CommentDetailView(APIView, PageNumberPagination):
+    
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
+    def get(self, request, pk_a, pk, pk_m):
+        """
+        Get the specific comment
+        """
+        # ERROR HERE
+        author = Author.objects.get(id=pk_a)
+        post = Post.objects.get(author=author)
+        comment = Comment.objects.filter(author=author,post=post,id=pk_m)
+        comment = self.paginate_queryset(comment, request) 
+        serializer = PostSerializer(comment, many=True)
         return self.get_paginated_response(serializer.data)
 
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
@@ -176,14 +192,19 @@ class post_list(APIView, PageNumberPagination):
                 serializer.save()
                 return Response(serializer.data)
             else: 
-               return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST) 
+               return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
             post = serializer.save()
             inbox_item = Inbox(content_object=post, author=author)
+            for friend in author.friends.all():
+                inbox_item = Inbox(content_object=post, author=friend)
             inbox_item.save()
+            for friend in author.friends.all():
+                inbox_item = Inbox(content_object=post, author=friend)
+                inbox_item.save()
             return Response(serializer.data)
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
@@ -335,60 +356,53 @@ class ImageView(APIView):
             error_msg = {"message":"Post does not exist!"}
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
-class LikeView(APIView, PageNumberPagination):
 
-    #Check for if the user has already liked the object then 
-    #return something that says user already liked the object...
-    serializer_class = LikeSerializer
-    pagination_class = PostSetPagination
-    
-    def post(self, request, pk_a, pk):
-        like_id = uuid.uuid4()
-        # url = request.data
-        # url 
-        post_url = request.data['object']
-        author = request.data['author']
-        try:
-            author = Author.objects.get(pk=pk_a)
-        except Author.DoesNotExist:
-            error_msg = "Author id not found"
-            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        try: 
-            #setup the URL and check to see if it exists already
-            #like = Like.object.get(author = pk_a, object = url)
-            like = Like.objects.get(auhtor=author, object=post_url )
-            return Response('Already Liked')
-        except Like.DoesNotExist:
-             #find a way to get inbox of author and put inbox into data that goes in serializer
-            try:
-                inbox = Inbox.object.get(author=author)
-            except Inbox.DoesNotExist:
-                return Response("Inbox does not exist", status=status.HTTP_400_BAD_REQUEST)
-            all_data = request.data
-            all_data['inbox'] = inbox 
-            serializer = LikeSerializer(data=all_data, context={'author_id': pk_a})
-            if serializer.is_valid():
-                serializer.validated_data.pop("author")
-                like = Like.objects.create(**serializer.validated_data, author=author, id=like_id, )
-                like.update_fields_with_request(request)
-
-                serializer = LikeSerializer(like, many=False)
-                return Response(serializer.data)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # like_id = uuid.uuid4()
+        # # url = request.data
+        # # url 
+        # post_url = request.data['object']
+        # author = request.data['author']
         # try:
-        #     author = Author.objects.get(id=pk_a)
+        #     author = Author.objects.get(pk=pk_a)
         # except Author.DoesNotExist:
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
+        #     error_msg = "Author id not found"
+        #     return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        # try: 
+        #     #setup the URL and check to see if it exists already
+        #     #like = Like.object.get(author = pk_a, object = url)
+        #     like = Like.objects.get(auhtor=author, object=post_url )
+        #     return Response('Already Liked')
+        # except Like.DoesNotExist:
+        #      #find a way to get inbox of author and put inbox into data that goes in serializer
+        #     try:
+        #         inbox = Inbox.object.get(author=author)
+        #     except Inbox.DoesNotExist:
+        #         return Response("Inbox does not exist", status=status.HTTP_400_BAD_REQUEST)
+        #     all_data = request.data
+        #     all_data['inbox'] = inbox 
+        #     serializer = LikeSerializer(data=all_data, context={'author_id': pk_a})
+        #     if serializer.is_valid():
+        #         serializer.validated_data.pop("author")
+        #         like = Like.objects.create(**serializer.validated_data, author=author, id=like_id, )
+        #         like.update_fields_with_request(request)
+
+        #         serializer = LikeSerializer(like, many=False)
+        #         return Response(serializer.data)
+        #     else:
+        #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # # try:
+        # #     author = Author.objects.get(id=pk_a)
+        # # except Author.DoesNotExist:
+        # #     return Response(status=status.HTTP_404_NOT_FOUND)
         
-        # data = {'author': author.id, **request.data}
-        # serializer = LikeSerializer(data=data)
+        # # data = {'author': author.id, **request.data}
+        # # serializer = LikeSerializer(data=data)
         
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # else:
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # # if serializer.is_valid():
+        # #     serializer.save()
+        # #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # # else:
+        # #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
@@ -438,7 +452,7 @@ class CommentView(APIView, PageNumberPagination):
             error_msg = "Post id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = CommentSerializer(data=request.data, context={"author_id":pk_a,"post":post,"id":comment_id}, partial=True)
+        serializer = CommentSerializer(data=request.data, context={"post":post,"id":comment_id, 'author_id':request.data["author_id"]}, partial=True)
         if serializer.is_valid():
             comment = serializer.save()
             inbox_item = Inbox(content_object=comment, author=post.author)

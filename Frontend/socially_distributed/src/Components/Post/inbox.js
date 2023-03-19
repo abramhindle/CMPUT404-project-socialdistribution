@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FOLLOWREQ from "./FollowReq";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
-import { getAuthorId, getCsrfToken } from "../utils/auth";
+import { getAuthorId, getCsrfToken, unsetCurrentUser } from "../utils/auth";
 import COMMENTINBOX from "./CommentInbox";
 
 function INBOX() {
@@ -22,7 +22,7 @@ function INBOX() {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
 		} else {
-			const author_id = getAuthorId();
+			const author_id = getAuthorId(null);
 			const url = `authors/${author_id}/inbox`;
 			axios({ method: "get", url: url }).then((res) => {
 				setInbox(res.data.results);
@@ -60,6 +60,7 @@ function INBOX() {
 		});
 		reqInstance.post("accounts/logout/").then((res) => {
 			if (res.status === 200) {
+				unsetCurrentUser();
 				navigate("/login");
 			}
 		});

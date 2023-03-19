@@ -9,7 +9,7 @@ from django.urls import reverse,reverse_lazy
 from django.views import generic
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from author.pagination import InboxSetPagination
+from author.pagination import *
 from posts.serializers import *
 from .models import *
 from .serializers import *
@@ -26,7 +26,6 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
-from posts.serializers import AlreadyLikedException
 
 response_schema_dict = {
     "200": openapi.Response(
@@ -77,20 +76,25 @@ response_schema_dict = {
         }
     )}
 
-@swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Authors registered")
-@api_view(['GET'])
 
-def get_authors(request):
-    """
-    Get the list of authors on our website
-    """
-    authors = Author.objects
-    serializer = AuthorSerializer(authors, many=True)
-    return Response(serializer.data)
+class AuthorsListView(APIView, PageNumberPagination):
+    # for pagination
+    page_size = 10
+    page_size_query_param = 'size'
+    max_page_size = 100
 
+    @swagger_auto_schema(responses=response_schema_dict,operation_summary="List of Authors registered")
+    def get(self, request):
+        
+        """
+        Get the list of authors on our website
+        """
+        authors = Author.objects.all()
+        authors=self.paginate_queryset(authors, request) 
+        serializer = AuthorSerializer(authors, many=True)
+        return self.get_paginated_response(serializer.data)
 
 class AuthorView(APIView):
-    
     def validate(self, data):
         if 'displayName' not in data:
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
@@ -376,8 +380,6 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             else: 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Case 2: author is within the server
-        except AlreadyLikedException as e:
-            return Response("Post Already Liked!")
         except AttributeError as e:
             item = serializer   
         inbox_item = Inbox(content_object=item, author=author)
@@ -399,8 +401,8 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     
     def get_items(self,pk_a,data):
         # helper function 
-
-        dict = {"type":"inbox", "author": settings.APP_NAME + 'authors/' + pk_a }
+        
+        dict = {"type":"inbox", "author": settings.APP_NAME + '/authors/' + pk_a }
         items = []
         for item in data:
             items.append(item["content_object"])
