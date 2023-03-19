@@ -3,6 +3,7 @@ ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 
 FROM node:16-alpine AS deps
 RUN apk add --no-cache libc6-compat
+RUN echo ****************************************************${NEXT_PUBLIC_SUPABASE_URL}
 
 WORKDIR /app
 COPY package.json ./
@@ -11,6 +12,7 @@ COPY yarn.lock  ./
 RUN yarn install --frozen-lockfile
 
 FROM node:16-alpine AS builder
+RUN echo ****************************************************${NEXT_PUBLIC_SUPABASE_URL}
 ENV NODE_ENV=production
 WORKDIR /app
 
@@ -21,6 +23,7 @@ RUN yarn build
  
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
+RUN echo ****************************************************${NEXT_PUBLIC_SUPABASE_URL}
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
