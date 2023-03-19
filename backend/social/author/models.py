@@ -32,7 +32,9 @@ class Author(models.Model):
         # get the url for a single author
         url = reverse('authors:detail', args=[str(self.id)])
         url = settings.APP_NAME + url
-        return url[:-1] if url.endswith('/') else url 
+        self.url = url[:-1] if url.endswith('/') else url 
+        self.save()
+        return self.url
     
     def update_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self.get_absolute_url())
@@ -41,9 +43,6 @@ class Author(models.Model):
     
     # return the author public ID
     def get_public_id(self):
-        if not self.url: 
-            self.url = self.get_absolute_url()
-            self.save()
         return (self.url) or str(self.id)   
     
     def follower_to_object(self):

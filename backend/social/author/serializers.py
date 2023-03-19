@@ -7,6 +7,7 @@ from django.http import HttpResponse
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
+    url = serializers.URLField(source="get_absolute_url",read_only=True)
     displayName = serializers.CharField(default = 'x')
     
     @staticmethod

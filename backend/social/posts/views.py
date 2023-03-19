@@ -155,23 +155,7 @@ class post_list(APIView, PageNumberPagination):
         posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
-
-
-class CommentDetailView(APIView, PageNumberPagination):
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
-    def get(self, request, pk_a, pk, pk_m):
-        """
-        Get the specific comment
-        """
-        # ERROR HERE
-        author = Author.objects.get(id=pk_a)
-        post = Post.objects.get(author=author)
-        comment = Comment.objects.filter(author=author,post=post,id=pk_m)
-        comment = self.paginate_queryset(comment, request) 
-        serializer = PostSerializer(comment, many=True)
-        return self.get_paginated_response(serializer.data)
-
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
 
     def post(self, request, pk_a):
@@ -206,6 +190,43 @@ class CommentDetailView(APIView, PageNumberPagination):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CommentDetailView(APIView, PageNumberPagination):
+    
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
+    def get(self, request, pk_a, pk, pk_m):
+        """
+        Get the specific comment
+        """
+        # ERROR HERE
+        author = Author.objects.get(id=pk_a)
+        post = Post.objects.get(author=author)
+        comment = Comment.objects.filter(author=author,post=post,id=pk_m)
+        comment = self.paginate_queryset(comment, request) 
+        serializer = PostSerializer(comment, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def post(self, request,pk_a, pk):
+        comment_id = uuid.uuid4()
+        try:
+            author = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        try: 
+            post = Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            error_msg = "Post id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = CommentSerializer(data=request.data, context={"post":post,"id":comment_id, 'author_id':request.data["author_id"]}, partial=True)
+        if serializer.is_valid():
+            comment = serializer.save()
+            inbox_item = Inbox(content_object=comment, author=post.author)
+            inbox_item.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
@@ -288,6 +309,23 @@ class post_detail(APIView, PageNumberPagination):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class LikedView(APIView):
+
+    # TODO: RESPONSE AND REQUESTS
+    
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all objects liked by author")
+    def get(self, request, pk_a):
+        """
+        Get the liked objects by author
+        """
+        try:
+            author = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author not found"
+            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+        likes = Like.object.get(author=author)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
 
 @swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
 @api_view(['GET'])
