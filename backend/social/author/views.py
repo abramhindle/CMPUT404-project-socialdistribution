@@ -384,6 +384,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         inbox_item.save()
         return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
     
+    
     @swagger_auto_schema( responses=response_schema_dict,operation_summary="Delete all the objects in the inbox")
     def delete(self, request, pk_a):
         # GET all objects in inbox, only need auth in request

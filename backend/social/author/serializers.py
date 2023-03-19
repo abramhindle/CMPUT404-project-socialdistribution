@@ -71,9 +71,6 @@ class FollowRequestSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
     class Meta:
         model = FollowRequest
         fields = ['type','Summary','actor', 'object']
@@ -98,4 +95,3 @@ class InboxSerializer(serializers.ModelSerializer):
 
 
 
-        
