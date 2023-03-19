@@ -44,7 +44,7 @@ class Post(models.Model):
     visibility = models.CharField(choices=visbility_choices, default=PUBLIC, max_length=20)  # visibility status of post
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
-    count = models.PositiveIntegerField(default=0)
+    count = models.PositiveIntegerField(default=0, blank=True)
     commentsSrc = models.CharField(max_length=255, default="", blank=True)
     
     image = models.ImageField(null=True,blank=True, default="")  # reference to an image in the DB

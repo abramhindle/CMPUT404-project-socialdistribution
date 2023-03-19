@@ -13,4 +13,3 @@ urlpatterns = [
   path('<str:pk_a>/viewreq/', views.ViewRequests.as_view(), name='get_Requests'),
   # path('<str:displayName>', views.getAuthor)
 ]
-#path('authors/<str:pk_a>/inbox/', views.LikeView.as_view(), name = "likes"),

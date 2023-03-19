@@ -10,14 +10,13 @@ import uuid
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     id = serializers.CharField(source="get_public_id", read_only=True)
-    count = serializers.IntegerField(read_only=True)
+    count = serializers.IntegerField(read_only=True, default=0)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
     commentsSrc = serializers.JSONField(read_only=True)
     author = AuthorSerializer(required=False)
-    count = serializers.IntegerField()
     source = serializers.URLField(default="get_source",max_length=500)  # source of post
     origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
-    categories = serializers.CharField(max_length=300)
+    categories = serializers.CharField(max_length=300, default="")
     
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
