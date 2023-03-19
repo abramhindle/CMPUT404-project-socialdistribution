@@ -113,6 +113,7 @@ class Comment(models.Model):
     published = models.DateTimeField(auto_now_add=True)  # date published
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
     inbox = GenericRelation(Inbox, related_query_name='comment')  # inbox in which post is in
+    
 
     # get public id of comment
     def get_public_id(self):
@@ -122,7 +123,7 @@ class Comment(models.Model):
         return (self.url) + "/" + str(self.id) or str(self.id)
     
     def get_absolute_url(self):
-        url = reverse('posts:comments', args=[str(self.author.id), str(self.post.id)])
+        url = reverse('posts:comments', args=[str(self.post.author.id), str(self.post.id)])
         return url[:-1] if url.endswith('/') else url 
     
     @staticmethod

@@ -155,7 +155,7 @@ class post_list(APIView, PageNumberPagination):
         posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
-    
+
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
 
     def post(self, request, pk_a):
@@ -192,40 +192,19 @@ class post_list(APIView, PageNumberPagination):
 
 class CommentDetailView(APIView, PageNumberPagination):
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
         Get the specific comment
         """
         # ERROR HERE
-        author = Author.objects.get(id=pk_a)
-        post = Post.objects.get(author=author)
-        comment = Comment.objects.filter(author=author,post=post,id=pk_m)
-        comment = self.paginate_queryset(comment, request) 
-        serializer = PostSerializer(comment, many=True)
-        return self.get_paginated_response(serializer.data)
-
-    def post(self, request,pk_a, pk):
-        comment_id = uuid.uuid4()
-        try:
-            author = Author.objects.get(pk=pk_a)
-        except Author.DoesNotExist:
-            error_msg = "Author id not found"
-            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         try: 
-            post = Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            error_msg = "Post id not found"
-            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = CommentSerializer(data=request.data, context={"post":post,"id":comment_id, 'author_id':request.data["author_id"]}, partial=True)
-        if serializer.is_valid():
-            comment = serializer.save()
-            inbox_item = Inbox(content_object=comment, author=post.author)
-            inbox_item.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            comment = Comment.objects.filter(id=pk_m)
+            comment = self.paginate_queryset(comment, request) 
+            serializer = CommentSerializer(comment, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Comment.DoesNotExist: 
+            return self.put(request, pk_a, pk)
         
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
@@ -241,7 +220,8 @@ class post_detail(APIView, PageNumberPagination):
             serializer = PostSerializer(post, many=False)
             return Response(serializer.data)
         except Post.DoesNotExist: 
-            return self.put(request, pk_a, pk)
+            error_msg = "Comment not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
     #content for creating a new post object
     #{
@@ -251,7 +231,8 @@ class post_detail(APIView, PageNumberPagination):
     def post(self, request, pk_a, pk):       
         """
         Request: only include fields you want to update, not including id or author.
-        """        
+        """     
+        print("hello1") 
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -265,6 +246,7 @@ class post_detail(APIView, PageNumberPagination):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
         serializer = PostSerializer(post, data=request.data, partial=True)
+        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

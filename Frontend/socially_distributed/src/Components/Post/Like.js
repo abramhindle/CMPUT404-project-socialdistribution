@@ -14,19 +14,17 @@ function LIKE({ postObj }) {
 	//Confirm the name of the button
 	const handleSubmitClick = () => {
 		const FAID = getAuthorId(postObj.author["id"]);
-		console.log(FAID);
-		const author_id = getAuthorId();
+		const author_id = getAuthorId(null);
 		const params = {
 			type: "Like",
-			author_id: FAID,
+			author_id: author_id,
 			object: postObjUrl,
 		};
-		const url = `authors/${author_id}/inbox`;
+		const url = `authors/${FAID}/inbox`;
 
 		//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
-				console.log(res.data);
 				toaster.push(
 					<Message type="success">Successful Like</Message>,
 					{
