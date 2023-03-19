@@ -96,8 +96,7 @@ class LikeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
        
-        if not Like.objects.filter(author=author, object=validated_data.get("object")):
-
+        if Like.objects.filter(author=author, object=validated_data.get("object")).exists():
             return "already liked"
         else:
             id = str(uuid.uuid4())

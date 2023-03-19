@@ -323,9 +323,21 @@ class LikedView(APIView):
         except Author.DoesNotExist:
             error_msg = "Author not found"
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
-        likes = Like.object.get(author=author)
+        likes = Like.objects.filter(author=author)
         serializer = LikeSerializer(likes, many=True)
-        return Response(serializer.data)
+        data = self.get_items(pk_a, serializer.data)
+        return Response(data)
+    
+    def get_items(self,pk_a,data):
+        # helper function 
+        
+        dict = {"type":"liked" }
+        items = []
+        for item in data:
+            items.append(item)
+
+        dict["items"] = items
+        return(dict) 
 
 @swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
 @api_view(['GET'])
