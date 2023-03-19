@@ -8,7 +8,7 @@ import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import axios from '@/utils/axios'
+import axios, { remoteInstance } from '@/utils/axios'
 import { Post } from '@/index';
 
 
@@ -21,6 +21,10 @@ const Stream: React.FC<streamProps> = ({posts}) => {
 
 	const supabaseClient = useSupabaseClient()
 	const user = useUser()
+
+  React.useEffect(() => {
+	console.log(posts)
+  }, []);
 
   if (!user)
   return (
@@ -99,9 +103,12 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  });
 
+	  let remotePosts = await remoteInstance.get("/authors/80e83b86-0d26-4189-b68a-bf57e8c87af1/posts/");
+	//   console.log(remotePosts.data);
+
 	return {
 	  props: {
-		posts: resPosts.data.posts
+		posts: [...remotePosts.data.items, ...resPosts.data.posts]
 	  }
 	}
   }
