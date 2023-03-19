@@ -96,9 +96,13 @@ class LikeSerializer(serializers.ModelSerializer):
     summary = serializers.CharField(source="get_summary", read_only=True)
 
     def create(self, validated_data):
+        print("VALI DATAs")
+        print(validated_data)
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
         try: 
+            
             _ = Like.objects.filter(author=author, object=validated_data.get("object"))
+            print(Like.objects.all())
             return "already liked"
         except: 
             id = str(uuid.uuid4())
