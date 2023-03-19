@@ -156,6 +156,22 @@ class post_list(APIView, PageNumberPagination):
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
 
+
+class CommentDetailView(APIView, PageNumberPagination):
+    
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
+    def get(self, request, pk_a, pk, pk_m):
+        """
+        Get the specific comment
+        """
+        # ERROR HERE
+        author = Author.objects.get(id=pk_a)
+        post = Post.objects.get(author=author)
+        comment = Comment.objects.filter(author=author,post=post,id=pk_m)
+        comment = self.paginate_queryset(comment, request) 
+        serializer = PostSerializer(comment, many=True)
+        return self.get_paginated_response(serializer.data)
+
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
 
     def post(self, request, pk_a):
