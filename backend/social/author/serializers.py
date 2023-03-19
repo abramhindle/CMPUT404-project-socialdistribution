@@ -15,15 +15,12 @@ class AuthorSerializer(serializers.ModelSerializer):
         return author
     @staticmethod
     def extract_and_upcreate_author(validated_data, author_id=None):
-        validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
-        try:
-            if validated_author_data:
-                updated_author = AuthorSerializer._upcreate(validated_author_data)
-            else:
-                updated_author = Author.objects.get(id=author_id)
-            return updated_author
-        except:
+        #validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
+        updated_author = Author.objects.get(id=author_id)
+        if not updated_author:
             raise exceptions.ValidationError("Author does not exist")
+        else:
+            return updated_author
     
     def to_representation(self, instance):
         id = instance.get_public_id()

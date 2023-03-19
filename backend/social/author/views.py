@@ -363,8 +363,6 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             else: 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Case 2: author is within the server
-        except AlreadyLikedException as e:
-            return Response("Post Already Liked!")
         except AttributeError as e:
             item = serializer   
         inbox_item = Inbox(content_object=item, author=author)

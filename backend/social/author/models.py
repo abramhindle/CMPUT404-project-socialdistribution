@@ -74,7 +74,7 @@ class Inbox(models.Model):
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
-        ordering = ['published']
+        ordering = ['-published']
 
 class FollowRequest(models.Model):
     type =models.CharField(max_length=255, blank=True)
