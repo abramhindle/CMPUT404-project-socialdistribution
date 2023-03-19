@@ -158,4 +158,9 @@ class Like(models.Model):
     def __str__(self):
         return 'Liked by {}'.format(self.author)
     
+    ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGEike'
+    
+    def __str__(self):
+        return 'Liked by {}'.format(self.author)
+    
     ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGE
