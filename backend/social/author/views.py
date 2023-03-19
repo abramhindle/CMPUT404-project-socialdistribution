@@ -397,3 +397,11 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         dict["items"] = items
         return(dict) 
         
+@api_view(['GET'])
+def getAuthor(request, displayName):
+    """
+    Get the list of comments on our website
+    """
+    author = Author.objects.get(displayName=displayName)
+    serializer = AuthorSerializer(author,partial=True)
+    return Response(serializer.data)

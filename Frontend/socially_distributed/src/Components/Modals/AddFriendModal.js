@@ -16,23 +16,24 @@ import { getAuthorId } from "../utils/auth";
 function ADD_FRIEND_MODAL({ open, handleClose }) {
 	const [displayName, setName] = useState("");
 	const [foreign_author, setForeign] = useState({});
-	const [isFriends, setIsFriends] = useState("");
 	const toaster = useToaster();
 
-	// This function gets the author info and sends the friend req to the author
-	async function handleAddFriendClick() {
-		// url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}/`;
-		// axios({ method: "put", url: url });
-		const url = `authors/${displayName}`;
+	async function sendreq(id) {
+		console.log(id);
 		const AUTHOR_ID = getAuthorId(null);
-		await axios({ method: "get", url: url }).then((res) => {
-			if (res.status === 200) {
-				setForeign(res.data);
-			}
-		});
-		const url2 = `authors/${AUTHOR_ID}/sendreq/`;
-		await axios({ method: "post", url: url2, data: foreign_author })
+		const url2 = `authors/${id}/inbox`;
+		const params = {
+			type: "Follow",
+			actor: {
+				id: AUTHOR_ID,
+			},
+			object: {
+				id: foreign_author,
+			},
+		};
+		return axios({ method: "post", url: url2, data: params })
 			.then((res) => {
+				console.log(res.data);
 				toaster.push(
 					<Message type="success">Friend Request Sent</Message>,
 					{
@@ -42,6 +43,18 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 				);
 			})
 			.catch((err) => console.log(err.data));
+	}
+
+	// This function gets the author info and sends the friend req to the author
+	async function handleAddFriendClick() {
+		// url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}/`;
+		// axios({ method: "put", url: url });
+		const url = `authors/displayName/${displayName}`;
+		await axios({ method: "get", url: url }).then(async (res) => {
+			if (res.status === 200) {
+				await sendreq(res.data.id);
+			}
+		});
 		handleClose();
 	}
 

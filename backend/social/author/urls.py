@@ -11,5 +11,5 @@ urlpatterns = [
   path('<str:pk_a>/followers/<str:pk>', views.FollowersView.as_view(), name="follow"),
   path('<str:pk_a>/sendreq/', views.FriendRequestView.as_view(), name='send_req'),
   path('<str:pk_a>/viewreq/', views.ViewRequests.as_view(), name='get_Requests'),
-  # path('<str:displayName>', views.getAuthor)
+  path('displayName/<str:displayName>', views.getAuthor)
 ]
