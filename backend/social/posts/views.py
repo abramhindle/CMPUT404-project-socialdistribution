@@ -167,9 +167,11 @@ class CommentDetailView(APIView, PageNumberPagination):
         # ERROR HERE
         author = Author.objects.get(id=pk_a)
         post = Post.objects.get(author=author)
-        comment = Comment.objects.filter(author=author,post=post,id=pk_m)
+        comment = Comment.objects.filter(id=pk_m)
+        
         comment = self.paginate_queryset(comment, request) 
-        serializer = PostSerializer(comment, many=True)
+
+        serializer = CommentSerializer(comment, many=True)
         return self.get_paginated_response(serializer.data)
 
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
