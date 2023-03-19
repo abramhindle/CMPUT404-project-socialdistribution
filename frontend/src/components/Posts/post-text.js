@@ -24,11 +24,11 @@ export default function PlainPost(data) {
   )
     .split("/")
     .pop()}`; // allows linking to the author who wrote the post
-  const postUrl = `//${window.location.hostname}${port}/post/${(
-    data.post.id ?? ""
+  const postUrl = `//${window.location.hostname}${port}/user/${(
+    data.post.author.id ?? ""
   )
     .split("/")
-    .pop()}`;
+    .pop()}/post/${(data.post.id ?? "").split("/").pop()}`;
 
   const [commentFieldVisibilty, setCommentFieldVisibilty] = useState(false);
   const [comment, setComment] = useState("");
@@ -62,9 +62,7 @@ export default function PlainPost(data) {
           {/* Will need to handle other post types here, plain for now */}
           <div className="content-container">
             <h5>
-              <Link to={postUrl} state={{ data: data.post }}>
-                {data["post"]["title"]}
-              </Link>
+              <Link to={postUrl}>{data["post"]["title"]}</Link>
             </h5>
             {markdown && (
               <ReactMarkdown

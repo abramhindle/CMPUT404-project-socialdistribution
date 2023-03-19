@@ -67,7 +67,7 @@ function App() {
             }
           ></Route>
           <Route
-            path="post/:post_id"
+            path="user/:author_id/post/:post_id"
             element={
               <PrivateRoute>
                 <PostDetail />
