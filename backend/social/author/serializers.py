@@ -4,8 +4,6 @@ from rest_framework import serializers, exceptions
 from .models import *
 from django.http import HttpResponse
 
-
-
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
@@ -47,7 +45,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 class FollowRequestSerializer(serializers.ModelSerializer):
     #to_user = serializers.CharField(default = 'x')
     type = serializers.CharField(default="Follow",source="get_api_type",read_only=True)
-    Summary = serializers.CharField(source="get_summary", read_only=True)
+    summary = serializers.CharField(source="get_summary", read_only=True)
 
     actor = AuthorSerializer(required=True)
     object = AuthorSerializer(required=True)
@@ -66,12 +64,9 @@ class FollowRequestSerializer(serializers.ModelSerializer):
 
              return FollowRequest.objects.create(actor=actor,object=object)
 
-
-
-
     class Meta:
         model = FollowRequest
-        fields = ['type','Summary','actor', 'object']
+        fields = ['type','summary','actor', 'object']
         
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="inbox",source="get_api_type",read_only=True)
