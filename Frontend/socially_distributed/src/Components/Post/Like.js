@@ -13,12 +13,12 @@ function LIKE({ postObj }) {
 
 	//Confirm the name of the button
 	const handleSubmitClick = () => {
-		const FAID = postObj.author["id"];
+		const FAID = getAuthorId(postObj.author["id"]);
 		console.log(FAID);
-		const author_id = getAuthorId(FAID);
+		const author_id = getAuthorId();
 		const params = {
 			type: "Like",
-			author_id: author_id,
+			author_id: FAID,
 			object: postObjUrl,
 		};
 		const url = `authors/${author_id}/inbox`;

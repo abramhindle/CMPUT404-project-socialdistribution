@@ -27,7 +27,7 @@ class register(APIView):
         try:
             user = User.objects.create_user(username=display_name, email=email, password=password)
             user.save()
-            url = "/" + id_
+            url = "authors/" + id_
             author = Author(user=user, id = id_, displayName= display_name, url=url)
             author.save()
             return(Response(id_, status=status.HTTP_201_CREATED))
