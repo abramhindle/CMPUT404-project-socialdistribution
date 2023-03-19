@@ -3,7 +3,7 @@
 
 FROM node:16-alpine AS deps
 RUN apk add --no-cache libc6-compat
-RUN echo ${NEXT_PUBLIC_SUPABASE_URL}
+RUN echo "${NEXT_PUBLIC_SUPABASE_URL}"
 RUN echo *******************************************************************
 
 WORKDIR /app
@@ -13,7 +13,7 @@ COPY yarn.lock  ./
 RUN yarn install --frozen-lockfile
 
 FROM node:16-alpine AS builder
-RUN echo ${NEXT_PUBLIC_SUPABASE_URL}
+RUN echo "${NEXT_PUBLIC_SUPABASE_URL}"
 RUN echo *******************************************************************
 ENV NODE_ENV=production
 WORKDIR /app
@@ -25,7 +25,7 @@ RUN yarn build
  
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
-RUN echo ${NEXT_PUBLIC_SUPABASE_URL}
+RUN echo "${NEXT_PUBLIC_SUPABASE_URL}"
 RUN echo *******************************************************************
 # ARG NEXT_PUBLIC_SUPABASE_URL
 # ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
