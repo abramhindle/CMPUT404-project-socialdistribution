@@ -443,7 +443,7 @@ class CommentView(APIView, PageNumberPagination):
             error_msg = "Post id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = CommentSerializer(data=request.data, context={"author_id":pk_a,"post":post,"id":comment_id}, partial=True)
+        serializer = CommentSerializer(data=request.data, context={"post":post,"id":comment_id, 'author_id':request.data["author_id"]}, partial=True)
         if serializer.is_valid():
             comment = serializer.save()
             inbox_item = Inbox(content_object=comment, author=post.author)
