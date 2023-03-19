@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM python:3.8-slim-buster AS builder
+FROM python:3.8-slim-buster AS builder
 EXPOSE 8000
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
