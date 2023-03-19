@@ -141,7 +141,7 @@ class post_list(APIView, PageNumberPagination):
     # for pagination
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
-    #
+    
 
     # TODO: RESPONSE AND REQUESTS
     
