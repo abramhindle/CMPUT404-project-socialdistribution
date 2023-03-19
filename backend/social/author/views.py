@@ -388,8 +388,8 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     
     def get_items(self,pk_a,data):
         # helper function 
-
-        dict = {"type":"inbox", "author": settings.APP_NAME + 'authors/' + pk_a }
+        
+        dict = {"type":"inbox", "author": settings.APP_NAME + '/authors/' + pk_a }
         items = []
         for item in data:
             items.append(item["content_object"])
