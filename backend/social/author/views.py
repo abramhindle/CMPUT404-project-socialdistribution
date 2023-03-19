@@ -299,6 +299,8 @@ class InboxSerializerObjects:
     def deserialize_objects(self, data, pk_a):
         # return serializer of objects to be added to inbox (so we get the object)
         type = data.get('type')
+        print(data)
+        print(2222222222222222222222222222)
         obj = None
         if type is None:
             raise exceptions
@@ -316,7 +318,10 @@ class InboxSerializerObjects:
             context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
         elif type == FollowRequest.get_api_type():
             serializer = FollowRequestSerializer
-            context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+            context={'actorr': data["actor"]["id"],'objectt':data["object"]["id"]}
+            
+         
+      
         return obj or serializer(data=data, context=context, partial=True)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
@@ -348,17 +353,24 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             1. If the object is from a foreign author and not in database: a full object (Like, Author, Comment) with mandatory fields required, TYPE, id, author.
             2. If object in database: TYPE, id.
         """
-
+        print(self.request.data)
+        print(784392478932479328798327)
         author = get_object_or_404(Author,pk=pk_a)
         serializer = self.deserialize_objects(
             self.request.data, pk_a)
+        print(serializer)
         
         # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
         try:
             if serializer.is_valid():
+                print(99999999999999999999999999999999999999)
                 item = serializer.save()
                 if item=="already liked":
                     return Response("Post Already Liked!")
+                if item == "already sent":
+                    return Response("You've already sent a request to this user!")
+                if item == "same":
+                    return Response("You cannot send a follow request to yourself!")
                 if hasattr(item, 'update_fields_with_request'):
                     item.update_fields_with_request(request)
             else: 
@@ -371,6 +383,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         inbox_item = Inbox(content_object=item, author=author)
         inbox_item.save()
         return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
+    
     
     @swagger_auto_schema( responses=response_schema_dict,operation_summary="Delete all the objects in the inbox")
     def delete(self, request, pk_a):
