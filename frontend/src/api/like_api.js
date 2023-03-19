@@ -46,3 +46,96 @@ export const get_comment_like = async (
     console.log("Error Occured");
   }
 };
+
+export const post_like = async (
+  likedAuthorId,
+  likeAuthor,
+  postId,
+  context,
+  success
+) => {
+  console.log("Attempting to post likes for", { postId });
+  const data = {
+    type: "Like",
+    context: context,
+    author: likeAuthor,
+    object: `http://localhost/authors/${likedAuthorId /* URL Needs to be updated once hosted on heroku */
+      .split("/")
+      .pop()}/posts/${postId.split("/").pop()}`,
+  };
+  const res = await axios.post(
+    `http://localhost:8000/authors/${likedAuthorId}/inbox/`,
+    data,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  console.log(res);
+  if (res.status === 202) {
+    console.log("Success!");
+    success();
+  } else {
+    console.log("Error Occured");
+  }
+};
+
+export const comment_like = async (
+  likedAuthorId,
+  likeAuthor,
+  postId,
+  commentId,
+  context,
+  success
+) => {
+  console.log("Attempting to post likes for", { commentId });
+  const data = {
+    type: "Like",
+    context: context,
+    author: likeAuthor,
+    object: `http://localhost/authors/${likedAuthorId /* URL Needs to be updated once hosted on heroku */
+      .split("/")
+      .pop()}/posts/${postId.split("/").pop()}/comments/${commentId
+      .split("/")
+      .pop()}`,
+  };
+  const res = await axios.post(
+    `http://localhost:8000/authors/${likedAuthorId}/inbox/`,
+    data,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  console.log(res);
+  if (res.status === 202) {
+    console.log("Success!");
+    success(res.data);
+  } else {
+    console.log("Error Occured");
+  }
+};
+
+export const get_liked = async (authorId, success) => {
+  console.log("Attempting to get liked for", { authorId });
+  const res = await axios.get(
+    `http://localhost:8000/authors/${authorId}/liked`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  console.log(res);
+  if (res.status === 200) {
+    console.log("Success!");
+    success(res.data.items);
+  } else {
+    console.log("Error Occured");
+  }
+};

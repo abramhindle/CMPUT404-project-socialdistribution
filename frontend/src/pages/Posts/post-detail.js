@@ -21,6 +21,8 @@ function PostDetail() {
   const [commentType, setCommentType] = useState("text/plain");
   const [commentPage, setCommentPage] = useState(1);
   const [commentSize, setCommentSize] = useState(5);
+  const [disableCommentNextButton, setDisableCommentNextButton] =
+    useState(false);
 
   const nextCommentPage = () => {
     setCommentPage(commentPage + 1);
@@ -57,9 +59,26 @@ function PostDetail() {
 
   const successComment = (commentData) => {
     setCommentsInfo(commentData);
+    if (commentData.items.length < commentSize) {
+      setDisableCommentNextButton(true);
+    } else if (commentData.items.length === commentSize) {
+      get_post_comments(
+        `http://localhost/authors/${author_id}`,
+        `http://localhost/authors/${author_id}/posts/${post_id}`,
+        preCheckNextCommentPage,
+        commentPage + 1,
+        commentSize
+      );
+    }
   };
 
-  console.log(postInfo);
+  const preCheckNextCommentPage = (commentData) => {
+    if (commentData.items.length === 0) {
+      setDisableCommentNextButton(true);
+    } else {
+      setDisableCommentNextButton(false);
+    }
+  };
 
   useEffect(() => {
     get_post(
@@ -87,8 +106,8 @@ function PostDetail() {
   const port = window.location.port ? `:${window.location.port}` : "";
   const authorUrl = `//${window.location.hostname}${port}/user/${author_id}`;
 
-  let markdown = null;
-  let shareable = null;
+  let markdown;
+  let shareable;
   if (postInfo) {
     markdown = postInfo.contentType === "text/markdown" ? true : false;
     //Decide if shareable
@@ -169,6 +188,7 @@ function PostDetail() {
           <div className="comments">
             {commentsInfo &&
               commentsInfo.items.map((comment) => (
+                /** TODO: Using Comment View once it is implemented */
                 <div key={comment.id}>{comment.comment}</div>
               ))}
             <button
@@ -177,7 +197,12 @@ function PostDetail() {
             >
               prev
             </button>
-            <button onClick={nextCommentPage}>next</button>
+            <button
+              onClick={nextCommentPage}
+              disabled={disableCommentNextButton}
+            >
+              next
+            </button>
           </div>
         </div>
       </div>

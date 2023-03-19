@@ -1,10 +1,11 @@
 import "./posts.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import { post_comment } from "../../api/comment_api";
+import { post_like } from "../../api/like_api";
 
 export default function PlainPost(data) {
   console.log(typeof data["post"]["content"]);
@@ -29,6 +30,10 @@ export default function PlainPost(data) {
   )
     .split("/")
     .pop()}/post/${(data.post.id ?? "").split("/").pop()}`;
+
+  const like_success = () => {
+    /* Show Success Snackbar? */
+  };
 
   const [commentFieldVisibilty, setCommentFieldVisibilty] = useState(false);
   const [comment, setComment] = useState("");
@@ -77,7 +82,20 @@ export default function PlainPost(data) {
             )}
           </div>
           <div className="interaction-options">
-            <button>like</button>
+            <button
+              disabled={data.liked}
+              onClick={() =>
+                post_like(
+                  data.post.author.id,
+                  user,
+                  data.post.id,
+                  "context",
+                  like_success
+                )
+              }
+            >
+              {data.liked ? "liked" : "like"}
+            </button>
 
             <button
               onClick={() =>
