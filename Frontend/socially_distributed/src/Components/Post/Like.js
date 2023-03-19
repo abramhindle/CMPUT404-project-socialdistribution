@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { IconButton, useToaster, Message } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import axios from "axios";
+import { getAuthorId } from "../utils/auth";
 
 // Component Imports
 function LIKE({ postObj }) {
@@ -12,24 +13,15 @@ function LIKE({ postObj }) {
 
 	//Confirm the name of the button
 	const handleSubmitClick = () => {
-		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const author_name = author.displayName;
-		const author_id = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
-		const post_id = postObj.id.slice(
-			postObj.id.length - len,
-			postObj.id.length
-		);
-		const message = author_name + " Liked your post.";
+		const FAID = postObj.author["id"];
+		console.log(FAID);
+		const author_id = getAuthorId(FAID);
 		const params = {
-			author: author_id,
+			type: "Like",
+			author_id: author_id,
 			object: postObjUrl,
-			summary: message,
 		};
-		const url = `posts/authors/${author_id}/inbox`;
+		const url = `authors/${author_id}/inbox`;
 
 		//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })

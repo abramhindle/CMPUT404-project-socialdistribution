@@ -22,7 +22,7 @@ function INBOX() {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
 		} else {
-			const author_id = getAuthorId();
+			const author_id = getAuthorId(null);
 			const url = `authors/${author_id}/inbox`;
 			axios({ method: "get", url: url }).then((res) => {
 				setInbox(res.data.results);

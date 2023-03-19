@@ -8,8 +8,6 @@ import {
 	Uploader,
 	Button,
 } from "rsuite";
-// import { Scrollbars } from "react-custom-scrollbars-2";
-// Component Imports
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { getAuthorId } from "../utils/auth";
@@ -111,7 +109,7 @@ function CREATEPOST() {
 
 	const handlePostClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
-		const author_id = getAuthorId();
+		const author_id = getAuthorId(null);
 		const url = `posts/authors/${author_id}/posts/`;
 		var params = {
 			title: title,
@@ -120,6 +118,8 @@ function CREATEPOST() {
 			contentType: post_type,
 			visiblity: post_status,
 			author: author,
+			categories: categories,
+			count: 0,
 		};
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {

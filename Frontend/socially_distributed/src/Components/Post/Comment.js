@@ -42,7 +42,7 @@ function COMMENTS({ postobj }) {
 			postObj.id.length - len,
 			postObj.id.length
 		);
-		const params = { comment: new_comment };
+		const params = { comment: new_comment,  };
 		const url = `posts/authors/${author_id}/posts/${post_id}/comments/`;
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {

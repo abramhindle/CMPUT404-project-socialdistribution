@@ -61,9 +61,14 @@ export async function getCsrfToken() {
 	return _csrfToken;
 }
 
-export function getAuthorId() {
-	const author = JSON.parse(localStorage.getItem("user"));
+export function getAuthorId(a_id) {
+	let author_id = "";
 	const len = 36;
-	const author_id = author.id.slice(author.id.length - len, author.id.length);
+	if (a_id === null) {
+		const author = JSON.parse(localStorage.getItem("user"));
+		author_id = author.id.slice(author.id.length - len, author.id.length);
+	} else {
+		author_id = a_id.slice(a_id.length - len, a_id.length);
+	}
 	return author_id;
 }

@@ -24,7 +24,7 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 		// url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}/`;
 		// axios({ method: "put", url: url });
 		const url = `authors/${displayName}`;
-		const AUTHOR_ID = getAuthorId();
+		const AUTHOR_ID = getAuthorId(null);
 		await axios({ method: "get", url: url }).then((res) => {
 			if (res.status === 200) {
 				setForeign(res.data);
