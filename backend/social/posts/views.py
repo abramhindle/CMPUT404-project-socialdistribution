@@ -232,7 +232,6 @@ class post_detail(APIView, PageNumberPagination):
         """
         Request: only include fields you want to update, not including id or author.
         """     
-        print("hello1") 
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -244,15 +243,15 @@ class post_detail(APIView, PageNumberPagination):
         except Post.DoesNotExist:
             error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = PostSerializer(post, data=request.data, partial=True)
-        print(request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+        if post.url == post.origin:
+            serializer = PostSerializer(post, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response("Cannot edit a shared post", status=status.HTTP_405_METHOD_NOT_ALLOWED)
     @swagger_auto_schema(responses=response_schema_dictdelete,operation_summary="Delete a particular post of an author") 
     def delete(self, request, pk_a, pk):
         """
