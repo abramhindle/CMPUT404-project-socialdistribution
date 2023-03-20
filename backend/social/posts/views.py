@@ -152,6 +152,19 @@ class post_list(APIView, PageNumberPagination):
         """
         author = Author.objects.get(id=pk_a)
         posts = Post.objects.filter(author=author)
+        authenticated_user = Author.objects.get(id=pk_a)
+
+        for post in posts:
+            if "PRIVATE" in post.visibility:
+                # if the post author is not the auth'd user, don't show this post
+                if post.author != authenticated_user:
+                    posts.exclude(post)
+                    
+            if "FRIENDS" in post.visibility:
+                # if the post author is not friends with the auth'd user, don't show this post
+                if authenticated_user not in post.author.friends:
+                    posts.exclude(post)
+        
         posts = self.paginate_queryset(posts, request) 
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
@@ -170,13 +183,7 @@ class post_list(APIView, PageNumberPagination):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        if 'image' in request.data['contentType']:
-            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            else: 
-               return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
             post = serializer.save()
@@ -217,6 +224,23 @@ class post_detail(APIView, PageNumberPagination):
         """
         try: 
             post = Post.objects.get(id = pk)
+            authenticated_user = Author.objects.get(id=pk_a)
+
+            # if it is private or friends, only continue if author is trying to access it:
+            if "PRIVATE" in post.visibility:
+                # check if the author is not the one accessing it:
+                # TODO: specifically shared users
+                if post.author != authenticated_user:
+                    error_msg = {"message":"You do not have access to this post!"}
+                    return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
+
+            # otherwise, handle it for friends:
+            if "FRIENDS" in post.visibility:
+                # if the author or friends are trying to access it:
+                if post.author not in authenticated_user.friends and post.author != authenticated_user:
+                    error_msg = {"message":"You do not have access to this image!"}
+                    return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
+                
             serializer = PostSerializer(post, many=False)
             return Response(serializer.data)
         except Post.DoesNotExist: 
@@ -245,6 +269,15 @@ class post_detail(APIView, PageNumberPagination):
             error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
+        # if image post
+        if 'image' in request.data['contentType']:
+            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else: 
+               return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+            
         serializer = PostSerializer(post, data=request.data, partial=True)
         print(request.data)
         if serializer.is_valid():
@@ -346,7 +379,6 @@ def get_likes(request, pk_a, pk):
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
-# hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
@@ -374,9 +406,8 @@ class ImageView(APIView):
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
 
             # otherwise, handle it for friends:
-            elif "FRIENDS" in post.visibility:
+            if "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
-                # this line will likely be bugged until auth is set up ┐(´～｀)┌
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
                     error_msg = {"message":"You do not have access to this image!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
@@ -385,6 +416,7 @@ class ImageView(APIView):
             post_content = post.contentType.split(';')[0]
             return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)
 
+        # but it's not real!
         except Post.DoesNotExist:
             error_msg = {"message":"Post does not exist!"}
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)

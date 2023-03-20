@@ -3,7 +3,6 @@ from .models import *
 from .models import Post
 from author.serializers import AuthorSerializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-# pip install drf-base64
 from drf_base64.fields import Base64ImageField
 import uuid 
 
