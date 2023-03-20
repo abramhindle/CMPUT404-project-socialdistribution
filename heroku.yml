@@ -6,12 +6,12 @@ setup:
     env_file: .env
 build:
   docker:
-    frontend: frontend/Dockerfile
+    web: frontend/Dockerfile
     backend: backend/social_net/Dockerfile 
 release:
   command:
     - python3 manage.py migrate
   image: backend
 run:
-  frontend: yarn start
+  web: yarn start
   backend: gunicorn social_net.wsgi # python3 manage.py runserver 0.0.0.0:8000
