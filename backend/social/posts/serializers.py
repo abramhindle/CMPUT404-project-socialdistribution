@@ -113,13 +113,24 @@ class LikeSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     image = Base64ImageField()
-    author = AuthorSerializer()
+    print(image)
     id = serializers.URLField(source="get_public_id",read_only=True)
+    author = AuthorSerializer(required=False)
     # visibility is public by default
     visibility = serializers.ChoiceField(choices=visbility_choices,default="PUBLIC")
+
+    def create(self, validated_data):
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        id = validated_data.pop('id') if validated_data.get('id') else None
+        if not id:
+            id = self.context["id"]
+        post = Post.objects.create(**validated_data, author = author, id = id)
+        return post
+
     class Meta:
         model = Post
         fields = [
+            "contentType",
             "type",
             "id",
             "author",

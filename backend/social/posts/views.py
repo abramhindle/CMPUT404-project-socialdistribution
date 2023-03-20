@@ -184,7 +184,12 @@ class post_list(APIView, PageNumberPagination):
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+        # if image post
+        if 'image' in request.data['contentType']:
+            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+        else:
+            serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+        
         if serializer.is_valid():
             post = serializer.save()
             inbox_item = Inbox(content_object=post, author=author)
@@ -387,6 +392,9 @@ class ImageView(APIView):
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
             authenticated_user = Author.objects.get(id=pk_a)
+
+            print(post.contentType)
+
             # not image post
             if post.contentType and 'image' not in post.contentType:
                 error_msg = {"message":"Post does not contain an image!"}
@@ -411,7 +419,7 @@ class ImageView(APIView):
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
                     error_msg = {"message":"You do not have access to this image!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
-            
+
             # return the image!
             post_content = post.contentType.split(';')[0]
             return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)
