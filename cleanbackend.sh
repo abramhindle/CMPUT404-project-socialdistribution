@@ -10,3 +10,6 @@ rm -rf ./backend/social_net/entrypoint.sh
 rm -rf ./backend/social_net/Dockerfile
 rm -rf ./backend/social_net/db.sqlite3
 
+mv -iv ./backend/* ./backend/..
+
+rm -rf ./backend
