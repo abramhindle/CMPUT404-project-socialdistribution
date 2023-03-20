@@ -63,9 +63,7 @@ class Post(models.Model):
 
     # get public id of post
     def get_public_id(self):
-        if not self.url: 
-            self.url = settings.APP_NAME + self.get_absolute_url()
-            self.save()
+        self.get_absolute_url()
         return (self.url) or str(self.id)
     
     # get comments url
@@ -86,7 +84,10 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
-        return url[:-1] if url.endswith('/') else url 
+        url = settings.APP_NAME + url
+        self.url = url[:-1] if url.endswith('/') else url 
+        self.save()
+        return self.url
 
     def get_source(self):
         #set post source (URL to source)
@@ -155,6 +156,11 @@ class Like(models.Model):
     @staticmethod
     def get_api_type():
         return 'Like'
+    
+    def __str__(self):
+        return 'Liked by {}'.format(self.author)
+    
+    ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGEike'
     
     def __str__(self):
         return 'Liked by {}'.format(self.author)

@@ -279,7 +279,6 @@ class ViewRequests(APIView):
 
         Object = Author.objects.get(id=pk_a)
         displaynamefrom=Object.displayName
-   
 
         requests = FollowRequest.objects.filter(object = Object)
         serializer = FollowRequestSerializer(requests,many=True)
@@ -302,7 +301,6 @@ class InboxSerializerObjects:
     def deserialize_objects(self, data, pk_a):
         # return serializer of objects to be added to inbox (so we get the object)
         type = data.get('type')
-      
         obj = None
         if type is None:
             raise exceptions
@@ -355,15 +353,13 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             1. If the object is from a foreign author and not in database: a full object (Like, Author, Comment) with mandatory fields required, TYPE, id, author.
             2. If object in database: TYPE, id.
         """
-    
         author = get_object_or_404(Author,pk=pk_a)
         serializer = self.deserialize_objects(
             self.request.data, pk_a)
-       
+        
         # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
         try:
             if serializer.is_valid():
-        
                 item = serializer.save()
                 if item=="already liked":
                     return Response("Post Already Liked!")
