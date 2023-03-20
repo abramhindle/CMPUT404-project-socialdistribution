@@ -4,7 +4,7 @@
     "title": "Social Distribution API Specification",
     "version": "1.0"
   },
-  "servers": [{ "url": "http://localhost:8000/authors" }],
+  "servers": [{ "url": "https://social-distribution-w23-t17.herokuapp.com/authors" }],
   "tags": [
     {
       "name": "authors"

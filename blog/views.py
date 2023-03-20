@@ -46,21 +46,3 @@ class SignOutView(APIView):
             return Response({ 'success': 'Loggout Out' }, status=200)
         except:
             return Response({ 'error': 'Something went wrong when logging out' }, status=401)
-
-@method_decorator(csrf_exempt, name='dispatch')
-class ManageToken(APIView):
-    permission_classes = ()
-    def post(self, request):
-        try:
-            data = json.loads(request.data)
-        except:
-            data = request.data
-        username = data["username"]
-        password = data["password"]
-
-        user = auth.authenticate(username=username, password=password)
-        if user:
-            token = Token.objects.get_or_create(user=user)
-            return Response({"token": str(token[0])}, status=200)
-
-        return Response({"error": "Error Authenticating"}, status=401)
