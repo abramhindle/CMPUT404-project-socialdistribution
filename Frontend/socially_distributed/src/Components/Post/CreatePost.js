@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { Input, Avatar, Panel, Dropdown, Uploader, Button } from "rsuite";
-// import { Scrollbars } from "react-custom-scrollbars-2";
-// Component Imports
+import {
+	Input,
+	Avatar,
+	useToaster,
+	Message,
+	Dropdown,
+	Uploader,
+	Button,
+} from "rsuite";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import MarkdownEditor from "@uiw/react-markdown-editor";
-// allows the frontend to convert the file to base64 before passing 
-// it into the backend
 import FileBase4 from 'react-file-base64';
+import { getAuthorId } from "../utils/auth";
 
 function CREATEPOST() {
 	const [post_status, set_post_status] = useState("Public");
@@ -18,6 +21,7 @@ function CREATEPOST() {
 	const [description, setDescription] = useState("");
 	const [categories, setCategories] = useState("");
 	const [markdown, setMarkdown] = useState("");
+	const toaster = useToaster();
 
 	const input = () => {
 		if (post_type === "text/plain") {
@@ -42,10 +46,6 @@ function CREATEPOST() {
 		if (post_type === "text/markdown") {
 			return (
 				<div>
-					{/* <MarkdownEditor
-						value="# This is a H1  \n## This is a H2  \n###### This is a H6"
-						onChange={(value, viewUpdate) => setMarkdown(value)}
-					></MarkdownEditor> */}
 					<Input
 						style={{
 							float: "left",
@@ -96,48 +96,32 @@ function CREATEPOST() {
 		}
 	};
 
-	const notifySuccessPost = () =>
-		toast.success("success", {
-			position: "top-right",
-			autoClose: 5000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: "light",
+	const notifySuccessPost = () => {
+		toaster.push(<Message type="success">Successful post</Message>, {
+			placement: "topEnd",
+			duration: 5000,
 		});
+	};
 
-	const notifyFailedPost = () =>
-		toast.error("failure", {
-			position: "top-right",
-			autoClose: 5000,
-			hideProgressBar: false,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: "light",
+	const notifyFailedPost = (error) => {
+		toaster.push(<Message type="error">{error}</Message>, {
+			placement: "topEnd",
+			duration: 5000,
 		});
+	};
 
 	const handlePostClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const author_id = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
+		const author_id = getAuthorId(null);
 		const url = `posts/authors/${author_id}/posts/`;
-		// if (post_type === "text/markdown") {
-		// 	text = markdown;
-		// }
 		var params = {
 			title: title,
 			description: description,
 			content: text,
 			contentType: post_type,
 			visiblity: post_status,
-			author: author,
+			categories: categories,
+			count: 0,
 		};
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
@@ -151,8 +135,7 @@ function CREATEPOST() {
 					set_post_type("text/plain");
 					setMarkdown("");
 				} else {
-					console.log(res);
-					notifyFailedPost();
+					notifyFailedPost(res.data);
 				}
 			})
 			.catch((err) => console.log(err));
@@ -228,20 +211,6 @@ function CREATEPOST() {
 			>
 				Post
 			</Button>
-			<ToastContainer
-				position="top-right"
-				autoClose={5000}
-				hideProgressBar={false}
-				newestOnTop={false}
-				closeOnClick
-				rtl={false}
-				pauseOnFocusLoss
-				draggable
-				pauseOnHover
-				theme="light"
-			/>
-			{/* Same as */}
-			<ToastContainer />
 		</div>
 	);
 }

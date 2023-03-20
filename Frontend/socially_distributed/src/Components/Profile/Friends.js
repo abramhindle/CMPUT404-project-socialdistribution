@@ -1,32 +1,27 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { Avatar } from "rsuite";
+import axios from "axios";
+import { getAuthorId } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 function FRIENDS() {
-	// make a get request to get author and every post the author made and comments on the posts
-	// make a get request to get all the friends of an author
-	const friends = {
-		type: "followers",
-		items: [
-			{
-				type: "author",
-				id: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-				url: "http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-				host: "http://127.0.0.1:5454/",
-				displayName: "Greg Johnson",
-				github: "http://github.com/gjohnson",
-				profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
-			},
-			{
-				type: "author",
-				id: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-				host: "http://127.0.0.1:5454/",
-				displayName: "Lara Croft",
-				url: "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-				github: "http://github.com/laracroft",
-				profileImage: "https://i.imgur.com/k7XVwpB.jpeg",
-			},
-		],
-	};
+	const [friends, setFriends] = useState({ items: [] });
+	let navigate = useNavigate();
+
+	useLayoutEffect(() => {
+		if (!localStorage.getItem("loggedIn")) {
+			navigate("/login");
+		} else {
+			const AUTHOR_ID = getAuthorId(null);
+			const url = `authors/${AUTHOR_ID}/followers/`;
+			axios({
+				method: "get",
+				url: url,
+			}).then((res) => {
+				setFriends(res.data);
+			});
+		}
+	}, []);
 
 	const item = (obj) => {
 		return (

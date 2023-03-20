@@ -4,38 +4,41 @@ from .models import Post
 from author.serializers import AuthorSerializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from drf_base64.fields import Base64ImageField
+import uuid 
 
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     id = serializers.CharField(source="get_public_id", read_only=True)
-    count = serializers.IntegerField(source="count_comments", read_only=True)
+    count = serializers.IntegerField(read_only=True, default=0)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
+    commentsSrc = serializers.JSONField(read_only=True)
     author = AuthorSerializer(required=False)
-    # count = serializers.IntegerField(source='sget_comment_count')
-    source = serializers.URLField(default="get_source",max_length=500)  # source of post
-    origin = serializers.URLField(default="get_origin",max_length=500)  # origin of post
-    categories = serializers.SerializerMethodField(read_only=True)
-        
-    def get_categories(self, instance):
-        categories_list = instance.categories.split(",")
-        return [category for category in categories_list]
+    source = serializers.URLField(source="get_source", read_only=True, max_length=500)  # source of post
+    origin = serializers.URLField(source="get_origin", read_only=True, max_length=500)  # origin of post
+    categories = serializers.CharField(max_length=300, default="")
     
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
         id = validated_data.pop('id') if validated_data.get('id') else None
         if not id:
             id = self.context["id"]
-        print("ID HERE",id)
         post = Post.objects.create(**validated_data, author = author, id = id)
         return post
 
     def to_representation(self, instance):
         id = instance.get_public_id()
         id = id[:-1] if id.endswith('/') else id
+        categories_list = instance.categories.split(",")
+        comments_list = Comment.objects.filter(post=instance)
+        commentsSrc = [CommentSerializer(comment,many=False).data for comment in comments_list]
         return {
             **super().to_representation(instance),
-            'id': id
+            'id': id,
+            'categories':[category for category in categories_list],
+            'commentsSrc': commentsSrc,
+            'count': len(commentsSrc)
         }
+            
     class Meta:
         model = Post
         fields = [
@@ -51,6 +54,7 @@ class PostSerializer(WritableNestedModelSerializer):
             'categories',
             'count',
             'comments',
+            'commentsSrc',
             'published',
             'visibility',
             #'unlisted',
@@ -61,6 +65,17 @@ class CommentSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="comment",source="get_api_type",read_only=True)
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer()
+
+    def create(self, validated_data):
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data,author_id=self.context["author_id"])
+        id = validated_data.pop('id') if validated_data.get('id') else None
+        
+        if not id:
+            id = self.context["id"]
+        comment = Comment.objects.create(**validated_data, author = author, id = id, post=self.context["post"])
+        comment.save()
+        return comment
+
     class Meta:
         model = Comment
         fields = [
@@ -74,8 +89,21 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="like",source="get_api_type",read_only=True)
-    id = serializers.URLField(source="get_public_id",read_only=True)
-    author = AuthorSerializer()
+    author = AuthorSerializer(required=True)
+    summary = serializers.CharField(source="get_summary", read_only=True)
+
+    def create(self, validated_data):
+        print("VALI DATAs")
+        print(validated_data)
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+       
+        if not Like.objects.filter(author=author, object=validated_data.get("object")):
+
+            return "already liked"
+        else:
+            id = str(uuid.uuid4())
+            return Like.objects.create(**validated_data, author=author, id = id)
+
     class Meta:
         model = Like
         fields = [
@@ -83,7 +111,6 @@ class LikeSerializer(serializers.ModelSerializer):
             "type",
             "author",
             "object",
-            "id",
         ]
 
 class ImageSerializer(serializers.ModelSerializer):

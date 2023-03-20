@@ -9,7 +9,7 @@ from django.urls import reverse,reverse_lazy
 from django.views import generic
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from author.pagination import InboxSetPagination
+from author.pagination import *
 from posts.serializers import *
 from .models import *
 from .serializers import *
@@ -76,20 +76,25 @@ response_schema_dict = {
         }
     )}
 
-@swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Authors registered")
-@api_view(['GET'])
 
-def get_authors(request):
-    """
-    Get the list of authors on our website
-    """
-    authors = Author.objects
-    serializer = AuthorSerializer(authors, many=True)
-    return Response(serializer.data)
+class AuthorsListView(APIView, PageNumberPagination):
+    # for pagination
+    page_size = 10
+    page_size_query_param = 'size'
+    max_page_size = 100
 
+    @swagger_auto_schema(responses=response_schema_dict,operation_summary="List of Authors registered")
+    def get(self, request):
+        
+        """
+        Get the list of authors on our website
+        """
+        authors = Author.objects.all()
+        authors=self.paginate_queryset(authors, request) 
+        serializer = AuthorSerializer(authors, many=True)
+        return self.get_paginated_response(serializer.data)
 
 class AuthorView(APIView):
-    
     def validate(self, data):
         if 'displayName' not in data:
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
@@ -110,23 +115,14 @@ class AuthorView(APIView):
         """
         Update the authors profile
         """
-        author_id = pk_a 
+
+        author = Author.objects.get(pk=pk_a)
            
-        serializer = AuthorSerializer(data=request.data,partial=True)
+        serializer = AuthorSerializer(author,data=request.data,partial=True)
          
         if serializer.is_valid():
-            display = Author.objects.filter(id=author_id).values('displayName')
-            if request.data['displayName'] == '':
-                request.data._mutable = True
-                request.data['displayName'] = display
-            
-            Author.objects.filter(id=author_id).update(**serializer.validated_data)
-            author = Author.objects.get(id=pk_a)
-            serializer = AuthorSerializer(author,partial=True)
-            auth,created = Author.objects.update(**serializer.validated_data, id=author_id)
-            
-            return Response(serializer.data)
-   
+            serializer.save()
+            return Response(serializer.data)                
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -145,7 +141,6 @@ class FollowersView(APIView):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-
         # If url is /authors/authors/author_id/followers/
         if pk ==None:
             followers = author.friends.all()
@@ -153,14 +148,16 @@ class FollowersView(APIView):
             for follower in followers:
                 try: 
                     follower_author = Author.objects.get(id=follower.id)
-                    print (follower_author)
                 except Author.DoesNotExist:
                     error_msg = "Follower id not found"
                     return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
                 followers_list.append(follower_author.follower_to_object())
 
-            # print(followers_list)
-            return Response(followers_list)
+            results = {"type": "followers",
+                    "items": followers_list
+            }
+
+            return Response(results, status=200)
         # else If url is /authors/authors/author_id/followers/foreign_author_id    
         else:
             try:
@@ -255,9 +252,8 @@ class FriendRequestView(APIView):
     serializer_class = FollowRequestSerializer
     
     def post(self,request,pk_a):
-        
         actor = Author.objects.get(id=pk_a)
-        displaynameto = request.data['object.displayName']
+        displaynameto = request.data['displayName']
         displaynamefrom=actor.displayName
         objects = Author.objects.filter(displayName = displaynameto)[0]
 
@@ -275,7 +271,7 @@ class FriendRequestView(APIView):
     
 class ViewRequests(APIView):
     serializer_class = FollowRequestSerializer
-    @permission_classes([IsAuthenticated])
+    # @permission_classes([IsAuthenticated])
     def get(self,request,pk_a):
         """
         Get the list of Follow requests for the current Author
@@ -290,38 +286,47 @@ class ViewRequests(APIView):
         serializer = FollowRequestSerializer(requests,many=True)
         return Response(serializer.data)
 
-
-
 class InboxSerializerObjects:
     def serialize_inbox_objects(self, item, context={}):
         # return the serializer data of all objects in inbox
         object_model = item.content_type.model_class()
-        print("CONTENT",item.content_object)
         if object_model is Post:
             serializer = PostSerializer
         elif object_model is Like:
             serializer = LikeSerializer
         elif object_model is Comment:
             serializer = CommentSerializer
+        elif object_model is FollowRequest:
+            serializer = FollowRequestSerializer
         return serializer(item.content_object, context=context).data
     
     def deserialize_objects(self, data, pk_a):
         # return serializer of objects to be added to inbox (so we get the object)
         type = data.get('type')
+        print(data)
+        print(2222222222222222222222222222)
         obj = None
         if type is None:
             raise exceptions
-        context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+        
         if type == Post.get_api_type():
-            #print(data["id"].split("/")[-1])
             obj = Post.objects.get(id=(data["id"].split("/")[-1]))
             serializer = PostSerializer
+            context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
         elif type == Like.get_api_type():
-            obj = Like.objects.get(id=data["id"].split("/")[-1])
+            # TODO: Add a check to see if the author liked that object before, then just return obj
             serializer = LikeSerializer
+            context={'author_id': data["author_id"]}
         elif type == Comment.get_api_type():
             serializer = CommentSerializer
-        return obj or serializer(data=data, context=context)
+            context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+        elif type == FollowRequest.get_api_type():
+            serializer = FollowRequestSerializer
+            context={'actorr': data["actor"]["id"],'objectt':data["object"]["id"]}
+            
+         
+      
+        return obj or serializer(data=data, context=context, partial=True)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     """
@@ -352,32 +357,54 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             1. If the object is from a foreign author and not in database: a full object (Like, Author, Comment) with mandatory fields required, TYPE, id, author.
             2. If object in database: TYPE, id.
         """
-
+        print(self.request.data)
+        print(784392478932479328798327)
         author = get_object_or_404(Author,pk=pk_a)
         serializer = self.deserialize_objects(
             self.request.data, pk_a)
+        print(serializer)
+        
         # Case 1: friend author is outside the server, we create all these objects in our database (not sure)
         try:
             if serializer.is_valid():
+                print(99999999999999999999999999999999999999)
                 item = serializer.save()
+                if item=="already liked":
+                    return Response("Post Already Liked!")
+                if item == "already sent":
+                    return Response("You've already sent a request to this user!")
+                if item == "same":
+                    return Response("You cannot send a follow request to yourself!")
                 if hasattr(item, 'update_fields_with_request'):
                     item.update_fields_with_request(request)
             else: 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Case 2: author is within the server
-        except AttributeError:
+        except AttributeError as e:
             item = serializer   
         inbox_item = Inbox(content_object=item, author=author)
         inbox_item.save()
         return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
     
+    
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Delete all the objects in the inbox")
+    def delete(self, request, pk_a):
+        # GET all objects in inbox, only need auth in request
+        try: 
+            author = get_object_or_404(Author,pk=pk_a)
+            author.inbox.all().delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Post.DoesNotExist:
+            return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
+    
+    
     def get_items(self,pk_a,data):
         # helper function 
-
-        dict = {"type":"inbox", "author": settings.APP_NAME + 'authors/' + pk_a }
+        
+        dict = {"type":"inbox", "author": settings.APP_NAME + '/authors/' + pk_a }
         items = []
         for item in data:
-            print("content", item["content_object"])
             items.append(item["content_object"])
 
         dict["items"] = items

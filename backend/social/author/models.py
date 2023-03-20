@@ -5,8 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 from django.db.models import Q
 from django.urls import reverse
-
-APP_NAME = 'http://127.0.0.1:8000'
+from django.conf import settings
 
 # Create your models here.
 class Author(models.Model):
@@ -18,7 +17,7 @@ class Author(models.Model):
     profileImage = models.URLField(editable=True,blank=True, max_length=500) # profile image of author, optional
     url = models.URLField(editable=False, max_length=500)  # url of author profile
     host = models.URLField(editable=False, max_length=500)  # host server
-
+    github = models.URLField(max_length=500, default="", blank=True)  # Github url field
 
     # make it pretty
     def __str__(self):
@@ -42,9 +41,9 @@ class Author(models.Model):
     # return the author public ID
     def get_public_id(self):
         if not self.url: 
-            self.url = self.get_absolute_url()
+            self.url = settings.APP_NAME + self.get_absolute_url()
             self.save()
-        return (APP_NAME+self.url) or str(self.id)   
+        return (self.url) or str(self.id)   
     
     def follower_to_object(self):
         return {"type":"author",
@@ -52,7 +51,7 @@ class Author(models.Model):
             "url":self.url,
             "host":self.host,
             "displayName":self.displayName,
-            # "github":self.github
+            "github":self.github,
             "profileImage":self.profileImage
         } 
     
@@ -62,6 +61,7 @@ class Inbox(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(blank=True, null=True,max_length=255)
     content_object = GenericForeignKey('content_type', 'object_id')
+    published = models.DateTimeField(auto_now_add=True, editable=False)  # date published
 
     def __str__(self):
         return self.id
@@ -74,17 +74,26 @@ class Inbox(models.Model):
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
+        ordering = ['-published']
 
 class FollowRequest(models.Model):
-    Type =models.CharField(max_length=255, blank=True)
+    #type =models.CharField(max_length=255, blank=True)
     actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
     object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
-    Summary =models.CharField(max_length=255, blank=True)
+    Summary = models.CharField(max_length=255, default = '')
     accepted = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('actor','object')
-
+    
+    @staticmethod
+    def get_api_type():
+        return 'Follow'
+    
+    def get_summary(self):
+        summary  = self.actor.displayName + " wants to follow " + self.object.displayName
+        return summary
+    
     def __str__(self):
         return f'{self.actor} follow {self.object}'
         

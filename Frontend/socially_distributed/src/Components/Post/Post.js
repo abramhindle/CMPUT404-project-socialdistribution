@@ -5,6 +5,7 @@ import ShareIcon from "@rsuite/icons/legacy/Reply";
 import COMMENTS from "./Comment";
 import "./Post.css";
 import ReactMarkdown from "react-markdown";
+import LIKE from "./Like";
 // Component Imports
 
 function POST({ postobj }) {
@@ -44,24 +45,20 @@ function POST({ postobj }) {
 				circle
 				src="https://avatars.githubusercontent.com/u/12592949"
 			></Avatar>
-			<h4
+			<div
 				style={{
 					marginLeft: "10px",
 					float: "left",
 				}}
 			>
 				{post["author"]["displayName"]}
-			</h4>
+			</div>
 			<IconButton
 				style={{ float: "right", marginRight: "10px" }}
 				appearance="subtle"
 				icon={<ShareIcon />}
 			/>
-			<IconButton
-				style={{ float: "right", marginRight: "10px" }}
-				appearance="subtle"
-				icon={<ThumbsUpIcon />}
-			/>
+			<LIKE postObj={postobj} />
 		</div>
 	);
 
@@ -74,8 +71,26 @@ function POST({ postobj }) {
 			}}
 		>
 			<div style={{ height: "auto" }}>
-				<h3>{post["title"]}</h3>
-				<h5>{post["description"]}</h5>
+				<div
+					style={{
+						marginLeft: "5px",
+						fontFamily: "Times New Roman",
+						fontWeight: "bold",
+						fontSize: "20px",
+					}}
+				>
+					{post["title"]}
+				</div>
+				<div
+					style={{
+						marginLeft: "5px",
+						fontFamily: "Times New Roman",
+						fontWeight: "bold",
+						fontSize: "15px",
+					}}
+				>
+					{post["description"]}
+				</div>
 				{body()}
 			</div>
 			<Panel bordered collapsible header="Comments">

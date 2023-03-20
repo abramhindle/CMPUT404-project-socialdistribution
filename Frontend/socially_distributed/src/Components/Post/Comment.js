@@ -28,8 +28,7 @@ function COMMENTS({ postobj }) {
 			postObj.id.length - len,
 			postObj.id.length
 		);
-		const url = `posts/authors/${author_id}/posts/${post_id}/comments`;
-		getComments(url);
+		getComments(`posts/authors/${author_id}/posts/${post_id}/comments`);
 	}, []);
 
 	const handleSubmitClick = () => {
@@ -43,12 +42,13 @@ function COMMENTS({ postobj }) {
 			postObj.id.length - len,
 			postObj.id.length
 		);
-		const params = { comment: new_comment };
+		const params = { comment: new_comment,  };
 		const url = `posts/authors/${author_id}/posts/${post_id}/comments/`;
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
 					getComments(url);
+					set_new_comment("");
 				}
 			})
 			.catch((err) => console.log(err));
@@ -58,6 +58,7 @@ function COMMENTS({ postobj }) {
 		<div>
 			{commentObj.comments.map((obj) => (
 				<div
+					key={obj.id}
 					style={{
 						width: "100%",
 						border: "0.5px solid lightgrey",

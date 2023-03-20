@@ -2,6 +2,8 @@ import uuid
 from django.urls import reverse
 from rest_framework import serializers, exceptions
 from .models import *
+from django.http import HttpResponse
+
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -15,18 +17,12 @@ class AuthorSerializer(serializers.ModelSerializer):
         return author
     @staticmethod
     def extract_and_upcreate_author(validated_data, author_id=None):
-        validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
-        print("validated",validated_author_data)
-        try:
-            if validated_author_data:
-                print("if case")
-                updated_author = AuthorSerializer._upcreate(validated_author_data)
-            else:
-                print("else case")
-                updated_author = Author.objects.get(id=author_id)
-            return updated_author
-        except:
+        #validated_author_data = validated_data.pop('author') if validated_data.get('author') else None
+        updated_author = Author.objects.get(id=author_id)
+        if not updated_author:
             raise exceptions.ValidationError("Author does not exist")
+        else:
+            return updated_author
     
     def to_representation(self, instance):
         id = instance.get_public_id()
@@ -41,21 +37,41 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = [
             'type', 
             'id', 
-            #'host',
+            'url',
+            'host',
             'displayName',
-            #'url',
-            #'github',
+            'github',
             'profileImage',
         ]
 
 class FollowRequestSerializer(serializers.ModelSerializer):
     #to_user = serializers.CharField(default = 'x')
-    
-    actor = AuthorSerializer()
-    object = AuthorSerializer()
+    type = serializers.CharField(default="Follow",source="get_api_type",read_only=True)
+    Summary = serializers.CharField(source="get_summary", read_only=True)
+
+    actor = AuthorSerializer(required=True)
+    object = AuthorSerializer(required=True)
+
+    #actor = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all())
+   # object = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all())
+    def create(self,validated_data):
+        actor = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["actorr"])
+        object = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["objectt"])
+
+        if FollowRequest.objects.filter(actor=actor, object=object).exists():
+            return "already sent"
+        elif actor==object:
+            return "same"
+        else:
+
+             return FollowRequest.objects.create(actor=actor,object=object)
+
+
+
+
     class Meta:
         model = FollowRequest
-        fields = ['Type','Summary','actor', 'object']
+        fields = ['type','Summary','actor', 'object']
         
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="inbox",source="get_api_type",read_only=True)
@@ -69,3 +85,11 @@ class InboxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inbox
         fields = ['type', 'author', 'content_type', 'object_id' ,'content_object']
+
+
+
+
+
+
+
+
