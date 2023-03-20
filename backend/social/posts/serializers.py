@@ -76,6 +76,7 @@ class CommentSerializer(serializers.ModelSerializer):
         comment = Comment.objects.create(**validated_data, author = author, id = id, post=self.context["post"])
         comment.save()
         return comment
+    
 
     class Meta:
         model = Comment

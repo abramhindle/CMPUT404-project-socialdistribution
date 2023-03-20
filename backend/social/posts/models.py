@@ -151,7 +151,7 @@ class Like(models.Model):
         return (self.url) or str(self.id)
 
     def get_summary(self):
-        return self.author.displayName + " Likes your post"
+        return self.author.displayName + " Likes your " + str(self.object).split('/')[-2][:-1]
 
     @staticmethod
     def get_api_type():
