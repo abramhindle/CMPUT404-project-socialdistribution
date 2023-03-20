@@ -26,7 +26,7 @@ div.Page {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  color: black;
+  color: white;
 }
 
 .from {
@@ -59,7 +59,7 @@ div.Page {
 }
 
 .timestamp {
-  color: black;
+  color: white;
   font-size: small;
   text-align: right;
   margin-right: 1.5em;

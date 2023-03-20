@@ -7,11 +7,10 @@ import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar/sidebar";
 import "./post-detail.css";
 import { get_post_comments, post_comment } from "../../api/comment_api";
-import { get_post_like } from "../../api/like_api.js";
+import { get_post_like, post_like } from "../../api/like_api.js";
 
 function PostDetail() {
   const { author_id, post_id } = useParams();
-
   const user = useSelector((state) => state.user);
 
   const [postInfo, setPostInfo] = useState(null);
@@ -21,6 +20,7 @@ function PostDetail() {
   const [commentType, setCommentType] = useState("text/plain");
   const [commentPage, setCommentPage] = useState(1);
   const [commentSize, setCommentSize] = useState(5);
+  const [nextCommentPageInfo, setNextCommentPageInfo] = useState(null);
   const [disableCommentNextButton, setDisableCommentNextButton] =
     useState(false);
 
@@ -75,6 +75,7 @@ function PostDetail() {
   const preCheckNextCommentPage = (commentData) => {
     if (commentData.items.length === 0) {
       setDisableCommentNextButton(true);
+      setNextCommentPageInfo(commentData);
     } else {
       setDisableCommentNextButton(false);
     }
@@ -125,7 +126,7 @@ function PostDetail() {
           <div className="message">
             <div className="from">
               <h6>
-                <a href={authorUrl}>{postInfo.author.displayName}</a>
+                <Link to={authorUrl}>{postInfo.author.displayName}</Link>
               </h6>
               <img alt="author" src={postInfo.author.profileImage}></img>
             </div>
@@ -150,7 +151,19 @@ function PostDetail() {
           </div>
           <div className="Social">
             {likeInfo && <div>{likeInfo.items.length} Liked this post</div>}
-            <button>Like</button>
+            <button
+              onClick={() =>
+                post_like(
+                  `http://localhost/authors/${author_id}`,
+                  user,
+                  `http://localhost/authors/${author_id}/posts/${post_id}`,
+                  "context"
+                  //like_success
+                )
+              }
+            >
+              Like
+            </button>
             {shareable && (
               <div className="share">
                 {/* Only show if shareable */}
@@ -188,7 +201,7 @@ function PostDetail() {
           <div className="comments">
             {commentsInfo &&
               commentsInfo.items.map((comment) => (
-                /** TODO: Using Comment View once it is implemented */
+                /** TODO: Use Comment View once it is implemented */
                 <div key={comment.id}>{comment.comment}</div>
               ))}
             <button
