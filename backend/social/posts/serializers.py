@@ -113,7 +113,6 @@ class LikeSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     image = Base64ImageField()
-    print(image)
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer(required=False)
     # visibility is public by default

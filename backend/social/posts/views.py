@@ -286,7 +286,6 @@ class post_detail(APIView, PageNumberPagination):
                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
             
         serializer = PostSerializer(post, data=request.data, partial=True)
-        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -394,8 +393,6 @@ class ImageView(APIView):
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
             authenticated_user = Author.objects.get(id=pk_a)
-
-            print(post.contentType)
 
             # not image post
             if post.contentType and 'image' not in post.contentType:
