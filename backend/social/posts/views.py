@@ -25,6 +25,15 @@ import base64
 import json
 from .image_renderer import JPEGRenderer, PNGRenderer
 
+
+custom_parameter = openapi.Parameter(
+    name='custom_param',
+    in_=openapi.IN_QUERY,
+    description='A custom parameter for the POST request',
+    type=openapi.TYPE_STRING,
+    required=True,
+)
+
 response_schema_dictposts = {
     "200": openapi.Response(
         description="Successful Operation",

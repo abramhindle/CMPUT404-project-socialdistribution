@@ -17,6 +17,15 @@ from social.serializers import UserSerializer
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 
+custom_parameter = openapi.Parameter(
+    name='custom_param',
+    in_=openapi.IN_QUERY,
+    description='A custom parameter for the POST request',
+    type=openapi.TYPE_STRING,
+    required=True,
+)
+
+
 class register(APIView):
     def post(self, request):
         """Register a django user to make them an author"""

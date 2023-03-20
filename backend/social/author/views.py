@@ -27,6 +27,15 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 
+custom_parameter = openapi.Parameter(
+    name='custom_param',
+    in_=openapi.IN_QUERY,
+    description='A custom parameter for the POST request',
+    type=openapi.TYPE_STRING,
+    required=True,
+)
+
+
 response_schema_dict = {
     "200": openapi.Response(
         description="Successful Operation",
@@ -345,7 +354,8 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         # TODO: Fix pagination
         return self.get_paginated_response(data)
     
-    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Post a new object to the inbox")
+    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Post a new object to the inbox",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
+
     def post(self, request, pk_a):
         """
             POST a new object to inbox
@@ -361,6 +371,9 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         try:
             if serializer.is_valid():
                 item = serializer.save()
+                if self.request.data['type'] == "Follow":
+                    objectid = self.request.data['object']['id']
+                    author = get_object_or_404(Author,pk=objectid)
                 if item=="already liked":
                     return Response("Post Already Liked!")
                 if item == "already sent":
