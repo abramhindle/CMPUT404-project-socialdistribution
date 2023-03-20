@@ -11,6 +11,7 @@ RUN git pull
 RUN pip3 install -r requirements.txt --no-cache-dir
 # ENTRYPOINT ["python3"] 
 # CMD ["manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "social_net.wsgi"]
 
 # FROM --platform=$BUILDPLATFORM python:3.8-slim-buster AS builder
 # EXPOSE 8000
