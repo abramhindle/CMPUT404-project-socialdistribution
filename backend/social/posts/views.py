@@ -190,7 +190,7 @@ class post_list(APIView, PageNumberPagination):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class CommentDetailView(APIView, PageNumberPagination):
+class CommentDetailView(APIView):
     
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
@@ -199,12 +199,12 @@ class CommentDetailView(APIView, PageNumberPagination):
         """
         # ERROR HERE
         try: 
-            comment = Comment.objects.filter(id=pk_m)
-            comment = self.paginate_queryset(comment, request) 
-            serializer = CommentSerializer(comment, many=True)
-            return self.get_paginated_response(serializer.data)
-        except Comment.DoesNotExist: 
-            return self.put(request, pk_a, pk)
+            comment = Comment.objects.get(id=pk_m)
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
+        except Post.DoesNotExist: 
+            error_msg = "Comment not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
