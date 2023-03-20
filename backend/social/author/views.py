@@ -92,7 +92,7 @@ class AuthorsListView(APIView, PageNumberPagination):
     page_size_query_param = 'size'
     max_page_size = 100
 
-    @swagger_auto_schema(responses=response_schema_dict,operation_summary="List of Authors registered")
+    @swagger_auto_schema(operation_summary="List of Authors registered")
     def get(self, request):
         
         """
@@ -109,7 +109,7 @@ class AuthorView(APIView):
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
         return data 
 
-    @swagger_auto_schema(responses=response_schema_dict,operation_summary="Finds Author by iD")
+    @swagger_auto_schema(operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
 
         """
@@ -119,7 +119,7 @@ class AuthorView(APIView):
         serializer = AuthorSerializer(author,partial=True)
         return  Response(serializer.data)
     
-    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Update a particular Authors profile")
+    @swagger_auto_schema(operation_summary="Update a particular Authors profile",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
     def put(self, request, pk_a):
         """
         Update the authors profile
@@ -190,6 +190,7 @@ class FollowersView(APIView):
     #call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/
     #Implement later after talking to group 
     # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="New Follower")
+    #request_body=openapi.Schema( operation_summary = "type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
     def put(self, request, pk_a, pk):
         try:
             author = Author.objects.get(id=pk_a)
@@ -257,6 +258,7 @@ class FollowersView(APIView):
         # return the new list of followers
         return Response(followers_list)
 
+#request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 class FriendRequestView(APIView):
     serializer_class = FollowRequestSerializer
     
@@ -341,7 +343,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     serializer_class = InboxSerializer
     pagination_class = InboxSetPagination
 
-    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Get all the objects in the inbox")
+    @swagger_auto_schema(operation_summary="Get all the objects in the inbox")
     def get(self, request, pk_a):
         # GET all objects in inbox, only need auth in request
 
@@ -354,7 +356,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         # TODO: Fix pagination
         return self.get_paginated_response(data)
     
-    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Post a new object to the inbox",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
+    @swagger_auto_schema(operation_summary="Post a new object to the inbox",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 
     def post(self, request, pk_a):
         """
@@ -392,7 +394,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
     
     
-    @swagger_auto_schema( responses=response_schema_dict,operation_summary="Delete all the objects in the inbox")
+    @swagger_auto_schema(operation_summary="Delete all the objects in the inbox")
     def delete(self, request, pk_a):
         # GET all objects in inbox, only need auth in request
         try: 

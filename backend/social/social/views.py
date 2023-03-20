@@ -16,7 +16,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from social.serializers import UserSerializer
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
-
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 custom_parameter = openapi.Parameter(
     name='custom_param',
     in_=openapi.IN_QUERY,
