@@ -250,6 +250,8 @@ class post_detail(APIView, PageNumberPagination):
         except Post.DoesNotExist: 
             error_msg = "Comment not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
     
     #content for creating a new post object
     #{

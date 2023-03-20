@@ -178,7 +178,7 @@ class TestAuthor(APITestCase):
         }
         url = reverse('authors:inbox',kwargs={'pk_a':test_id})
         response = self.client.post(url,json.dumps(post_data),content_type="application/json")
-        print(response)
+
 
         self.assertEqual(response.status_code,status.HTTP_200_OK)
 

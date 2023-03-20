@@ -26,7 +26,6 @@ class TestPosts(APITestCase):
             'displayName':test_name[0].strip(),
         }
         post_data = {
-            'author':author_data,
             'type':'post',
             'title':'test',
             'description':'testing testy test',
@@ -38,16 +37,38 @@ class TestPosts(APITestCase):
         response = self.client.post(url,json.dumps(post_data),content_type="application/json")
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
-
-        # TODO:extract the post ID from the response
         
         post_id = str(Post.objects.all()[0].id)
-
+        
         # test the get
-        response = self.client.get(url+post_id+'/')
+        url = url+post_id+'/'
+        response = self.client.get(url)
         
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
+
+        #Testing editing a shared post
+        post_data = {
+            'title':'testUpdated',
+            'description':'testing testy testUpdated',
+        }
+
+        response = self.client.post(url,json.dumps(post_data),content_type="application/json")
+        self.assertEqual(response.status_code,status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        #Testing DELETE for an individual post
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code,status.HTTP_204_NO_CONTENT)
+
+        #Testing PUT where the postiD is custom
+        url = reverse('posts:detail',kwargs={'pk_a':test_id,'pk':'MyCustomID'})
+        post_data = {
+            'title':'custom title',
+        }
+        response = self.client.put(url,json.dumps(post_data),content_type="application/json")
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"custom title")
+
 
     
 
@@ -64,7 +85,7 @@ class TestPosts(APITestCase):
         url = reverse('posts:posts',kwargs={'pk_a':test_id})
         # test image converted to base64
         with open("media/test_img/test_img.png", "rb") as png_image:
-            base64_image = base64.b64encode(png_image.read())
+            base64_image = base64.b64encode(png_image.read()).decode('utf-8')
         # set up the json object with that data
         author_data = {
             'id':test_id,
