@@ -290,7 +290,10 @@ class post_detail(APIView, PageNumberPagination):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LikedView(APIView):
+class LikedView(APIView, PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'size'
+    max_page_size = 100
 
     # TODO: RESPONSE AND REQUESTS
     
@@ -306,9 +309,10 @@ class LikedView(APIView):
             error_msg = "Author not found"
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         likes = Like.objects.filter(author=author)
+        likes = self.paginate_queryset(likes, request)
         serializer = LikeSerializer(likes, many=True)
         data = self.get_items(pk_a, serializer.data)
-        return Response(data)
+        return self.get_paginated_response(data)
     
     def get_items(self,pk_a,data):
         # helper function 
@@ -438,6 +442,9 @@ class ImageView(APIView):
 
 # hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'size'
+    max_page_size = 100
     serializer_class = CommentSerializer
     pagination_class = PostSetPagination
 
@@ -464,11 +471,11 @@ class CommentView(APIView, PageNumberPagination):
             if post.author != authenticated_user:
                 comments = comments.exclude(author=post.author.friends)
                 
+        comments = self.paginate_queryset(comments, request)
         serializer = CommentSerializer(comments, many=True)
-
         commentsObj = {}
         commentsObj['comments'] = serializer.data
-        return Response(commentsObj)
+        return Response(self.get_paginated_response(commentsObj))
 
     
     def post(self, request,pk_a, pk):
