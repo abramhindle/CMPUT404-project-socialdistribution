@@ -31,7 +31,10 @@ class Author(models.Model):
     def get_absolute_url(self):
         # get the url for a single author
         url = reverse('authors:detail', args=[str(self.id)])
-        return url[:-1] if url.endswith('/') else url 
+        url = settings.APP_NAME + url
+        self.url = url[:-1] if url.endswith('/') else url 
+        self.save()
+        return self.url
     
     def update_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self.get_absolute_url())
@@ -40,10 +43,7 @@ class Author(models.Model):
     
     # return the author public ID
     def get_public_id(self):
-        if not self.url: 
-            self.url = self.get_absolute_url()
-            self.save()
-        return (settings.APP_NAME+self.url) or str(self.id)   
+        return (self.url) or str(self.id)   
     
     def follower_to_object(self):
         return {"type":"author",
@@ -74,13 +74,13 @@ class Inbox(models.Model):
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
         ]
-        ordering = ['published']
+        ordering = ['-published']
 
 class FollowRequest(models.Model):
-    type =models.CharField(max_length=255, blank=True)
+    #type =models.CharField(max_length=255, blank=True)
     actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
     object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
-    Summary = models.CharField(max_length=255, blank=True)
+    summary = models.CharField(max_length=255, default = '')
     accepted = models.BooleanField(default=False)
 
     class Meta:
@@ -89,6 +89,10 @@ class FollowRequest(models.Model):
     @staticmethod
     def get_api_type():
         return 'Follow'
+    
+    def get_summary(self):
+        summary  = self.actor.displayName + " wants to follow " + self.object.displayName
+        return summary
     
     def __str__(self):
         return f'{self.actor} follow {self.object}'

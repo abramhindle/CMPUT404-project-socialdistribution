@@ -44,7 +44,7 @@ class Post(models.Model):
     visibility = models.CharField(choices=visbility_choices, default=PUBLIC, max_length=20)  # visibility status of post
     inbox = GenericRelation(Inbox, related_query_name='post')  # inbox in which post is in
     published = models.DateTimeField(auto_now_add=True)  # date published
-    count = models.PositiveIntegerField(default=0)
+    count = models.PositiveIntegerField(default=0, blank=True)
     commentsSrc = models.CharField(max_length=255, default="", blank=True)
     
     image = models.ImageField(null=True,blank=True, default="")  # reference to an image in the DB
@@ -63,9 +63,7 @@ class Post(models.Model):
 
     # get public id of post
     def get_public_id(self):
-        if not self.url: 
-            self.url = settings.APP_NAME + self.get_absolute_url()
-            self.save()
+        self.get_absolute_url()
         return (self.url) or str(self.id)
     
     # get comments url
@@ -86,7 +84,10 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
-        return url[:-1] if url.endswith('/') else url 
+        url = settings.APP_NAME + url
+        self.url = url[:-1] if url.endswith('/') else url 
+        self.save()
+        return self.url
 
     def get_source(self):
         #set post source (URL to source)
@@ -112,6 +113,7 @@ class Comment(models.Model):
     published = models.DateTimeField(auto_now_add=True)  # date published
     contentType = models.CharField(choices=content_types, default=PLAIN, max_length=20)  # type of content
     inbox = GenericRelation(Inbox, related_query_name='comment')  # inbox in which post is in
+    
 
     # get public id of comment
     def get_public_id(self):
@@ -121,7 +123,7 @@ class Comment(models.Model):
         return (self.url) + "/" + str(self.id) or str(self.id)
     
     def get_absolute_url(self):
-        url = reverse('posts:comments', args=[str(self.author.id), str(self.post.id)])
+        url = reverse('posts:comments', args=[str(self.post.author.id), str(self.post.id)])
         return url[:-1] if url.endswith('/') else url 
     
     @staticmethod
@@ -129,7 +131,7 @@ class Comment(models.Model):
         return 'comment'
     
     class Meta:
-        ordering = ['published']
+        ordering = ['-published']
 
     def __str__(self):
         return 'Comment by {}'.format(self.author)
@@ -154,6 +156,11 @@ class Like(models.Model):
     @staticmethod
     def get_api_type():
         return 'Like'
+    
+    def __str__(self):
+        return 'Liked by {}'.format(self.author)
+    
+    ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGEike'
     
     def __str__(self):
         return 'Liked by {}'.format(self.author)

@@ -1,32 +1,33 @@
 import React, { useLayoutEffect, useState } from "react";
 import { Avatar } from "rsuite";
 import axios from "axios";
+import { getAuthorId } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
+import PROFILEIMAGE from "./ProfileImage";
 
 function FRIENDS() {
-	// make a get request to get author and every post the author made and comments on the posts
-	// make a get request to get all the friends of an author
 	const [friends, setFriends] = useState({ items: [] });
+	let navigate = useNavigate();
 
 	useLayoutEffect(() => {
-		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const AUTHOR_ID = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
-		const url = `authors/${AUTHOR_ID}/followers/`;
-		axios({
-			method: "get",
-			url: url,
-		}).then((res) => {
-			console.log(res.data);
-			setFriends(res.data);
-		});
+		if (!localStorage.getItem("loggedIn")) {
+			navigate("/login");
+		} else {
+			const AUTHOR_ID = getAuthorId(null);
+			const url = `authors/${AUTHOR_ID}/followers/`;
+			axios({
+				method: "get",
+				url: url,
+			}).then((res) => {
+				setFriends(res.data);
+			});
+		}
 	}, []);
 
 	const item = (obj) => {
 		return (
 			<div
+				key={obj.id}
 				style={{
 					height: "50px",
 					border: "0.5px solid lightgrey",
@@ -36,10 +37,10 @@ function FRIENDS() {
 			>
 				<div style={{ padding: "5px" }}>
 					<Avatar
-						style={{ float: "left" }}
+						style={{ float: "left", marginBotton: "5px" }}
 						circle
-						src="https://avatars.githubusercontent.com/u/12592949"
-					></Avatar>
+						src={obj["profileImage"]} //{follow[actor][profileImage]} replace this with the actors profile image url
+					/>
 					<h5
 						style={{
 							marginLeft: "10px",

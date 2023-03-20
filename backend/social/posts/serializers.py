@@ -7,21 +7,16 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from drf_base64.fields import Base64ImageField
 import uuid 
 
-class AlreadyLikedException(Exception):
-    "Liked already"
-    pass
-
 class PostSerializer(WritableNestedModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     id = serializers.CharField(source="get_public_id", read_only=True)
-    count = serializers.IntegerField(read_only=True)
+    count = serializers.IntegerField(read_only=True, default=0)
     comments = serializers.URLField(source="get_comments_source", read_only=True)
     commentsSrc = serializers.JSONField(read_only=True)
     author = AuthorSerializer(required=False)
-    count = serializers.IntegerField()
     source = serializers.URLField(source="get_source", read_only=True, max_length=500)  # source of post
     origin = serializers.URLField(source="get_origin", read_only=True, max_length=500)  # origin of post
-    categories = serializers.CharField(max_length=300)
+    categories = serializers.CharField(max_length=300, default="")
     
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
@@ -35,7 +30,7 @@ class PostSerializer(WritableNestedModelSerializer):
         id = instance.get_public_id()
         id = id[:-1] if id.endswith('/') else id
         categories_list = instance.categories.split(",")
-        comments_list = Comment.objects.filter(post=instance)
+        comments_list = Comment.objects.filter(post=instance).order_by('-published')[0:5]
         commentsSrc = [CommentSerializer(comment,many=False).data for comment in comments_list]
         return {
             **super().to_representation(instance),
@@ -73,11 +68,14 @@ class CommentSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
 
     def create(self, validated_data):
-        author = AuthorSerializer.extract_and_upcreate_author(author_id=self.context["author_id"])
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data,author_id=self.context["author_id"])
         id = validated_data.pop('id') if validated_data.get('id') else None
+        
         if not id:
             id = self.context["id"]
-        return Comment.objects.create(**validated_data, author = author, id = id, post=self.context["post"])
+        comment = Comment.objects.create(**validated_data, author = author, id = id, post=self.context["post"])
+        comment.save()
+        return comment
 
     class Meta:
         model = Comment
@@ -97,10 +95,10 @@ class LikeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
-        try: 
-            _ = Like.objects.filter(author=author, object=validated_data.get("object"))
+       
+        if Like.objects.filter(author=author, object=validated_data.get("object")).exists():
             return "already liked"
-        except: 
+        else:
             id = str(uuid.uuid4())
             return Like.objects.create(**validated_data, author=author, id = id)
 

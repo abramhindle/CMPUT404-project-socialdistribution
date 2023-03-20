@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import { Input, InputGroup, Panel } from "rsuite";
-import { Scrollbars } from "react-custom-scrollbars-2";
+import { Input, InputGroup } from "rsuite";
 import axios from "axios";
+import { getAuthorId } from "../utils/auth";
 // Component Imports
+import COMMENTLIKE from "./LikeComment";
 
 function COMMENTS({ postobj }) {
 	const [commentObj, setCommentObj] = useState({ comments: [] });
@@ -18,33 +19,17 @@ function COMMENTS({ postobj }) {
 	};
 
 	useLayoutEffect(() => {
-		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const author_id = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
-		const post_id = postObj.id.slice(
-			postObj.id.length - len,
-			postObj.id.length
-		);
-		console.log(post_id);
+		const author_id = getAuthorId(null);
+		const post_id = getAuthorId(postObj.id);
 		getComments(`posts/authors/${author_id}/posts/${post_id}/comments`);
 	}, []);
 
 	const handleSubmitClick = () => {
-		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const author_id = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
-		const post_id = postObj.id.slice(
-			postObj.id.length - len,
-			postObj.id.length
-		);
-		const params = { comment: new_comment };
-		const url = `posts/authors/${author_id}/posts/${post_id}/comments/`;
+		const FAID = getAuthorId(postObj.author["id"]);
+		const author_id = getAuthorId(null);
+		const post_id = getAuthorId(postObj.id);
+		const params = { comment: new_comment, author_id: author_id };
+		const url = `posts/authors/${FAID}/posts/${post_id}/comments/`;
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
@@ -67,6 +52,7 @@ function COMMENTS({ postobj }) {
 						marginBottom: "2px",
 					}}
 				>
+					{/* <text>{obj.id}</text> */}
 					<text
 						style={{
 							marginLeft: "10px",
@@ -76,6 +62,7 @@ function COMMENTS({ postobj }) {
 						{obj["author"]["displayName"]}
 					</text>
 					<text>: {obj["comment"]}</text>
+					<COMMENTLIKE obj={obj.id} />
 				</div>
 			))}
 

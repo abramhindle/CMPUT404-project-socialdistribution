@@ -9,7 +9,7 @@ from django.urls import reverse,reverse_lazy
 from django.views import generic
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from author.pagination import InboxSetPagination
+from author.pagination import *
 from posts.serializers import *
 from .models import *
 from .serializers import *
@@ -26,7 +26,6 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
-from posts.serializers import AlreadyLikedException
 
 response_schema_dict = {
     "200": openapi.Response(
@@ -77,20 +76,25 @@ response_schema_dict = {
         }
     )}
 
-@swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Authors registered")
-@api_view(['GET'])
 
-def get_authors(request):
-    """
-    Get the list of authors on our website
-    """
-    authors = Author.objects
-    serializer = AuthorSerializer(authors, many=True)
-    return Response(serializer.data)
+class AuthorsListView(APIView, PageNumberPagination):
+    # for pagination
+    page_size = 10
+    page_size_query_param = 'size'
+    max_page_size = 100
 
+    @swagger_auto_schema(responses=response_schema_dict,operation_summary="List of Authors registered")
+    def get(self, request):
+        
+        """
+        Get the list of authors on our website
+        """
+        authors = Author.objects.all()
+        authors=self.paginate_queryset(authors, request) 
+        serializer = AuthorSerializer(authors, many=True)
+        return self.get_paginated_response(serializer.data)
 
 class AuthorView(APIView):
-    
     def validate(self, data):
         if 'displayName' not in data:
             data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
@@ -275,8 +279,6 @@ class ViewRequests(APIView):
 
         Object = Author.objects.get(id=pk_a)
         displaynamefrom=Object.displayName
-        print(53646456456456)
-        print(FollowRequest.objects.filter(object = Object))
 
         requests = FollowRequest.objects.filter(object = Object)
         serializer = FollowRequestSerializer(requests,many=True)
@@ -316,7 +318,10 @@ class InboxSerializerObjects:
             context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
         elif type == FollowRequest.get_api_type():
             serializer = FollowRequestSerializer
-            context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
+            context={'actorr': data["actor"]["id"],'objectt':data["object"]["id"]}
+            
+         
+      
         return obj or serializer(data=data, context=context, partial=True)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
@@ -348,7 +353,6 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             1. If the object is from a foreign author and not in database: a full object (Like, Author, Comment) with mandatory fields required, TYPE, id, author.
             2. If object in database: TYPE, id.
         """
-
         author = get_object_or_404(Author,pk=pk_a)
         serializer = self.deserialize_objects(
             self.request.data, pk_a)
@@ -359,18 +363,21 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
                 item = serializer.save()
                 if item=="already liked":
                     return Response("Post Already Liked!")
+                if item == "already sent":
+                    return Response("You've already sent a request to this user!")
+                if item == "same":
+                    return Response("You cannot send a follow request to yourself!")
                 if hasattr(item, 'update_fields_with_request'):
                     item.update_fields_with_request(request)
             else: 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Case 2: author is within the server
-        except AlreadyLikedException as e:
-            return Response("Post Already Liked!")
         except AttributeError as e:
             item = serializer   
         inbox_item = Inbox(content_object=item, author=author)
         inbox_item.save()
         return Response({'request': self.request.data, 'saved': model_to_dict(inbox_item)})
+    
     
     @swagger_auto_schema( responses=response_schema_dict,operation_summary="Delete all the objects in the inbox")
     def delete(self, request, pk_a):
@@ -386,12 +393,20 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     
     def get_items(self,pk_a,data):
         # helper function 
-
-        dict = {"type":"inbox", "author": settings.APP_NAME + 'authors/' + pk_a }
+        
+        dict = {"type":"inbox", "author": settings.APP_NAME + '/authors/' + pk_a }
         items = []
         for item in data:
             items.append(item["content_object"])
 
         dict["items"] = items
         return(dict) 
-        
+
+@api_view(['GET'])
+def getAuthor(request, displayName):
+    """
+    Get the list of comments on our website
+    """
+    author = Author.objects.get(displayName=displayName)
+    serializer = AuthorSerializer(author,partial=True)
+    return Response(serializer.data)

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Input,
 	Avatar,
@@ -13,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getAuthorId } from "../utils/auth";
 import PROFILEIMAGE from "../Profile/ProfileImage";
 
-function CREATEPOST() {
+function EDITPOST({ obj, handleClose }) {
 	const [post_status, set_post_status] = useState("Public");
 	const [post_type, set_post_type] = useState("text/plain");
 	const [text, setText] = useState("");
@@ -22,6 +22,25 @@ function CREATEPOST() {
 	const [categories, setCategories] = useState("");
 	const [markdown, setMarkdown] = useState("");
 	const toaster = useToaster();
+
+	const stringify = (arr) => {
+		let str = "";
+		for (let i = 0; i < arr.length; i++) {
+			str = str + arr[i];
+		}
+		return str;
+	};
+
+	useEffect(() => {
+		let x = stringify(obj.categories);
+		setText(obj.content);
+		setDescription(obj.description);
+		setTitle(obj.title);
+		setCategories(x);
+		set_post_status(obj.visibility);
+		set_post_type(obj.contentType);
+		setMarkdown(obj.content);
+	}, []);
 
 	const input = () => {
 		if (post_type === "text/plain") {
@@ -95,10 +114,13 @@ function CREATEPOST() {
 	};
 
 	const notifySuccessPost = () => {
-		toaster.push(<Message type="success">Successful post</Message>, {
-			placement: "topEnd",
-			duration: 5000,
-		});
+		toaster.push(
+			<Message type="success">Successful Edited this post</Message>,
+			{
+				placement: "topEnd",
+				duration: 5000,
+			}
+		);
 	};
 
 	const notifyFailedPost = (error) => {
@@ -109,9 +131,9 @@ function CREATEPOST() {
 	};
 
 	const handlePostClick = () => {
-		const author = JSON.parse(localStorage.getItem("user"));
 		const author_id = getAuthorId(null);
-		const url = `posts/authors/${author_id}/posts/`;
+		const post_id = getAuthorId(obj.id);
+		const url = `posts/authors/${author_id}/posts/${post_id}/`;
 		var params = {
 			title: title,
 			description: description,
@@ -119,19 +141,12 @@ function CREATEPOST() {
 			contentType: post_type,
 			visiblity: post_status,
 			categories: categories,
-			count: 0,
 		};
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
+					handleClose();
 					notifySuccessPost();
-					setText("");
-					setDescription("");
-					setTitle("");
-					setCategories("");
-					set_post_status("Public");
-					set_post_type("text/plain");
-					setMarkdown("");
 				} else {
 					notifyFailedPost(res.data);
 				}
@@ -164,6 +179,7 @@ function CREATEPOST() {
 			<Dropdown
 				title={post_type}
 				activeKey={post_type}
+				disabled
 				onSelect={(eventkey) => set_post_type(eventkey)}
 				style={{ float: "left", marginLeft: "10px" }}
 			>
@@ -203,10 +219,10 @@ function CREATEPOST() {
 				appearance="primary"
 				block
 			>
-				Post
+				Post Edit
 			</Button>
 		</div>
 	);
 }
 
-export default CREATEPOST;
+export default EDITPOST;

@@ -1,42 +1,44 @@
 import React, { useState, useEffect } from "react";
-import { IconButton } from "rsuite";
+import { IconButton, useToaster, Message } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import axios from "axios";
+import { getAuthorId } from "../utils/auth";
 
 // Component Imports
-
 function LIKE({ postObj }) {
 	// const [like, set_like] = useState(likeobj);
 	const [new_like, set_new_like] = useState("");
+	const toaster = useToaster();
 	const postObjUrl = postObj.url;
 
 	//Confirm the name of the button
 	const handleSubmitClick = () => {
-		const author = JSON.parse(localStorage.getItem("user"));
-		const len = 36;
-		const author_name = author.displayName;
-		const author_id = author.id.slice(
-			author.id.length - len,
-			author.id.length
-		);
-		const post_id = postObj.id.slice(
-			postObj.id.length - len,
-			postObj.id.length
-		);
-		const message = author_name + " Liked your post.";
+		const FAID = getAuthorId(postObj.author["id"]);
+		const author_id = getAuthorId(null);
 		const params = {
-			author: author_id,
+			type: "Like",
+			author_id: author_id,
 			object: postObjUrl,
-			summary: message,
 		};
-		const url = `posts/authors/${author_id}/inbox`;
+		const url = `authors/${FAID}/inbox`;
 
 		//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
-				console.log(res.data);
+				toaster.push(
+					<Message type="success">Successful Like</Message>,
+					{
+						placement: "topEnd",
+						duration: 5000,
+					}
+				);
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => {
+				toaster.push(<Message type="error">{err}</Message>, {
+					placement: "topEnd",
+					duration: 5000,
+				});
+			});
 	};
 
 	return (

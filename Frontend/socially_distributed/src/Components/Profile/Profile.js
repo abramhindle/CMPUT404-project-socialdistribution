@@ -1,11 +1,22 @@
-import React, { useState } from "react";
-import { Avatar, ButtonGroup, Panel, Button, Navbar, Nav } from "rsuite";
+import React, { useEffect, useState } from "react";
+import {
+	ButtonGroup,
+	Panel,
+	Button,
+	Navbar,
+	Nav,
+	Input,
+	InputGroup,
+	Message,
+	useToaster,
+} from "rsuite";
 import FRIENDS from "./Friends";
 import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
-import { getCsrfToken } from "../utils/auth";
+import { getAuthorId, getCsrfToken, getProfileImageUrl } from "../utils/auth";
+import PROFILEIMAGE from "./ProfileImage";
 
 function PROFILE() {
 	const [posts, setPosts] = React.useState(true);
@@ -13,7 +24,21 @@ function PROFILE() {
 		posts: "primary",
 		friends: "ghost",
 	});
+	const [author, setAuthor] = useState({});
+	let navigate = useNavigate();
 	const [open, setOpen] = useState(false);
+	const [imageurl, setImage] = useState("");
+	const [giturl, setGiturl] = useState("");
+	let toaster = useToaster();
+
+	useEffect(() => {
+		if (!localStorage.getItem("loggedIn")) {
+			navigate("/login");
+		} else {
+			setImage(getProfileImageUrl);
+			setAuthor(localStorage.getItem("user"));
+		}
+	}, []);
 
 	const handlePostsBtnClick = () => {
 		setPosts(true);
@@ -26,7 +51,6 @@ function PROFILE() {
 	};
 
 	const [curPage, setCurPage] = useState("profile");
-	let navigate = useNavigate();
 
 	const handleInboxClick = () => {
 		navigate("/");
@@ -57,6 +81,44 @@ function PROFILE() {
 		setOpen(false);
 	};
 
+	const notifySuccessPost = (message) => {
+		toaster.push(<Message type="success">{message}</Message>, {
+			placement: "topEnd",
+			duration: 5000,
+		});
+	};
+
+	const notifyFailedPost = (error) => {
+		toaster.push(<Message type="error">{error}</Message>, {
+			placement: "topEnd",
+			duration: 5000,
+		});
+	};
+
+	async function handleGitClick() {
+		const author_id = getAuthorId(null);
+		const url = `authors/${author_id}/`;
+		axios({ method: "post", url: url, data: { github: giturl } })
+			.then((res) => {
+				notifySuccessPost("successfully upadated the giturl");
+			})
+			.error((err) => notifyFailedPost(err));
+	}
+
+	async function handleImageClick() {
+		const author_id = getAuthorId(null);
+		const url = `authors/${author_id}/`;
+		axios({
+			method: "post",
+			url: url,
+			data: { profileImage: imageurl },
+		})
+			.then((res) => {
+				notifySuccessPost("successfully upadated the profile url");
+			})
+			.error((err) => notifyFailedPost(err));
+	}
+
 	return (
 		<div style={{ padding: "10px", width: "60%", margin: "auto" }}>
 			<Navbar>
@@ -75,13 +137,32 @@ function PROFILE() {
 				</Nav>
 			</Navbar>
 			<Panel shaded>
-				<Avatar
-					style={{ float: "left" }}
-					circle
-					src="https://avatars.githubusercontent.com/u/12592949"
-					size="lg"
-				></Avatar>
-				<h2 style={{ marginLeft: "10px", float: "left" }}>Author</h2>
+				<PROFILEIMAGE size="lg" />
+				<h2 style={{ marginLeft: "10px", float: "left" }}>
+					{author["displayName"]}
+				</h2>
+
+				<InputGroup inside style={{ marginTop: "5px" }}>
+					<Input
+						placeholder="Profile Image Url"
+						value={imageurl}
+						onChange={(e) => setImage(e)}
+					/>
+					<InputGroup.Button onClick={handleImageClick}>
+						Save
+					</InputGroup.Button>
+				</InputGroup>
+
+				<InputGroup inside style={{ marginTop: "5px" }}>
+					<Input
+						placeholder="Github Url"
+						value={giturl}
+						onChange={(e) => setGiturl(e)}
+					/>
+					<InputGroup.Button onClick={handleGitClick}>
+						Save
+					</InputGroup.Button>
+				</InputGroup>
 
 				<ButtonGroup
 					justified

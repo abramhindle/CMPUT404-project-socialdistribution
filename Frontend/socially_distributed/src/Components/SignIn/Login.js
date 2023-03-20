@@ -19,8 +19,12 @@ function LOGIN() {
 	let navigate = useNavigate();
 
 	useEffect(() => {
-		unsetCurrentUser();
-		getCsrfToken();
+		if (localStorage.getItem("loggedIn")) {
+			navigate("/");
+		} else {
+			unsetCurrentUser();
+			getCsrfToken();
+		}
 	}, []);
 
 	const handleChange = () => {
@@ -33,17 +37,11 @@ function LOGIN() {
 			password: password,
 		};
 
-		// const token = localStorage.getItem("token");
-		// console.log(token);
-		// let reqInstance = axios.create({
-		// 	headers: { "X-CSRFToken": token },
-		// });
 		await axios({ method: "post", url: "login", data: params })
 			.then(async (res) => {
 				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();
 				setLoggedIn(true);
-				console.log("hello");
 			})
 			.catch((err) => console.log(err));
 	}
