@@ -30,7 +30,6 @@ export const signIn_api = async (username, password, success) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      withCredentials: false
     },
   )
   .then(function (res) {

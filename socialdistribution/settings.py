@@ -48,7 +48,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -169,8 +168,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
 }
 
