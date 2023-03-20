@@ -159,6 +159,7 @@ class post_list(APIView, PageNumberPagination):
                 # if the post author is not the auth'd user, don't show this post
                 if post.author != authenticated_user:
                     posts.exclude(post)
+                    
             if "FRIENDS" in post.visibility:
                 # if the post author is not friends with the auth'd user, don't show this post
                 if authenticated_user not in post.author.friends:
@@ -228,6 +229,7 @@ class post_detail(APIView, PageNumberPagination):
             # if it is private or friends, only continue if author is trying to access it:
             if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:
+                # TODO: specifically shared users
                 if post.author != authenticated_user:
                     error_msg = {"message":"You do not have access to this post!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
