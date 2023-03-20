@@ -12,4 +12,11 @@ rm -rf ./backend/social_net/db.sqlite3
 
 mv -iv ./backend/* ./backend/..
 
+mkdir ./temp
+mv -fv ./social_net/* ./temp
+
 rm -rf ./backend
+rm -rf ./social_net
+
+mv -fv ./temp/* .
+rm -rf ./temp
