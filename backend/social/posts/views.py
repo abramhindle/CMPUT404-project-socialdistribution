@@ -438,11 +438,8 @@ class ImageView(APIView):
 
 # hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'size'
-    max_page_size = 100
     serializer_class = CommentSerializer
-    pagination_class = PostSetPagination
+    pagination_class = PageNumberPagination
 
     def get(self, request, pk_a, pk):
         try:
@@ -467,11 +464,15 @@ class CommentView(APIView, PageNumberPagination):
             if post.author != authenticated_user:
                 comments = comments.exclude(author=post.author.friends)
                 
-        comments = self.paginate_queryset(comments, request)
-        serializer = CommentSerializer(comments, many=True)
+        paginator = self.pagination_class()
+        comments_page = paginator.paginate_queryset(comments, request, view=self)
+        serializer = CommentSerializer(comments_page, many=True)
         commentsObj = {}
         commentsObj['comments'] = serializer.data
-        return Response(self.get_paginated_response(commentsObj))
+        response = paginator.get_paginated_response(serializer.data)
+        print(response)
+        return response
+
 
     
     def post(self, request,pk_a, pk):
