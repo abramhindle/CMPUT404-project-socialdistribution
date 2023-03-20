@@ -33,9 +33,9 @@ ALLOWED_HOSTS = [
     'http://localhost:3000',        
 ]
 
-CORS_SUPPORTS_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_HEADERS = "access-control-allow-origin"
+CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken']
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
