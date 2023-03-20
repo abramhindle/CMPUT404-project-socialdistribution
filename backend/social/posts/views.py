@@ -187,6 +187,8 @@ class post_list(APIView, PageNumberPagination):
         # if image post
         if 'image' in request.data['contentType']:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+            # you will need to pass in a JSON object with a title, contentType, content, and image
+            # image is passed in as a base64 string. it should look like data:image/png;base64,LOTSOFLETTERS
         else:
             serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         
