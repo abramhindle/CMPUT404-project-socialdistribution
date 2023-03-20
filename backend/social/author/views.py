@@ -198,7 +198,13 @@ class FollowersView(APIView):
 
         followers = author.friends
         followers.add(new_follower)
+        print("ayo")
         author.save()
+        try: 
+            follow = FollowRequest.objects.get(actor=new_follower,object=author)
+            Inbox.objects.get(object_id=follow.id).delete()
+        except:
+            pass
 
         followers = author.friends.all()
         followers_list = []
