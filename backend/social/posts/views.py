@@ -290,10 +290,7 @@ class post_detail(APIView, PageNumberPagination):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class LikedView(APIView, PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'size'
-    max_page_size = 100
+class LikedView(APIView):
 
     # TODO: RESPONSE AND REQUESTS
     
@@ -309,10 +306,9 @@ class LikedView(APIView, PageNumberPagination):
             error_msg = "Author not found"
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         likes = Like.objects.filter(author=author)
-        likes = self.paginate_queryset(likes, request)
         serializer = LikeSerializer(likes, many=True)
         data = self.get_items(pk_a, serializer.data)
-        return self.get_paginated_response(data)
+        return Response(data)
     
     def get_items(self,pk_a,data):
         # helper function 
