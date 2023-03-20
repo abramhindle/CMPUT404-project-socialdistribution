@@ -8,8 +8,9 @@ build:
   docker:
     frontend: frontend/Dockerfile
     backend: backend/social_net/Dockerfile 
+release:
+  command:
+    - python3 manage.py migrate
 run:
   frontend: yarn start
-  backend:
-    - python3 manage.py migrate
-    - gunicorn social_net.wsgi # python3 manage.py runserver 0.0.0.0:8000
+  backend: gunicorn social_net.wsgi # python3 manage.py runserver 0.0.0.0:8000
