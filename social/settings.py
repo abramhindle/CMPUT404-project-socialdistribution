@@ -137,6 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 SWAGGER_SETTINGS = {
+    "base_path": '/api',
     'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg_examples.SwaggerAutoSchema',
     "DEFAULT_MODEL_RENDERING": "example",
     'DEFAULT_FIELD_INSPECTORS': [
@@ -175,9 +176,6 @@ STATIC_URL = '/static/'
 # allows the server to host images
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
-LOGIN_URL = 'login'
-LOGOUT_URL = 'logout'
 
 import django_heroku
 django_heroku.settings(locals())
