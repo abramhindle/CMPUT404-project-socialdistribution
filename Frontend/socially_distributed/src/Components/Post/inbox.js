@@ -66,6 +66,16 @@ function INBOX() {
 		});
 	}
 
+	async function handleClearInboxClick() {
+		const author_id = getAuthorId(null);
+		const url = `authors/${author_id}/inbox`;
+		await axios({ method: "delete", url: url }).then((res) => {
+			if (res.status === 204) {
+				setInbox({ items: [] });
+			}
+		});
+	}
+
 	const handleOpen = () => {
 		setOpen(true);
 	};
@@ -83,7 +93,10 @@ function INBOX() {
 				</Nav>
 				<Nav pullRight>
 					<Nav.Menu title="Inbox">
-						<Nav.Item style={{ color: "red" }}>
+						<Nav.Item
+							style={{ color: "red" }}
+							onClick={handleClearInboxClick}
+						>
 							Clear Inbox
 						</Nav.Item>
 					</Nav.Menu>

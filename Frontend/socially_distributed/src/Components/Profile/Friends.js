@@ -3,6 +3,7 @@ import { Avatar } from "rsuite";
 import axios from "axios";
 import { getAuthorId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import PROFILEIMAGE from "./ProfileImage";
 
 function FRIENDS() {
 	const [friends, setFriends] = useState({ items: [] });
@@ -26,6 +27,7 @@ function FRIENDS() {
 	const item = (obj) => {
 		return (
 			<div
+				key={obj.id}
 				style={{
 					height: "50px",
 					border: "0.5px solid lightgrey",
@@ -35,10 +37,10 @@ function FRIENDS() {
 			>
 				<div style={{ padding: "5px" }}>
 					<Avatar
-						style={{ float: "left" }}
+						style={{ float: "left", marginBotton: "5px" }}
 						circle
-						src="https://avatars.githubusercontent.com/u/12592949"
-					></Avatar>
+						src={obj["profileImage"]} //{follow[actor][profileImage]} replace this with the actors profile image url
+					/>
 					<h5
 						style={{
 							marginLeft: "10px",

@@ -34,11 +34,8 @@ export async function getCurrentUser(author_id) {
 		return await axios
 			.get(`authors/${author_id}`)
 			.then((response) => {
-				// console.log(response.data);
 				const user = response.data;
-				// console.log(user);
 				setCurrentUser(user);
-				console.log("getUser");
 			})
 			.catch((res) => console.log(res));
 	} else {
@@ -56,7 +53,6 @@ export async function getCsrfToken() {
 		const data = await response.json();
 		_csrfToken = data.csrfToken;
 	}
-	console.log(_csrfToken);
 	setToken(_csrfToken);
 	return _csrfToken;
 }
@@ -72,3 +68,8 @@ export function getAuthorId(a_id) {
 	}
 	return author_id;
 }
+
+export const getProfileImageUrl = () => {
+	const user = JSON.parse(localStorage.getItem("user"));
+	return user.profileImage;
+};

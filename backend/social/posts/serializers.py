@@ -29,7 +29,7 @@ class PostSerializer(WritableNestedModelSerializer):
         id = instance.get_public_id()
         id = id[:-1] if id.endswith('/') else id
         categories_list = instance.categories.split(",")
-        comments_list = Comment.objects.filter(post=instance)
+        comments_list = Comment.objects.filter(post=instance).order_by('-published')[0:5]
         commentsSrc = [CommentSerializer(comment,many=False).data for comment in comments_list]
         return {
             **super().to_representation(instance),
@@ -93,12 +93,9 @@ class LikeSerializer(serializers.ModelSerializer):
     summary = serializers.CharField(source="get_summary", read_only=True)
 
     def create(self, validated_data):
-        print("VALI DATAs")
-        print(validated_data)
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
        
-        if not Like.objects.filter(author=author, object=validated_data.get("object")):
-
+        if Like.objects.filter(author=author, object=validated_data.get("object")).exists():
             return "already liked"
         else:
             id = str(uuid.uuid4())

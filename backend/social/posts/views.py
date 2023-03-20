@@ -169,22 +169,6 @@ class post_list(APIView, PageNumberPagination):
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
 
-
-class CommentDetailView(APIView, PageNumberPagination):
-    
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
-    def get(self, request, pk_a, pk, pk_m):
-        """
-        Get the specific comment
-        """
-        # ERROR HERE
-        author = Author.objects.get(id=pk_a)
-        post = Post.objects.get(author=author)
-        comment = Comment.objects.filter(author=author,post=post,id=pk_m)
-        comment = self.paginate_queryset(comment, request) 
-        serializer = PostSerializer(comment, many=True)
-        return self.get_paginated_response(serializer.data)
-
     @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
 
     def post(self, request, pk_a):
@@ -213,6 +197,22 @@ class CommentDetailView(APIView, PageNumberPagination):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CommentDetailView(APIView, PageNumberPagination):
+    
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List specific comment")
+    def get(self, request, pk_a, pk, pk_m):
+        """
+        Get the specific comment
+        """
+        # ERROR HERE
+        try: 
+            comment = Comment.objects.filter(id=pk_m)
+            comment = self.paginate_queryset(comment, request) 
+            serializer = CommentSerializer(comment, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Comment.DoesNotExist: 
+            return self.put(request, pk_a, pk)
+        
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
@@ -244,7 +244,8 @@ class post_detail(APIView, PageNumberPagination):
             serializer = PostSerializer(post, many=False)
             return Response(serializer.data)
         except Post.DoesNotExist: 
-            return self.put(request, pk_a, pk)
+            error_msg = "Comment not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
     #content for creating a new post object
     #{
@@ -254,7 +255,8 @@ class post_detail(APIView, PageNumberPagination):
     def post(self, request, pk_a, pk):       
         """
         Request: only include fields you want to update, not including id or author.
-        """        
+        """     
+        print("hello1") 
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -277,6 +279,7 @@ class post_detail(APIView, PageNumberPagination):
                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
             
         serializer = PostSerializer(post, data=request.data, partial=True)
+        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -321,6 +324,36 @@ class post_detail(APIView, PageNumberPagination):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class LikedView(APIView):
+
+    # TODO: RESPONSE AND REQUESTS
+    
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all objects liked by author")
+    def get(self, request, pk_a):
+        """
+        Get the liked objects by author
+        TODO: make sure objects are public
+        """
+        try:
+            author = Author.objects.get(pk=pk_a)
+        except Author.DoesNotExist:
+            error_msg = "Author not found"
+            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+        likes = Like.objects.filter(author=author)
+        serializer = LikeSerializer(likes, many=True)
+        data = self.get_items(pk_a, serializer.data)
+        return Response(data)
+    
+    def get_items(self,pk_a,data):
+        # helper function 
+        
+        dict = {"type":"liked" }
+        items = []
+        for item in data:
+            items.append(item)
+
+        dict["items"] = items
+        return(dict) 
 
 @swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
 @api_view(['GET'])

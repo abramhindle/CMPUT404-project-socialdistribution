@@ -31,7 +31,10 @@ class Author(models.Model):
     def get_absolute_url(self):
         # get the url for a single author
         url = reverse('authors:detail', args=[str(self.id)])
-        return url[:-1] if url.endswith('/') else url 
+        url = settings.APP_NAME + url
+        self.url = url[:-1] if url.endswith('/') else url 
+        self.save()
+        return self.url
     
     def update_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self.get_absolute_url())
@@ -40,9 +43,6 @@ class Author(models.Model):
     
     # return the author public ID
     def get_public_id(self):
-        if not self.url: 
-            self.url = settings.APP_NAME + self.get_absolute_url()
-            self.save()
         return (self.url) or str(self.id)   
     
     def follower_to_object(self):
@@ -80,7 +80,7 @@ class FollowRequest(models.Model):
     #type =models.CharField(max_length=255, blank=True)
     actor = models.ForeignKey(Author, related_name='actor', on_delete=models.CASCADE)
     object = models.ForeignKey(Author, related_name='object', on_delete=models.CASCADE)
-    Summary = models.CharField(max_length=255, default = '')
+    summary = models.CharField(max_length=255, default = '')
     accepted = models.BooleanField(default=False)
 
     class Meta:

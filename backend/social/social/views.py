@@ -58,7 +58,6 @@ class login(APIView):
     
 
 def csrf(request):
-    print(get_token(request))
     return JsonResponse({'csrfToken': get_token(request)})
     
 class logout(APIView):
