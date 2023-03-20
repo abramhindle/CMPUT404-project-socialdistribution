@@ -11,7 +11,7 @@ build:
 release:
   command:
     - python3 manage.py migrate
-    image: backend
+  image: backend
 run:
   frontend: yarn start
   backend: gunicorn social_net.wsgi # python3 manage.py runserver 0.0.0.0:8000
