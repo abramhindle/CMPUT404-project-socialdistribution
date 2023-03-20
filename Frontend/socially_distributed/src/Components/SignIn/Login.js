@@ -42,7 +42,6 @@ function LOGIN() {
 				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();
 				setLoggedIn(true);
-				console.log("hello");
 			})
 			.catch((err) => console.log(err));
 	}

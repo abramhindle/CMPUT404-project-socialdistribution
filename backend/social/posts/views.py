@@ -232,7 +232,8 @@ class post_detail(APIView, PageNumberPagination):
     def post(self, request, pk_a, pk):       
         """
         Request: only include fields you want to update, not including id or author.
-        """        
+        """     
+        print("hello1") 
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -246,6 +247,7 @@ class post_detail(APIView, PageNumberPagination):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
         serializer = PostSerializer(post, data=request.data, partial=True)
+        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
