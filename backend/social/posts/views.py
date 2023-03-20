@@ -25,6 +25,15 @@ import base64
 import json
 from .image_renderer import JPEGRenderer, PNGRenderer
 
+
+custom_parameter = openapi.Parameter(
+    name='custom_param',
+    in_=openapi.IN_QUERY,
+    description='A custom parameter for the POST request',
+    type=openapi.TYPE_STRING,
+    required=True,
+)
+
 response_schema_dictposts = {
     "200": openapi.Response(
         description="Successful Operation",
@@ -145,7 +154,7 @@ class post_list(APIView, PageNumberPagination):
 
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
+    @swagger_auto_schema(operation_summary="List all Posts for an Author")
     def get(self, request, pk_a):
         """
         Get the list of posts on our website
@@ -168,7 +177,7 @@ class post_list(APIView, PageNumberPagination):
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
 
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
+    @swagger_auto_schema(operation_summary="Create a new Post for an Author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 
     def post(self, request, pk_a):
         """
@@ -197,7 +206,7 @@ class post_list(APIView, PageNumberPagination):
 
 class CommentDetailView(APIView, PageNumberPagination):
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List specific comment")
+    @swagger_auto_schema(operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
         Get the specific comment
@@ -215,7 +224,7 @@ class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
 
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Get a particular post of an author")
+    @swagger_auto_schema(operation_summary="Get a particular post of an author")
     def get(self, request, pk_a, pk):
         """
         Get a particular post of an author
@@ -246,7 +255,7 @@ class post_detail(APIView, PageNumberPagination):
     #{
     # Title, Description, Content type, Content, Categories, Visibility
     # }
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Update a particular post of an author") 
+    @swagger_auto_schema(operation_summary="Update a particular post of an author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request')) 
     def post(self, request, pk_a, pk):       
         """
         Request: only include fields you want to update, not including id or author.
@@ -279,7 +288,7 @@ class post_detail(APIView, PageNumberPagination):
         else:
             return Response("Cannot edit a shared post", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @swagger_auto_schema(responses=response_schema_dictdelete,operation_summary="Delete a particular post of an author") 
+    @swagger_auto_schema(operation_summary="Delete a particular post of an author") 
     def delete(self, request, pk_a, pk):
         """
         Deletes the post given by the particular authorid and postid
@@ -295,7 +304,7 @@ class post_detail(APIView, PageNumberPagination):
             return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
       
 
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a post of an author whose id is the specified post id") 
+    @swagger_auto_schema(operation_summary="Create a post of an author whose id is the specified post id",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request')) 
     def put(self, request, pk_a, pk):
         """
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
@@ -321,7 +330,7 @@ class LikedView(APIView):
 
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all objects liked by author")
+    @swagger_auto_schema(operation_summary="List all objects liked by author")
     def get(self, request, pk_a):
         """
         Get the liked objects by author
@@ -348,7 +357,7 @@ class LikedView(APIView):
         dict["items"] = items
         return(dict) 
 
-@swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
+@swagger_auto_schema( method='get', operation_summary="Get the comments on a post")
 @api_view(['GET'])
 def get_comments(request, pk_a, pk):
     """
@@ -361,7 +370,7 @@ def get_comments(request, pk_a, pk):
     return Response(serializer.data)
 
 
-@swagger_auto_schema( method='get',responses=response_schema_dictpost,operation_summary="Get a partdsfdidsf of an author")
+@swagger_auto_schema( method='get',operation_summary="Get a partdsfdidsf of an author")
 @api_view(['GET'])
 def get_likes(request, pk_a, pk):
     """
@@ -501,7 +510,7 @@ class CommentView(APIView, PageNumberPagination):
         return response
 
 
-    
+    @swagger_auto_schema(request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
     def post(self, request,pk_a, pk):
         comment_id = uuid.uuid4()
         try:
@@ -527,6 +536,7 @@ class CommentView(APIView, PageNumberPagination):
 
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
 class ShareView(APIView):
+    @swagger_auto_schema(request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
     def post(self, request, origin_author, post_id, author):       
         
         try:
