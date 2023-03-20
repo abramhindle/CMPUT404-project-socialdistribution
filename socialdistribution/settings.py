@@ -81,8 +81,23 @@ ROOT_URLCONF = 'socialdistribution.urls'
 
 TEMPLATES = [
     {
+        'NAME': "react-frontend",
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'build')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+    {
+        'NAME': "swagger",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, '')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -161,7 +176,7 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesSto
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DOMAIN = "http://localhost" #TODO: CHANGE THIS IN PRODUCTION!!
+DOMAIN = "https://social-distribution-w23-t17.herokuapp.com"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
