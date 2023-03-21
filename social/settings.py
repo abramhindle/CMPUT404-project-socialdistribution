@@ -136,7 +136,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 SWAGGER_SETTINGS = {
-    "base_path": '/api',
     'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg_examples.SwaggerAutoSchema',
     "DEFAULT_MODEL_RENDERING": "example",
     'DEFAULT_FIELD_INSPECTORS': [

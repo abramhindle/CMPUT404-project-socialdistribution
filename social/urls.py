@@ -53,8 +53,8 @@ urlpatterns = [
     path('docs',schema_view.with_ui('swagger',cache_timeout=0),name = 'schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',cache_timeout=0),name = 'schema-redoc'),
 
-    path("api/register", views.register.as_view(), name="register"),
-    path("api/login", views.login.as_view(), name="login"),
+    path("dregister", views.register.as_view(), name="register"),
+    path("dlogin", views.login.as_view(), name="login"),
     path('csrf/', views.csrf),
     re_path(r"^$", render_react),
     re_path(r"^(?:.*)/?$", render_react),

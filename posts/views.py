@@ -496,7 +496,7 @@ class CommentView(APIView, PageNumberPagination):
             # of the author are filtered out
             if post.author != authenticated_user:
                 comments = comments.exclude(author=post.author.friends)
-                
+
         serializer = CommentSerializer(comments, many=True)
 
         commentsObj = {}
