@@ -38,15 +38,22 @@ function Profile() {
 
   useEffect(() => {
     //only runs once
-    get_author(`http://localhost/authors/${author_id}/`, setAuthor);
+    get_author(
+      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
+      setAuthor
+    );
 
     if (tab === "followers") {
       get_followers_for_author(
-        `http://localhost/authors/${author_id}`,
+        `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
         setList
       );
     } else if (tab === "posts") {
-      get_author_posts(`http://localhost/authors/${author_id}`, page, setList);
+      get_author_posts(
+        `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
+        page,
+        setList
+      );
     }
   }, []);
 
