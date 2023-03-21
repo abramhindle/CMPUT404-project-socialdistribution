@@ -15,6 +15,10 @@ div.Page {
   float: right;
 }
 
+.postBody {
+  width: 100%;
+}
+
 .content-container {
   display: flex;
   flex-direction: column;
@@ -43,6 +47,10 @@ div.Page {
   padding: 0.5em;
 }
 
+#title {
+  margin: 0;
+}
+
 .line {
   border-top: 1px solid black;
   padding-inline: 1em;
@@ -66,20 +74,28 @@ div.Page {
   text-align: right;
 }
 
-h5 {
+.Social {
   text-align: left;
-  margin: 0;
-  margin-left: 1.5em;
-  padding: 0.5em;
+  margin-top: 1em;
+  margin-left: 0.5em;
+  font-size: medium;
 }
+
 .interaction-options {
+  margin-top: 0.5em;
   display: flex;
 }
 
 .interaction-options > button {
   padding: 0.2em;
+  vertical-align: top;
 }
 
-.post-body {
-  width: 100%;
+.comments {
+  margin-top: 2.5em;
+  font-size: 14pt;
+}
+
+.comment-input-form {
+  margin-bottom: 1em;
 }

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { get_post } from "../../api/post_display_api";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar/sidebar";
 import "./post-detail.css";
 import { get_post_comments, post_comment } from "../../api/comment_api";
@@ -34,14 +34,21 @@ function PostDetail() {
     }
   };
 
-  const submitComment = () => {
+  const submitComment = async () => {
     if (comment) {
-      post_comment(
+      await post_comment(
         `http://localhost/authors/${author_id}`,
         `http://localhost/authors/${author_id}/posts/${post_id}`,
         commentType,
         comment,
         user.id
+      );
+      get_post_comments(
+        `http://localhost/authors/${author_id}`,
+        `http://localhost/authors/${author_id}/posts/${post_id}`,
+        successComment,
+        commentPage,
+        commentSize
       );
       setComment("");
     } else {
@@ -133,7 +140,7 @@ function PostDetail() {
             <div className="postBody">
               {/* Will need to handle other post types here, plain for now */}
               <div className="content-container">
-                <h3>{postInfo.title}</h3>
+                <h3 id="title">{postInfo.title}</h3>
                 {markdown && (
                   <ReactMarkdown
                     className="content line"
@@ -151,71 +158,74 @@ function PostDetail() {
           </div>
           <div className="Social">
             {likeInfo && <div>{likeInfo.items.length} Liked this post</div>}
-            <button
-              onClick={() =>
-                post_like(
-                  `http://localhost/authors/${author_id}`,
-                  user,
-                  `http://localhost/authors/${author_id}/posts/${post_id}`,
-                  "context"
-                  //like_success
-                )
-              }
-            >
-              Like
-            </button>
-            {shareable && (
-              <div className="share">
-                {/* Only show if shareable */}
-                <button>share</button>
-              </div>
-            )}
-          </div>
-
-          <div className="comment-input-form">
-            <input
-              type="radio"
-              id="text"
-              name="contentType"
-              value="text/plain"
-              defaultChecked
-              onChange={(e) => setCommentType(e.target.value)}
-            />
-            <label htmlFor="text">Text</label>
-            <input
-              type="radio"
-              id="markdown"
-              name="contentType"
-              value="text/markdown"
-              onChange={(e) => setCommentType(e.target.value)}
-            />
-            <label htmlFor="markdown">Markdown</label>
-            <input
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Enter the comment here"
-              type="text"
-            />
-            <button onClick={submitComment}>Submit</button>
+            <div className="interaction-options">
+              <button
+                onClick={() =>
+                  post_like(
+                    `http://localhost/authors/${author_id}`,
+                    user,
+                    `http://localhost/authors/${author_id}/posts/${post_id}`,
+                    "context"
+                  )
+                }
+              >
+                Like
+              </button>
+              {shareable && (
+                <div className="share">
+                  {/* Only show if shareable */}
+                  <button>share</button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="comments">
-            {commentsInfo &&
-              commentsInfo.items.map((comment) => (
-                /** TODO: Use Comment View once it is implemented */
-                <div key={comment.id}>{comment.comment}</div>
-              ))}
-            <button
-              onClick={prevCommentPage}
-              disabled={commentPage === 1 ? true : false}
-            >
-              prev
-            </button>
-            <button
-              onClick={nextCommentPage}
-              disabled={disableCommentNextButton}
-            >
-              next
-            </button>
+            <div className="comment-input-form">
+              <input
+                type="radio"
+                id="text"
+                name="contentType"
+                value="text/plain"
+                defaultChecked
+                onChange={(e) => setCommentType(e.target.value)}
+              />
+              <label htmlFor="text">Text</label>
+              <input
+                type="radio"
+                id="markdown"
+                name="contentType"
+                value="text/markdown"
+                onChange={(e) => setCommentType(e.target.value)}
+              />
+              <label htmlFor="markdown">Markdown</label>
+              <input
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Enter the comment here"
+                type="text"
+              />
+              <button onClick={submitComment}>Submit</button>
+            </div>
+            <div>
+              {commentsInfo &&
+                commentsInfo.items.map((comment) => (
+                  /** TODO: Use Comment View once it is implemented */
+                  <div key={comment.id}>{comment.comment}</div>
+                ))}
+              <button
+                onClick={prevCommentPage}
+                disabled={commentPage === 1 ? true : false}
+              >
+                prev
+              </button>
+              <button
+                onClick={nextCommentPage}
+                disabled={disableCommentNextButton}
+              >
+                next
+              </button>
+            </div>
           </div>
         </div>
       </div>
