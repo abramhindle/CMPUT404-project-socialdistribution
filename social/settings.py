@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+
+import mimetypes
+
+mimetypes.add_type("text/javascript", ".js", True)
 
 APP_NAME = 'http://127.0.0.1:8000'
 
@@ -27,8 +32,6 @@ SECRET_KEY = '(e42^@_2fo+3!4%3y9t@50j#)ljo8+7r3_6e$z*p960-1-+g@y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -58,7 +61,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
+
+STATIC_URL = 'static/'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "build/static"),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -74,7 +86,7 @@ ROOT_URLCONF = 'social.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS':  [],
+        'DIRS': [os.path.join(BASE_DIR, 'build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -86,7 +98,7 @@ TEMPLATES = [
         },
     },
 ]
-ALLOWED_HOSTS = ['127.0.0.1',"localhost"]
+ALLOWED_HOSTS = ['*']
 WSGI_APPLICATION = 'social.wsgi.application'
 CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', "http://127.0.0.1:8000/"]
 
@@ -101,7 +113,8 @@ DATABASES = {
     }
 }
 
-
+# DATABASES = {}
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 
 # Password validation
@@ -156,11 +169,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
-
 # allows the server to host images
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-LOGIN_URL = 'login'
-LOGOUT_URL = 'logout'
+import django_heroku
+django_heroku.settings(locals())
+
+options = DATABASES['default'].get('OPTIONS', {})
+options.pop('sslmode', None)

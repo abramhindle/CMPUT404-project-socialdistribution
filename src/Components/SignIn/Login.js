@@ -36,8 +36,14 @@ function LOGIN() {
 			username: username,
 			password: password,
 		};
+		await getCsrfToken();
+		const token = localStorage.getItem("token");
+		
 
-		await axios({ method: "post", url: "login", data: params })
+		let reqInstance = axios.create({
+			headers: { "X-CSRFToken": token },
+		});
+		reqInstance({ method: "post", url: "dlogin", data: params })
 			.then(async (res) => {
 				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();

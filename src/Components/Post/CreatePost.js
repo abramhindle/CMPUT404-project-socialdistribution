@@ -26,9 +26,10 @@ function CREATEPOST() {
 	let navigate = useNavigate();
 	const [friends, setFriends] = useState({ items: [] });
 	const toaster = useToaster();
-	const data = friends.items.map(
-		item => ({ label: item["displayName"], value: item["displayName"] })
-	);
+	const data = friends.items.map((item) => ({
+		label: item["displayName"],
+		value: item["displayName"],
+	}));
 
 	useLayoutEffect(() => {
 		if (!localStorage.getItem("loggedIn")) {
@@ -115,7 +116,7 @@ function CREATEPOST() {
 		if (post_type === "image/png" || post_type === "image/jpeg") {
 			return (
 				<div>
-					<input id='file' type='file' accept=".png, .jpg, .jpeg" />
+					<input id="file" type="file" accept=".png, .jpg, .jpeg" />
 				</div>
 			);
 		}
@@ -156,15 +157,18 @@ function CREATEPOST() {
 			contentType: post_type,
 			visibility: post_status,
 		};
-		if (categories.length > 0) {
-			params["categories"] = categories
+		var imagefile = "";
+		if (post_type === "image/png" || post_type === "image/jpeg") {
+			imagefile = document.getElementById("file").files[0];
+			if (imagefile) {
+				readFileAsDataURL(imagefile).then((dataURL) => {
+					params["image"] = dataURL;
+				});
+			}
 		}
 
-		var imagefile = document.getElementById("file").files[0];
-		if (imagefile) {
-			readFileAsDataURL(imagefile).then(dataURL => {
-				params['image'] = dataURL;
-			});
+		if (categories.length > 0) {
+			params["categories"] = categories;
 		}
 
 		axios({ method: "post", url: url, data: params })
@@ -219,10 +223,19 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="image/png">Png</Dropdown.Item>
 				<Dropdown.Item eventKey="image/jpeg">Jpeg</Dropdown.Item>
 			</Dropdown>
-			{(post_type === "PRIVATE") && <>
-				<CheckPicker style={{ float: "left", marginLeft: "10px", width: 224 }}
-					label="Friends" data={data} />
-			</>}
+			{post_type === "PRIVATE" && (
+				<>
+					<CheckPicker
+						style={{
+							float: "left",
+							marginLeft: "10px",
+							width: 224,
+						}}
+						label="Friends"
+						data={data}
+					/>
+				</>
+			)}
 			<Input
 				style={{ float: "left", marginTop: "5px" }}
 				as="textarea"

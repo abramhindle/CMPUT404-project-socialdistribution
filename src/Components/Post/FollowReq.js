@@ -13,12 +13,11 @@ function FOLLOWREQ({ obj }) {
 		var FAID = getAuthorId(obj.actor.id);
 		const url2 = obj;
 
-		console.log(curr_author_id)
-		console.log(url2)
-		console.log(FAID)
+		console.log(curr_author_id);
+		console.log(url2);
+		console.log(FAID);
 
-		const params = {
-		};
+		const params = {};
 		const url = `authors/${curr_author_id}/followers/${FAID}`;
 
 		axios({ method: "put", url: url, data: params })
@@ -37,7 +36,6 @@ function FOLLOWREQ({ obj }) {
 					duration: 5000,
 				});
 			});
-
 	}
 
 	return (

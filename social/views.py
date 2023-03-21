@@ -27,6 +27,12 @@ custom_parameter = openapi.Parameter(
 )
 
 
+from rest_framework import viewsets
+from django.views import View
+from django.http import HttpResponse, HttpResponseNotFound
+import os
+
+
 class register(APIView):
     def post(self, request):
         """Register a django user to make them an author"""
