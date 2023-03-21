@@ -25,6 +25,15 @@ import base64
 import json
 from .image_renderer import JPEGRenderer, PNGRenderer
 
+
+custom_parameter = openapi.Parameter(
+    name='custom_param',
+    in_=openapi.IN_QUERY,
+    description='A custom parameter for the POST request',
+    type=openapi.TYPE_STRING,
+    required=True,
+)
+
 response_schema_dictposts = {
     "200": openapi.Response(
         description="Successful Operation",
@@ -145,13 +154,14 @@ class post_list(APIView, PageNumberPagination):
 
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all Posts for an Author")
+    @swagger_auto_schema(operation_summary="List all Posts for an Author")
     def get(self, request, pk_a):
         """
         Get the list of posts on our website
         """
         author = Author.objects.get(id=pk_a)
         posts = Post.objects.filter(author=author)
+        posts = self.paginate_queryset(posts, request)
         authenticated_user = Author.objects.get(id=pk_a)
 
         for post in posts:
@@ -162,14 +172,23 @@ class post_list(APIView, PageNumberPagination):
                     
             if "FRIENDS" in post.visibility:
                 # if the post author is not friends with the auth'd user, don't show this post
-                if authenticated_user not in post.author.friends:
+                if authenticated_user not in post.author.friends or authenticated_user != post.author:
+                    posts.exclude(post)
+                
+            if "UNLISTED" in post.visibility:
+                # if the post is marked as unlisted, don't show this post UNLESS the author is the one authenticated
+                # (other users can see it if they have the link)
+                if post.author != authenticated_user:
                     posts.exclude(post)
         
         posts = self.paginate_queryset(posts, request) 
+        if authenticated_user not in post.author.friends:
+            posts.exclude(post) 
+
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
 
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="Create a new Post for an Author")
+    @swagger_auto_schema(operation_summary="Create a new Post for an Author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 
     def post(self, request, pk_a):
         """
@@ -177,47 +196,46 @@ class post_list(APIView, PageNumberPagination):
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         pk = str(uuid.uuid4())
-        
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+        # if image post
+        if 'image' in request.data['contentType']:
+            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+            # you will need to pass in a JSON object with a title, contentType, content, and image
+            # image is passed in as a base64 string. it should look like data:image/png;base64,LOTSOFLETTERS
+        else:
+            serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+
         if serializer.is_valid():
             post = serializer.save()
-            inbox_item = Inbox(content_object=post, author=author)
-            for friend in author.friends.all():
-                inbox_item = Inbox(content_object=post, author=friend)
-            inbox_item.save()
-            for friend in author.friends.all():
-                inbox_item = Inbox(content_object=post, author=friend)
-                inbox_item.save()
+            share_object(post,author)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class CommentDetailView(APIView, PageNumberPagination):
+class CommentDetailView(APIView):
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List specific comment")
+    @swagger_auto_schema(operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
         Get the specific comment
         """
-        # ERROR HERE
         try: 
-            comment = Comment.objects.filter(id=pk_m)
-            comment = self.paginate_queryset(comment, request) 
-            serializer = CommentSerializer(comment, many=True)
-            return self.get_paginated_response(serializer.data)
+            comment = Comment.objects.get(id=pk_m)
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
         except Comment.DoesNotExist: 
-            return self.put(request, pk_a, pk)
+            error_msg = "Comment not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
 
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Get a particular post of an author")
+    @swagger_auto_schema(operation_summary="Get a particular post of an author")
     def get(self, request, pk_a, pk):
         """
         Get a particular post of an author
@@ -226,6 +244,7 @@ class post_detail(APIView, PageNumberPagination):
             post = Post.objects.get(id = pk)
             authenticated_user = Author.objects.get(id=pk_a)
 
+            # unlisted does not need to be addressed here; only in the post list
             # if it is private or friends, only continue if author is trying to access it:
             if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:
@@ -238,25 +257,23 @@ class post_detail(APIView, PageNumberPagination):
             if "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
-                    error_msg = {"message":"You do not have access to this image!"}
+                    error_msg = {"message":"You do not have access to this post!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
-                
-            serializer = PostSerializer(post, many=False)
-            return Response(serializer.data)
         except Post.DoesNotExist: 
             error_msg = "Comment not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
     
     #content for creating a new post object
     #{
     # Title, Description, Content type, Content, Categories, Visibility
     # }
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Update a particular post of an author") 
+    @swagger_auto_schema(operation_summary="Update a particular post of an author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request')) 
     def post(self, request, pk_a, pk):       
         """
         Request: only include fields you want to update, not including id or author.
         """     
-        print("hello1") 
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -268,10 +285,17 @@ class post_detail(APIView, PageNumberPagination):
         except Post.DoesNotExist:
             error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        
-        # if image post
-        if 'image' in request.data['contentType']:
-            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
+        if post.url == post.origin:
+            if post.author != _:
+                return Response("Cannot edit a post you didnt create", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            if 'image' in request.data['contentType']:
+                serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data)
+                else: 
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+            serializer = PostSerializer(post, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -279,22 +303,27 @@ class post_detail(APIView, PageNumberPagination):
                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
             
         serializer = PostSerializer(post, data=request.data, partial=True)
-        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response("Cannot edit a shared post", status=status.HTTP_400_BAD_REQUEST)
 
-    @swagger_auto_schema(responses=response_schema_dictdelete,operation_summary="Delete a particular post of an author") 
+    @swagger_auto_schema(operation_summary="Delete a particular post of an author") 
     def delete(self, request, pk_a, pk):
         """
         Deletes the post given by the particular authorid and postid
         """
         # TODO: check permissions 
-
         try: 
+            try:
+                author = Author.objects.get(id=pk_a)
+            except:
+                error_msg = "Author not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
             post = Post.objects.filter(id=pk)
+            if post.author != author:
+                return Response("Cannot delete a post you dont own", status=status.HTTP_405_METHOD_NOT_ALLOWED)
             post.delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -302,13 +331,13 @@ class post_detail(APIView, PageNumberPagination):
             return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
       
 
-    @swagger_auto_schema(responses=response_schema_dictpost,operation_summary="Create a post of an author whose id is the specified post id") 
+    @swagger_auto_schema(operation_summary="Create a post of an author whose id is the specified post id",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request')) 
     def put(self, request, pk_a, pk):
         """
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         try:
-            _ = Author.objects.get(id=pk_a)
+            author = Author.objects.get(id=pk_a)
             try:
                 _ = Post.objects.get(id=pk)
                 return Response("Post already exists", status=status.HTTP_400_BAD_REQUEST)
@@ -319,7 +348,8 @@ class post_detail(APIView, PageNumberPagination):
 
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
-            serializer.save()
+            post = serializer.save()
+            share_object(post,author)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -328,7 +358,7 @@ class LikedView(APIView):
 
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all objects liked by author")
+    @swagger_auto_schema(operation_summary="List all objects liked by author")
     def get(self, request, pk_a):
         """
         Get the liked objects by author
@@ -354,12 +384,29 @@ class LikedView(APIView):
 
         dict["items"] = items
         return(dict) 
+    
+class CommentLikesView(APIView):
 
-@swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
+    """
+    Get the list of likes on our comments
+    """
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all likes on a comment")
+    def get(self, request, pk_a, pk, pk_m):
+        try:
+            comment = Comment.objects.get(id=pk_m)
+            print("URL",comment.url)
+        except Author.DoesNotExist:
+            error_msg = "Comment not found"
+            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+        likes = Like.objects.filter(object=comment.url)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
+
+@swagger_auto_schema( method='get', operation_summary="Get the comments on a post")
 @api_view(['GET'])
 def get_comments(request, pk_a, pk):
     """
-    Get the list of comments on our website
+    Get the list of comments on the post
     """
     author = Author.objects.get(id=pk_a)
     post = Post.objects.get(author=author, id=pk)
@@ -368,17 +415,18 @@ def get_comments(request, pk_a, pk):
     return Response(serializer.data)
 
 
-@swagger_auto_schema( method='get',responses=response_schema_dictpost,operation_summary="Get a partdsfdidsf of an author")
+@swagger_auto_schema( method='get',operation_summary="Get a partdsfdidsf of an author")
 @api_view(['GET'])
 def get_likes(request, pk_a, pk):
     """
-    Get the list of comments on our website
+    Get the list of likes on a post
     """
     post = Post.objects.get(id=pk)
-    likes = Like.objects.filter(object=post.id)
+    likes = Like.objects.filter(object=post.url)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
+# hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
@@ -387,6 +435,7 @@ class ImageView(APIView):
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
             authenticated_user = Author.objects.get(id=pk_a)
+
             # not image post
             if post.contentType and 'image' not in post.contentType:
                 error_msg = {"message":"Post does not contain an image!"}
@@ -398,6 +447,7 @@ class ImageView(APIView):
                 return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
             
             # image privacy settings
+            # unlisted does not need to be addressed here
             # if it is private or friends, only continue if author is trying to access it:
             if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:
@@ -406,17 +456,17 @@ class ImageView(APIView):
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
 
             # otherwise, handle it for friends:
-            if "FRIENDS" in post.visibility:
+            elif "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
+                # this line will likely be bugged until auth is set up ┐(´～｀)┌
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
                     error_msg = {"message":"You do not have access to this image!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
-            
+
             # return the image!
             post_content = post.contentType.split(';')[0]
             return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)
 
-        # but it's not real!
         except Post.DoesNotExist:
             error_msg = {"message":"Post does not exist!"}
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
@@ -473,6 +523,7 @@ class ImageView(APIView):
 class CommentView(APIView, PageNumberPagination):
     serializer_class = CommentSerializer
     pagination_class = PostSetPagination
+    page_size_query_param = 'page_size'
 
     def get(self, request, pk_a, pk):
         try:
@@ -496,14 +547,17 @@ class CommentView(APIView, PageNumberPagination):
             # of the author are filtered out
             if post.author != authenticated_user:
                 comments = comments.exclude(author=post.author.friends)
-
-        serializer = CommentSerializer(comments, many=True)
-
+        
+        paginator = self.pagination_class()
+        comments_page = paginator.paginate_queryset(comments, request, view=self)
+        serializer = CommentSerializer(comments_page, many=True)
         commentsObj = {}
         commentsObj['comments'] = serializer.data
-        return Response(commentsObj)
+        response = paginator.get_paginated_response(serializer.data)
+        return response
 
-    
+
+    @swagger_auto_schema(request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
     def post(self, request,pk_a, pk):
         comment_id = uuid.uuid4()
         try:
@@ -528,6 +582,7 @@ class CommentView(APIView, PageNumberPagination):
 
 
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
+
 class ShareView(APIView):
     def post(self, request, origin_author, post_id, author):       
         
@@ -546,7 +601,7 @@ class ShareView(APIView):
 
         # create new post object with different author but same origin
         #new URL 
-        current_url = request.build_aboslute_url
+        current_url = post.get_absolute_url()
         source = current_url.split('share')[0]
         origin = post.origin
         
@@ -555,7 +610,7 @@ class ShareView(APIView):
         description=post.description,
         content=post.content,
         contentType=post.contentType,
-        author=post.author,
+        author=sharing_author,
         categories=post.categories,
         published=post.published,
         visibility=post.visibility,
@@ -567,6 +622,7 @@ class ShareView(APIView):
 
         # save the new post
         new_post.save()
+        share_object(new_post,sharing_author)
         serializer = PostSerializer(new_post)
         return Response(serializer.data)
         

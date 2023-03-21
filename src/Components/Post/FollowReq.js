@@ -1,10 +1,42 @@
 import React, { useState } from "react";
-import { Button, Avatar, Panel } from "rsuite";
+import { Button, Avatar, Panel, useToaster, Message } from "rsuite";
 import axios from "axios";
+import { getAuthorId } from "../utils/auth";
 import PROFILEIMAGE from "../Profile/ProfileImage";
 
 function FOLLOWREQ({ obj }) {
 	const [follow, setFollow] = useState(obj);
+	const toaster = useToaster();
+
+	async function acceptFriend() {
+		const curr_author_id = getAuthorId(null);
+		var FAID = getAuthorId(obj.actor.id);
+		const url2 = obj;
+
+		console.log(curr_author_id);
+		console.log(url2);
+		console.log(FAID);
+
+		const params = {};
+		const url = `authors/${curr_author_id}/followers/${FAID}`;
+
+		axios({ method: "put", url: url, data: params })
+			.then((res) => {
+				toaster.push(
+					<Message type="success">User now follows you</Message>,
+					{
+						placement: "topEnd",
+						duration: 5000,
+					}
+				);
+			})
+			.catch((err) => {
+				toaster.push(<Message type="error">{err}</Message>, {
+					placement: "topEnd",
+					duration: 5000,
+				});
+			});
+	}
 
 	return (
 		<Panel
@@ -32,7 +64,7 @@ function FOLLOWREQ({ obj }) {
 			</div>
 
 			<div style={{ marginTop: "10px" }}>
-				<Button block appearance="primary">
+				<Button block onClick={acceptFriend} appearance="primary">
 					Accept
 				</Button>
 				<Button block>Deny</Button>
