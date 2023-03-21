@@ -272,6 +272,8 @@ class post_detail(APIView, PageNumberPagination):
             error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         if post.url == post.origin:
+            if post.author != _:
+                return Response("Cannot edit a post you didnt create", status=status.HTTP_405_METHOD_NOT_ALLOWED)
             if 'image' in request.data['contentType']:
                 serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
                 if serializer.is_valid():
@@ -294,9 +296,15 @@ class post_detail(APIView, PageNumberPagination):
         Deletes the post given by the particular authorid and postid
         """
         # TODO: check permissions 
-
         try: 
+            try:
+                author = Author.objects.get(id=pk_a)
+            except:
+                error_msg = "Author not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
             post = Post.objects.filter(id=pk)
+            if post.author != author:
+                return Response("Cannot delete a post you dont own", status=status.HTTP_405_METHOD_NOT_ALLOWED)
             post.delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
