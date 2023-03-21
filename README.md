@@ -8,10 +8,10 @@ Make a distributed social network!
 
 # Contributing
 
-Courtenay Laing-Kobe [laingkob@ualberta.ca]
-Aidan Horemans [horemans@ualberta.ca]
-Hua Wang [hua6@ualberta.ca]
-Junesung Lee [junesung@ualberta.ca]
+    Courtenay Laing-Kobe [laingkob@ualberta.ca]
+    Aidan Horemans [horemans@ualberta.ca]
+    Hua Wang [hua6@ualberta.ca]
+    Junesung Lee [junesung@ualberta.ca]
 
 # Contributors / Licensing
 

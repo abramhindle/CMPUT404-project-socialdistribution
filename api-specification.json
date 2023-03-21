@@ -4,7 +4,7 @@
     "title": "Social Distribution API Specification",
     "version": "1.0"
   },
-  "servers": [{ "url": "https://authors" }],
+  "servers": [{ "url": "https://social-distribution-w23-t17.herokuapp.com/authors" }],
   "tags": [
     {
       "name": "authors"
@@ -30,7 +30,7 @@
       "get": {
         "tags": ["authors"],
         "summary": "Get all Authors",
-        "operationId": "getAuthors",
+        "operationId": "getAllAuthors",
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -49,10 +49,32 @@
       }
     },
     "/{author_id}": {
+      "parameters": [
+        {
+          "name": "author_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        }
+      ],
       "get": {
         "tags": ["authors"],
-        "summary": "Get all Authors",
+        "summary": "Get Authors by Id",
         "operationId": "getAuthorsById",
+        "parameters": [
+          {
+            "name": "author_id", 
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -68,6 +90,17 @@
       }
     },
     "/{author_id}/posts": {
+      "parameters": [
+        {
+          "name": "author_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        }
+      ],
       "get": {
         "tags": ["posts"],
         "summary": "Get an author's posts",
@@ -128,10 +161,30 @@
       }
     },
     "/{author_id}/posts/{post_id}": {
+      "parameters": [
+        {
+          "name": "author_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        },
+        {
+          "name": "post_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/b797fc58-e267-4c5e-b2c8-2c9838f48ebf/posts/a7df8d91-b874-4778-9eaa-ba0f008621dc"
+          }
+        }
+      ],
       "get": {
         "tags": ["posts"],
         "summary": "Get a post",
-        "operationId": "getAuthorPosts",
+        "operationId": "getPostsById",
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -154,7 +207,7 @@
       "post": {
         "tags": ["posts"],
         "summary": "Create a post with an existing ID",
-        "operationId": "createAuthorPost",
+        "operationId": "createAuthorPostWithId",
         "requestBody": {
           "description": "Create Post for an author",
           "content": {
@@ -191,6 +244,26 @@
       }
     },
     "/{author_id}/posts/{post_id}/comments/": {
+      "parameters": [
+        {
+          "name": "author_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        },
+        {
+          "name": "post_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/b797fc58-e267-4c5e-b2c8-2c9838f48ebf/posts/a7df8d91-b874-4778-9eaa-ba0f008621dc"
+          }
+        }
+      ],
       "get": {
         "tags": ["comments"],
         "summary": "Get comments for a post",
@@ -212,11 +285,11 @@
                       "type":"integer"
                     },
                     "post": {
-                      "type":"url",
+                      "type":"string",
                       "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
                     },
                     "id": {
-                      "type":"url",
+                      "type":"string",
                       "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e/comments"
                     },
                     "items":{
@@ -268,6 +341,26 @@
       }
     },
     "/{author_id}/followers/{foreign_author_id}": {
+      "parameters": [
+        {
+          "name": "author_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        },
+        {
+          "name": "foreign_author_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        }
+      ],
       "get": {
         "tags": ["followers"],
         "summary": "Check if foreign author is a follower of author",
@@ -327,10 +420,21 @@
     }
   },
   "/{author_id}/followers": {
+    "parameters": [
+      {
+        "name": "author_id", 
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+        }
+      }
+    ],
     "get": {
       "tags": ["followers"],
       "summary": "Get followers for an author",
-      "operationId": "getFollower",
+      "operationId": "getFollowers",
       "responses": {
         "200": {
           "description": "Successful operation",
@@ -361,6 +465,17 @@
     }
   },
   "/{author_id}/inbox": {
+    "parameters": [
+      {
+        "name": "author_id", 
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+        }
+      }
+    ],
     "put": {
       "tags": ["inbox"],
       "summary": "Add item to an author's inbox",
@@ -432,6 +547,26 @@
         }
     },
     "/{author_id}/posts/{post_id}/likes": {
+      "parameters": [
+        {
+          "name": "author_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        },
+        {
+          "name": "post_id", 
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/b797fc58-e267-4c5e-b2c8-2c9838f48ebf/posts/a7df8d91-b874-4778-9eaa-ba0f008621dc"
+          }
+        }
+      ],
         "get": {
           "tags": ["likes"],
           "summary": "Get all the likes on an author's post",
@@ -466,6 +601,17 @@
           }
       },
       "/{author_id}/liked/": {
+        "parameters": [
+          {
+            "name": "author_id", 
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+            }
+          }
+        ],
         "get": {
           "tags": ["likes"],
           "summary": "Get an author's likes",
@@ -510,7 +656,7 @@
             "default": "author"
           },
           "id": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost/authors/"
           },
           "displayName": {
@@ -518,15 +664,15 @@
             "example": "Joe"
           },
           "url": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
           },
           "github": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
           },
           "profileImage": {
-            "type": "url",
+            "type": "string",
             "example": "http://google.com/funnyanimalpic"
           }
         }
@@ -553,15 +699,15 @@
             "default": "post"
           },
           "id": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost/authors/11f6bdd5-a60b-4ca0-a395-1fba77f1ede8/posts/b2920040-9c7f-4ad7-bdc2-2ecb61a94217"
           },
           "source": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost"
           },
           "origin": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost/authors/4d53bc84-0caa-4fd3-b2b4-fd762c2d0786"
           },
           "description": {
@@ -607,11 +753,11 @@
             "default": "comment"
           },
           "id": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost/authors/11f6bdd5-a60b-4ca0-a395-1fba77f1ede8/posts/b2920040-9c7f-4ad7-bdc2-2ecb61a94217/comments/317bb454-6b52-457a-a97b-cf7b4e24e42f"
           },
           "author": {
-            "type": "url",
+            "type": "object",
             "$ref": "#/components/schemas/Author"
           },
           "comment": {
@@ -636,7 +782,7 @@
             "default": "inbox"
           },
           "author": {
-            "type": "url",
+            "type": "string",
             "example": "http://localhost/authors/11f6bdd5-a60b-4ca0-a395-1fba77f1ede8",
             "description": "id of the author"
           },
@@ -702,7 +848,7 @@
             "$ref": "#/components/schemas/Author"
           },
           "object": {
-            "type": "url",
+            "type": "string",
             "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
           }
         }
