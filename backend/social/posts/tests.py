@@ -64,6 +64,9 @@ class TestPosts(APITestCase):
         url = reverse('posts:detail',kwargs={'pk_a':test_id,'pk':'MyCustomID'})
         post_data = {
             'title':'custom title',
+            'description':'testing testy test',
+            'contentType':'text/plain',
+            'content':'test'
         }
         response = self.client.put(url,json.dumps(post_data),content_type="application/json")
         self.assertEqual(response.status_code,status.HTTP_200_OK)
@@ -85,20 +88,20 @@ class TestPosts(APITestCase):
         url = reverse('posts:posts',kwargs={'pk_a':test_id})
         # test image converted to base64
         with open("media/test_img/test_img.png", "rb") as png_image:
-            base64_image = base64.b64encode(png_image.read()).decode('utf-8')
+            base64_image = base64.b64encode(png_image.read())
         # set up the json object with that data
         author_data = {
             'id':test_id,
             'displayName':test_name[0].strip(),
         }
         post_data = {
-            'author':author_data,
+        
             'type':'post',
             'title':'test',
             'description':'testing testy test',
-            'contentType':'image/png;base64',
+            'contentType':'image/png',
             'content':'test',
-            'image':base64_image
+            'image':str(base64_image)
         }
         # test the POST to the posts URL, this time with an image in the object
         response = self.client.post(url,json.dumps(post_data),content_type="application/json")
@@ -116,10 +119,93 @@ class TestPosts(APITestCase):
         # TODO: test private posts
     
 
+    
+    
     def test_comments(self):
-        return
+        '''Testing get and post of comments
+            have also included tests for individual comment get'''
+
+        create_author = Author.objects.create(displayName='sugon')
+        test_name = str(create_author).split('(')
+        test_id = test_name[-1].strip(')')
+        create_author2 = Author.objects.create(displayName='sawcon')
+        test_name2= str(create_author2).split('(')
+        test_id2 = test_name2[-1].strip(')')
+        # get url for the user to make posts at
+        url = reverse('posts:posts',kwargs={'pk_a':test_id})
+        # set up the json object with that data
+        
+        post_data = {
+            'type':'post',
+            'title':'test',
+            'description':'testing testy test',
+            'contentType':'text/plain',
+            'content':'test'
+        }
+        
+        # test the post
+        response = self.client.post(url,json.dumps(post_data),content_type="application/json")
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"testing testy test")
+        post_id = str(Post.objects.all()[0].id)
+        url = reverse('posts:comments',kwargs={'pk_a':test_id,'pk':post_id})
+        comment_data = {
+            "author_id":test_id2,
+            "comment":"test2"
+        }
+        response = self.client.post(url,json.dumps(comment_data),content_type="application/json")
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"test2")
+
+        #test the get
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"test2")
+
+        #test individual comment get
+        url = response.json()['results'][0]['id']
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        
+        
+
+        
+
+
 
     def test_likes(self):
+        '''incomplete'''
+        create_author = Author.objects.create(displayName='sugon')
+        test_name = str(create_author).split('(')
+        test_id = test_name[-1].strip(')')
+        create_author2 = Author.objects.create(displayName='sawcon')
+        test_name2= str(create_author2).split('(')
+        test_id2 = test_name2[-1].strip(')')
+        # get url for the user to make posts at
+        url = reverse('posts:posts',kwargs={'pk_a':test_id})
+        # set up the json object with that data
+        
+        post_data = {
+            'type':'post',
+            'title':'test',
+            'description':'testing testy test',
+            'contentType':'text/plain',
+            'content':'test'
+        }
+        
+        # test the post
+        response = self.client.post(url,json.dumps(post_data),content_type="application/json")
+        
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"testing testy test")
+        post_id = str(Post.objects.all()[0].id)
+
+        #POST request for the like
+        url = reverse("authors:inbox",kwargs={"pk_a":test_id})
+        posturl = response.json()['id']
+        like_data = {"type": "Like", "author_id": test_id2, "object" :posturl}
+        response = self.client.post(url,json.dumps(like_data),content_type="application/json")
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+    
         return
     
-
