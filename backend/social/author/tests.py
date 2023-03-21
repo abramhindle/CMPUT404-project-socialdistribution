@@ -37,6 +37,13 @@ class TestAuthor(APITestCase):
         response = self.client.get(user_url)
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"sugon")
+
+        #authordoesnotexist
+        user_url += "4"
+        response = self.client.get(user_url)
+        self.assertEqual(response.status_code,status.HTTP_404_NOT_FOUND)
+        
+
         
 
     # tests the put function of the author view
@@ -178,9 +185,24 @@ class TestAuthor(APITestCase):
         }
         url = reverse('authors:inbox',kwargs={'pk_a':test_id})
         response = self.client.post(url,json.dumps(post_data),content_type="application/json")
-        print(response)
+
 
         self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+        #Check for sending a request thats already sent
+        response = self.client.post(url,json.dumps(post_data),content_type="application/json")
+        self.assertContains(response,"You've already sent a request to this user!")
+
+        #Following yourself test
+        post_data =  {
+        "type": "Follow",
+        "actor":{"id":test_id},
+        "object":{"id":test_id}
+        }
+        response = self.client.post(url,json.dumps(post_data),content_type="application/json")
+        self.assertContains(response,"You cannot send a follow request to yourself!")
+
+
 
         #viewing the sent req
         url = reverse('authors:inbox',kwargs={'pk_a':test_id2})
