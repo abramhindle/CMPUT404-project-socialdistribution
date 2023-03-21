@@ -227,7 +227,7 @@ class CommentDetailView(APIView):
             comment = Comment.objects.get(id=pk_m)
             serializer = CommentSerializer(comment, many=False)
             return Response(serializer.data)
-        except Post.DoesNotExist: 
+        except Comment.DoesNotExist: 
             error_msg = "Comment not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
