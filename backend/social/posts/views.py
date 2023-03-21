@@ -164,7 +164,6 @@ class post_list(APIView, PageNumberPagination):
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         pk = str(uuid.uuid4())
-        
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -173,20 +172,16 @@ class post_list(APIView, PageNumberPagination):
         if 'image' in request.data['contentType']:
             serializer = ImageSerializer(data=request.data, context={'author_id': pk_a})
             if serializer.is_valid():
-                serializer.save()
+                post = serializer.save()
+                share_object(post,author)
                 return Response(serializer.data)
             else: 
                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        print(request.data)
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
             post = serializer.save()
-            inbox_item = Inbox(content_object=post, author=author)
-            for friend in author.friends.all():
-                inbox_item = Inbox(content_object=post, author=friend)
-            inbox_item.save()
-            for friend in author.friends.all():
-                inbox_item = Inbox(content_object=post, author=friend)
-                inbox_item.save()
+            share_object(post,author)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -197,7 +192,6 @@ class CommentDetailView(APIView):
         """
         Get the specific comment
         """
-        # ERROR HERE
         try: 
             comment = Comment.objects.get(id=pk_m)
             serializer = CommentSerializer(comment, many=False)
@@ -232,7 +226,6 @@ class post_detail(APIView, PageNumberPagination):
         """
         Request: only include fields you want to update, not including id or author.
         """     
-        print("hello1") 
         try:
             _ = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -275,7 +268,7 @@ class post_detail(APIView, PageNumberPagination):
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         try:
-            _ = Author.objects.get(id=pk_a)
+            author = Author.objects.get(id=pk_a)
             try:
                 _ = Post.objects.get(id=pk)
                 return Response("Post already exists", status=status.HTTP_400_BAD_REQUEST)
@@ -286,7 +279,8 @@ class post_detail(APIView, PageNumberPagination):
 
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
-            serializer.save()
+            post = serializer.save()
+            share_object(post,author)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -321,12 +315,29 @@ class LikedView(APIView):
 
         dict["items"] = items
         return(dict) 
+    
+class CommentLikesView(APIView):
+
+    """
+    Get the list of likes on our comments
+    """
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all likes on a comment")
+    def get(self, request, pk_a, pk, pk_m):
+        try:
+            comment = Comment.objects.get(id=pk_m)
+            print("URL",comment.url)
+        except Author.DoesNotExist:
+            error_msg = "Comment not found"
+            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+        likes = Like.objects.filter(object=comment.url)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
 
 @swagger_auto_schema( method='get',responses=response_schema_dictComments,operation_summary="Get the comments on a post")
 @api_view(['GET'])
 def get_comments(request, pk_a, pk):
     """
-    Get the list of comments on our website
+    Get the list of comments on the post
     """
     author = Author.objects.get(id=pk_a)
     post = Post.objects.get(author=author, id=pk)
@@ -339,10 +350,10 @@ def get_comments(request, pk_a, pk):
 @api_view(['GET'])
 def get_likes(request, pk_a, pk):
     """
-    Get the list of comments on our website
+    Get the list of likes on a post
     """
     post = Post.objects.get(id=pk)
-    likes = Like.objects.filter(object=post.id)
+    likes = Like.objects.filter(object=post.url)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
@@ -496,9 +507,9 @@ class CommentView(APIView, PageNumberPagination):
 
 
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
+
 class ShareView(APIView):
-    def post(self, request, origin_author, post_id, author):       
-        
+    def post(self, request, origin_author, post_id, author):             
         try:
             sharing_author = Author.objects.get(pk=author)
         except Author.DoesNotExist:
@@ -514,7 +525,7 @@ class ShareView(APIView):
 
         # create new post object with different author but same origin
         #new URL 
-        current_url = request.build_aboslute_url
+        current_url = post.get_absolute_url()
         source = current_url.split('share')[0]
         origin = post.origin
         
@@ -523,7 +534,7 @@ class ShareView(APIView):
         description=post.description,
         content=post.content,
         contentType=post.contentType,
-        author=post.author,
+        author=sharing_author,
         categories=post.categories,
         published=post.published,
         visibility=post.visibility,
@@ -535,6 +546,23 @@ class ShareView(APIView):
 
         # save the new post
         new_post.save()
+        share_object(new_post,sharing_author)
         serializer = PostSerializer(new_post)
         return Response(serializer.data)
         
+def share_object(object, author):
+    inbox_item = Inbox(content_object=object, author=author)
+    inbox_item.save()
+    print(object.visibility)
+    visibility = object.visibility
+    if visibility == 'PUBLIC':
+        for foreign_author in Author.objects.all():
+            if foreign_author!=author:
+                inbox_item = Inbox(content_object=object, author=foreign_author) 
+                inbox_item.save()   
+
+    elif visibility == 'FRIENDS':
+        for friend in author.friends.all():
+            inbox_item = Inbox(content_object=object, author=friend)
+            inbox_item.save()
+    

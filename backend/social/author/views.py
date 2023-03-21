@@ -198,7 +198,6 @@ class FollowersView(APIView):
 
         followers = author.friends
         followers.add(new_follower)
-        print("ayo")
         author.save()
         try: 
             follow = FollowRequest.objects.get(actor=new_follower,object=author)
@@ -326,8 +325,6 @@ class InboxSerializerObjects:
             serializer = FollowRequestSerializer
             context={'actorr': data["actor"]["id"],'objectt':data["object"]["id"]}
             
-         
-      
         return obj or serializer(data=data, context=context, partial=True)
 
 class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):

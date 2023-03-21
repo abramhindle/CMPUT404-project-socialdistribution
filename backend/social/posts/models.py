@@ -20,7 +20,7 @@ visbility_choices = [
 
 MARKDOWN = 'text/markdown'
 PLAIN = 'text/plain'
-IMAGE_PNG = 'image/png'
+IMAGE_PNG = 'image/png' 
 IMAGE_JPEG = 'image/jpeg'
 
 content_types = [
@@ -117,14 +117,15 @@ class Comment(models.Model):
 
     # get public id of comment
     def get_public_id(self):
-        if not self.url: 
-            self.url = settings.APP_NAME + self.get_absolute_url()
-            self.save()
-        return (self.url) + "/" + str(self.id) or str(self.id)
+        self.get_absolute_url()
+        return (self.url) or str(self.id)
     
     def get_absolute_url(self):
-        url = reverse('posts:comments', args=[str(self.post.author.id), str(self.post.id)])
-        return url[:-1] if url.endswith('/') else url 
+        url = reverse('posts:comment_detail', args=[str(self.author.id), str(self.post.id), str(self.id)])
+        url = settings.APP_NAME + url
+        self.url = url[:-1] if url.endswith('/') else url 
+        self.save()
+        return self.url
     
     @staticmethod
     def get_api_type():
