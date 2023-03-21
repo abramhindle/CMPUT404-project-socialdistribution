@@ -1,11 +1,12 @@
 import "./posts.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown from "react-markdown";
 import { post_comment } from "../../api/comment_api";
+import { post_like } from "../../api/like_api";
 
 export default function PlainPost(data) {
-  console.log(typeof(data["post"]["content"]));
+  console.log(typeof data["post"]["content"]);
   const user = useSelector((state) => state.user);
   //Check if markdown
   let markdown = data["post"]["contentType"] === "text/markdown" ? true : false;
@@ -22,6 +23,10 @@ export default function PlainPost(data) {
   )
     .split("/")
     .pop()}`; // allows linking to the author who wrote the post
+
+  const like_success = () => {
+    /* Show Success Snackbar? */
+  };
 
   const [commentFieldVisibilty, setCommentFieldVisibilty] = useState(false);
   const [comment, setComment] = useState("");
@@ -55,15 +60,33 @@ export default function PlainPost(data) {
           {/* Will need to handle other post types here, plain for now */}
           <div className="content-container">
             <h5>{data["post"]["title"]}</h5>
-            {markdown && <ReactMarkdown className="content line" children={data["post"]["content"]}>
-{/* Mardown doesn't like leading whitespace */}
-                        </ReactMarkdown>}
-                        {(!markdown) && <div className="content line">
-                            {data["post"]["content"]}
-                        </div>}
+            {markdown && (
+              <ReactMarkdown
+                className="content line"
+                children={data["post"]["content"]}
+              >
+                {/* Mardown doesn't like leading whitespace */}
+              </ReactMarkdown>
+            )}
+            {!markdown && (
+              <div className="content line">{data["post"]["content"]}</div>
+            )}
           </div>
           <div className="interaction-options">
-            <button>like</button>
+            <button
+              disabled={data.liked}
+              onClick={() =>
+                post_like(
+                  data.post.author.id,
+                  user,
+                  data.post.id,
+                  "context",
+                  like_success
+                )
+              }
+            >
+              {data.liked ? "liked" : "like"}
+            </button>
 
             <button
               onClick={() =>

@@ -198,6 +198,8 @@ class InboxView(APIView):
         try:
             like = Like.objects.get(_id=id)
         except ObjectDoesNotExist:
+            print(body)
+            print(foreign_author)
             like = Like()
             like._id = id
             like.context = body["context"]
