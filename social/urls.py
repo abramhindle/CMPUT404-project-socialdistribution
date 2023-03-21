@@ -25,8 +25,12 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from . import views
+from django.urls import re_path
+from django.views.static import serve
+from django.shortcuts import render
 
-
+def render_react(request):
+    return render(request, "index.html")
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -46,16 +50,15 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('authors/', include('author.urls')),
 
-    path('/docs',schema_view.with_ui('swagger',cache_timeout=0),name = 'schema-swagger-ui'),
-    
-    path("register", views.register.as_view(), name="register"),
+    path('docs',schema_view.with_ui('swagger',cache_timeout=0),name = 'schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc',cache_timeout=0),name = 'schema-redoc'),
 
-    path("register", views.register.as_view(), name="register"),
-    path("login", views.login.as_view(), name="login"),
+    path("api/register", views.register.as_view(), name="register"),
+    path("api/login", views.login.as_view(), name="login"),
     path('csrf/', views.csrf),
+    re_path(r"^$", render_react),
+    re_path(r"^(?:.*)/?$", render_react),
 ]
-
 # adds the path to the media directory, we can put images in media/images/[filename] 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -17,6 +17,12 @@ from social.serializers import UserSerializer
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 
+from rest_framework import viewsets
+from django.views import View
+from django.http import HttpResponse, HttpResponseNotFound
+import os
+
+
 class register(APIView):
     def post(self, request):
         """Register a django user to make them an author"""
