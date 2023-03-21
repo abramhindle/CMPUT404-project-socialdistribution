@@ -6,7 +6,6 @@ import { get_liked } from "../../api/like_api";
 
 function PostList({ user_list }) {
   const user = useSelector((state) => state.user);
-
   //gets a json object, and returns a list item for it
 
   const [liked, setLiked] = useState(null);
