@@ -3,7 +3,6 @@ from .models import *
 from .models import Post
 from author.serializers import AuthorSerializer
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-# pip install drf-base64
 from drf_base64.fields import Base64ImageField
 import uuid 
 
@@ -116,13 +115,21 @@ class LikeSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post",source="get_api_type",read_only=True)
     image = Base64ImageField()
-    author = AuthorSerializer()
     id = serializers.URLField(source="get_public_id",read_only=True)
-    # visibility is public by default
-    visibility = serializers.ChoiceField(choices=visbility_choices,default="PUBLIC")
+    author = AuthorSerializer(required=False)
+    
+    def create(self, validated_data):
+        author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
+        id = validated_data.pop('id') if validated_data.get('id') else None
+        if not id:
+            id = self.context["id"]
+        post = Post.objects.create(**validated_data, author = author, id = id)
+        return post
+
     class Meta:
         model = Post
         fields = [
+            "contentType",
             "type",
             "id",
             "author",

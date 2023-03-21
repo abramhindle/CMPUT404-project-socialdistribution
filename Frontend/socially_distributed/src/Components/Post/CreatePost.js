@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useCallback, useState } from "react";
 import {
 	Input,
 	Avatar,
@@ -84,11 +84,11 @@ function CREATEPOST() {
 			);
 		}
 
-		if (post_type === "Image") {
-			return (
-				<div>
-					<Uploader
+		// converts image to base64 then passes it into the backend
+		/* this is the code for what the uploader was:
+		<Uploader
 						action="post/authors/{AUTHOR_ID}/posts/"
+						accept=".png, .jpg, .jpeg"
 						autoUpload={false}
 						draggable
 						style={{
@@ -111,6 +111,11 @@ function CREATEPOST() {
 							</span>
 						</div>
 					</Uploader>
+		*/
+		if (post_type === "image/png" || post_type === "image/jpeg") {
+			return (
+				<div>
+					<input id='file' type='file' accept=".png, .jpg, .jpeg" />
 				</div>
 			);
 		}
@@ -130,10 +135,20 @@ function CREATEPOST() {
 		});
 	};
 
+	async function readFileAsDataURL(file) {
+		let result_base64 = await new Promise((resolve) => {
+			let fileReader = new FileReader();
+			fileReader.onloadend = (e) => resolve(fileReader.result);
+			fileReader.readAsDataURL(file);
+		});
+		return result_base64;
+	}
+
 	const handlePostClick = () => {
 		const author = JSON.parse(localStorage.getItem("user"));
 		const author_id = getAuthorId(null);
 		const url = `posts/authors/${author_id}/posts/`;
+
 		var params = {
 			title: title,
 			description: description,
@@ -144,6 +159,14 @@ function CREATEPOST() {
 		if (categories.length > 0) {
 			params["categories"] = categories
 		}
+
+		var imagefile = document.getElementById("file").files[0];
+		if (imagefile) {
+			readFileAsDataURL(imagefile).then(dataURL => {
+				params['image'] = dataURL;
+			});
+		}
+
 		axios({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
@@ -183,6 +206,7 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="PUBLIC">Public</Dropdown.Item>
 				<Dropdown.Item eventKey="FRIENDS">Friends</Dropdown.Item>
 				<Dropdown.Item eventKey="PRIVATE">Private</Dropdown.Item>
+				<Dropdown.Item eventKey="Unlisted">Unlisted</Dropdown.Item>
 			</Dropdown>
 			<Dropdown
 				title={post_type}
