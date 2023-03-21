@@ -36,31 +36,26 @@ class AuthorFollowRequests(View):
 #TODO: maybe an endpoint to delete a follow request?
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowRequests(View):
-    http_method_names = ['post', 'delete']
+    http_method_names = ['put', 'delete']
 
     def post(self, request, author_id, foreign_author_id):
         #if request.user.is_authenticated:
-        
+        follow_requests = Follow.objects.all().filter(object=author_id)
         if author_id == foreign_author_id:
             return HttpResponseBadRequest() #can't follow yourself!
 
         author = Author.objects.get(_id = author_id)
-        followed = Author.objects.get(_id = foreign_author_id)
+        follower = Author.objects.get(_id = foreign_author_id)
 
         try:
             author.followers.get(_id=foreign_author_id)
         except ObjectDoesNotExist:
             r = Follow()
-            r._id = Follow.create_follow_id(foreign_author_id,author_id)
-            r.actor = author
-            r.object = followed
+            r.actor = follower
+            r.object = author
             r.save()
 
-            r_json = r.toJSON()
-
-            return HttpResponse(json.dumps(r_json), status=201, content_type = CONTENT_TYPE_JSON)
-
-            #return HttpResponse(status=200)
+            return HttpResponse(status=200)
 
         return HttpResponse(status=409)
 

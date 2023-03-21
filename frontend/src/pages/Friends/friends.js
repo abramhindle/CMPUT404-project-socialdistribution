@@ -52,7 +52,7 @@ function Friends() {
 
     const followAuthor= (follow_id) => {
         add_request(user.id, follow_id, onSuccess)
-        //add_followers_for_author(user.id, follow_id, onSuccess)
+        add_followers_for_author(user.id, follow_id, onSuccess)
     }
 
     const onSuccess = () => {
