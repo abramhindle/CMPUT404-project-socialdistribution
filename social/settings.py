@@ -16,7 +16,7 @@ import dj_database_url
 
 import mimetypes
 
-mimetypes.add_type("text/javascript", ".js", True)
+mimetypes.add_type("application/javascript", ".js", True)
 
 APP_NAME = 'http://127.0.0.1:8000'
 
@@ -75,7 +75,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 CORS_ALLOW_CREDENTIALS = True
 
 # change to https://app.example.com in production settings
-CORS_ORIGIN_WHITELIST = ['http://localhost:3000']
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'http://localhost:8000']
 
 REST_FRAMEWORK = {
     'PAGE_SIZE': 50,

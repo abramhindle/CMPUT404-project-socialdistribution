@@ -6,7 +6,7 @@ import { getAuthorId } from "../utils/auth";
 import COMMENTLIKE from "./LikeComment";
 
 function COMMENTS({ postobj }) {
-	const [commentObj, setCommentObj] = useState({ comments: [] });
+	const [commentObj, setCommentObj] = useState([]);
 	const [postObj, setPostObj] = useState(postobj);
 	const [new_comment, set_new_comment] = useState("");
 
@@ -14,7 +14,7 @@ function COMMENTS({ postobj }) {
 		axios({ method: "get", url: url + "/" })
 			.then((res) => {
 				console.log(res);
-				setCommentObj(res.data);
+				setCommentObj(res.data.results);
 			})
 			.catch((err) => console.log(err));
 	};
@@ -43,7 +43,7 @@ function COMMENTS({ postobj }) {
 
 	return (
 		<div>
-			{commentObj.comments.map((obj) => (
+			{commentObj.map((obj) => (
 				<div
 					key={obj.id}
 					style={{
