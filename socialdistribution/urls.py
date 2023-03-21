@@ -28,5 +28,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('authors/', include('service.urls')), #all API calls are prefixed with authors/ so we forward to the service app
     path('api/', include("blog.urls")),
-    re_path('.*', TemplateView.as_view(template_name='docs/index.html')) #this should have some sort of 404 page built into it
+    re_path('.*', TemplateView.as_view(template_name='index.html')) #this should have some sort of 404 page built into it
 ]
