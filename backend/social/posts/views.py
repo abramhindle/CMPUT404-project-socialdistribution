@@ -162,7 +162,13 @@ class post_list(APIView, PageNumberPagination):
                     
             if "FRIENDS" in post.visibility:
                 # if the post author is not friends with the auth'd user, don't show this post
-                if authenticated_user not in post.author.friends:
+                if authenticated_user not in post.author.friends or authenticated_user != post.author:
+                    posts.exclude(post)
+                
+            if "UNLISTED" in post.visibility:
+                # if the post is marked as unlisted, don't show this post UNLESS the author is the one authenticated
+                # (other users can see it if they have the link)
+                if post.author != authenticated_user:
                     posts.exclude(post)
         
         posts = self.paginate_queryset(posts, request) 
@@ -233,6 +239,7 @@ class post_detail(APIView, PageNumberPagination):
             post = Post.objects.get(id = pk)
             authenticated_user = Author.objects.get(id=pk_a)
 
+            # unlisted does not need to be addressed here; only in the post list
             # if it is private or friends, only continue if author is trying to access it:
             if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:
@@ -245,7 +252,7 @@ class post_detail(APIView, PageNumberPagination):
             if "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
-                    error_msg = {"message":"You do not have access to this image!"}
+                    error_msg = {"message":"You do not have access to this post!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
                 
             serializer = PostSerializer(post, many=False)
@@ -405,6 +412,7 @@ class ImageView(APIView):
                 return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
             
             # image privacy settings
+            # unlisted does not need to be addressed here
             # if it is private or friends, only continue if author is trying to access it:
             if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:

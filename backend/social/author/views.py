@@ -89,6 +89,7 @@ class AuthorsListView(APIView, PageNumberPagination):
         """
         Get the list of authors on our website
         """
+        
         authors = Author.objects.all()
         authors=self.paginate_queryset(authors, request) 
         serializer = AuthorSerializer(authors, many=True)
@@ -96,9 +97,13 @@ class AuthorsListView(APIView, PageNumberPagination):
 
 class AuthorView(APIView):
     def validate(self, data):
-        if 'displayName' not in data:
-            data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
-        return data 
+        try:
+            if 'displayName' not in data:
+                data['displayName'] = Author.objects.get(displayName=data['displayName']).weight
+            return data 
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
     @swagger_auto_schema(responses=response_schema_dict,operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
@@ -106,26 +111,34 @@ class AuthorView(APIView):
         """
         Get a particular author searched by AuthorID
         """
-        author = Author.objects.get(id=pk_a)
-        serializer = AuthorSerializer(author,partial=True)
-        return  Response(serializer.data)
-    
+        try:        
+            author = Author.objects.get(id=pk_a)
+            serializer = AuthorSerializer(author,partial=True)
+            return  Response(serializer.data)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+
     @swagger_auto_schema( responses=response_schema_dict,operation_summary="Update a particular Authors profile")
     def put(self, request, pk_a):
         """
         Update the authors profile
         """
-
-        author = Author.objects.get(pk=pk_a)
-           
-        serializer = AuthorSerializer(author,data=request.data,partial=True)
-         
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)                
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+        try:    
+            author = Author.objects.get(pk=pk_a)
+            
+            serializer = AuthorSerializer(author,data=request.data,partial=True)
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)                
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+            
 class FollowersView(APIView):
     serializer_class = AuthorSerializer
 
@@ -252,22 +265,27 @@ class FriendRequestView(APIView):
     serializer_class = FollowRequestSerializer
     
     def post(self,request,pk_a):
-        actor = Author.objects.get(id=pk_a)
-        displaynameto = request.data['displayName']
-        displaynamefrom=actor.displayName
-        objects = Author.objects.filter(displayName = displaynameto)[0]
+        try:
+            actor = Author.objects.get(id=pk_a)
+            displaynameto = request.data['displayName']
+            displaynamefrom=actor.displayName
+            objects = Author.objects.filter(displayName = displaynameto)[0]
 
-        if FollowRequest.objects.filter(actor=actor, object=objects).exists():
-            return Response("You've already sent a request to this user", status=status.HTTP_400_BAD_REQUEST)
-        if actor==objects:
-            return Response("You cannot follow yourself!", status=status.HTTP_400_BAD_REQUEST)
+            if FollowRequest.objects.filter(actor=actor, object=objects).exists():
+                return Response("You've already sent a request to this user", status=status.HTTP_400_BAD_REQUEST)
+            if actor==objects:
+                return Response("You cannot follow yourself!", status=status.HTTP_400_BAD_REQUEST)
+            
+            type = "Follow"
+            summary = displaynamefrom + " wants to follow " + displaynameto
+            follow = FollowRequest(Type = type,Summary=summary,actor=actor, object=objects)
+            follow.save()
+            serializer = FollowRequestSerializer(follow)
+            return Response(serializer.data)
         
-        type = "Follow"
-        summary = displaynamefrom + " wants to follow " + displaynameto
-        follow = FollowRequest(Type = type,Summary=summary,actor=actor, object=objects)
-        follow.save()
-        serializer = FollowRequestSerializer(follow)
-        return Response(serializer.data)
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
 class ViewRequests(APIView):
     serializer_class = FollowRequestSerializer
@@ -276,13 +294,17 @@ class ViewRequests(APIView):
         """
         Get the list of Follow requests for the current Author
         """
+        try:    
+            Object = Author.objects.get(id=pk_a)
+            displaynamefrom=Object.displayName
 
-        Object = Author.objects.get(id=pk_a)
-        displaynamefrom=Object.displayName
-
-        requests = FollowRequest.objects.filter(object = Object)
-        serializer = FollowRequestSerializer(requests,many=True)
-        return Response(serializer.data)
+            requests = FollowRequest.objects.filter(object = Object)
+            serializer = FollowRequestSerializer(requests,many=True)
+            return Response(serializer.data)
+        
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
 class InboxSerializerObjects:
     def serialize_inbox_objects(self, item, context={}):
@@ -306,7 +328,11 @@ class InboxSerializerObjects:
             raise exceptions
         
         if type == Post.get_api_type():
-            obj = Post.objects.get(id=(data["id"].split("/")[-1]))
+            try:
+                obj = Post.objects.get(id=(data["id"].split("/")[-1]))
+            except Post.DoesNotExist:
+                error_msg = "Post not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
             serializer = PostSerializer
             context={'author_id': pk_a,'id':data["id"].split("/")[-1]}
         elif type == Like.get_api_type():
@@ -353,7 +379,13 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
             1. If the object is from a foreign author and not in database: a full object (Like, Author, Comment) with mandatory fields required, TYPE, id, author.
             2. If object in database: TYPE, id.
         """
-        author = get_object_or_404(Author,pk=pk_a)
+        try:
+            author = get_object_or_404(Author,pk=pk_a)
+            
+        except Author.DoesNotExist:
+            error_msg = "Author id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
         serializer = self.deserialize_objects(
             self.request.data, pk_a)
         

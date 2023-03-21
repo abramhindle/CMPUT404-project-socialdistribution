@@ -26,7 +26,6 @@ class TestPosts(APITestCase):
             'displayName':test_name[0].strip(),
         }
         post_data = {
-            'author':author_data,
             'type':'post',
             'title':'test',
             'description':'testing testy test',
@@ -39,8 +38,7 @@ class TestPosts(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
 
-        # TODO:extract the post ID from the response
-        
+        # extract the post ID from the response
         post_id = str(Post.objects.all()[0].id)
 
         # test the get
@@ -49,7 +47,36 @@ class TestPosts(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
 
-    
+    # test the different post privacy settings (PRIVATE, FRIENDS, UNLISTED)
+    # TODO: work properly with auth
+    def test_post_privacy(self):
+        # create the author of the posts + extract the URL
+        create_author = Author.objects.create(displayName='sugon')
+        test_name = str(create_author).split('(')
+        test_id = test_name[-1].strip(')')
+        # get url for the user to make posts at
+        url = reverse('posts:posts',kwargs={'pk_a':test_id})
+        # set up the json object with that data
+        author_data = {
+            'id':test_id,
+            'displayName':test_name[0].strip(),
+        }
+        post_data = {
+            'type':'post',
+            'title':'test',
+            'description':'testing testy test',
+            'contentType':'text/plain',
+            'content':'test',
+            'visibility':'PRIVATE',
+        }
+        
+        # test the post
+        response = self.client.post(url,json.dumps(post_data),content_type="application/json")
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"testing testy test")
+
+        # here, we should have a different auth user try to access it with some other test cases :)
 
        
     # as image posts share the same POST process up to the serializer,
@@ -71,21 +98,20 @@ class TestPosts(APITestCase):
             'displayName':test_name[0].strip(),
         }
         post_data = {
-            'author':author_data,
             'type':'post',
             'title':'test',
             'description':'testing testy test',
-            'contentType':'image/png;base64',
+            'contentType':'image/png',
             'content':'test',
-            'image':base64_image
+            'image':str(base64_image)
         }
         # test the POST to the posts URL, this time with an image in the object
         response = self.client.post(url,json.dumps(post_data),content_type="application/json")
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
 
-        # TODO:same post ID extraction step as the above
-        post_id = '???'
+        # same post ID extraction step as the above
+        post_id = str(Post.objects.all()[0].id)
 
         # test the GET and make sure that the image is in there. if it's there, it's rendered
         response = self.client.get(url+post_id+'/')

@@ -115,9 +115,7 @@ class ImageSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     id = serializers.URLField(source="get_public_id",read_only=True)
     author = AuthorSerializer(required=False)
-    # visibility is public by default
-    visibility = serializers.ChoiceField(choices=visbility_choices,default="PUBLIC")
-
+    
     def create(self, validated_data):
         author = AuthorSerializer.extract_and_upcreate_author(validated_data, author_id=self.context["author_id"])
         id = validated_data.pop('id') if validated_data.get('id') else None
