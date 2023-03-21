@@ -8,13 +8,34 @@ from service.models.author import Author
 from service.service_constants import *
 from rest_framework.views import APIView
 
+from django.conf import settings
+
+import requests
+
+from django.db.models import Q
+
 # Create your views here.
 
 class MultipleAuthors(APIView):
     http_method_names = ["get"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        authors_queryset = Author.objects.all().order_by('displayName')
+
+        filter_host = Q(host=settings.DOMAIN)
+
+        if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote_user, use requests to go out to each remote host and get their values and save them
+            # go out to other servers and find all authors and then save them
+            # rather than saving the author id we get in the ID, we can save it in the URL, and then create our own ID
+            # this means we need to check against URL rather than ID for duplicates
+
+            for host_name in [host[1] for host in settings.REMOTE_USERS]:
+                response = requests.get(host_name, auth=())
+                print(response.json())
+                pass
+
+            filter_host = Q()  # no filter, since not a remote user
+
+        authors_queryset = Author.objects.all().order_by('displayName').filter(filter_host)
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
 

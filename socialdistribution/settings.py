@@ -178,6 +178,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DOMAIN = "https://social-distribution-w23-t17.herokuapp.com"
 
+REMOTE_USERS = [
+    ("remote-user-t14", "hostname", ("username", "password")),
+    ("remote-user-t22", "hostname", ("username", "password")),
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
