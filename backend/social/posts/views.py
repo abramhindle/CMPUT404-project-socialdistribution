@@ -172,8 +172,19 @@ class post_list(APIView, PageNumberPagination):
                     
             if "FRIENDS" in post.visibility:
                 # if the post author is not friends with the auth'd user, don't show this post
+                if authenticated_user not in post.author.friends or authenticated_user != post.author:
+                    posts.exclude(post)
+                
+            if "UNLISTED" in post.visibility:
+                # if the post is marked as unlisted, don't show this post UNLESS the author is the one authenticated
+                # (other users can see it if they have the link)
+                if post.author != authenticated_user:
+                    posts.exclude(post)
+        
+        posts = self.paginate_queryset(posts, request) 
                 if authenticated_user not in post.author.friends:
                     posts.exclude(post) 
+
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
 
@@ -191,7 +202,15 @@ class post_list(APIView, PageNumberPagination):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+        
+        # if image post
+        if 'image' in request.data['contentType']:
+            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+            # you will need to pass in a JSON object with a title, contentType, content, and image
+            # image is passed in as a base64 string. it should look like data:image/png;base64,LOTSOFLETTERS
+        else:
+            serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
+
         if serializer.is_valid():
             post = serializer.save()
             inbox_item = Inbox(content_object=post, author=author)
@@ -233,6 +252,7 @@ class post_detail(APIView, PageNumberPagination):
             post = Post.objects.get(id = pk)
             authenticated_user = Author.objects.get(id=pk_a)
 
+            # unlisted does not need to be addressed here; only in the post list
             # if it is private or friends, only continue if author is trying to access it:
             if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:
@@ -245,7 +265,7 @@ class post_detail(APIView, PageNumberPagination):
             if "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
-                    error_msg = {"message":"You do not have access to this image!"}
+                    error_msg = {"message":"You do not have access to this post!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
         except Post.DoesNotExist: 
             error_msg = "Comment not found"
@@ -287,10 +307,15 @@ class post_detail(APIView, PageNumberPagination):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else: 
+               return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+            
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
         else:
-            return Response("Cannot edit a shared post", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response("Cannot edit a shared post", status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(operation_summary="Delete a particular post of an author") 
     def delete(self, request, pk_a, pk):
@@ -400,6 +425,7 @@ class ImageView(APIView):
             author = Author.objects.get(id=pk_a) 
             post = Post.objects.get(author=author, id=pk)
             authenticated_user = Author.objects.get(id=pk_a)
+
             # not image post
             if post.contentType and 'image' not in post.contentType:
                 error_msg = {"message":"Post does not contain an image!"}
@@ -411,6 +437,7 @@ class ImageView(APIView):
                 return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
             
             # image privacy settings
+            # unlisted does not need to be addressed here
             # if it is private or friends, only continue if author is trying to access it:
             if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:
@@ -425,7 +452,7 @@ class ImageView(APIView):
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
                     error_msg = {"message":"You do not have access to this image!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
-            
+
             # return the image!
             post_content = post.contentType.split(';')[0]
             return Response(post.image, content_type=post_content, status=status.HTTP_200_OK)

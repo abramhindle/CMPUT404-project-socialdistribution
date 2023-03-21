@@ -183,6 +183,7 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="Public">Public</Dropdown.Item>
 				<Dropdown.Item eventKey="Friends">Friends</Dropdown.Item>
 				<Dropdown.Item eventKey="Private">Private</Dropdown.Item>
+				<Dropdown.Item eventKey="Unlisted">Unlisted</Dropdown.Item>
 			</Dropdown>
 			<Dropdown
 				title={post_type}

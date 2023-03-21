@@ -37,7 +37,8 @@ class TestPosts(APITestCase):
         response = self.client.post(url,json.dumps(post_data),content_type="application/json")
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
-        
+
+        # extract the post ID from the response
         post_id = str(Post.objects.all()[0].id)
         
         # test the get
@@ -72,9 +73,6 @@ class TestPosts(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"custom title")
 
-
-    
-
        
     # as image posts share the same POST process up to the serializer,
     # but a different GET from views to render the image
@@ -95,7 +93,6 @@ class TestPosts(APITestCase):
             'displayName':test_name[0].strip(),
         }
         post_data = {
-        
             'type':'post',
             'title':'test',
             'description':'testing testy test',
@@ -108,8 +105,8 @@ class TestPosts(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"testing testy test")
 
-        # TODO:same post ID extraction step as the above
-        post_id = '???'
+        # same post ID extraction step as the above
+        post_id = str(Post.objects.all()[0].id)
 
         # test the GET and make sure that the image is in there. if it's there, it's rendered
         response = self.client.get(url+post_id+'/')
@@ -117,9 +114,6 @@ class TestPosts(APITestCase):
         self.assertContains(response,"testing testy test")
 
         # TODO: test private posts
-    
-
-    
     
     def test_comments(self):
         '''Testing get and post of comments
@@ -175,13 +169,6 @@ class TestPosts(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertContains(response,"sawcon Likes your post")
-        
-        
-        
-
-        
-
-
 
     def test_likes(self):
         '''incomplete'''
