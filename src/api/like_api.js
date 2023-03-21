@@ -16,12 +16,16 @@ export const post_like = async (
       .split("/")
       .pop()}/posts/${postId.split("/").pop()}`,
   };
-  const res = await axios.post(`authors/${likedAuthorId}/inbox/`, data, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
+  const res = await axios.post(
+    `https://social-distribution-w23-t17.herokuapp.com/authors/${likedAuthorId}/inbox/`,
+    data,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
   console.log(res);
   if (res.status === 202) {
     console.log("Success!");
