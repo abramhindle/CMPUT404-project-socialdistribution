@@ -163,9 +163,19 @@ class TestPosts(APITestCase):
         self.assertContains(response,"test2")
 
         #test individual comment get
-        url = response.json()['results'][0]['id']
+        commenturl = response.json()['results'][0]['id']
+        response = self.client.get(commenturl)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+        #liking the comment
+        url = reverse("authors:inbox",kwargs={"pk_a":test_id})
+        like_data = {"type": "Like", "author_id": test_id2, "object" :commenturl}
+        response = self.client.post(url,json.dumps(like_data),content_type="application/json") 
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
         response = self.client.get(url)
         self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"sawcon Likes your post")
+        
         
         
 
@@ -206,6 +216,22 @@ class TestPosts(APITestCase):
         like_data = {"type": "Like", "author_id": test_id2, "object" :posturl}
         response = self.client.post(url,json.dumps(like_data),content_type="application/json")
         self.assertEqual(response.status_code,status.HTTP_200_OK)
-    
+
+
+        #NEEDS FIXING ( )
+        url = posturl + "/likes/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+   
+
+
+
+        #testing liked posts of an author
+        url = reverse("authors:get_liked",kwargs={"pk_a":test_id2})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertContains(response,"sawcon Likes your post")
+        
+        
         return
     
