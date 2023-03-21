@@ -75,7 +75,6 @@ class InboxView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs):
         author_id = kwargs['author_id']
 
-        print(request.data)
         body = request.data
 
         try:
