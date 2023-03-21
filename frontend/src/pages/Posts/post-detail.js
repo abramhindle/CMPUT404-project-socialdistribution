@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { get_post } from "../../api/post_display_api";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar/sidebar";
 import "./post-detail.css";
+import { get_post } from "../../api/post_display_api";
 import { get_post_comments, post_comment } from "../../api/comment_api";
 import { get_post_like, post_like } from "../../api/like_api.js";
 
@@ -21,17 +21,13 @@ function PostDetail() {
   const [commentPage, setCommentPage] = useState(1);
   const [commentSize, setCommentSize] = useState(5);
   const [nextCommentPageInfo, setNextCommentPageInfo] = useState(null);
-  const [disableCommentNextButton, setDisableCommentNextButton] =
-    useState(false);
 
   const nextCommentPage = () => {
     setCommentPage(commentPage + 1);
   };
 
   const prevCommentPage = () => {
-    if (commentPage > 1) {
-      setCommentPage(commentPage - 1);
-    }
+    setCommentPage(commentPage - 1);
   };
 
   const submitComment = async () => {
@@ -67,7 +63,7 @@ function PostDetail() {
   const successComment = (commentData) => {
     setCommentsInfo(commentData);
     if (commentData.items.length < commentSize) {
-      setDisableCommentNextButton(true);
+      setNextCommentPageInfo(null);
     } else if (commentData.items.length === commentSize) {
       get_post_comments(
         `http://localhost/authors/${author_id}`,
@@ -81,10 +77,9 @@ function PostDetail() {
 
   const preCheckNextCommentPage = (commentData) => {
     if (commentData.items.length === 0) {
-      setDisableCommentNextButton(true);
-      setNextCommentPageInfo(commentData);
+      setNextCommentPageInfo(null);
     } else {
-      setDisableCommentNextButton(false);
+      setNextCommentPageInfo(commentData);
     }
   };
 
@@ -221,7 +216,7 @@ function PostDetail() {
               </button>
               <button
                 onClick={nextCommentPage}
-                disabled={disableCommentNextButton}
+                disabled={nextCommentPageInfo ? false : true}
               >
                 next
               </button>
