@@ -36,7 +36,7 @@ function POST({ postobj, edit }) {
 
 		// Peter you just need to return the image here
 		if (post["contentType"] === "image/jpeg") {
-			return <p>{}</p>;
+			return <p>{ }</p>;
 		}
 	};
 
@@ -57,6 +57,23 @@ function POST({ postobj, edit }) {
 			}
 		);
 	};
+
+	async function sharePost() {
+		const author_id = getAuthorId(null);
+		const origin_author_id = getAuthorId(postobj.author.id);
+		const post_id = getAuthorId(postobj.id);
+		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}`;
+		axios({ method: "post", url: url })
+			.then((res) => {
+				if (res.status === 204) {
+					notifySuccessPost();
+				} else {
+					notifyFailedPost(res.data);
+				}
+			})
+			.catch((err) => console.log(err));
+
+	}
 
 	const notifyFailedPost = (error) => {
 		toaster.push(<Message type="error">{error}</Message>, {
@@ -118,6 +135,7 @@ function POST({ postobj, edit }) {
 			<IconButton
 				style={{ float: "right", marginRight: "10px" }}
 				appearance="subtle"
+				onClick={sharePost}
 				icon={<ShareIcon />}
 			/>
 			<LIKE postObj={postobj} />

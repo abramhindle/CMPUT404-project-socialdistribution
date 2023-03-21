@@ -12,41 +12,39 @@ function COMMENTLIKE({ obj }) {
 
 	//Confirm the name of the button
 	async function handleSubmitClick() {
-		const commentId = getAuthorId(obj);
 		const curr_author_id = getAuthorId(null);
-		var comment_author_id = "";
+		var FAID = "";
 		const url2 = obj;
 
-		// await axios({ method: "get", url: url2 }).then((res) => {
-		// 	console.log(res.data.author.id);
-		// 	comment_author_id = getAuthorId(res.data.author.id);
-		// });
+		await axios({ method: "get", url: url2 }).then((res) => {
+			console.log(res.data.author);
+			FAID = getAuthorId(res.data.author.id);
+		});
 
-		// const params = {
-		// 	type: "Like",
-		// 	author_id: author_id,
-		// 	object: postObjUrl,
-		// };
-		// const url = `authors/${FAID}/inbox`;
+		const params = {
+			type: "Like",
+			author_id: curr_author_id,
+			object: url2,
+		};
+		const url = `authors/${FAID}/inbox`;
 
-		// //Confirm what to add into the params and send inbox
-		// axios({ method: "post", url: url, data: params })
-		// 	.then((res) => {
-		// 		console.log(res.data);
-		// 		toaster.push(
-		// 			<Message type="success">Successful Like</Message>,
-		// 			{
-		// 				placement: "topEnd",
-		// 				duration: 5000,
-		// 			}
-		// 		);
-		// 	})
-		// 	.catch((err) => {
-		// 		toaster.push(<Message type="error">{err}</Message>, {
-		// 			placement: "topEnd",
-		// 			duration: 5000,
-		// 		});
-		// 	});
+		//Confirm what to add into the params and send inbox
+		axios({ method: "post", url: url, data: params })
+			.then((res) => {
+				toaster.push(
+					<Message type="success">Successful Like</Message>,
+					{
+						placement: "topEnd",
+						duration: 5000,
+					}
+				);
+			})
+			.catch((err) => {
+				toaster.push(<Message type="error">{err}</Message>, {
+					placement: "topEnd",
+					duration: 5000,
+				});
+			});
 	}
 
 	return (

@@ -182,8 +182,8 @@ class post_list(APIView, PageNumberPagination):
                     posts.exclude(post)
         
         posts = self.paginate_queryset(posts, request) 
-                if authenticated_user not in post.author.friends:
-                    posts.exclude(post) 
+        if authenticated_user not in post.author.friends:
+            posts.exclude(post) 
 
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
@@ -196,7 +196,6 @@ class post_list(APIView, PageNumberPagination):
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         pk = str(uuid.uuid4())
-        
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -213,31 +212,24 @@ class post_list(APIView, PageNumberPagination):
 
         if serializer.is_valid():
             post = serializer.save()
-            inbox_item = Inbox(content_object=post, author=author)
-            for friend in author.friends.all():
-                inbox_item = Inbox(content_object=post, author=friend)
-            inbox_item.save()
-            for friend in author.friends.all():
-                inbox_item = Inbox(content_object=post, author=friend)
-                inbox_item.save()
+            share_object(post,author)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class CommentDetailView(APIView, PageNumberPagination):
+class CommentDetailView(APIView):
     
     @swagger_auto_schema(operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
         Get the specific comment
         """
-        # ERROR HERE
         try: 
-            comment = Comment.objects.filter(id=pk_m)
-            comment = self.paginate_queryset(comment, request) 
-            serializer = CommentSerializer(comment, many=True)
-            return self.get_paginated_response(serializer.data)
+            comment = Comment.objects.get(id=pk_m)
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
         except Comment.DoesNotExist: 
-            return self.put(request, pk_a, pk)
+            error_msg = "Comment not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         
 class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
@@ -345,7 +337,7 @@ class post_detail(APIView, PageNumberPagination):
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
         """
         try:
-            _ = Author.objects.get(id=pk_a)
+            author = Author.objects.get(id=pk_a)
             try:
                 _ = Post.objects.get(id=pk)
                 return Response("Post already exists", status=status.HTTP_400_BAD_REQUEST)
@@ -356,7 +348,8 @@ class post_detail(APIView, PageNumberPagination):
 
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
-            serializer.save()
+            post = serializer.save()
+            share_object(post,author)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -391,12 +384,29 @@ class LikedView(APIView):
 
         dict["items"] = items
         return(dict) 
+    
+class CommentLikesView(APIView):
+
+    """
+    Get the list of likes on our comments
+    """
+    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all likes on a comment")
+    def get(self, request, pk_a, pk, pk_m):
+        try:
+            comment = Comment.objects.get(id=pk_m)
+            print("URL",comment.url)
+        except Author.DoesNotExist:
+            error_msg = "Comment not found"
+            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+        likes = Like.objects.filter(object=comment.url)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
 
 @swagger_auto_schema( method='get', operation_summary="Get the comments on a post")
 @api_view(['GET'])
 def get_comments(request, pk_a, pk):
     """
-    Get the list of comments on our website
+    Get the list of comments on the post
     """
     author = Author.objects.get(id=pk_a)
     post = Post.objects.get(author=author, id=pk)
@@ -409,10 +419,10 @@ def get_comments(request, pk_a, pk):
 @api_view(['GET'])
 def get_likes(request, pk_a, pk):
     """
-    Get the list of comments on our website
+    Get the list of likes on a post
     """
     post = Post.objects.get(id=pk)
-    likes = Like.objects.filter(object=post.id)
+    likes = Like.objects.filter(object=post.url)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
@@ -572,8 +582,8 @@ class CommentView(APIView, PageNumberPagination):
 
 
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
+
 class ShareView(APIView):
-    @swagger_auto_schema(request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
     def post(self, request, origin_author, post_id, author):       
         
         try:
@@ -591,7 +601,7 @@ class ShareView(APIView):
 
         # create new post object with different author but same origin
         #new URL 
-        current_url = request.build_aboslute_url
+        current_url = post.get_absolute_url()
         source = current_url.split('share')[0]
         origin = post.origin
         
@@ -600,7 +610,7 @@ class ShareView(APIView):
         description=post.description,
         content=post.content,
         contentType=post.contentType,
-        author=post.author,
+        author=sharing_author,
         categories=post.categories,
         published=post.published,
         visibility=post.visibility,
@@ -612,5 +622,7 @@ class ShareView(APIView):
 
         # save the new post
         new_post.save()
+        share_object(new_post,sharing_author)
         serializer = PostSerializer(new_post)
         return Response(serializer.data)
+        

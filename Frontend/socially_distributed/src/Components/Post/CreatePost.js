@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useLayoutEffect, useCallback, useState } from "react";
 import {
 	Input,
 	Avatar,
@@ -7,21 +7,43 @@ import {
 	Dropdown,
 	Uploader,
 	Button,
+	CheckPicker,
 } from "rsuite";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { getAuthorId } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 import PROFILEIMAGE from "../Profile/ProfileImage";
 
 function CREATEPOST() {
-	const [post_status, set_post_status] = useState("Public");
+	const [post_status, set_post_status] = useState("PUBLIC");
 	const [post_type, set_post_type] = useState("text/plain");
 	const [text, setText] = useState("");
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [categories, setCategories] = useState("");
 	const [markdown, setMarkdown] = useState("");
+	let navigate = useNavigate();
+	const [friends, setFriends] = useState({ items: [] });
 	const toaster = useToaster();
+	const data = friends.items.map(
+		item => ({ label: item["displayName"], value: item["displayName"] })
+	);
+
+	useLayoutEffect(() => {
+		if (!localStorage.getItem("loggedIn")) {
+			navigate("/login");
+		} else {
+			const AUTHOR_ID = getAuthorId(null);
+			const url = `authors/${AUTHOR_ID}/followers/`;
+			axios({
+				method: "get",
+				url: url,
+			}).then((res) => {
+				setFriends(res.data);
+			});
+		}
+	}, []);
 
 	const input = () => {
 		if (post_type === "text/plain") {
@@ -132,13 +154,14 @@ function CREATEPOST() {
 			description: description,
 			content: text,
 			contentType: post_type,
-			visiblity: post_status,
-			categories: categories,
-			count: 0,
+			visibility: post_status,
 		};
+		if (categories.length > 0) {
+			params["categories"] = categories
+		}
 
 		var imagefile = document.getElementById("file").files[0];
-		if (imagefile){
+		if (imagefile) {
 			readFileAsDataURL(imagefile).then(dataURL => {
 				params['image'] = dataURL;
 			});
@@ -152,7 +175,7 @@ function CREATEPOST() {
 					setDescription("");
 					setTitle("");
 					setCategories("");
-					set_post_status("Public");
+					set_post_status("PUBLIC");
 					set_post_type("text/plain");
 					setMarkdown("");
 				} else {
@@ -180,9 +203,9 @@ function CREATEPOST() {
 				onSelect={(eventkey) => set_post_status(eventkey)}
 				style={{ float: "left", marginLeft: "10px" }}
 			>
-				<Dropdown.Item eventKey="Public">Public</Dropdown.Item>
-				<Dropdown.Item eventKey="Friends">Friends</Dropdown.Item>
-				<Dropdown.Item eventKey="Private">Private</Dropdown.Item>
+				<Dropdown.Item eventKey="PUBLIC">Public</Dropdown.Item>
+				<Dropdown.Item eventKey="FRIENDS">Friends</Dropdown.Item>
+				<Dropdown.Item eventKey="PRIVATE">Private</Dropdown.Item>
 				<Dropdown.Item eventKey="Unlisted">Unlisted</Dropdown.Item>
 			</Dropdown>
 			<Dropdown
@@ -196,6 +219,10 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="image/png">Png</Dropdown.Item>
 				<Dropdown.Item eventKey="image/jpeg">Jpeg</Dropdown.Item>
 			</Dropdown>
+			{(post_type === "PRIVATE") && <>
+				<CheckPicker style={{ float: "left", marginLeft: "10px", width: 224 }}
+					label="Friends" data={data} />
+			</>}
 			<Input
 				style={{ float: "left", marginTop: "5px" }}
 				as="textarea"
