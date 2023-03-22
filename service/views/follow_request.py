@@ -64,7 +64,7 @@ class FollowRequests(View):
         follow_requests = Follow.objects.all().filter(object=author_id)
         for request in follow_requests:
             if request.actor._id == foreign_author_id:
-                follow_requests.remove(request)
+                request.delete()
                 follow_requests.save()
 
         return HttpResponse(status=204)

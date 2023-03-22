@@ -105,7 +105,7 @@ export const get_request = async (authorId, success) => {
     });
 };
 
-// TODO need fix here, it return me 405 but I have defined post method 
+
 export const add_request = async (authorId, followId, success) => {
   console.log("sending request from", { followId });
   await axios
