@@ -42,6 +42,7 @@ class register(APIView):
         password = request.data['password']
         try:
             user = User.objects.create_user(username=display_name, email=email, password=password)
+            user.is_active = False
             user.save()
             url = "authors/" + id_
             author = Author(user=user, id = id_, displayName= display_name, url=url)
