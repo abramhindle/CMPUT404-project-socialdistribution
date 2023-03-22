@@ -58,7 +58,7 @@ function INBOX() {
 		let reqInstance = axios.create({
 			headers: { "X-CSRFToken": token },
 		});
-		reqInstance.post("accounts/logout/").then((res) => {
+		reqInstance.post("dlogout/").then((res) => {
 			if (res.status === 200) {
 				unsetCurrentUser();
 				navigate("/login");
