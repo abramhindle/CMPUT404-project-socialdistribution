@@ -74,7 +74,6 @@ function App() {
               <PrivateRoute>
                 <Posts />
               </PrivateRoute>
-<<<<<<< HEAD
             }>
             <Route path="new"
             element={
@@ -83,12 +82,6 @@ function App() {
               </PrivateRoute>
             }/>
             <Route path="sent"/>
-=======
-            }
-          >
-            <Route path="new" />
-            <Route path="sent" />
->>>>>>> 2015df3406b07fb726c2ad55040b557da15855fa
           </Route>
           <Route
             path="user/:author_id"
