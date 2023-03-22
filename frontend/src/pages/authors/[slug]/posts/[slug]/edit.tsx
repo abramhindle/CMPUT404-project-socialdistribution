@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import dynamic from "next/dynamic";
 import TextArea from "@/components/Textarea";
 import Input from "@/components/Input";
@@ -12,25 +12,39 @@ import {ThemeSupa} from '@supabase/auth-ui-shared'
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useForm } from "react-hook-form";
 import { getBase64 } from '@/utils';
-import axios from '@/utils/axios'
+import NodeManager from '@/nodes';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { Post } from '@/index';
 const MDEditor = dynamic(
 	() => import("@uiw/react-md-editor"),
 	{ ssr: false }
   );
 
 interface createProps {
-
+    post: Post
+	authorId: string
 }
 
 
 
-const Create: React.FC<createProps> = ({}) => {
-	const [selectValue, setSelectValue] = useState<string>("text/plain");
-	const [markDownValue, setMarkDownValue] = useState<string | undefined>("")
-	const { register, handleSubmit, watch, formState: { errors } } = useForm()
+const Edit: React.FC<createProps> = ({post}) => {
+	const [selectValue, setSelectValue] = useState<string>(post.contentType);
+	const [markDownValue, setMarkDownValue] = useState<string | undefined>(
+        post.contentType === 'text/markdown' ? post.content : undefined
+    )
+	const { register, handleSubmit, watch, formState: { errors } } = useForm({
+        defaultValues: {
+            title: post.title,
+            description:post.description,
+            categories: post.categories.join(','),
+            contentType: post.contentType,
+            visibility: post.visibility ? 'PUBLIC' : post.unlisted ? 'UNLISTED' : 'PRIVATE',
+            content: post.content,
+
+        }
+    })
 	const supabaseClient = useSupabaseClient()
   	const user = useUser()
 	const router = useRouter()
@@ -52,15 +66,15 @@ const Create: React.FC<createProps> = ({}) => {
 		data.categories = data.categories.split(',')
 
 		try {
-			await axios.post(`/authors/${user?.id}/posts`, {
-			...data,
-			source: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-			origin: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-			unlisted: data.visibility === 'UNLISTED',
-			visibility: data.visibility === 'PUBLIC'
-			
-		})
-		await router.push('/')
+			await NodeManager.updatePost(post.author.id, post.id, {
+				...data,
+				source: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+				origin: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+				unlisted: data.visibility === 'UNLISTED',
+				visibility: data.visibility === 'PUBLIC',
+			})
+
+		await router.push(`${post.author.id}/posts/${post.id}`)
 		} catch (error) {
 			console.log(error)
 		}
@@ -84,13 +98,13 @@ const Create: React.FC<createProps> = ({}) => {
     )
 		return (<div className='flex flex-col h-screen'>
 		<Head>
-			<title>Create Post</title>
+			<title>Edit Post</title>
 		</Head>
 		<div className='flex flex-1 overflow-hidden'>
 		<Sidebar/>
 		<div className='overflow-y-auto w-full py-12'>
 		<form className='max-w-5xl mx-auto px-8' onSubmit={handleSubmit(onSubmit)}>
-			<h2 className='text-xl font-semibold mb-5'>Create Post</h2>
+			<h2 className='text-xl font-semibold mb-5'>Edit Post</h2>
 			<Input 
 				register={register}
 			extraClass='mb-6' id="title" name="Title" placeholder="Enter a title" required={true}/>
@@ -153,11 +167,11 @@ const Create: React.FC<createProps> = ({}) => {
 				}]
 			}/>
 			</div>
-			<Button name="Create Post" className="text-white"/>
+			<Button name="Edit Post" className="text-white"/>
 			
 		</form></div></div></div>);
 }
-export default Create
+export default Edit
 
 export const getServerSideProps:GetServerSideProps = async (context) => {
 
@@ -175,8 +189,8 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-	  let res = await axios.get(`/authors/${user?.id}`)
-	  if (!res.data) {
+	  
+	  if (!await NodeManager.checkAuthorExists(user.id)) {
 		return {
 			redirect: {
 				destination: '/onboarding',
@@ -184,8 +198,30 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 			}
 		}
 	  }
+	  
 
+	let [authorId, postId] = context.params?.slug as string[] || ['', ''];
+
+	  if (user.id !==  authorId) {
+		return {
+		  redirect: {
+			destination: '/',
+			permanent: false
+		  }
+	  }
+	}
+
+    let post = await NodeManager.getPost(authorId, postId) 
+
+	if (!post) {
+		return {
+			notFound: true
+		}
+	}
+  
 	return {
-	  props: {}
+	  props: {
+        post: post
+      }
 	}
   }

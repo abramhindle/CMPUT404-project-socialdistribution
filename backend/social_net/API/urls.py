@@ -15,5 +15,4 @@ urlpatterns = [
   path('authors/<slug:author_id>/posts/<slug:post_id>/likes', views.PostLikeView, name='PostLikeView'),
   path('authors/<slug:author_id>/posts/<slug:post_id>/comments/<slug:comment_id>/likes', views.CommentLikeView, name='CommentLikeView'),
   path('authors/<slug:author_id>/liked', views.LikedView, name='LikedView'),
-  path('search', views.SearchView, name='SearchView')
 ]

@@ -12,8 +12,8 @@ import Head from 'next/head';
 import { GitHub } from 'react-feather';
 import { useRouter } from 'next/router';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import axios from '@/utils/axios';
 import { Author, Post as PostType } from '@/index';
+import NodeManager from '@/nodes';
 
 interface Props {
 	post: PostType
@@ -21,8 +21,8 @@ interface Props {
 
 const Page: NextPage<Props> = ({post}) => {
 	const supabaseClient = useSupabaseClient()
-  	const user = useUser()
-	const router = useRouter()
+  	const user = useUser();
+	const router = useRouter();
 
 	if (!user)
     return (
@@ -69,13 +69,13 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 	  }
 
 	  try {
+		let [authorId, postId] = context.params?.slug as string[] || ['', ''];
 
-        let post = await axios.get(`authors/${user.id}/posts/${context.params?.slug}`)
+        let post = await NodeManager.getPost(authorId, postId);
      
-		
 		return {
 			props: {
-				post: post.data
+				post: post
 			}
 	}	
 	  }

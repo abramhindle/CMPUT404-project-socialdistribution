@@ -7,7 +7,7 @@ import Head from 'next/head'
 import Sidebar from '@/components/Sidebar'
 import { GetServerSideProps } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import axios from '@/utils/axios'
+import NodeManager from '@/nodes';
 import {useForm} from 'react-hook-form'
 import { Author } from '..';
 import ProfilePreview from '@/components/ProfilePreview';
@@ -23,8 +23,8 @@ const SearchPage: React.FC<searchProps> = ({}) => {
 	const {register, handleSubmit} = useForm()
 
 	const searchSubmit = async (data:any) => {
-		const {data:search} = await axios.get(`/search`, {params: {query: data.search}})
-		let searchItems = search['items']
+		const searchData = await NodeManager.getAuthors(undefined, undefined, data.search);
+		let searchItems = searchData.items
 		setSearches(searchItems)
 		setSearch(true)
 	}
@@ -97,17 +97,15 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-	  try {
-		await axios.get(`/authors/${user?.id}`)
-	  }
-	  catch {
+	 
+	  if (!await NodeManager.checkAuthorExists(user.id))
 		return {
 			redirect: {
 				destination: '/onboarding',
 				permanent: false
 			}
 		}
-	  }
+	  
 
 	return {
 	  props: {}

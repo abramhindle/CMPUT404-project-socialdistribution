@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import dynamic from "next/dynamic";
 import TextArea from "@/components/Textarea";
 import Input from "@/components/Input";
@@ -12,38 +12,25 @@ import {ThemeSupa} from '@supabase/auth-ui-shared'
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useForm } from "react-hook-form";
 import { getBase64 } from '@/utils';
-import axios from '@/utils/axios'
+import NodeManager from '@/nodes';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import { Post } from '@/index';
 const MDEditor = dynamic(
 	() => import("@uiw/react-md-editor"),
 	{ ssr: false }
   );
 
 interface createProps {
-    post: Post
+	authorId: string
 }
 
 
 
-const Edit: React.FC<createProps> = ({post}) => {
-	const [selectValue, setSelectValue] = useState<string>(post.contentType);
-	const [markDownValue, setMarkDownValue] = useState<string | undefined>(
-        post.contentType === 'text/markdown' ? post.content : undefined
-    )
-	const { register, handleSubmit, watch, formState: { errors } } = useForm({
-        defaultValues: {
-            title: post.title,
-            description:post.description,
-            categories: post.categories.join(','),
-            contentType: post.contentType,
-            visibility: post.visibility ? 'PUBLIC' : post.unlisted ? 'UNLISTED' : 'PRIVATE',
-            content: post.content,
-
-        }
-    })
+const Create: React.FC<createProps> = ({authorId}) => {
+	const [selectValue, setSelectValue] = useState<string>("text/plain");
+	const [markDownValue, setMarkDownValue] = useState<string | undefined>("")
+	const { register, handleSubmit, watch, formState: { errors } } = useForm()
 	const supabaseClient = useSupabaseClient()
   	const user = useUser()
 	const router = useRouter()
@@ -65,15 +52,15 @@ const Edit: React.FC<createProps> = ({post}) => {
 		data.categories = data.categories.split(',')
 
 		try {
-			await axios.put(`/authors/${user?.id}/posts/${post.id}`, {
+			await NodeManager.createPost(authorId, {
 			...data,
 			source: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 			origin: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 			unlisted: data.visibility === 'UNLISTED',
-			visibility: data.visibility === 'PUBLIC',
+			visibility: data.visibility === 'PUBLIC'
 			
 		})
-		await router.push(`/posts/${post.id}`)
+		await router.push('/')
 		} catch (error) {
 			console.log(error)
 		}
@@ -97,13 +84,13 @@ const Edit: React.FC<createProps> = ({post}) => {
     )
 		return (<div className='flex flex-col h-screen'>
 		<Head>
-			<title>Edit Post</title>
+			<title>Create Post</title>
 		</Head>
 		<div className='flex flex-1 overflow-hidden'>
 		<Sidebar/>
 		<div className='overflow-y-auto w-full py-12'>
 		<form className='max-w-5xl mx-auto px-8' onSubmit={handleSubmit(onSubmit)}>
-			<h2 className='text-xl font-semibold mb-5'>Edit Post</h2>
+			<h2 className='text-xl font-semibold mb-5'>Create Post</h2>
 			<Input 
 				register={register}
 			extraClass='mb-6' id="title" name="Title" placeholder="Enter a title" required={true}/>
@@ -166,11 +153,11 @@ const Edit: React.FC<createProps> = ({post}) => {
 				}]
 			}/>
 			</div>
-			<Button name="Edit Post" className="text-white"/>
+			<Button name="Create Post" className="text-white"/>
 			
 		</form></div></div></div>);
 }
-export default Edit
+export default Create
 
 export const getServerSideProps:GetServerSideProps = async (context) => {
 
@@ -188,8 +175,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-	  let res = await axios.get(`/authors/${user?.id}`)
-	  if (!res.data) {
+	  if (!await NodeManager.checkAuthorExists(user.id)) {
 		return {
 			redirect: {
 				destination: '/onboarding',
@@ -198,11 +184,9 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-    let post = await axios.get(`authors/${user.id}/posts/${context.params?.slug}`)
-  
 	return {
 	  props: {
-        post: post.data,
-      }
+		authorId: user.id
+	  }
 	}
   }

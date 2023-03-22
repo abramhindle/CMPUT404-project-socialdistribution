@@ -8,7 +8,7 @@ import { Auth } from '@supabase/auth-ui-react'
 import {ThemeSupa} from '@supabase/auth-ui-shared'
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useForm } from "react-hook-form";
-import axios from '@/utils/axios'
+import NodeManager from '@/nodes';
 import {getBase64} from '@/utils'
 import { useRouter } from 'next/router';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
@@ -33,7 +33,7 @@ const Create: React.FC<createProps> = ({}) => {
         data.host = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
         data.url = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000' + '/authors/' + user?.id
         try {
-            await axios.post('/authors', data)
+            await NodeManager.createAuthor(data);
             router.push('/')
         } catch (error) {
             console.log(error)
@@ -87,19 +87,19 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-	  try {
-		await axios.get(`/authors/${user?.id}`)
+	  if (await NodeManager.checkAuthorExists(user.id)) {
         return {
             redirect: {
                 destination: '/',
                 permanent: false
             }
         }
-	  } catch (error) {
+	}
+	  
         return {
             props: {}
         }
-      }
+      
 
 
   }

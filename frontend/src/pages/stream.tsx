@@ -8,16 +8,15 @@ import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import axios from '@/utils/axios'
-import { Post } from '@/index';
-
+import NodeManager from '@/nodes';
+import { InboxListItem, Post } from '@/index';
 
 
 interface streamProps {
-	posts: Post[]
+	inbox: InboxListItem
 }
 
-const Stream: React.FC<streamProps> = ({posts}) => {
+const Stream: React.FC<streamProps> = ({inbox}) => {
 
 	const supabaseClient = useSupabaseClient()
 	const user = useUser()
@@ -38,23 +37,35 @@ const Stream: React.FC<streamProps> = ({posts}) => {
 			
 			<div className='flex flex-col h-screen'>
 				<Head>
-					<title>Post Stream</title>
+					<title>Stream</title>
 				</Head>
 		<div className='flex flex-1 overflow-hidden'>
 				<Sidebar/>
 		<div className='flex flex-1 flex-col overflow-y-auto w-full py-12'>
 			
 		<div className='w-full mx-auto bg-white px-6 max-w-4xl'>
-			{posts.map((post) => {
-				return <Post key={post.id} {...post}/>
+			{inbox.items.map((item) => {
+				switch (item.type.toLowerCase()) {
+					case 'post':
+						item = item as Post;
+						return <Post {...item} key={item.id} />;
+					case 'Follow':
+						return null;
+					case 'Like':
+						return null;
+					case 'comment':
+						return null;
+				}
 			})}
 		</div>
 		{
-			posts.length === 0 && (
+			inbox.items.length === 0 && (
 				<div className='w-full mx-auto bg-white px-6 max-w-4xl'>
 					<div className='flex flex-col items-center justify-center h-full'>
-						<h1 className='text-3xl font-bold text-gray-700 mb-3'>No posts yet</h1>
-						<p className='text-gray-500'>Follow some users to see their posts</p>
+						<h1 className='text-3xl font-bold text-gray-700 mb-3'>No Activity Yet</h1>
+						<p className='text-gray-500'>
+							Maybe follow some friends so you can have some activity?
+						</p>
 					</div>
 				</div>
 				
@@ -81,10 +92,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-	  try {
-		await axios.get(`/authors/${user?.id}`)
-	  }
-	  catch {
+	   if (!await NodeManager.checkAuthorExists(user.id)) {
 		return {
 			redirect: {
 				destination: '/onboarding',
@@ -92,16 +100,12 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 			}
 		}
 	  }
-
-	  let resPosts = await axios.get(`/authors/${user.id}/posts`, {
-		params: {
-			following: true
-		}
-	  });
-
+ 
+	let inbox = await NodeManager.getInbox(user.id)
+	  
 	return {
 	  props: {
-		posts: resPosts.data.posts
+		inbox
 	  }
 	}
   }

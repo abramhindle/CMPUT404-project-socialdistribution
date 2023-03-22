@@ -1,4 +1,3 @@
-import axios from "@/utils/axios";
 
 export function getBase64(file:File) {
 	return new Promise((resolve, reject) => {
@@ -9,3 +8,4 @@ export function getBase64(file:File) {
 	});
   }
   
+

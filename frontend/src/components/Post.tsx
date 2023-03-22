@@ -7,7 +7,7 @@ import { ThumbsUp, Share, Link2 } from 'react-feather';
 import { Tooltip } from '@material-tailwind/react';
 import { Menu } from '@headlessui/react'
 import {Post as PostProps} from '@/index';
-import axios from '@/utils/axios';
+import NodeManager from '@/nodes';
 import { useRouter } from 'next/router';
 import { useUser } from '@supabase/auth-helpers-react';
 
@@ -16,6 +16,9 @@ const Post: React.FC<PostProps> = ({title, description, contentType, content, so
 	const [liked, setLiked] = React.useState(false);
 	const user = useUser()
 	const router = useRouter()
+
+
+	
 		return (<div >
 			<div className="flex flex-col border border-gray-100 shadow-sm rounded-sm mb-4"> 
 				<div className="flex flex-row justify-between items-center pt-4 px-5"><Link href={`/posts/${id}`}><h2 className='text-base hover:underline text-gray-700 font-semibold'>{title}</h2></Link>
@@ -36,13 +39,9 @@ const Post: React.FC<PostProps> = ({title, description, contentType, content, so
 								{({ active }) => (
 									<Link onClick={
 										async () => {
-											await axios.delete(`/authors/${author.id}/posts/${id}`)
-											if (router.pathname === `/post/${id}`) {
-												router.push('/')
-											} else  {
-												router.reload()
-											}
-							
+											await NodeManager.deletePost(author.id, id);
+											await router.push('/');
+
 										}	
 									} className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-gray-100' : ''}`} href="#">
 										Delete
