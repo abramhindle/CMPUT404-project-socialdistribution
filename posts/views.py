@@ -182,8 +182,8 @@ class post_list(APIView, PageNumberPagination):
                     posts.exclude(post)
         
         posts = self.paginate_queryset(posts, request) 
-        if authenticated_user not in post.author.friends:
-            posts.exclude(post) 
+        # if authenticated_user not in post.author.friends:
+        #     posts.exclude(post) 
 
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
@@ -626,3 +626,16 @@ class ShareView(APIView):
         serializer = PostSerializer(new_post)
         return Response(serializer.data)
         
+def share_object(item, author):
+    inbox_item = Inbox(content_object=item, author=author)
+    inbox_item.save()
+
+    if (item.visibility == 'PUBLIC'):
+        for friend in author.objects.all().exclude(id=author.id):
+            inbox_item = Inbox(content_object=item, author=author)
+            inbox_item.save()
+    if (item.visibility == 'PUBLIC'):
+        for friend in author.friends.all():
+            inbox_item = Inbox(content_object=item, author=author)
+            inbox_item.save()
+    
