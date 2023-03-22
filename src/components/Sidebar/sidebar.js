@@ -51,7 +51,6 @@ function Sidebar() {
     const scrollbarVisible = (element) => {
         return element.scrollHeight > element.clientHeight;
     }
-    //^^^
 
   return (
     <div>

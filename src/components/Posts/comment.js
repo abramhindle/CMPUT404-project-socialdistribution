@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import { post_comment } from "../../api/comment_api";
-import { post_like } from "../../api/like_api";
+import { comment_like } from "../../api/like_api";
 
 export default function Comment(data) {
   let id = useSelector((state) => state.user).id;
@@ -27,108 +27,56 @@ export default function Comment(data) {
     /* Show Success Snackbar? */
   };
 
-  // TODO: CAN WE COMMENT ON COMMENTS?
-//   const [commentFieldVisibilty, setCommentFieldVisibilty] = useState(false);
-//   const [comment, setComment] = useState("");
-//   const [commentType, setCommentType] = useState("text/plain");
-//   const submitComment = () => {
-//     if (comment) {
-//       post_comment(
-//         data.post.author.id,
-//         data.post.id,
-//         commentType,
-//         comment,
-//         user.id
-//       );
-//       setComment("");
-//       setCommentFieldVisibilty(false);
-//     } else {
-//       alert("enter the comment");
-//     }
-//   };
+  const handleLike = () => {
+    if (!data.liked){
+      comment_like(data.data.author.id, user, data.data.id, "context", like_success);
+      document.getElementsByClassName("heart")
+    }
+    else {
+      //delete like object
+    }
+  }
 
   return (
-    <div className="comment">
-      <div className="message">
+    <div className="vflex">
+      <h5><a href={authorUrl}>{data.data.author.displayName}</a> commented on your <a href={postUrl}>post</a></h5>
+      
+      <div className="list-item">
+        {/* Profile image w/link to post author's profile */}
         <div className="profile from">
-          <h6>
-            <a href={authorUrl}>{data.data.author.displayName}</a>
-          </h6>
+          <a href={authorUrl}>
           {<img alt="author" src={data.data.author.profileImage}></img>}
-          {/**Add comment indicator */}
+          </a>
         </div>
-        <div className="postBody">
-          <div className="content-container">
-            <h5>Commented on your <a href={postUrl}>post</a></h5>
+
+        {/* Title, message */}
+
+          <div className="comment">
             {markdown && (
               <ReactMarkdown
-                className="content line"
+                className="content"
                 children={data["data"]["comment"]}
               >
                 {/* Mardown doesn't like leading whitespace */}
               </ReactMarkdown>
             )}
             {!markdown && (
-              <div className="content line">{data["data"]["comment"]}</div>
+              <div className="content">{data["data"]["comment"]}</div>
             )}
           </div>
-          <div className="interaction-options">
-            <button
-              disabled={data.liked}
-              onClick={() =>
-                post_like(
-                  data.data.author.id,
-                  user,
-                  data.data.id,
-                  "context",
-                  like_success
-                )
-              }
+                  {/* Interaction Options (like, share) */}
+        <div>
+            <button className="interact"
+              onClick={handleLike}
             >
-              {data.liked ? "liked" : "like"}
+              <svg version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="2.5em" height="2.5em" viewBox="0 0 15 15">
+                <path className="heart" fill={data.data.liked ? "red" : "var(--driftwood)"}
+                  d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
+              </svg>
             </button>
-{/*
-            <button
-              onClick={() =>
-                setCommentFieldVisibilty(commentFieldVisibilty ? false : true)
-              }
-            >
-              comment
-            </button>
-
-            {commentFieldVisibilty && (
-              <div className="comment-input-form">
-                <input
-                  type="radio"
-                  id="text"
-                  name="contentType"
-                  value="text/plain"
-                  defaultChecked
-                  onChange={(e) => setCommentType(e.target.value)}
-                />
-                <label htmlFor="text">Text</label>
-                <input
-                  type="radio"
-                  id="markdown"
-                  name="contentType"
-                  value="text/markdown"
-                  onChange={(e) => setCommentType(e.target.value)}
-                />
-                <label htmlFor="markdown">Markdown</label>
-                <input
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Enter the comment here"
-                  type="text"
-                />
-                <button onClick={submitComment}>Submit</button>
-              </div>
-            )}
-            */}
-
-          </div>
         </div>
+        </div>
+        <div className="timestamp">{data["data"]["published"]}</div>
       </div>
-      <div className="timestamp">{data["data"]["published"]}</div>
-    </div>
   );
 }

@@ -1,10 +1,3 @@
-.content-container {
-    display: flex;
-    flex-direction: column;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-}
-
 .comment, .post { /*Same for now, might change*/
     background-color: #857F74;
     padding: 1em;
@@ -12,11 +5,13 @@
     border: 0.3em solid #37342F; 
 }
 
-.message {
+.list-item {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     color: black;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .from {
@@ -35,17 +30,10 @@
     padding: 0.5em;
 }
 
-.line {
-    border-top: 1px solid black;
-    padding-inline: 1em;
-}
-
 .content {
     width: fit-content;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-    margin: 1em;
-    padding: 0.5em;
+    margin: 0;
+    padding: 0;
     font-size: 12pt;
     text-align: left;
 }
@@ -53,9 +41,8 @@
 .timestamp {
     color: black;
     font-size: small;
-    text-align: right;
-    margin-right: 1.5em;
-    text-align: right;
+    text-align: left;
+    margin-left: 9em;
 }
 
 h5 {
@@ -64,14 +51,26 @@ h5 {
     margin-left: 1.5em;
     padding: 0.5em;
 }
-.interaction-options {
-    display: flex;
-}
 
-.interaction-options > button {
-    padding: 0.2em;
+button.interact {
+    margin: 0.5em;
+    background-color:transparent;
+    border-color: transparent;
 }
 
 .post-body {
     width:100%;
+}
+
+.vflex {
+    display: flex;
+    min-width: fit-content;
+    flex-direction: column;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.hflex {
+    display: flex;
+    flex-direction: row;
 }

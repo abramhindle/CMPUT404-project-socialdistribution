@@ -1,4 +1,4 @@
-div {
+.Signin div {
     text-align: center;
     align-items: center;
     justify-items: center;
@@ -6,11 +6,11 @@ div {
     color: white;
 }
 
-input {
+.Signnin input {
     size: 20vw;
 }
 
-button {
+.Signin button {
     background-color: var(--bark);
     border-radius: 0.5em;
     font-size: large;

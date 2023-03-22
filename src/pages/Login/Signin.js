@@ -27,7 +27,7 @@ export const SignIn = () => {
   };
 
   return (
-    <div className="Auth-form-container">
+    <div className="Auth-form-container Signin">
       <form className="Auth-form" onSubmit={submit}>
         <div className="Auth-form-content">
           <h1>Social Distribution</h1>
