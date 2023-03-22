@@ -66,3 +66,20 @@ export const get_inbox_posts = async (authorInbox, page, success) => {
       console.log(error);
     });
 };
+
+export const get_post = async (authorId, postId, success) => {
+  console.log("Attempting to get post", { postId });
+  await axios
+    .get(`authors/${authorId}/posts/${postId}/`, {
+      headers: {
+        Accept: "application/json",
+      },
+    })
+    .then(function (response) {
+      console.log("Success");
+      success(response.data);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
