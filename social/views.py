@@ -1,5 +1,5 @@
 from django.shortcuts import  render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -42,6 +42,7 @@ class register(APIView):
         password = request.data['password']
         try:
             user = User.objects.create_user(username=display_name, email=email, password=password)
+            user.is_active = False
             user.save()
             url = "authors/" + id_
             author = Author(user=user, id = id_, displayName= display_name, url=url)
@@ -76,10 +77,7 @@ class login(APIView):
 def csrf(request):
     return JsonResponse({'csrfToken': get_token(request)})
     
-class logout(APIView):
-    def post(self, request):
-        """deals with user auth"""
-        auth = AllowAllUsersModelBackend()
-        
-        user = auth.logout(request=request)
-        return Response( status=status.HTTP_202_ACCEPTED)
+# class logout(APIView):
+def logout_view(request):
+    logout(request)
+    return Response( status=status.HTTP_202_ACCEPTED)
