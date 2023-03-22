@@ -61,19 +61,16 @@ class login(APIView):
 
         user = auth.authenticate(request=request, username=username, password= password)
 
-        if user is not None:
-            login(request, user)
+        author= Author.objects.filter(displayName=username)[0]
 
-            author= Author.objects.filter(displayName=username)[0]
+        params = {}
+        # params['user'] = UserSerializer(user)
+        # params['token'] = get_token()
+        params = AuthorSerializer(author)
 
-            params = {}
-            # params['user'] = UserSerializer(user)
-            # params['token'] = get_token()
-            params = AuthorSerializer(author)
-            return Response(params.data, status=status.HTTP_202_ACCEPTED)
-        else:
+        if not user:
             return Response("user not registered", status=status.HTTP_401_UNAUTHORIZED)
-        
+        return Response(params.data, status=status.HTTP_202_ACCEPTED)
     
 
 def csrf(request):
