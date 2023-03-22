@@ -16,8 +16,20 @@ function Sidebar() {
     const goToInbox = () =>{
         navigate("/");
     };//Navigate to Requests page
-    const goToRequests = () => {
+    const goToAdd = () => {
         navigate("/friends/");
+    };//Navigate to Requests page
+    const goToRequests = () => {
+        navigate("/friends/requests");
+    };//Navigate to Requests page
+    const goToTrue = () => {
+        navigate("/friends/true");
+    };//Navigate to Followed page
+    const goToFollowed = () => {
+        navigate("/friends/followed");
+    };//Navigate to Followers page
+    const goToFollowers = () => {
+        navigate("/friends/followers");     
     };//Navigate to Post creation page
     const goToNewPost = () => {
         navigate("/posts/new");
@@ -58,6 +70,24 @@ function Sidebar() {
                     </li>
                     <li>
                         <button className='Options'>Likes</button>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <button className='Page' onClick={goToAdd}>Friends</button>
+                {/* Requests Options Submenu, only show if Friends selected */}
+                <ul className="Options-bar">
+                    <li>
+                        <button className='Options' onClick={goToRequests}>Pending</button>
+                    </li>
+                    <li>
+                        <button className='Options' onClick={goToTrue}>True Friends</button>
+                    </li>
+                    <li>
+                        <button className='Options' onClick={goToFollowed}>Followed</button>
+                    </li>
+                    <li>
+                        <button className='Options' onClick={goToFollowers}>Followers</button>
                     </li>
                 </ul>
             </li>
