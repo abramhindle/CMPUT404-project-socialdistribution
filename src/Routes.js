@@ -9,6 +9,7 @@ import Posts from "./pages/Posts/new-post-page";
 import Main from "./pages/Main";
 import Profile from "./pages/Profile/profile";
 import Realfriends from "./pages/Friends/realfriends";
+import PostDetail from "./pages/Posts/post-detail";
 
 function App() {
   return (
