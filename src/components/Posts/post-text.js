@@ -55,7 +55,7 @@ export default function PlainPost(data) {
   };
 
   return (
-    <div>
+    <div className="post">
       <div className="message">
         <div className="from">
           <h6>

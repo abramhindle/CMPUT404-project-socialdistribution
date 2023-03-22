@@ -86,7 +86,7 @@ function Inbox(filter) {
       <div className="Page">
         <Sidebar />
         <div className="Inbox">
-          <div className="profileContent">{populateList()};</div>
+          <div className="pageContent">{populateList()}</div>
           {page_buttons()}
         </div>
       </div>

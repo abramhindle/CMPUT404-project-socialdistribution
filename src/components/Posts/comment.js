@@ -7,16 +7,16 @@ import { post_like } from "../../api/like_api";
 
 export default function Comment(data) {
   let id = useSelector((state) => state.user).id;
-  console.log(typeof data["comment"]["comment"]);
+  console.log(typeof data["data"]["comment"]);
   const user = useSelector((state) => state.user);
   //Check if markdown
-  let markdown = data["comment"]["contentType"] === "text/markdown" ? true : false;
+  let markdown = data["data"]["contentType"] === "text/markdown" ? true : false;
 
   const port = window.location.port ? `:${window.location.port}` : "";
-  const commentUrl = `${data.comment.id}`;
+  const commentUrl = `${data.data.id}`;
   const postUrl = commentUrl.split("comment")[0];
   const authorUrl = `//${window.location.hostname}${port}/user/${(
-    data.comment.author.id ?? ""
+    data.data.author.id ?? ""
   )
     .split("/")
     .pop()}`; // allows linking to the author who wrote the comment
@@ -48,13 +48,13 @@ export default function Comment(data) {
 //   };
 
   return (
-    <div>
+    <div className="comment">
       <div className="message">
         <div className="from">
           <h6>
-            <a href={authorUrl}>{data.comment.author.displayName}</a>
+            <a href={authorUrl}>{data.data.author.displayName}</a>
           </h6>
-          {<img alt="author" src={data.comment.author.profileImage}></img>}
+          {<img alt="author" src={data.data.author.profileImage}></img>}
           {/**Add comment indicator */}
         </div>
         <div className="postBody">
@@ -63,13 +63,13 @@ export default function Comment(data) {
             {markdown && (
               <ReactMarkdown
                 className="content line"
-                children={data["comment"]["content"]}
+                children={data["data"]["comment"]}
               >
                 {/* Mardown doesn't like leading whitespace */}
               </ReactMarkdown>
             )}
             {!markdown && (
-              <div className="content line">{data["comment"]["content"]}</div>
+              <div className="content line">{data["data"]["comment"]}</div>
             )}
           </div>
           <div className="interaction-options">
@@ -77,9 +77,9 @@ export default function Comment(data) {
               disabled={data.liked}
               onClick={() =>
                 post_like(
-                  data.post.author.id,
+                  data.data.author.id,
                   user,
-                  data.post.id,
+                  data.data.id,
                   "context",
                   like_success
                 )
@@ -128,7 +128,7 @@ export default function Comment(data) {
           </div>
         </div>
       </div>
-      <div className="timestamp">{data["comment"]["published"]}</div>
+      <div className="timestamp">{data["data"]["published"]}</div>
     </div>
   );
 }

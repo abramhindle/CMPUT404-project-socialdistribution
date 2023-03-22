@@ -6,3 +6,7 @@
   flex: 1;
   margin-left: calc(23vh + 2em);
 }
+
+.pageContent {
+  background-color: #57534C;
+}
