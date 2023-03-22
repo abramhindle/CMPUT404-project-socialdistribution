@@ -32,6 +32,8 @@ SECRET_KEY = '(e42^@_2fo+3!4%3y9t@50j#)ljo8+7r3_6e$z*p960-1-+g@y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+APPEND_SLASH = True
+
 # Application definition
 INSTALLED_APPS = [
     'serveradmin.apps.ServeradminConfig',

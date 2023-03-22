@@ -73,9 +73,9 @@ class Post(models.Model):
     # get comments url
     def get_comments_source(self):
         if self.url.endswith("/"):
-            return self.url + 'comments/'
+            return self.url + 'comments'
         else:
-            return self.url + '/comments/'
+            return self.url + '/comments'
         
     def get_likes_count(self):
         return self.likes.count()
@@ -155,8 +155,11 @@ class Like(models.Model):
             self.save()
         return (self.url) or str(self.id)
 
+    def get_object(self):
+        return self.object[:-1] if self.object.endswith('/') else self.object 
+
     def get_summary(self):
-        return self.author.displayName + " Likes your " + str(self.object).split('/')[-2][:-1]
+        return self.author.displayName + " Likes your " + str(self.object).split('/')[-1][:-1]
 
     @staticmethod
     def get_api_type():
