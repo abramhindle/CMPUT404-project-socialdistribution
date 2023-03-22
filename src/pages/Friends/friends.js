@@ -50,9 +50,10 @@ function Friends() {
     
     get_search_params();
 
+    //no need to handle anything here
     const followAuthor= (follow_id) => {
-        add_request(user.id, follow_id, onSuccess)
-        add_followers_for_author(user.id, follow_id, onSuccess)
+        //add_request(user.id, follow_id, onSuccess)
+        //add_followers_for_author(user.id, follow_id, onSuccess)
     }
 
     const onSuccess = () => {
@@ -60,8 +61,6 @@ function Friends() {
     }
     
     const page_buttons = () => {
-
-    /*  need fix here! */
  
         if (follow_list.items.length < 5 && page == 1)
         {
