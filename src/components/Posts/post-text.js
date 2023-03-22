@@ -1,5 +1,7 @@
 import "./posts.css";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import { post_comment } from "../../api/comment_api";
@@ -23,6 +25,11 @@ export default function PlainPost(data) {
   )
     .split("/")
     .pop()}`; // allows linking to the author who wrote the post
+  const postUrl = `//${window.location.hostname}${port}/user/${(
+    data.post.author.id ?? ""
+  )
+    .split("/")
+    .pop()}/post/${(data.post.id ?? "").split("/").pop()}`;
 
   const like_success = () => {
     /* Show Success Snackbar? */
@@ -59,7 +66,9 @@ export default function PlainPost(data) {
         <div className="postBody">
           {/* Will need to handle other post types here, plain for now */}
           <div className="content-container">
-            <h5>{data["post"]["title"]}</h5>
+            <h5>
+              <Link to={postUrl}>{data["post"]["title"]}</Link>
+            </h5>
             {markdown && (
               <ReactMarkdown
                 className="content line"

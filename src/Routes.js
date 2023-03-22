@@ -16,24 +16,28 @@ function App() {
       <Router>
         <Routes>
           {/* Inbox */}
-          <Route path="/"
+          <Route
+            path="/"
             element={
               <PrivateRoute>
-                <Main filter="feed"/>
+                <Main filter="feed" />
               </PrivateRoute>
-            }>
-              <Route path="feed"
-                element={
-                  <PrivateRoute>
-                    <Main filter="feed" />
-                  </PrivateRoute>
-                }>
-                </Route>
-              <Route path="foryou"/>
-              <Route path="likes"/>
+            }
+          >
+            <Route
+              path="feed"
+              element={
+                <PrivateRoute>
+                  <Main filter="feed" />
+                </PrivateRoute>
+              }
+            ></Route>
+            <Route path="foryou" />
+            <Route path="likes" />
           </Route>
           {/* Friends */}
-          <Route path="/friends"
+          <Route
+            path="/friends"
             element={
               <PrivateRoute>
                 <Friends />
@@ -64,25 +68,34 @@ function App() {
                   <Followers />
                 </PrivateRoute>
             }/>
-          
-            
           {/* Posting */}
-          <Route path="/posts"
+          <Route
+            path="/posts"
             element={
               <PrivateRoute>
                 <Posts />
               </PrivateRoute>
-            }>
-            <Route path="new"/>
-            <Route path="sent"/>
+            }
+          >
+            <Route path="new" />
+            <Route path="sent" />
           </Route>
-          <Route path="user/:author_id"
+          <Route
+            path="user/:author_id"
             element={
               <PrivateRoute>
                 <Profile />
               </PrivateRoute>
-            }>
-          </Route>
+            }
+          ></Route>
+          <Route
+            path="user/:author_id/post/:post_id"
+            element={
+              <PrivateRoute>
+                <PostDetail />
+              </PrivateRoute>
+            }
+          ></Route>
           {/* Sign In */}
           <Route
             path="/signin"
