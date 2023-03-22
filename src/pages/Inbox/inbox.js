@@ -85,7 +85,7 @@ function Inbox(filter) {
     post_list && (
       <div className="Page">
         <Sidebar />
-        <div className="Inbox">
+        <div className="Inbox sidebar-offset">
           <div className="pageContent">{populateList()}</div>
           {page_buttons()}
         </div>

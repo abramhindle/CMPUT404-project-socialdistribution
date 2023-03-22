@@ -17,6 +17,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
+import Sidebar from '../../components/Sidebar/sidebar';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -60,7 +61,8 @@ function Request() {
     return (
         
         <>
-        <div>
+        <Sidebar />
+        <div className="sidebar-offset">
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar variant="dense">

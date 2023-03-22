@@ -58,6 +58,12 @@
     flex: 1;
 }
 
+.Right {
+    right: 0;
+    min-width: calc(23vh + 2em);
+    width: fit-content;
+}
+
 .Sidebar li {
     display: block;
     width: 100%;

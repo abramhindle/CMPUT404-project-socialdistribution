@@ -55,7 +55,7 @@ function Followed() {
     return (
         
         <>
-        <div>
+        <div className="sidebar-offset">
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar variant="dense">

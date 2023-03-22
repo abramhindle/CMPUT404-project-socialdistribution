@@ -17,6 +17,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Sidebar from "../../components/Sidebar/sidebar";
 
 
 
@@ -51,7 +52,8 @@ function Followed() {
     return (
         
         <>
-        <div>
+        <Sidebar/>
+        <div className="sidebar-offset">
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar variant="dense">

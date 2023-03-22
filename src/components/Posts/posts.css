@@ -25,7 +25,8 @@
     display: flex;
     flex-direction: column-reverse;
 }
-.from img {
+
+.profile img {
     height: 3em;
     width:3em;
     object-fit: cover;

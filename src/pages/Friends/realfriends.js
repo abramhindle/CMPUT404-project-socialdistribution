@@ -17,6 +17,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Sidebar from "../../components/Sidebar/sidebar";
 
 
 
@@ -54,56 +55,59 @@ function Realfriends() {
     return (
         
         <>
-        <div>
-        <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar variant="dense">
-            <Button
-                variant="contained"
-                onClick={goBack}
-                >
-                back
-            </Button>
-          <Typography variant="h6" align="left" color="inherit" component="div">
-            Realfriends
-          </Typography>
-          </Toolbar>
-        </AppBar>
-        </Box>
-        </div>
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Follow</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {follow_list.items.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell align="right">{row.displayName}</TableCell>
-                <TableCell align="right">
+        <Sidebar/>
+        <div className="sidebar-offset">
+          <div>
+            <Box sx={{ flexGrow: 1 }}>
+              <AppBar position="static">
+                <Toolbar variant="dense">
                   <Button
-                    variant="contained"
-                    color = "success"
-                    onClick={(e) => Details(row.id)}
-                  >
-                    Details
+                      variant="contained"
+                      onClick={goBack}
+                      >
+                      back
                   </Button>
-                </TableCell>
+                <Typography variant="h6" align="left" color="inherit" component="div">
+                  Realfriends
+                </Typography>
+                </Toolbar>
+              </AppBar>
+            </Box>
+          </div>
+          <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell align="right">Name</TableCell>
+                <TableCell align="right">Follow</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>  
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {follow_list.items.map((row) => (
+                <TableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.id}
+                  </TableCell>
+                  <TableCell align="right">{row.displayName}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="contained"
+                      color = "success"
+                      onClick={(e) => Details(row.id)}
+                    >
+                      Details
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>  
+        </TableContainer>
+        </div>
       
       </>
     );

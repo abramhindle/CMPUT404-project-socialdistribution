@@ -46,8 +46,16 @@ function Sidebar() {
     var numFollowers = 99;
     var numFriends = 27;
 
+    //John Au-Yeung
+    //https://javascript.plainenglish.io/how-to-check-if-a-scrollbar-is-visible-with-javascript-95aced8b420d
+    const scrollbarVisible = (element) => {
+        return element.scrollHeight > element.clientHeight;
+    }
+    //^^^
+
   return (
-    <nav className="Sidebar">
+    <div>
+    <div className="Sidebar">
         {/* Profile Preview */}
         <div className='Profile' id="profile-tab">
             <img className="profile-pic" src={user.profileImage} alt="profile" href={authorUrl}/>
@@ -104,7 +112,11 @@ function Sidebar() {
             <button className='Page' onClick={signOut}>Sign Out</button>
             </li>
         </menu>
-    </nav>
+    </div>
+    <div className='Right Sidebar'>
+
+    </div>
+    </div>
   );
 }
 

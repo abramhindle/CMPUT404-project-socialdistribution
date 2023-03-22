@@ -4,7 +4,13 @@
   font-size: calc(10px + 2vmin);
   color: white;
   flex: 1;
-  margin-left: calc(23vh + 2em);
+  scrollbar-width: 0;
+  -ms-overflow-style: none;
+  overflow: auto;
+}
+
+.Inbox::-webkit-scrollbar {
+  display: none;
 }
 
 .pageContent {

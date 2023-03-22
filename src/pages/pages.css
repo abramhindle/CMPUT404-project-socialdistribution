@@ -4,10 +4,7 @@ div.Page {
     height: 100vh;
 }
 
-a:hover {
-    color: #25CED1;
-}
-
-.page-content {
+.sidebar-offset {
     margin-left: calc(23vh + 2em);
+    margin-right: calc(23vh + 2em);
 }

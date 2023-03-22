@@ -115,7 +115,7 @@ function Profile() {
       <div>
         <Sidebar />
       </div>
-      <div className="myprofile page-content">
+      <div className="myprofile sidebar-offset">
         <div className="profileHead">
           <h1>{author.displayName}</h1>
           GitHub: {author.github}

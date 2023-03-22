@@ -57,7 +57,7 @@ export default function PlainPost(data) {
   return (
     <div className="post">
       <div className="message">
-        <div className="from">
+        <div className="from profile">
           <h6>
             <a href={authorUrl}>{data.post.author.displayName}</a>
           </h6>

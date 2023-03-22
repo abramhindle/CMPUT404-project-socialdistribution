@@ -109,7 +109,7 @@ function Friends() {
         
         <>
         <Sidebar/>
-        <div className="page-content">
+        <div className="sidebar-offset">
         <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">

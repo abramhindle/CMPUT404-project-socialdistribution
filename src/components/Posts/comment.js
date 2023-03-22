@@ -50,7 +50,7 @@ export default function Comment(data) {
   return (
     <div className="comment">
       <div className="message">
-        <div className="from">
+        <div className="profile from">
           <h6>
             <a href={authorUrl}>{data.data.author.displayName}</a>
           </h6>
