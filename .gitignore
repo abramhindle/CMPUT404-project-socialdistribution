@@ -24,3 +24,4 @@ yarn-error.log*
 
 package-lock.json
 db.sqlite3
+db.sqlite3
