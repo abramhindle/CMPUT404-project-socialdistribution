@@ -91,7 +91,7 @@ export const delete_followers_for_author = async (authorId, followId, success) =
 export const get_request = async (authorId, success) => {
   console.log("Geting request", {authorId  });
   await axios
-    .get(`http://localhost:8000/authors/${authorId}/follow-request/`, {
+    .get(`http://localhost:8000/authors/${authorId}/follow-requests/`, {
       headers: {
         Accept: "application/json",
       },
