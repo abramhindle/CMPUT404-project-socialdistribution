@@ -631,11 +631,10 @@ def share_object(item, author):
     inbox_item.save()
 
     if (item.visibility == 'PUBLIC'):
-        for friend in author.objects.all().exclude(id=author.id):
-            inbox_item = Inbox(content_object=item, author=author)
+        for foreign_author in Author.objects.all().exclude(id=author.id):
+            inbox_item = Inbox(content_object=item, author=foreign_author)
             inbox_item.save()
-    if (item.visibility == 'PUBLIC'):
+    if (item.visibility == 'PRIVATE'):
         for friend in author.friends.all():
-            inbox_item = Inbox(content_object=item, author=author)
+            inbox_item = Inbox(content_object=item, author=friend)
             inbox_item.save()
-    
