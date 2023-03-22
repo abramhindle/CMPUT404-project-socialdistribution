@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .basic_auth import BasicAuthenticator
@@ -16,10 +17,9 @@ from .models import *
 from .serializers import *
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import status
@@ -166,6 +166,8 @@ class AuthorView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class FollowersView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = AuthorSerializer
 
     # The get function is called witha  get request. The function is called by using 
@@ -295,6 +297,8 @@ class FollowersView(APIView):
 
 #request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 class FriendRequestView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
     
     def post(self,request,pk_a):
@@ -321,6 +325,8 @@ class FriendRequestView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
 class ViewRequests(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
     # @permission_classes([IsAuthenticated])
     def get(self,request,pk_a):
@@ -340,6 +346,8 @@ class ViewRequests(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
 class InboxSerializerObjects:
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def serialize_inbox_objects(self, item, context={}):
         # return the serializer data of all objects in inbox
         object_model = item.content_type.model_class()
@@ -385,7 +393,8 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     """
         URL: author/auhor_id/inbox
     """
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = InboxSerializer
     pagination_class = InboxSetPagination
 
@@ -470,6 +479,8 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         return(dict) 
 
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def getAuthor(request, displayName):
     """
     Get the list of comments on our website
@@ -477,3 +488,34 @@ def getAuthor(request, displayName):
     author = Author.objects.get(displayName=displayName)
     serializer = AuthorSerializer(author,partial=True)
     return Response(serializer.data)
+
+class registerNode(APIView):
+    def post(self, request):
+        """Register a django user to make them a Node"""
+        '''In the data provide "username":"the username they chose", 
+        "email":"Their email they provided", 
+        "password":"Their Password",
+        "url":"url to their site"
+        
+          '''
+        #   {"username":"jacob_node1", 
+        # "email":"jacob@node1", 
+        # "password":"jacobs_node1",
+        # "url":"url to their site"}
+
+        id_ = str(uuid.uuid4())
+        username = request.data['username']
+        email = request.data['email']
+        password = request.data['password']
+        application_url = request.data['url']
+        try:
+            #create a new user object
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.is_active = False
+            user.save()
+            node = Node(user=user, id = id_, name= 'Node', url=application_url)
+            node.save()
+            return Response("created", status=status.HTTP_201_CREATED)
+        except IntegrityError as e: 
+            print(e)
+            return Response("display name already in use", status=status.HTTP_400_BAD_REQUEST)

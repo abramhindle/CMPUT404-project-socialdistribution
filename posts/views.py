@@ -1,4 +1,8 @@
 from django.http import HttpResponseRedirect
+from author.basic_auth import BasicAuthenticator
+from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse,reverse_lazy
 from django.views import generic
@@ -7,7 +11,7 @@ from django.views.generic import ListView,DetailView,CreateView,UpdateView,Delet
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import *
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from .serializers import *
 from .pagination import PostSetPagination
@@ -146,7 +150,8 @@ response_schema_dictComments = {
     )}
 
 class post_list(APIView, PageNumberPagination):
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     # for pagination
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
@@ -217,6 +222,8 @@ class post_list(APIView, PageNumberPagination):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentDetailView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
@@ -355,6 +362,8 @@ class post_detail(APIView, PageNumberPagination):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LikedView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     # TODO: RESPONSE AND REQUESTS
     
@@ -386,6 +395,8 @@ class LikedView(APIView):
         return(dict) 
     
 class CommentLikesView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     """
     Get the list of likes on our comments
@@ -404,6 +415,8 @@ class CommentLikesView(APIView):
 
 @swagger_auto_schema( method='get', operation_summary="Get the comments on a post")
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_comments(request, pk_a, pk):
     """
     Get the list of comments on the post
@@ -417,6 +430,8 @@ def get_comments(request, pk_a, pk):
 
 @swagger_auto_schema( method='get',operation_summary="Get a partdsfdidsf of an author")
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_likes(request, pk_a, pk):
     """
     Get the list of likes on a post
@@ -428,6 +443,8 @@ def get_likes(request, pk_a, pk):
 
 # hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
     def get(self, request, pk_a, pk):
@@ -521,6 +538,8 @@ class ImageView(APIView):
 
 # hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = CommentSerializer
     pagination_class = PostSetPagination
     page_size_query_param = 'page_size'
@@ -584,6 +603,8 @@ class CommentView(APIView, PageNumberPagination):
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
 
 class ShareView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request, origin_author, post_id, author):       
         
         try:
