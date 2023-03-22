@@ -55,6 +55,7 @@ urlpatterns = [
 
     path("dregister", views.register.as_view(), name="register"),
     path("dlogin", views.login.as_view(), name="login"),
+    path("dlogout", views.logout_view, name="logout"),
     path('csrf/', views.csrf),
     re_path(r"^$", render_react),
     re_path(r"^(?:.*)/?$", render_react),

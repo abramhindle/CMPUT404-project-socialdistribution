@@ -23,7 +23,6 @@ APP_NAME = 'http://127.0.0.1:8000'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -33,9 +32,7 @@ SECRET_KEY = '(e42^@_2fo+3!4%3y9t@50j#)ljo8+7r3_6e$z*p960-1-+g@y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'serveradmin.apps.ServeradminConfig',
     'posts.apps.PostsConfig',
@@ -69,13 +66,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "build/static"),
 ]
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-CORS_ALLOW_CREDENTIALS = True
-
-# change to https://app.example.com in production settings
-CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'http://localhost:8000']
 
 REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
@@ -100,7 +91,9 @@ TEMPLATES = [
 ]
 ALLOWED_HOSTS = ['*']
 WSGI_APPLICATION = 'social.wsgi.application'
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', "http://127.0.0.1:8000/"]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', "http://127.0.0.1:8000"]
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'http://localhost:8000']
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Database
@@ -112,10 +105,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# DATABASES = {}
-# DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -150,8 +139,6 @@ SWAGGER_SETTINGS = {
     ],
 }
 
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -164,7 +151,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

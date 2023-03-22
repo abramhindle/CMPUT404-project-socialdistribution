@@ -1,5 +1,5 @@
 from django.shortcuts import  render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -61,25 +61,25 @@ class login(APIView):
 
         user = auth.authenticate(request=request, username=username, password= password)
 
-        author= Author.objects.filter(displayName=username)[0]
+        if user is not None:
+            login(request, user)
 
-        params = {}
-        # params['user'] = UserSerializer(user)
-        # params['token'] = get_token()
-        params = AuthorSerializer(author)
+            author= Author.objects.filter(displayName=username)[0]
 
-        if not user:
+            params = {}
+            # params['user'] = UserSerializer(user)
+            # params['token'] = get_token()
+            params = AuthorSerializer(author)
+            return Response(params.data, status=status.HTTP_202_ACCEPTED)
+        else:
             return Response("user not registered", status=status.HTTP_401_UNAUTHORIZED)
-        return Response(params.data, status=status.HTTP_202_ACCEPTED)
+        
     
 
 def csrf(request):
     return JsonResponse({'csrfToken': get_token(request)})
     
-class logout(APIView):
-    def post(self, request):
-        """deals with user auth"""
-        auth = AllowAllUsersModelBackend()
-        
-        user = auth.logout(request=request)
-        return Response( status=status.HTTP_202_ACCEPTED)
+# class logout(APIView):
+def logout_view(request):
+    logout(request)
+    return Response( status=status.HTTP_202_ACCEPTED)
