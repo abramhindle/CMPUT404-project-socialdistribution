@@ -1,5 +1,6 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
+from .basic_auth import BasicAuthenticator
 
 # Create your views here.
 
@@ -26,6 +27,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 custom_parameter = openapi.Parameter(
     name='custom_param',
@@ -85,13 +87,13 @@ response_schema_dict = {
         }
     )}
 
-
-class AuthorsListView(APIView, PageNumberPagination):
+class AuthorsListView(BasicAuthenticator, APIView, PageNumberPagination):
     # for pagination
     page_size = 10
     page_size_query_param = 'size'
     max_page_size = 100
-
+    
+    @login_required
     @swagger_auto_schema(operation_summary="List of Authors registered")
     def get(self, request):
         
@@ -104,6 +106,7 @@ class AuthorsListView(APIView, PageNumberPagination):
         serializer = AuthorSerializer(authors, many=True)
         return self.get_paginated_response(serializer.data)
 
+# @permission_classes([IsAuthenticated]) 
 class AuthorView(APIView):
     def validate(self, data):
         try:

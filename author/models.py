@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import uuid
@@ -96,4 +96,33 @@ class FollowRequest(models.Model):
     
     def __str__(self):
         return f'{self.actor} follow {self.object}'
+
+
+class MyNodeManager(BaseUserManager):
+    def create_node(self, username, password=None, **extra_fields):
+        if not username:
+            raise ValueError('The Username field must be set')
+        if not password:
+            raise ValueError('The Password field must be set')
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, username, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(username, password, **extra_fields)
+
+class Node(AbstractBaseUser):    
+    username = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=255, default='Node')
+    is_active = models.BooleanField(default=True)
+
+    objects = MyNodeManager()
+
+    USERNAME_FIELD = 'username'
+
+    class Meta:
+        db_table = 'Node'
         
