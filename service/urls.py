@@ -24,7 +24,7 @@ urlpatterns = [
     path('docs/', TemplateView.as_view(template_name='templates/docs/index.html'), name='docs'),
     #for every different model, create a new model file and view file in the /model and /view directories then link it up here
     re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/posts/(?P<post_id>{POST_ID})/comments/(?P<comment_id>{COMMENT_ID_REGEX})/', LikesView.as_view(), name='post_likes'),
-    re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/follow-request/', AuthorFollowRequests.as_view(),name="author_request"),
+    re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/follow-requests/', AuthorFollowRequests.as_view(),name="author_request"),
     re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/follow-request/(?P<foreign_author_id>{AUTHOR_ID_REGEX})', FollowRequests.as_view(),name="add_request"),
     re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/followers/(?P<foreign_author_id>{AUTHOR_ID_REGEX})', FollowerAPI.as_view(),name="getfollower"),
     re_path(rf'(?P<author_id>{AUTHOR_ID_REGEX})/followed/', Follower_API.as_view(),name="get_followers"),
