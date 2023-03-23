@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from service.models.author import Author
 from django.contrib import auth
+from django.db import IntegrityError
 from rest_framework.authtoken.models import Token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -79,11 +80,7 @@ class SignUpView(APIView):
         try:
             Author.objects.create_user(username=username, password=password, displayName=displayName, profileImage=profileImage, github=github)
             return Response({"success": "Sign Up Requested!"}, status=202)
-        except ConflictException:
-            return Response(status=409)
+        except IntegrityError:
+            return Response({"error": "Username already in use"}, status=409)
         except:
             return Response({"error": "Error Occured"}, status=400)
-        
-
-class ConflictException(Exception):
-    pass
