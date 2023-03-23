@@ -40,7 +40,7 @@ function Profile() {
   useEffect(() => {
     //only runs once
     get_author(
-      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
+      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}/`,
       setAuthor
     );
 
@@ -59,7 +59,7 @@ function Profile() {
   }, []);
 
   const populateList = () => {
-    if (user_list.items.length === 0) {
+    if (!user_list || !user_list.items || user_list.items.length === 0) {
       return (
         <div className="emptyList">
           <h3>Nothing to see here yet!</h3>
@@ -82,7 +82,7 @@ function Profile() {
   };
 
   const page_buttons = () => {
-    if (user_list.items.length < 5 && page === 1) {
+    if (!user_list || !user_list.items || (user_list.items.length < 5 && page === 1)) {
       return;
     } else if (page === 1) {
       return <button onClick={forward_page}>Next Page</button>; //only 1 button

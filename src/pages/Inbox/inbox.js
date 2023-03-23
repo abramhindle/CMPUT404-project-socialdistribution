@@ -48,39 +48,6 @@ function Inbox(filter) {
     <button href={insert_query}>Next Page</button>;
   };
 
-  const page_buttons = () => {
-    if (!post_list) {
-      return;
-    }
-
-    if (post_list.items.length < 5 && page == 1) {
-      return;
-    } else if (page == 1) {
-      return <button onClick={forward_page}>Next Page</button>; //only 1 button
-    } else if (post_list.items.length < 5) {
-      return <button onClick={back_page}>Prev Page</button>;
-    } else {
-      return (
-        <div>
-          <button onClick={back_page}>Prev Page</button>
-          <button onClick={forward_page}>Next Page</button>
-        </div>
-      ); //only 1 button
-    }
-  };
-
-  const forward_page = () => {
-    page = page + 1;
-    navigate(`/inbox/${filter}?page=${page}`);
-    navigate(0); //WHY?
-  };
-
-  const back_page = () => {
-    page = page - 1;
-    navigate(`/inbox/${filter}?page=${page}`);
-    navigate(0);
-  };
-
   return (
     post_list && (
       <div className="Page">
