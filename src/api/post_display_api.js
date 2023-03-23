@@ -83,19 +83,3 @@ export const get_post = async (authorId, postId, success) => {
       console.log(error);
     });
 };
-
-export const get_inbox_posts = async (authorInbox, page, success) => {
-  console.log("Attempting to retrieve inbox info for", {authorInbox});
-  await axios.get(`authors/${authorInbox}/?page=${page}`,
-  {
-    headers: {
-      Accept: "application/json"
-    }
-  }).then(function (response) {
-    console.log("get_inbox_posts res: ", response.data);
-    success(response.data);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-};
