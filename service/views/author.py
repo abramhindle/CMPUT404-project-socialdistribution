@@ -1,5 +1,6 @@
 import json
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.http import *
 from django.views import View
@@ -14,6 +15,7 @@ import requests
 
 from django.db.models import Q
 
+
 # Create your views here.
 
 class MultipleAuthors(APIView):
@@ -23,15 +25,23 @@ class MultipleAuthors(APIView):
 
         filter_host = Q(host=settings.DOMAIN)
 
+        # every time we GET all authors, we need to get all authors from other servers and do some updating
         if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote_user, use requests to go out to each remote host and get their values and save them
             # go out to other servers and find all authors and then save them
             # rather than saving the author id we get in the ID, we can save it in the URL, and then create our own ID
             # this means we need to check against URL rather than ID for duplicates
 
-            for host_name in [host[1] for host in settings.REMOTE_USERS]:
-                response = requests.get(host_name, auth=())
-                print(response.json())
-                pass
+            for remote_host in settings.REMOTE_USERS:
+                print(remote_host[0])
+                print(remote_host[1])
+                print(remote_host[2])
+
+                response = requests.get(remote_host[1] + "service/authors/", auth=remote_host[2])
+                response_json = response.json()
+
+                for author in response_json["items"]:
+                    if remote_host[0] == "remote-user-t14":
+                        handle_t14(author, remote_host[1])
 
             filter_host = Q()  # no filter, since not a remote user
 
@@ -55,6 +65,7 @@ class MultipleAuthors(APIView):
 
         return HttpResponse(json.dumps(authors), content_type=CONTENT_TYPE_JSON)
 
+
 class SingleAuthor(APIView):
     http_method_names = ["get", "post"]
 
@@ -63,7 +74,7 @@ class SingleAuthor(APIView):
 
         try:
             author = Author.objects.get(_id=author_id)
-        except:
+        except ObjectDoesNotExist:
             author = None
 
         if not author:
@@ -81,7 +92,7 @@ class SingleAuthor(APIView):
 
         try:
             author = Author.objects.get(_id=author_id)
-        except:
+        except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
         if "displayName" in body:
@@ -93,17 +104,37 @@ class SingleAuthor(APIView):
         if "profileImage" in body:
             author.profileImage = body["profileImage"]
 
-        author.save() #updates whatever is set in the above if statements
+        author.save()  # updates whatever is set in the above if statements
 
         author_json = author.toJSON()
 
         return HttpResponse(json.dumps(author_json), status=202, content_type=CONTENT_TYPE_JSON)
 
+#this could probably be a serializer, but i dont care
+def handle_t14(author_json, hostname):
+    host_url = hostname + str(author_json["id"]) #this is an int
+
+    try:
+        # update old -> don't change host_url or id
+        old_author = Author.objects.get(url=host_url)
+
+        old_author.github = author_json["github"]
+        old_author.profileImage = author_json["profileImage"]
+        old_author.displayName = author_json["displayName"]
+        old_author.save()
+
+    except ObjectDoesNotExist:
+        # create new
+        new_author = Author()
+        new_author.github = author_json["github"]
+        new_author.profileImage = author_json["profileImage"]
+        new_author.displayName = author_json["displayName"]
+        new_author.url = host_url
+        new_author.host = hostname
+        new_author.save()
 
 def encode_list(authors):
     return {
         "type": "author",
         "items": authors
     }
-
-

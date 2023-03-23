@@ -11,8 +11,8 @@ def newId():
 class Author(models.Model):
     _id = models.URLField(primary_key=True, default=newId, editable=False)
     host = models.URLField(default=settings.DOMAIN, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True) #link an Author to a registered user -> not required
-    url = models.URLField(blank=True, null=True, unique=True) # this is essentially the ID we get from a remote host (or just the id if its local)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  # link an Author to a registered user -> not required
+    url = models.URLField(blank=True, null=True, unique=True)  # this is essentially the ID we get from a remote host (or just the id if its local)
     displayName = models.CharField(max_length=128)
     github = models.URLField()
     profileImage = models.URLField()
@@ -30,7 +30,7 @@ class Author(models.Model):
             "id": self._id,
             "host": self.host,
             "displayName": self.displayName,
-            "url": self.url, #don't really know what this is for...
+            "url": self.url,
             "github": self.github,
             "profileImage": self.profileImage,
     }

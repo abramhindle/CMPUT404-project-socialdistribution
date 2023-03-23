@@ -42,10 +42,12 @@ CORS_ORIGIN_WHITELIST = [
     'https://social-distribution-w23-t17.herokuapp.com',
     'http://127.0.0.1:3000',
     'http://localhost:8000',
+    'http://31552.yeg.rac.sh:8000'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
+    'http://31552.yeg.rac.sh:8000'
 ]
 
 # Application definition
@@ -179,8 +181,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DOMAIN = "https://social-distribution-w23-t17.herokuapp.com"
 
 REMOTE_USERS = [
-    ("remote-user-t14", "hostname", ("username", "password")),
-    ("remote-user-t22", "hostname", ("username", "password")),
+    ("remote-user-t14", "http://31552.yeg.rac.sh:8000/", ("ajinator", "ajinator")),
+    #("remote-user-t22", 'hostname', ("username", "password")),
 ]
 
 REST_FRAMEWORK = {
