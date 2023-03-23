@@ -1,5 +1,6 @@
 import Comment from "./comment";
 import PlainPost from "./post-text";
+
 //TODO : like / follow request objects
 
 export default function DisplayItem(props) {
@@ -8,7 +9,7 @@ export default function DisplayItem(props) {
 
     if (data.type === "comment"){
         //display comment
-        return (<Comment data={data} liked={liked}/>);
+        return (<Comment data={data} liked={liked} updateList={props.updateList}/>);
     }
     else if (data.type === "post"){
         //display post

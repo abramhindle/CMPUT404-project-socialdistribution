@@ -1,20 +1,23 @@
 import "./posts.css";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import { post_comment } from "../../api/comment_api";
 import { comment_like } from "../../api/like_api";
+import { get_liked } from "../../api/like_api";
 
 export default function Comment(data) {
   let id = useSelector((state) => state.user).id;
-  console.log(typeof data["data"]["comment"]);
   const user = useSelector((state) => state.user);
+  const [changes, setChanges] = useState(0);
+  var liked = data.liked;
+
   //Check if markdown
   let markdown = data["data"]["contentType"] === "text/markdown" ? true : false;
 
   const port = window.location.port ? `:${window.location.port}` : "";
   const commentUrl = `${data.data.id}`;
-  const postUrl = commentUrl.split("comment")[0];
+  const postUrl = commentUrl.split("/comment")[0];
   const authorUrl = `//${window.location.hostname}${port}/user/${(
     data.data.author.id ?? ""
   )
@@ -23,19 +26,27 @@ export default function Comment(data) {
 
 
 
-  const like_success = () => {
+  const like_success = (bool) => {
     /* Show Success Snackbar? */
+    liked = bool;
+    setChanges(changes+1);
+    console.log("like_success triggered liked =", liked);
   };
 
   const handleLike = () => {
-    if (!data.liked){
-      console.log("Attempt post like for comment", data)
+    if (!liked){
       comment_like(data.data.author.id, user, postUrl, data.data.id, "context", like_success);
     }
     else {
-      //delete like object
+      //TODO delete like object
+      console.log("Liked already")
     }
   }
+
+  useLayoutEffect(() => {
+    console.log("Use effect triggered");
+    get_liked(id, data.updateList);
+  }, [changes]);
 
   return (
     <div className="vflex">
@@ -50,7 +61,6 @@ export default function Comment(data) {
         </div>
 
         {/* Title, message */}
-
           <div className="comment">
             {markdown && (
               <ReactMarkdown
@@ -70,7 +80,7 @@ export default function Comment(data) {
               onClick={handleLike}
             >
               <svg version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="2.5em" height="2.5em" viewBox="0 0 15 15">
-                <path className="heart" fill={data.liked ? "red" : "white"}
+                <path className="heart" fill={liked ? "red" : "white"}
                   d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
               </svg>
             </button>

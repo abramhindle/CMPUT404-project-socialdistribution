@@ -8,7 +8,6 @@ import { post_comment } from "../../api/comment_api";
 import { post_like } from "../../api/like_api";
 
 export default function PlainPost(data) {
-  console.log(typeof data["post"]["content"]);
   const user = useSelector((state) => state.user);
   //Check if markdown
   let markdown = data["post"]["contentType"] === "text/markdown" ? true : false;

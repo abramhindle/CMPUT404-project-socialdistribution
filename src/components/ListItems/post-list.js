@@ -11,13 +11,16 @@ function PostList({ user_list }) {
 
   useEffect(() => {
     get_liked(user.id, setLiked);
-  }, []);
+  }, [liked]);
 
   function checkLiked(item) {
     for (var i = 0; i < liked.length; i++) {
       if (liked[i].object === item.id) {
-        //console.log("liked", liked[i].object, item.id)
+        console.log("liked", liked[i].object, item.id)
         return true;
+      }
+      else{
+        console.log(item)
       }
     }
     return false;
@@ -29,7 +32,7 @@ function PostList({ user_list }) {
         {console.log(user_list)}
         {user_list.items.map((list_item) => (
           <li key={list_item.id}>
-            <DisplayItem data={list_item} liked={checkLiked(list_item)}/>
+            <DisplayItem data={list_item} liked={checkLiked(list_item)} updateList={setLiked}/>
           </li>
         ))}
         end of items

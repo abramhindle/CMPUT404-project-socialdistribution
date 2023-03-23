@@ -54,7 +54,7 @@ function Inbox(filter) {
         <Sidebar />
         <div className="Inbox sidebar-offset">
           <div className="pageContent">{populateList()}</div>
-          {page_buttons()}
+          {/*{page_buttons()}*/}
         </div>
       </div>
     )

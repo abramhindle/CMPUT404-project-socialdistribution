@@ -82,7 +82,8 @@ export const comment_like = async (
   context,
   success
 ) => {
-  console.log("Attempting to post likes for", { commentId });
+  const id = postId.split("/");
+  console.log("Attempting to post like for comment with post id", postId);
   const data = {
     type: "Like",
     context: context,
@@ -93,6 +94,7 @@ export const comment_like = async (
       .split("/")
       .pop()}`,
   };
+  console.log("Comment's data:", data.object);
   const res = await axios.post(`authors/${likedAuthorId}/inbox/`, data, {
     headers: {
       Accept: "application/json",
@@ -102,7 +104,7 @@ export const comment_like = async (
   console.log(res);
   if (res.status === 202) {
     console.log("Success!");
-    success(res.data);
+    success(true);
   } else {
     console.log("Error Occured");
   }
@@ -118,7 +120,8 @@ export const get_liked = async (authorId, success) => {
   });
   console.log(res);
   if (res.status === 200) {
-    console.log("Success!");
+    console.log("Success! Likes received");
+    console.log("Like list:", res.data.items);
     success(res.data.items);
   } else {
     console.log("Error Occured");
