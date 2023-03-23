@@ -4,4 +4,3 @@ from .models import *
 
 admin.site.register(Author)
 admin.site.register(Inbox)
-admin.site.register(Node)
