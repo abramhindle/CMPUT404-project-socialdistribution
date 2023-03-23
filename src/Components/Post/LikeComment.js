@@ -16,7 +16,7 @@ function COMMENTLIKE({ obj }) {
 		var FAID = "";
 		const url2 = obj;
 
-		await axios({ method: "get", url: url2 }).then((res) => {
+		await axios({ method: "get", url: url2 + '/' }).then((res) => {
 			console.log(res.data.author);
 			FAID = getAuthorId(res.data.author.id);
 		});

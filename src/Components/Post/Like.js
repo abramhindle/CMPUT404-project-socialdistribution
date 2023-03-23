@@ -9,8 +9,9 @@ function LIKE({ postObj }) {
 	// const [like, set_like] = useState(likeobj);
 	const [new_like, set_new_like] = useState("");
 	const toaster = useToaster();
-	const postObjUrl = postObj.url;
-
+	const postObjUrl = postObj.id;
+	console.log("post", postObj);
+	console.log("URL", postObjUrl);
 	//Confirm the name of the button
 	const handleSubmitClick = () => {
 		const FAID = getAuthorId(postObj.author["id"]);

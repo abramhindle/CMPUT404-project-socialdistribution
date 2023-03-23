@@ -69,7 +69,7 @@ function POST({ postobj, edit }) {
 		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}/`;
 		axios({ method: "post", url: url })
 			.then((res) => {
-				if (res.status === 204) {
+				if (res.status === 200) {
 					notifySuccessPost();
 				} else {
 					notifyFailedPost(res.data);
