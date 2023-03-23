@@ -26,9 +26,9 @@ class SignInView(APIView):
         password =  data["password"]
 
         user = auth.authenticate(username=username, password=password)
-        if user is not None:
+        if user.is_active:
             try:
-                author = Author.objects.get(user=user)
+                author = Author.objects.get(username=username)
                 auth.login(request, user)
                 return Response({"success": "User authenticated", "author": author.toJSON()}, status=200)
             except:
