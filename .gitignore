@@ -35,3 +35,4 @@ social/__pycache__/settings.cpython-311.pyc
 social/__pycache__/views.cpython-311.pyc
 __pycache__/
 social/__pycache__
+db.sqlite3
