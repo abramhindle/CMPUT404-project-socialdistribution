@@ -13,6 +13,5 @@ urlpatterns = [
   path('<str:pk_a>/sendreq/', views.FriendRequestView.as_view(), name='send_req'),
   path('<str:pk_a>/viewreq/', views.ViewRequests.as_view(), name='get_Requests'),
   path('<str:pk_a>/liked/', pview.LikedView.as_view(), name='get_liked'),
-  path('displayName/<str:displayName>', views.getAuthor),
-  path('registerNode', views.registerNode.as_view(), name='register_node'),
+  path('displayName/<str:displayName>', views.getAuthor)
 ]

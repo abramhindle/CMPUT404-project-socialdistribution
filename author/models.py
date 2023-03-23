@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import uuid
@@ -96,46 +96,4 @@ class FollowRequest(models.Model):
     
     def __str__(self):
         return f'{self.actor} follow {self.object}'
-
-
-# class MyNodeManager(BaseUserManager):
-#     def create_node(self, username, password=None, **extra_fields):
-#         if not username:
-#             raise ValueError('The Username field must be set')
-#         if not password:
-#             raise ValueError('The Password field must be set')
-#         user = self.model(username=username, **extra_fields)
-#         user.set_password(password)
-#         user.save()
-#         return user
-
-#     def create_superuser(self, username, password=None, **extra_fields):
-#         extra_fields.setdefault('is_staff', True)
-#         extra_fields.setdefault('is_superuser', True)
-#         return self.create_user(username, password, **extra_fields)
-
-class Node(models.Model):   
-    id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255) 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    username = models.CharField(max_length=30)
-    name = models.CharField(max_length=255, default='Node')
-    is_active = models.BooleanField(default=False)
-    url = models.URLField(editable=False, default='https://sociallydistributed.herokuapp.com/', max_length=500)
-    # objects = MyNodeManager()
-
-    USERNAME_FIELD = 'username'
-
-    class Meta:
-        db_table = 'Node'
         
-
-# class Author(models.Model):
-#     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)  #1-1 with django user
-#     friends = models.ManyToManyField('self',blank=True, symmetrical=True)  # M-M with django
-#     #friends = models.ManyToManyField(User,blank=True, symmetrical=True)
-#     displayName = models.CharField(max_length=50, blank=False)  # displayed name of author
-#     profileImage = models.URLField(editable=True,blank=True, max_length=500) # profile image of author, optional
-#     url = models.URLField(editable=False, max_length=500)  # url of author profile
-#     host = models.URLField(editable=False, max_length=500)  # host server
-#     github = models.URLField(max_length=500, default="", blank=True)  # Github url field
