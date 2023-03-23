@@ -23,7 +23,7 @@ class MultipleAuthors(APIView):
 
     def get(self, request: HttpRequest, *args, **kwargs):
 
-        filter_host = Q(host=settings.DOMAIN)
+        filter_host = Q(host=settings.DOMAIN) | Q(host="http://localhost")
 
         # every time we GET all authors, we need to get all authors from other servers and do some updating
         if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote_user, use requests to go out to each remote host and get their values and save them
@@ -32,11 +32,11 @@ class MultipleAuthors(APIView):
             # this means we need to check against URL rather than ID for duplicates
 
             for remote_host in settings.REMOTE_USERS:
-                print(remote_host[0])
-                print(remote_host[1])
-                print(remote_host[2])
-
                 response = requests.get(remote_host[1] + "service/authors/", auth=remote_host[2])
+
+                if response.status_code < 200 or response.status_code > 299:
+                    continue
+
                 response_json = response.json()
 
                 for author in response_json["items"]:
@@ -70,7 +70,13 @@ class SingleAuthor(APIView):
     http_method_names = ["get", "post"]
 
     def get(self, request, *args, **kwargs):
+        # for the author, if the HOST is remote, reach out to the server and get it from them, then update the current
+        # version we have. if the server returns a 404, delete the version we have.
+
+        # we might need something (maybe a job) to routinely check against what we have
         author_id = kwargs['author_id']
+
+        print(author_id)
 
         try:
             author = Author.objects.get(_id=author_id)
@@ -122,7 +128,6 @@ def handle_t14(author_json, hostname):
         old_author.profileImage = author_json["profileImage"]
         old_author.displayName = author_json["displayName"]
         old_author.save()
-
     except ObjectDoesNotExist:
         # create new
         new_author = Author()
