@@ -32,9 +32,8 @@ export default function NewPost() {
 
     e.preventDefault();
     console.log(user, "is attempting to post", data);
-    await post_api(user, data, setPosted, setFollowers).then(
-      send_api(followers, posted)
-    );
+    await post_api(user, data, setPosted, setFollowers);
+    await send_api(followers, posted);
 
     //let followers = get_followers_for_author(user, setSucess);
     // console.log("Starting to send ...");
