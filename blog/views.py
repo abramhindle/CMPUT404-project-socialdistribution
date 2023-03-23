@@ -81,9 +81,9 @@ class SignUpView(APIView):
         
 
         if not valid_url(github):
-            return Response({"error": "Error Occured"}, status=400)
+            return Response({"error": "github field should be a url"}, status=400)
         if not valid_url(profileImage):
-            return Response({"error": "Error Occured"}, status=400)
+            return Response({"error": "profileImage field should be a url"}, status=400)
 
 
         try:
