@@ -1,5 +1,5 @@
 import "./post-list.css";
-import DisplayItem from "../Posts/display";
+import DisplayItem from "../ItemDisplay/display";
 import React, { useEffect, useState } from "react";
 import { get_liked } from "../../api/like_api";
 import { useSelector } from "react-redux";
@@ -11,16 +11,12 @@ function PostList({ user_list }) {
 
   useEffect(() => {
     get_liked(user.id, setLiked);
-  }, [liked]);
+  }, []);
 
   function checkLiked(item) {
     for (var i = 0; i < liked.length; i++) {
       if (liked[i].object === item.id) {
-        console.log("liked", liked[i].object, item.id)
         return true;
-      }
-      else{
-        console.log(item)
       }
     }
     return false;

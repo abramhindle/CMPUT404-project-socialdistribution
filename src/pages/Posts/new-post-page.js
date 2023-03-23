@@ -1,5 +1,5 @@
 import Sidebar from "../../components/Sidebar/sidebar";
-import NewPost from "../../components/Posts/new-post";
+import NewPost from "../../components/ItemDisplay/new-post";
 import '../pages.css'
 import './posts.css'
 
