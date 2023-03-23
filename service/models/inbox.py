@@ -9,7 +9,7 @@ from service.models.like import Like
 class Inbox(models.Model):
     author = models.OneToOneField(Author, primary_key=True, on_delete=models.CASCADE)
 
-    posts = models.ManyToManyField(Post)
-    comments = models.ManyToManyField(Comment)
-    follow_requests = models.ManyToManyField(Follow)
-    likes = models.ManyToManyField(Like)
+    posts = models.ManyToManyField(Post, blank=True)
+    comments = models.ManyToManyField(Comment, blank=True)
+    follow_requests = models.ManyToManyField(Follow, blank=True)
+    likes = models.ManyToManyField(Like, blank=True)

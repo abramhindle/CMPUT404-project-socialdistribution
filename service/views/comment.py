@@ -60,8 +60,7 @@ class CommentView(APIView):
         except:
             return HttpResponseNotFound()
 
-        body = request.body.decode(UTF8)
-        body = json.loads(body)
+        body = request.data
 
         comment = Comment()
 
@@ -71,7 +70,9 @@ class CommentView(APIView):
             comment.author = author
             comment.post = post
 
-            is_valid = self.valid_choice(body["contentType"], Comment.CONTENT_TYPES)
+            is_valid = False
+            if (body["contentType"] in ("text/markdown", "text/plain")):
+                is_valid = True
 
             if not is_valid:
                 return HttpResponseBadRequest()

@@ -65,7 +65,6 @@ class MultipleAuthors(APIView):
 
         return HttpResponse(json.dumps(authors), content_type=CONTENT_TYPE_JSON)
 
-
 class SingleAuthor(APIView):
     http_method_names = ["get", "post"]
 

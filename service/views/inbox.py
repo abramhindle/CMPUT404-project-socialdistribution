@@ -75,8 +75,7 @@ class InboxView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs):
         author_id = kwargs['author_id']
 
-        body = request.body.decode(UTF8)
-        body = json.loads(body)
+        body = request.data
 
         try:
             author = Author.objects.get(_id=author_id)
@@ -198,6 +197,8 @@ class InboxView(APIView):
         try:
             like = Like.objects.get(_id=id)
         except ObjectDoesNotExist:
+            print(body)
+            print(foreign_author)
             like = Like()
             like._id = id
             like.context = body["context"]
