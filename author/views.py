@@ -130,11 +130,10 @@ class AuthorView(APIView):
         return  Response(serializer.data)
     
     @swagger_auto_schema(operation_summary="Update a particular Authors profile",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
-    def put(self, request, pk_a):
+    def post(self, request, pk_a):
         """
         Update the authors profile
         """
-
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -142,7 +141,7 @@ class AuthorView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
            
         serializer = AuthorSerializer(author,data=request.data,partial=True)
-         
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)                
@@ -238,9 +237,9 @@ class FollowersView(APIView):
                 error_msg = "Follower id not found"
                 return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
             followers_list.append(follower_author.follower_to_object())
-
+        serializer = AuthorSerializer(follower_author)
         # return the new list of followers
-        return Response(followers_list)
+        return Response(serializer.data)
 
     #For the delete request we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id
     #Implement later after talking to group 
