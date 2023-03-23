@@ -10,7 +10,7 @@ from service.views.comment import CommentView
 from service.views.liked import LikedView, LikesView
 from django.views.generic import TemplateView
 
-#this shit is hell, but django freaks out trying to parse nested urls otherwise
+# this shit is hell, but django freaks out trying to parse nested urls otherwise
 AUTHOR_ID_REGEX = r"https://[A-Za-z0-9\w.-]+/authors/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"
 POST_ID = r"https://[A-Za-z0-9\w.-]+/authors/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/posts/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"
 COMMENT_ID_REGEX = r"https://[A-Za-z0-9\w.-]+/authors/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/posts/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}/comments/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"
