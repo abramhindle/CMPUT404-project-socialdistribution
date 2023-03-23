@@ -7,6 +7,8 @@ from django.db import IntegrityError
 from rest_framework.authtoken.models import Token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 import json
 
 class SignInSerializerForm(serializers.Serializer):
@@ -76,6 +78,13 @@ class SignUpView(APIView):
         displayName = data["displayName"]
         profileImage = data["profileImage"]
         github = data["github"]
+        
+
+        if not valid_url(github):
+            return Response({"error": "Error Occured"}, status=400)
+        if not valid_url(profileImage):
+            return Response({"error": "Error Occured"}, status=400)
+
 
         try:
             Author.objects.create_user(username=username, password=password, displayName=displayName, profileImage=profileImage, github=github)
@@ -84,3 +93,11 @@ class SignUpView(APIView):
             return Response({"error": "Username already in use"}, status=409)
         except:
             return Response({"error": "Error Occured"}, status=400)
+        
+def valid_url(to_validate):
+    validator = URLValidator()
+    try:
+        validator(to_validate)
+        return True
+    except ValidationError:
+        return False
