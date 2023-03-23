@@ -20,7 +20,7 @@ function LIKE({ postObj }) {
 			author_id: author_id,
 			object: postObjUrl,
 		};
-		const url = `authors/${FAID}/inbox`;
+		const url = `authors/${FAID}/inbox/`;
 
 		//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })

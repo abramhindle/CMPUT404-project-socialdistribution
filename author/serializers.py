@@ -25,7 +25,6 @@ class AuthorSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         id = instance.get_public_id()
-        id = id[:-1] if id.endswith('/') else id
         return {
             **super().to_representation(instance),
             'id': id

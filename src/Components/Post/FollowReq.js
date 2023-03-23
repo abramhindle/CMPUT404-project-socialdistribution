@@ -18,7 +18,7 @@ function FOLLOWREQ({ obj }) {
 		console.log(FAID);
 
 		const params = {};
-		const url = `authors/${curr_author_id}/followers/${FAID}`;
+		const url = `authors/${curr_author_id}/followers/${FAID}/`;
 
 		axios({ method: "put", url: url, data: params })
 			.then((res) => {

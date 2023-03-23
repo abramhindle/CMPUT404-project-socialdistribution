@@ -21,7 +21,7 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 	async function sendreq(id) {
 		const AUTHOR_ID = getAuthorId(null);
 		const faid = getAuthorId(id);
-		const url2 = `authors/${faid}/inbox`;
+		const url2 = `authors/${faid}/inbox/`;
 		const params = {
 			type: "Follow",
 			actor: {
@@ -48,7 +48,7 @@ function ADD_FRIEND_MODAL({ open, handleClose }) {
 	async function handleAddFriendClick() {
 		// url = `authors/authors/${AUTHOR_ID}/followers/${foreign_author_id}/`;
 		// axios({ method: "put", url: url });
-		const url = `authors/displayName/${displayName}`;
+		const url = `authors/displayName/${displayName}/`;
 		await axios({ method: "get", url: url }).then(async (res) => {
 			if (res.status === 200) {
 				await sendreq(res.data.id);
