@@ -12,7 +12,7 @@ import Head from 'next/head';
 import { GitHub } from 'react-feather';
 import { useRouter } from 'next/router';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import axios from '@/utils/axios';
+import NodeManager from '@/nodes';
 import { Author, Post as PostType } from '@/index';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 	followStatus: boolean;
 }
 
-const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, posts, followStatus}) => {
+const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, author,  posts, followStatus}) => {
 	const supabaseClient = useSupabaseClient()
   	const user = useUser()
 	const [followStatusState, setFollowStatusState] = useState(followStatus)
@@ -62,8 +62,11 @@ const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, 
 			<Button
 			onClick={async () => {
 				try {
-					await axios.post(`/authors/${user.id}/followers/${id}`)
+					let authorTo = await NodeManager.getAuthor(id)
+					if (authorTo) {
+					await NodeManager.sendFollowRequest(authorTo, author)
 					setFollowStatusState(!followStatusState)
+					}
 				}
 				catch {
 					console.log('error')
@@ -106,10 +109,10 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 	  let res = null;
-	  try {
-		res = await axios.get(`/authors/${context.params?.slug}`);
-	  }
-	  catch (err) {
+	
+		
+	
+	  if (await NodeManager.checkAuthorExists(context.params?.author_id as string)) {
 		return {
 			redirect: {
 				destination: '/onboarding',
@@ -117,14 +120,19 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 			}
 		}
 	  }
-
-	  let resPosts = await axios.get(`/authors/${context.params?.slug}/posts`);
-		let author = res.data;
-		let posts = resPosts.data.posts;
+	
+	  	let authorId = context.params?.author_id as string;
+	  	let posts = await NodeManager.getPosts(context.params?.author_id as string);
+		let author = await NodeManager.getAuthor(context.params?.author_id as string);
 		let followStatus;
-		if (user.id !== context.params?.slug) {
-			let resFollow = await axios.get(`/authors/${user.id}/followers/${context.params?.slug}`)
-			followStatus = resFollow.data.status;
+		if (user.id !== context.params?.author_id) {
+			let resFollow = await NodeManager.getFollowers(authorId)
+			for (let i = 0; i < resFollow.items.length; i++) {
+				if (resFollow.items[i].id === user.id) {
+					followStatus = 'FOLLOWING'
+					break;
+				}
+			}
 		} else {
 			followStatus = 'FRIENDS'
 		}
@@ -136,10 +144,11 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 				posts: posts,
 				followStatus: (followStatus === 'FRIENDS' || followStatus === 'FOLLOWING')
 			}
-	}	
-
+	}
 	
 }
+
+	
 
 export default Page;
 

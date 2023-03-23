@@ -189,7 +189,6 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 
-	  
 	  if (!await NodeManager.checkAuthorExists(user.id)) {
 		return {
 			redirect: {
@@ -200,7 +199,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 	  }
 	  
 
-	let [authorId, postId] = context.params?.slug as string[] || ['', ''];
+	let [authorId, postId] = context.params?.author_id as string[] || ['', ''];
 
 	  if (user.id !==  authorId) {
 		return {

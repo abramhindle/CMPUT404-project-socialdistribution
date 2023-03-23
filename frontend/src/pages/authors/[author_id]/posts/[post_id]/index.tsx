@@ -69,9 +69,9 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 	  }
 
 	  try {
-		let [authorId, postId] = context.params?.slug as string[] || ['', ''];
+		let [authorId, postId] = [context.params?.author_id, context.params?.post_id]
 
-        let post = await NodeManager.getPost(authorId, postId);
+        let post = await NodeManager.getPost(authorId as string, postId as string);
      
 		return {
 			props: {
