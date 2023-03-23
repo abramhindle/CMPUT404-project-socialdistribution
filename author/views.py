@@ -134,7 +134,6 @@ class AuthorView(APIView):
         """
         Update the authors profile
         """
-
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -142,7 +141,7 @@ class AuthorView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
            
         serializer = AuthorSerializer(author,data=request.data,partial=True)
-         
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)                
