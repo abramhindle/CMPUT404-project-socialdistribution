@@ -1,14 +1,12 @@
+import json
+
 from django.http import *
+from rest_framework.views import APIView
+
 from service.models.author import Author
 from service.models.follow import Follow
 from service.service_constants import *
-from django.views import View
-import json
-from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
-from django.utils.decorators import method_decorator
-from rest_framework.views import APIView
-from django.views.decorators.csrf import csrf_exempt
+
 
 class AuthorFollowRequests(APIView):
     """ GET an Authors's follow requests -> where they are being followed"""

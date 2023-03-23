@@ -1,4 +1,3 @@
-from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
@@ -6,14 +5,27 @@ from service.service_constants import *
 from django.http import *
 import json
 from datetime import datetime, timezone
-from service.services.rest_service import RestService
-import uuid
 
 from service.models.comment import Comment
 from service.models.post import Post
 from service.models.author import Author
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
+import json
+from datetime import datetime, timezone
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
+from django.http import *
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+
+from service.models.author import Author
+from service.models.comment import Comment
+from service.models.post import Post
+from service.service_constants import *
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CommentView(APIView):

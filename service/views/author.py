@@ -1,21 +1,18 @@
 import json
 
+import requests
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import *
-from django.views import View
+from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
-from rest_framework.views import APIView
+from service.services import team_14
 
-from django.conf import settings
 
-import requests
-
-from django.db.models import Q
-
-import time
 # Create your views here.
 
 class MultipleAuthors(APIView):
@@ -25,11 +22,7 @@ class MultipleAuthors(APIView):
 
         filter_host = Q(host=settings.DOMAIN) | Q(host="http://localhost")
 
-        # every time we GET all authors, we need to get all authors from other servers and do some updating
-        if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote_user, use requests to go out to each remote host and get their values and save them
-            # go out to other servers and find all authors and then save them
-            # rather than saving the author id we get in the ID, we can save it in the URL, and then create our own ID
-            # this means we need to check against URL rather than ID for duplicates
+        if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote host
 
             for remote_host in settings.REMOTE_USERS:
                 response = requests.get(remote_host[1] + "service/authors/", auth=remote_host[2])
@@ -42,7 +35,7 @@ class MultipleAuthors(APIView):
 
                 for author in response_json["items"]:
                     if remote_host[0] == "remote-user-t14":
-                        handle_t14(author, remote_host[1])
+                        team_14.get_or_create_author(author, remote_host[1])
 
             filter_host = Q()  # no filter, since not a remote user
 
@@ -70,13 +63,7 @@ class SingleAuthor(APIView):
     http_method_names = ["get", "post"]
 
     def get(self, request, *args, **kwargs):
-        # for the author, if the HOST is remote, reach out to the server and get it from them, then update the current
-        # version we have. if the server returns a 404, delete the version we have.
-
-        # we might need something (maybe a job) to routinely check against what we have
         author_id = kwargs['author_id']
-
-        print(author_id)
 
         try:
             author = Author.objects.get(_id=author_id)
@@ -84,16 +71,10 @@ class SingleAuthor(APIView):
             author = None
 
         if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:
-            # remote-user-t14
             if author and author.host == settings.REMOTE_USERS[0][1]:
-                response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1], auth=settings.REMOTE_USERS[0][2])
-                response.close()
+                author = team_14.get_single_author(author)  # remote-user-t14
 
-                # not updating for now...
-                if response.status_code < 200 or response.status_code > 299:
-                    author = None
-
-                author = handle_t14(response.json(), author.host)
+            # put other teams here
 
         if not author:
             return HttpResponseNotFound()
@@ -127,33 +108,6 @@ class SingleAuthor(APIView):
         author_json = author.toJSON()
 
         return HttpResponse(json.dumps(author_json), status=202, content_type=CONTENT_TYPE_JSON)
-
-#this could probably be a serializer, but i dont care
-def handle_t14(author_json, hostname):
-    host_url = hostname + str(author_json["id"]) #this is an int
-
-    try:
-        # update old -> don't change host_url or id
-        old_author = Author.objects.get(url=host_url)
-
-        old_author.github = author_json["github"]
-        old_author.profileImage = author_json["profileImage"]
-        old_author.displayName = author_json["displayName"]
-        old_author.save()
-
-        return old_author
-
-    except ObjectDoesNotExist:
-        # create new
-        new_author = Author()
-        new_author.github = author_json["github"]
-        new_author.profileImage = author_json["profileImage"]
-        new_author.displayName = author_json["displayName"]
-        new_author.url = host_url
-        new_author.host = hostname
-        new_author.save()
-
-        return new_author
 
 def encode_list(authors):
     return {

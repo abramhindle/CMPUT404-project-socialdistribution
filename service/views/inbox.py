@@ -3,8 +3,8 @@ import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import *
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.models.comment import Comment
@@ -13,7 +13,7 @@ from service.models.inbox import Inbox
 from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
-from rest_framework.views import APIView
+
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
 
