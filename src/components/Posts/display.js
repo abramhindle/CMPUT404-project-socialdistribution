@@ -1,39 +1,18 @@
 import Comment from "./comment";
 import PlainPost from "./post-text";
-import React, { useEffect, useState } from "react";
-import { get_liked } from "../../api/like_api";
-import { useSelector } from "react-redux";
-
 //TODO : like / follow request objects
 
 export default function DisplayItem(props) {
-    const user = useSelector((state) => state.user);
-    const [liked, setLiked] = useState([]);
     const data = props.data;
-
-
-    /*useEffect(() => {
-      get_liked(user.id, setLiked);
-    }, []);*/
-
-    console.log(data);
-  
-    function checkLiked(item) {
-      for (var i = 0; i < liked.length; i++) {
-        if (liked[i].object === item.id) {
-          return true;
-        }
-      }
-      return false;
-    }
+    const liked = props.liked;
 
     if (data.type === "comment"){
         //display comment
-        return (<Comment data={data}/>);
+        return (<Comment data={data} liked={liked}/>);
     }
     else if (data.type === "post"){
         //display post
-        return (<PlainPost post={data} liked={checkLiked(data)}/>);
+        return (<PlainPost post={data} liked={liked}/>);
     }
     else if (data.type === "like"){
         //display like object

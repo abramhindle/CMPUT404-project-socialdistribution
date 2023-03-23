@@ -87,7 +87,7 @@ export const comment_like = async (
     type: "Like",
     context: context,
     author: likeAuthor,
-    object: `authors/${likedAuthorId /* URL Needs to be updated once hosted on heroku */
+    object: `https://social-distribution-w23-t17.herokuapp.com/authors/${likedAuthorId /* URL Needs to be updated once hosted on heroku */
       .split("/")
       .pop()}/posts/${postId.split("/").pop()}/comments/${commentId
       .split("/")
@@ -110,7 +110,7 @@ export const comment_like = async (
 
 export const get_liked = async (authorId, success) => {
   console.log("Attempting to get liked for", { authorId });
-  const res = await axios.get(`authors/${authorId}/liked`, {
+  const res = await axios.get(`authors/${authorId}/liked/`, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
