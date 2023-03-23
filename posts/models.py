@@ -68,7 +68,7 @@ class Post(models.Model):
     # get public id of post
     def get_public_id(self):
         self.get_absolute_url()
-        return (self.url) or str(self.id)
+        return (self.url[:-1]) or str(self.id)
     
     # get comments url
     def get_comments_source(self):
@@ -89,7 +89,7 @@ class Post(models.Model):
     def get_absolute_url(self):
         url = reverse('posts:detail', args=[str(self.author.id), str(self.id)])
         url = settings.APP_NAME + url
-        self.url = url[:-1] if url.endswith('/') else url 
+        self.url = url if url.endswith('/') else url + '/'
         self.save()
         return self.url
 
@@ -122,12 +122,12 @@ class Comment(models.Model):
     # get public id of comment
     def get_public_id(self):
         self.get_absolute_url()
-        return (self.url) or str(self.id)
+        return (self.url[:-1]) or str(self.id)
     
     def get_absolute_url(self):
         url = reverse('posts:comment_detail', args=[str(self.author.id), str(self.post.id), str(self.id)])
         url = settings.APP_NAME + url
-        self.url = url[:-1] if url.endswith('/') else url 
+        self.url = url if url.endswith('/') else url + '/'
         self.save()
         return self.url
     
@@ -148,14 +148,11 @@ class Like(models.Model):
     object = models.URLField(max_length=500)  # URL of liked object
     inbox = GenericRelation(Inbox, related_query_name='like')  # inbox in which like is in
 
-    # get public id of like
-    def get_public_id(self):
-        if not self.url: 
-            self.url = settings.APP_NAME + self.get_absolute_url()
-            self.save()
-        return (self.url) or str(self.id)
+    def get_object(self):
+        return self.object if self.object.endswith('/') else self.object + '/' 
 
     def get_summary(self):
+        print("OBJECT",str(self.object))
         return self.author.displayName + " Likes your " + str(self.object).split('/')[-2][:-1]
 
     @staticmethod
@@ -167,7 +164,3 @@ class Like(models.Model):
     
     ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGEike'
     
-    def __str__(self):
-        return 'Liked by {}'.format(self.author)
-    
-    ### HOW TO CONTRAINT HOW MANY TIMES AN AUTHOR LIKES AN IMAGE

@@ -16,7 +16,7 @@ function COMMENTLIKE({ obj }) {
 		var FAID = "";
 		const url2 = obj;
 
-		await axios({ method: "get", url: url2 }).then((res) => {
+		await axios({ method: "get", url: url2 + '/' }).then((res) => {
 			console.log(res.data.author);
 			FAID = getAuthorId(res.data.author.id);
 		});
@@ -26,7 +26,7 @@ function COMMENTLIKE({ obj }) {
 			author_id: curr_author_id,
 			object: url2,
 		};
-		const url = `authors/${FAID}/inbox`;
+		const url = `authors/${FAID}/inbox/`;
 
 		//Confirm what to add into the params and send inbox
 		axios({ method: "post", url: url, data: params })

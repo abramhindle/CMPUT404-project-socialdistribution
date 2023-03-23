@@ -66,10 +66,10 @@ function POST({ postobj, edit }) {
 		const author_id = getAuthorId(null);
 		const origin_author_id = getAuthorId(postobj.author.id);
 		const post_id = getAuthorId(postobj.id);
-		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}`;
+		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}/`;
 		axios({ method: "post", url: url })
 			.then((res) => {
-				if (res.status === 204) {
+				if (res.status === 200) {
 					notifySuccessPost();
 				} else {
 					notifyFailedPost(res.data);

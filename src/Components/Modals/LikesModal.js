@@ -18,7 +18,7 @@ function LIKESMODAL({ postobj }) {
     } else {
       const author_id = getAuthorId(postobj.author.id);
       const post_id = getAuthorId(postobj.id);
-      const url = `posts/authors/${author_id}/posts/${post_id}/likes`
+      const url = `posts/authors/${author_id}/posts/${post_id}/likes/`
       axios({ method: "get", url: url }).then((res) => {
         setLikes(res.data.author.displayName);
       });

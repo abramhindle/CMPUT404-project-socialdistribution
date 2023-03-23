@@ -32,7 +32,7 @@ class Author(models.Model):
         # get the url for a single author
         url = reverse('authors:detail', args=[str(self.id)])
         url = settings.APP_NAME + url
-        self.url = url[:-1] if url.endswith('/') else url 
+        self.url = url if url.endswith('/') else url + '/'
         self.save()
         return self.url
     
@@ -43,7 +43,8 @@ class Author(models.Model):
     
     # return the author public ID
     def get_public_id(self):
-        return (self.url) or str(self.id)   
+        self.get_absolute_url()
+        return (self.url)[:-1] or str(self.id)   
     
     def follower_to_object(self):
         return {"type":"author",
