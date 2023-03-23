@@ -12,6 +12,14 @@ class SignInSerializerForm(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
+class SignUpSerializerForm(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+    displayName = serializers.CharField()
+    profileImage = serializers.URLField()
+    github = serializers.URLField()
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class SignInView(APIView):
     permission_classes = ()
@@ -26,15 +34,18 @@ class SignInView(APIView):
         password =  data["password"]
 
         user = auth.authenticate(username=username, password=password)
-        if user.is_active:
+        if user:
             try:
                 author = Author.objects.get(username=username)
+                if(not author.is_local):
+                    raise Exception
                 auth.login(request, user)
                 return Response({"success": "User authenticated", "author": author.toJSON()}, status=200)
             except:
                 return Response({"error": "Error Authenticating"}, status=401)
         
         return Response({"error": "Error Authenticating"}, status=401)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SignOutView(APIView):
@@ -46,3 +57,33 @@ class SignOutView(APIView):
             return Response({ 'success': 'Loggout Out' }, status=200)
         except:
             return Response({ 'error': 'Something went wrong when logging out' }, status=401)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SignUpView(APIView):
+    permission_classes = ()
+    serializer_class = SignUpSerializerForm
+    
+    def post(self, request, format=None):   
+        try:
+            data = json.loads(self.request.data)
+        except:
+            data = self.request.data
+
+        username = data["username"]
+        password =  data["password"]
+        displayName = data["displayName"]
+        profileImage = data["profileImage"]
+        github = data["github"]
+
+        try:
+            Author.objects.create_user(username=username, password=password, displayName=displayName, profileImage=profileImage, github=github)
+            return Response({"success": "Sign Up Requested!"}, status=202)
+        except ConflictException:
+            return Response(status=409)
+        except:
+            return Response({"error": "Error Occured"}, status=400)
+        
+
+class ConflictException(Exception):
+    pass
