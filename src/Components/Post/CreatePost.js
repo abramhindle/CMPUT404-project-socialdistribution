@@ -22,7 +22,9 @@ function CREATEPOST() {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [categories, setCategories] = useState("");
+	const [disabled, setDisabled] = useState(true);
 	const [markdown, setMarkdown] = useState("");
+	const [authors, setAuthors] = useState({ items: [] });
 	let navigate = useNavigate();
 	const [friends, setFriends] = useState({ items: [] });
 	const toaster = useToaster();
@@ -31,6 +33,12 @@ function CREATEPOST() {
 		value: item["displayName"],
 	}));
 
+	function handleClick(eventkey) {
+		set_post_status(eventkey);
+		if (eventkey === 'PRIVATE') {
+			setDisabled(false);
+		} else { setDisabled(true) }
+	}
 	useLayoutEffect(() => {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
@@ -157,6 +165,12 @@ function CREATEPOST() {
 			contentType: post_type,
 			visibility: post_status,
 		};
+
+		if (post_status === 'PRIVATE') {
+			console.log(authors)
+			params['authors'] = authors;
+
+		}
 		var imagefile = "";
 		if (post_type === "image/png" || post_type === "image/jpeg") {
 			imagefile = document.getElementById("file").files[0];
@@ -204,7 +218,7 @@ function CREATEPOST() {
 			<Dropdown
 				title={post_status}
 				activeKey={post_status}
-				onSelect={(eventkey) => set_post_status(eventkey)}
+				onSelect={(eventkey) => handleClick(eventkey)}
 				style={{ float: "left", marginLeft: "10px" }}
 			>
 				<Dropdown.Item eventKey="PUBLIC">Public</Dropdown.Item>
@@ -223,19 +237,21 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="image/png">Png</Dropdown.Item>
 				<Dropdown.Item eventKey="image/jpeg">Jpeg</Dropdown.Item>
 			</Dropdown>
-			{post_type === "PRIVATE" && (
-				<>
-					<CheckPicker
-						style={{
-							float: "left",
-							marginLeft: "10px",
-							width: 224,
-						}}
-						label="Friends"
-						data={data}
-					/>
-				</>
-			)}
+			<>
+				<CheckPicker
+					style={{
+						float: "left",
+						marginLeft: "10px",
+						width: 224,
+					}}
+					label="Friends"
+					data={data}
+					disabled={disabled}
+					valeu={authors}
+					onChange={(e) => setAuthors(e)}
+				/>
+			</>
+
 			<Input
 				style={{ float: "left", marginTop: "5px" }}
 				as="textarea"

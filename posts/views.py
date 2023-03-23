@@ -164,26 +164,26 @@ class post_list(APIView, PageNumberPagination):
         posts = self.paginate_queryset(posts, request)
         authenticated_user = Author.objects.get(id=pk_a)
 
-        for post in posts:
-            if "PRIVATE" in post.visibility:
-                # if the post author is not the auth'd user, don't show this post
-                if post.author != authenticated_user:
-                    posts.exclude(post)
+        # for post in posts:
+        #     if "PRIVATE" in post.visibility:
+        #         # if the post author is not the auth'd user, don't show this post
+        #         if post.author != authenticated_user:
+        #             posts.exclude(post)
                     
-            if "FRIENDS" in post.visibility:
-                # if the post author is not friends with the auth'd user, don't show this post
-                if authenticated_user not in post.author.friends or authenticated_user != post.author:
-                    posts.exclude(post)
+        #     if "FRIENDS" in post.visibility:
+        #         # if the post author is not friends with the auth'd user, don't show this post
+        #         if authenticated_user not in post.author.friends or authenticated_user != post.author:
+        #             posts.exclude(post)
                 
-            if "UNLISTED" in post.visibility:
-                # if the post is marked as unlisted, don't show this post UNLESS the author is the one authenticated
-                # (other users can see it if they have the link)
-                if post.author != authenticated_user:
-                    posts.exclude(post)
+        #     if "UNLISTED" in post.visibility:
+        #         # if the post is marked as unlisted, don't show this post UNLESS the author is the one authenticated
+        #         # (other users can see it if they have the link)
+        #         if post.author != authenticated_user:
+        #             posts.exclude(post)
         
-        posts = self.paginate_queryset(posts, request) 
-        if authenticated_user not in post.author.friends:
-            posts.exclude(post) 
+        #posts = self.paginate_queryset(posts, request) 
+        # if authenticated_user not in post.author.friends:
+        #     posts.exclude(post) 
 
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
@@ -471,54 +471,6 @@ class ImageView(APIView):
             error_msg = {"message":"Post does not exist!"}
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
-
-        # like_id = uuid.uuid4()
-        # # url = request.data
-        # # url 
-        # post_url = request.data['object']
-        # author = request.data['author']
-        # try:
-        #     author = Author.objects.get(pk=pk_a)
-        # except Author.DoesNotExist:
-        #     error_msg = "Author id not found"
-        #     return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        # try: 
-        #     #setup the URL and check to see if it exists already
-        #     #like = Like.object.get(author = pk_a, object = url)
-        #     like = Like.objects.get(auhtor=author, object=post_url )
-        #     return Response('Already Liked')
-        # except Like.DoesNotExist:
-        #      #find a way to get inbox of author and put inbox into data that goes in serializer
-        #     try:
-        #         inbox = Inbox.object.get(author=author)
-        #     except Inbox.DoesNotExist:
-        #         return Response("Inbox does not exist", status=status.HTTP_400_BAD_REQUEST)
-        #     all_data = request.data
-        #     all_data['inbox'] = inbox 
-        #     serializer = LikeSerializer(data=all_data, context={'author_id': pk_a})
-        #     if serializer.is_valid():
-        #         serializer.validated_data.pop("author")
-        #         like = Like.objects.create(**serializer.validated_data, author=author, id=like_id, )
-        #         like.update_fields_with_request(request)
-
-        #         serializer = LikeSerializer(like, many=False)
-        #         return Response(serializer.data)
-        #     else:
-        #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # # try:
-        # #     author = Author.objects.get(id=pk_a)
-        # # except Author.DoesNotExist:
-        # #     return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        # # data = {'author': author.id, **request.data}
-        # # serializer = LikeSerializer(data=data)
-        
-        # # if serializer.is_valid():
-        # #     serializer.save()
-        # #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # # else:
-        # #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 # hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
     serializer_class = CommentSerializer
@@ -626,3 +578,15 @@ class ShareView(APIView):
         serializer = PostSerializer(new_post)
         return Response(serializer.data)
         
+def share_object(item, author):
+    inbox_item = Inbox(content_object=item, author=author)
+    inbox_item.save()
+
+    if (item.visibility == 'PUBLIC'):
+        for foreign_author in Author.objects.all().exclude(id=author.id):
+            inbox_item = Inbox(content_object=item, author=foreign_author)
+            inbox_item.save()
+    if (item.visibility == 'PRIVATE'):
+        for friend in author.friends.all():
+            inbox_item = Inbox(content_object=item, author=friend)
+            inbox_item.save()

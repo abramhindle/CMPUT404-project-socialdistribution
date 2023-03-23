@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, Panel, IconButton, Message, useToaster } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import ShareIcon from "@rsuite/icons/legacy/Reply";
@@ -9,7 +9,9 @@ import LIKE from "./Like";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
 import EDITPOSTMODAL from "../Modals/EditPostModal";
+import LIKESMODAL from "../Modals/LikesModal";
 import { getAuthorId } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PROFILEIMAGE from "../Profile/ProfileImage";
 // Component Imports
@@ -18,8 +20,10 @@ function POST({ postobj, edit }) {
 	const [post, set_post] = useState(postobj);
 	const [comment, set_comment] = useState("");
 	const [authorPosts, set_authorPosts] = useState(edit);
+	const [likes, setLikes] = useState(edit);
 	const [open, setOpen] = useState(false);
 	const toaster = useToaster();
+	let navigate = useNavigate();
 
 	const body = () => {
 		if (post["contentType"] === "text/plain") {
@@ -184,6 +188,11 @@ function POST({ postobj, edit }) {
 				obj={postobj}
 				handleClose={handleModalClose}
 			/>
+			{/* <LIKESMODAL
+				open={open}
+				obj={postobj}
+				handleClose={handleModalClose}
+			/> */}
 		</div>
 	);
 }
