@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
-import { get_follow_for_author } from '../../api/follower_api';
+import { get_followers_for_author } from '../../api/follower_api';
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -32,7 +32,7 @@ function Followed() {
     const location = useLocation();
 
     useEffect(() => { 
-        get_follow_for_author(user.id, setList)
+        get_followers_for_author(user.id, setList)
       
     }, []);
 

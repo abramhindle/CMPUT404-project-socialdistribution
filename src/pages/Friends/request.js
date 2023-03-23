@@ -50,6 +50,7 @@ function Request() {
 
     const AcceptRequest= (actor_id) => {
         add_followers_for_author(user.id, actor_id, onSuccess)
+        delete_request(user.id, actor_id, onSuccess)
   }
 
 
