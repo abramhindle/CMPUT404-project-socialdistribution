@@ -149,6 +149,33 @@ response_schema_dictComments = {
         }
     )}
 
+
+ObjectsLikedGet = {
+    200: openapi.Response(
+        description='Sucessfully retrieve Liked objects',
+        examples={'application/json': {
+  "type": "liked",
+  "items": [
+    {
+      "summary": "TomHardyUpdated Likes your post",
+      "type": "Like",
+      "author": {
+        "type": "author",
+        "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+        "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+        "host": "",
+        "displayName": "TomHardyUpdated",
+        "github": "",
+        "profileImage": ""
+      },
+      "object": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561"
+    }
+  ]
+}}
+    )
+}
+
+
 class post_list(APIView, PageNumberPagination):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -367,7 +394,7 @@ class LikedView(APIView):
 
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(operation_summary="List all objects liked by author")
+    @swagger_auto_schema(responses = ObjectsLikedGet, operation_summary="List all objects liked by author")
     def get(self, request, pk_a):
         """
         Get the liked objects by author
