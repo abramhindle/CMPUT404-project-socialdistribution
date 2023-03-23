@@ -73,20 +73,18 @@ class Post(models.Model):
         }
 
     def toObject(self, json_object):
-        self._id = json_object["id"] #this is a url, we need to get the last item of the url
         self.title = json_object["title"]
-        self.id = json_object["id"]
         self.source = json_object["source"]
         self.origin = json_object["origin"]
         self.description = json_object["description"]
         self.contentType = json_object["contentType"]
         self.content = json_object["content"]
         self.author = Author().toObject(json_object["author"])
-        self.categories = json_object["categories"]
-        self.comments = json_object["comments"]
         self.published = json_object["published"]
         self.visibility = json_object["visibility"]
         self.unlisted = bool(json_object["unlisted"])
+
+        return self
 
     @staticmethod
     def create_post_id(author_id, post_id=None): #uses the last uuid value from author id, and generates a custom post_id

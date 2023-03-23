@@ -14,8 +14,6 @@ from pathlib import Path
 import os
 import django_on_heroku
 import dj_database_url
-import django_on_heroku
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,13 +30,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'http://localhost:8000',
-    'http://localhost:3000',        
+    'http://localhost:3000',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken']
-
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://social-distribution-w23-t17.herokuapp.com',
@@ -46,6 +41,8 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://31552.yeg.rac.sh:8000'
 ]
+
+CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken']
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -70,9 +67,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -130,7 +127,6 @@ DATABASES = {
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -165,7 +161,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "/staticfiles/"
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static'),
@@ -173,7 +169,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

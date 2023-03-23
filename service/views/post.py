@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timezone
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.http import *
 from django.utils.decorators import method_decorator
@@ -11,6 +12,9 @@ from service.models.author import Author
 from service.models.post import Post, Category
 from service.service_constants import *
 from service.services.rest_service import RestService
+from django.conf import settings
+
+import requests
 
 # endpoints with just author_id
 @method_decorator(csrf_exempt, name='dispatch')
@@ -19,27 +23,49 @@ class PostCreation(APIView, RestService):
 
     def get(self, request: HttpRequest, *args, **kwargs): # get all recent posts for author_id
         author_id = kwargs['author_id']
+        try:
+            author = Author.objects.get(_id=author_id)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
 
         page = request.GET.get('page', '')
         size = request.GET.get('size', '')
 
-        post_queryset = Post.objects.all().filter(author=author_id).order_by('-published') # only get posts from author_id in the URL, order by the published date
-
-        paged_posts = Paginator(post_queryset, size or 5) # default to size 5
-
-        try:
-            page = paged_posts.page(page or 1) # default to page 1
-        except:
-            page = list()
-
         posts = list()
 
-        for post in page:
-            posts.append(post.toJSON())
+        posts_json = dict()
 
-        posts_json = encode_list(posts)
+        # LOCAL author
+        if author.host == settings.DOMAIN:
+            post_queryset = Post.objects.all().filter(author=author_id).order_by('-published') # only get posts from author_id in the URL, order by the published date
+            paged_posts = Paginator(post_queryset, size or 5) # default to size 5
 
-        return HttpResponse(json.dumps(posts_json), content_type = CONTENT_TYPE_JSON)
+            try:
+                page = paged_posts.page(page or 1) # default to page 1
+            except:
+                page = list()
+
+            for post in page:
+                posts.append(post.toJSON())
+
+            posts_json = encode_list(posts)
+
+        # remote-user-t14
+        if author.host == settings.REMOTE_USERS[0][1]:
+            url = settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/posts/"
+
+            response = requests.get(url, auth=settings.REMOTE_USERS[0][2])
+            response.close()
+
+            items = list()
+
+            for item in response.json()["items"]:
+                post = handle_t14_post(item, author, author.host)
+                items.append(post.toJSON())
+
+            posts_json = encode_list(items)
+
+        return HttpResponse(json.dumps(posts_json), content_type=CONTENT_TYPE_JSON)
 
     def post(self, request: HttpRequest, *args, **kwargs): #create a new post
         if request.content_type != CONTENT_TYPE_JSON:
@@ -207,3 +233,27 @@ def encode_list(posts):
         "type": "posts",
         "items": posts
     }
+
+def handle_t14_post(post_json, author, hostname):
+    # use source as the id for the remote
+    # use origin as the host name
+    remote_source = hostname + str(post_json["id"]) #this is an int
+
+    print(remote_source)
+
+    try:
+        # update old -> don't change host_url or id
+        old_post = Post.objects.get(source=remote_source)
+
+        return old_post
+
+    except ObjectDoesNotExist:
+        # create new
+        new_post = Post().toObject(post_json)
+        new_post._id = Post.create_post_id(author._id)
+        new_post.categories.set(post_json["categories"])
+        new_post.source = remote_source
+        new_post.author = author
+        new_post.save()
+
+        return new_post

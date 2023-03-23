@@ -15,7 +15,7 @@ import requests
 
 from django.db.models import Q
 
-
+import time
 # Create your views here.
 
 class MultipleAuthors(APIView):
@@ -33,8 +33,9 @@ class MultipleAuthors(APIView):
 
             for remote_host in settings.REMOTE_USERS:
                 response = requests.get(remote_host[1] + "service/authors/", auth=remote_host[2])
+                response.close()
 
-                if response.status_code < 200 or response.status_code > 299:
+                if response.status_code < 200 or response.status_code > 299:  # unsuccessful
                     continue
 
                 response_json = response.json()
@@ -82,6 +83,18 @@ class SingleAuthor(APIView):
         except ObjectDoesNotExist:
             author = None
 
+        if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:
+            # remote-user-t14
+            if author and author.host == settings.REMOTE_USERS[0][1]:
+                response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1], auth=settings.REMOTE_USERS[0][2])
+                response.close()
+
+                # not updating for now...
+                if response.status_code < 200 or response.status_code > 299:
+                    author = None
+
+                author = handle_t14(response.json(), author.host)
+
         if not author:
             return HttpResponseNotFound()
 
@@ -127,6 +140,9 @@ def handle_t14(author_json, hostname):
         old_author.profileImage = author_json["profileImage"]
         old_author.displayName = author_json["displayName"]
         old_author.save()
+
+        return old_author
+
     except ObjectDoesNotExist:
         # create new
         new_author = Author()
@@ -136,6 +152,8 @@ def handle_t14(author_json, hostname):
         new_author.url = host_url
         new_author.host = hostname
         new_author.save()
+
+        return new_author
 
 def encode_list(authors):
     return {

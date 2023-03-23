@@ -83,6 +83,7 @@ function App() {
               </SignInRoute>
             }
           />
+          <Route path="/*"  status={404}/>
         </Routes>
       </Router>
     </div>
