@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
 import SignIn from "./pages/Login/Signin";
+import SignUp from "./pages/Login/Signup";
 import Friends from "./pages/Friends/friends";
 import Posts from "./pages/Posts/new-post-page";
 import Main from "./pages/Main";
@@ -72,6 +73,15 @@ function App() {
               <PrivateRoute>
                 <PostDetail />
               </PrivateRoute>
+            }
+          ></Route>
+          {/* Sign Up */}
+          <Route
+            path="/signup"
+            element={
+              <SignInRoute>
+                <SignUp />
+              </SignInRoute>
             }
           ></Route>
           {/* Sign In */}
