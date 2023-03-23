@@ -110,7 +110,7 @@ export const comment_like = async (
 
 export const get_liked = async (authorId, success) => {
   console.log("Attempting to get liked for", { authorId });
-  const res = await axios.get(`authors/${authorId}/liked`, {
+  const res = await axios.get(`authors/${authorId}/liked/`, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
