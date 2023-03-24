@@ -32,7 +32,7 @@ class Author(models.Model):
         # get the url for a single author
         url = reverse('authors:detail', args=[str(self.id)])
         url = settings.APP_NAME + url
-        self.url = url[:-1] if url.endswith('/') else url 
+        self.url = url if url.endswith('/') else url + '/'
         self.save()
         return self.url
     
@@ -43,7 +43,8 @@ class Author(models.Model):
     
     # return the author public ID
     def get_public_id(self):
-        return (self.url) or str(self.id)   
+        self.get_absolute_url()
+        return (self.url)[:-1] or str(self.id)   
     
     def follower_to_object(self):
         return {"type":"author",
@@ -97,7 +98,6 @@ class FollowRequest(models.Model):
     def __str__(self):
         return f'{self.actor} follow {self.object}'
 
-
 # class MyNodeManager(BaseUserManager):
 #     def create_node(self, username, password=None, **extra_fields):
 #         if not username:
@@ -127,7 +127,7 @@ class Node(models.Model):
 
     class Meta:
         db_table = 'Node'
-        
+
 
 # class Author(models.Model):
 #     id = models.CharField(primary_key=True, editable=False, default= uuid.uuid4, max_length=255)
@@ -138,4 +138,4 @@ class Node(models.Model):
 #     profileImage = models.URLField(editable=True,blank=True, max_length=500) # profile image of author, optional
 #     url = models.URLField(editable=False, max_length=500)  # url of author profile
 #     host = models.URLField(editable=False, max_length=500)  # host server
-#     github = models.URLField(max_length=500, default="", blank=True)  # Github url field
+#     github = models.URLField(max_length=500, default="", blank=True)  # Github url field     

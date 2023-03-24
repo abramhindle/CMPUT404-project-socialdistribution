@@ -2,7 +2,6 @@ from django.db import IntegrityError
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .basic_auth import BasicAuthenticator
-
 # Create your views here.
 
 from django.http import HttpResponseRedirect
@@ -16,10 +15,10 @@ from posts.serializers import *
 from .models import *
 from .serializers import *
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import status
@@ -28,7 +27,6 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
 
 custom_parameter = openapi.Parameter(
     name='custom_param',
@@ -88,18 +86,21 @@ response_schema_dict = {
         }
     )}
 
-# class AuthorsListView(BasicAuthenticator, APIView, PageNumberPagination):
+
 class AuthorsListView(APIView, PageNumberPagination):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    
     # for pagination
     page_size = 10
     page_size_query_param = 'size'
     max_page_size = 100
-    
+
     @swagger_auto_schema(operation_summary="List of Authors registered")
     def get(self, request):
+        
+        """
+        Get the list of authors on our website
+        """
         content = {
 
             'user':str(request.user),
@@ -107,20 +108,16 @@ class AuthorsListView(APIView, PageNumberPagination):
             'auth': str(request.auth)
         }
         
-        """
-        Get the list of authors on our website
-        """
-        
         authors = Author.objects.all()
         authors=self.paginate_queryset(authors, request) 
         serializer = AuthorSerializer(authors, many=True)
         return self.get_paginated_response(serializer.data)
 
-# @permission_classes([IsAuthenticated]) 
 class AuthorView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
+
     def validate(self, data):
         try:
             if 'displayName' not in data:
@@ -146,7 +143,7 @@ class AuthorView(APIView):
         return  Response(serializer.data)
     
     @swagger_auto_schema(operation_summary="Update a particular Authors profile",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
-    def put(self, request, pk_a):
+    def post(self, request, pk_a):
         """
         Update the authors profile
         """
@@ -247,18 +244,8 @@ class FollowersView(APIView):
         except:
             pass
 
-        followers = author.friends.all()
-        followers_list = []
-        for follower in followers:
-            try: 
-                follower_author = Author.objects.get(id=follower.id)
-            except Author.DoesNotExist:
-                error_msg = "Follower id not found"
-                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
-            followers_list.append(follower_author.follower_to_object())
-
         # return the new list of followers
-        return Response(followers_list)
+        return Response(new_follower.follower_to_object())
 
     #For the delete request we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id
     #Implement later after talking to group 
@@ -325,6 +312,8 @@ class FriendRequestView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
 class ViewRequests(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
