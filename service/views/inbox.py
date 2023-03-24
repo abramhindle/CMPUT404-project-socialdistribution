@@ -31,7 +31,7 @@ class InboxView(APIView):
         size = int(request.GET.get('size', 5))
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
         
@@ -78,7 +78,7 @@ class InboxView(APIView):
         body = request.data
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -118,7 +118,7 @@ class InboxView(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -190,7 +190,7 @@ class InboxView(APIView):
         foreign_author.toObject(body["author"])
 
         try:
-            Author.objects.get(_id=foreign_author._id, is_active=True, is_local=True)
+            Author.objects.get(_id=foreign_author._id)
         except ObjectDoesNotExist:
             foreign_author.save()
 
