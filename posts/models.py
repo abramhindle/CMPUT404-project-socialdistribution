@@ -154,7 +154,6 @@ class Like(models.Model):
         return self.object if self.object.endswith('/') else self.object + '/' 
 
     def get_summary(self):
-        print("OBJECT",str(self.object))
         return self.author.displayName + " Likes your " + str(self.object).split('/')[-2][:-1]
 
     @staticmethod

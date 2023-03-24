@@ -286,8 +286,6 @@ class post_detail(APIView, PageNumberPagination):
             error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
         # TODO: FIX AFTER SLASH
-        print("post here NOW"  + post.url)
-        print("origin", post.origin)
         if post.url == post.origin:
             if post.author != _:
                 return Response("Cannot edit a post you didnt create", status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -397,7 +395,6 @@ class CommentLikesView(APIView):
     def get(self, request, pk_a, pk, pk_m):
         try:
             comment = Comment.objects.get(id=pk_m)
-            print("URL",comment.url)
         except Author.DoesNotExist:
             error_msg = "Comment not found"
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)

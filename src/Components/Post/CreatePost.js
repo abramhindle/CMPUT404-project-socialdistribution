@@ -30,7 +30,7 @@ function CREATEPOST() {
 	const toaster = useToaster();
 	const data = friends.items.map((item) => ({
 		label: item["displayName"],
-		value: item["displayName"],
+		value: item["id"],
 	}));
 
 	function handleClick(eventkey) {
@@ -167,7 +167,6 @@ function CREATEPOST() {
 		};
 
 		if (post_status === 'PRIVATE') {
-			console.log(authors)
 			params['authors'] = authors;
 
 		}

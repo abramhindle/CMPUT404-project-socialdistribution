@@ -23,14 +23,6 @@ function EDITPOST({ obj, handleClose }) {
 	const [markdown, setMarkdown] = useState("");
 	const toaster = useToaster();
 
-	const stringify = (arr) => {
-		let str = "";
-		for (let i = 0; i < arr.length; i++) {
-			str = str + + arr[i];
-		}
-		return str;
-	};
-
 	useEffect(() => {
 		let x = (obj.categories).toString();
 		setText(obj.content);
@@ -219,7 +211,7 @@ function EDITPOST({ obj, handleClose }) {
 				appearance="primary"
 				block
 			>
-				Post Edit
+				Edit Post
 			</Button>
 		</div>
 	);
