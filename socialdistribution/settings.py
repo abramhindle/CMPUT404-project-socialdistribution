@@ -43,7 +43,7 @@ CORS_ORIGIN_WHITELIST = [
     "https://cmput404-group-project.herokuapp.com"
 ]
 
-CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken']
+CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken', 'authorization']
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
