@@ -9,10 +9,9 @@ function App() {
 		<div className="App">
 			<BrowserRouter>
 				<Routes>
-					<Route path="/" exact element={<INBOX />} />
 					<Route path="/login" exact element={<SIGN_IN />} />
+					<Route path="/" exact element={<INBOX />} />
 					<Route path="/profile" exact element={<PROFILE />} />
-					<Route path="/post" exact element={<CREATEPOST />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
