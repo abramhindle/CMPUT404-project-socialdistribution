@@ -31,7 +31,7 @@ class InboxView(APIView):
         size = int(request.GET.get('size', 5))
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
         
@@ -78,7 +78,7 @@ class InboxView(APIView):
         body = request.data
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -118,7 +118,7 @@ class InboxView(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -217,7 +217,7 @@ class InboxView(APIView):
         foreign_author.toObject(body["author"])
 
         try:
-            Author.objects.get(_id=foreign_author._id)
+            Author.objects.get(_id=foreign_author._id, is_active=True, is_local=True)
         except ObjectDoesNotExist:
             foreign_author.save()
 
@@ -229,7 +229,10 @@ class InboxView(APIView):
             like = Like()
             like._id = id
             like.context = body["context"]
-            like.summary = f"{foreign_author.displayName} likes your post"
+            if(body["object"].split("/")[-2] == "post"):
+                like.summary = f"{foreign_author.displayName} likes your post"
+            else:
+                like.summary = f"{foreign_author.displayName} likes your comment"
             like.author = foreign_author
             like.object = body["object"]
             like.published

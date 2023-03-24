@@ -10,6 +10,7 @@ from service.views.comment import CommentView
 from service.views.liked import LikedView, LikesView
 from django.views.generic import TemplateView
 
+
 import os
 from django.http.response import HttpResponse, HttpResponseNotFound
 
@@ -19,6 +20,7 @@ GUID_REGEX = r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A
 AUTHOR_ID_REGEX = rf"(https|http)://[A-Za-z0-9\w.-]+/authors/{GUID_REGEX}"
 POST_ID = rf"(https|http)://[A-Za-z0-9\w.-]+/authors/{GUID_REGEX}/posts/{GUID_REGEX}"
 COMMENT_ID_REGEX = rf"(https|http)://[A-Za-z0-9\w.-]+/authors/{GUID_REGEX}/posts/{GUID_REGEX}/comments/{GUID_REGEX}"
+
 
 urlpatterns = [
     path('docs/', TemplateView.as_view(template_name='templates/docs/index.html'), name='docs'),
