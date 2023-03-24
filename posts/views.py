@@ -27,6 +27,7 @@ from rest_framework.renderers import (
                                     )
 import base64
 import json
+from client import *
 from .image_renderer import JPEGRenderer, PNGRenderer
 
 
@@ -462,9 +463,6 @@ PostLikes = {
     )}
 
 
-
-
-
 class post_list(APIView, PageNumberPagination):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -539,7 +537,7 @@ class post_list(APIView, PageNumberPagination):
 
         if serializer.is_valid():
             post = serializer.save()
-            # share_object(post,author)
+            share_object(post,author)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -684,7 +682,7 @@ class post_detail(APIView, PageNumberPagination):
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
             post = serializer.save()
-            # share_object(post,author)
+            share_object(post,author)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -757,11 +755,11 @@ class PostLikesView(APIView):
     @swagger_auto_schema(operation_summary="Get the likes on a post")
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
-    def get(request, pk_a, pk):
+    def get(request, pk_a):
         """
         Get the list of likes on a post
         """
-        post = Post.objects.get(id=pk)
+        post = Post.objects.get(id=request[""])
         likes = Like.objects.filter(object=post.url)
         serializer = LikeSerializer(likes, many=True)
         return Response(serializer.data)
@@ -937,7 +935,23 @@ class PublicPostsView(APIView):
     def get(self, request):
         posts = Post.objects.filter(visbility='PUBLIC')
         serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        data_list = serializer.data
+
+        yoshi = getNodeAuthors_Yoshi()
+        for yoshi_author in yoshi:
+            id = yoshi_author["id"].split('/')[-1] or yoshi_author["id"]
+            posts = getNodePost_Yoshi(id)
+            for post in posts:
+                if post["visbility"]=='PUBLIC':
+                    data_list.append(post)
+        social_distro = getNodeAuthors_social_distro()
+        for social_distro_author in social_distro:
+            id = social_distro_author["id"].split('/')[-1] or social_distro_author["id"]
+            posts = getNodeAuthor_social_distro(id)
+            for post in posts:
+                if post["visbility"]=='PUBLIC':
+                    data_list.append(post)
+        return data_list
         
 def share_object(item, author):
     inbox_item = Inbox(content_object=item, author=author)
