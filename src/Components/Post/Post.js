@@ -18,9 +18,7 @@ import PROFILEIMAGE from "../Profile/ProfileImage";
 
 function POST({ postobj, edit }) {
 	const [post, set_post] = useState(postobj);
-	const [comment, set_comment] = useState("");
-	const [authorPosts, set_authorPosts] = useState(edit);
-	const [likes, setLikes] = useState(edit);
+	const [likes, setLikes] = useState(({ items: [] }));
 	const [open, setOpen] = useState(false);
 	const toaster = useToaster();
 	let navigate = useNavigate();
@@ -71,21 +69,6 @@ function POST({ postobj, edit }) {
 			}
 		);
 	};
-
-
-	// Get the likes
-	useLayoutEffect(() => {
-		if (!localStorage.getItem("loggedIn")) {
-			navigate("/login");
-		} else {
-			const author_id = getAuthorId(postobj.author.id);
-			const post_id = getAuthorId(postobj.id);
-			const url = `posts/authors/${author_id}/posts/${post_id}/likes/`
-			axios({ method: "get", url: url }).then((res) => {
-				setLikes(res.data);
-			});
-		}
-	}, []);
 
 	async function sharePost() {
 		const author_id = getAuthorId(null);
@@ -214,7 +197,7 @@ function POST({ postobj, edit }) {
 				handleClose={handleModalClose}
 			/>
 			<LIKESMODAL
-				postobj={likes}
+				postobj={postobj}
 			/>
 		</div>
 	);

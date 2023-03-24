@@ -4,16 +4,25 @@ import { useNavigate } from "react-router-dom";
 import { getAuthorId } from "../utils/auth";
 import axios from "axios";
 
-function LIKESMODAL({ likes }) {
+function LIKESMODAL({ postobj }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [likes, setLikes] = useState([])
+  var navigate = useNavigate()
 
-  const getLikes = () => {
-    if (likes && likes.length > 0) {
-      return likes.items.map((obj) => item(obj))
+  useLayoutEffect(() => {
+    if (!localStorage.getItem("loggedIn")) {
+      navigate("/login");
+    } else {
+      const author_id = getAuthorId(postobj.author.id);
+      const post_id = getAuthorId(postobj.id);
+      const url = `posts/authors/${author_id}/posts/${post_id}/likes/`
+      axios({ method: "get", url: url }).then((res) => {
+        setLikes(res.data);
+      });
     }
-  }
+  }, []);
 
   const item = (obj) => {
     return obj.author.displayName;
@@ -30,7 +39,7 @@ function LIKESMODAL({ likes }) {
           <Modal.Title>Likes on this post</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {getLikes()}
+          {likes.map((obj) => item(obj))}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleClose} appearance="primary">
