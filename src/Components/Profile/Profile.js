@@ -13,7 +13,7 @@ import {
 import FRIENDS from "./Friends";
 import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
 import {
 	getAuthorId,
@@ -63,12 +63,6 @@ function PROFILE() {
 	};
 
 	async function handleLogoutClick() {
-		await getCsrfToken();
-		const token = localStorage.getItem("token");
-
-		let reqInstance = axios.create({
-			headers: { "X-CSRFToken": token },
-		});
 		reqInstance.post("accounts/logout/").then((res) => {
 			if (res.status === 200) {
 				navigate("/login");
@@ -104,7 +98,7 @@ function PROFILE() {
 	async function handleGitClick() {
 		const author_id = getAuthorId(null);
 		const url = `authors/${author_id}/`;
-		axios({ method: "post", url: url, data: { github: giturl } })
+		reqInstance({ method: "post", url: url, data: { github: giturl } })
 			.then((res) => {
 				notifySuccessPost("successfully upadated the giturl");
 			})
@@ -114,7 +108,7 @@ function PROFILE() {
 	async function handleImageClick() {
 		const author_id = getAuthorId(null);
 		const url = `authors/${author_id}/`;
-		axios({
+		reqInstance({
 			method: "post",
 			url: url,
 			data: { profileImage: imageurl },

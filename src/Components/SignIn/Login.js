@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Input, Panel, InputGroup, Message, useToaster } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import {
 	getCsrfToken,
 	setCurrentUser,
 	setLoggedIn,
 	unsetCurrentUser,
+	setCreds,
 } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -54,6 +55,7 @@ function LOGIN() {
 				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();
 				setLoggedIn(true);
+				setCreds(params);
 			})
 			.catch((err) => notifyFailedPost(err.response.data));
 	}
