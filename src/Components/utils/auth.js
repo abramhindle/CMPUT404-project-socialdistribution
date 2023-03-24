@@ -70,7 +70,9 @@ export function getAuthorId(a_id) {
 
 export const getProfileImageUrl = () => {
 	const user = JSON.parse(localStorage.getItem("user"));
-	return user.profileImage;
+	if (localStorage.getItem("loggedIn")) {
+		return user.profileImage;
+	}
 };
 
 export const setCreds = (obj) => {
