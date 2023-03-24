@@ -1,0 +1,10 @@
+div.Page {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.sidebar-offset {
+    margin-left: calc(23vh + 2em);
+    margin-right: calc(23vh + 2em);
+}

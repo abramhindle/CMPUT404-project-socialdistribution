@@ -1,5 +1,5 @@
 import React from 'react'
-import './post-list.css';
+import './author-list.css';
 
 function AuthorList({user_list}) { //gets a json object, and returns a list item for it
    

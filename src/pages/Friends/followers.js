@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
-import { get_followers_for_author } from '../../api/follower_api';
+import { get_follow_for_author } from '../../api/follower_api';
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -17,6 +17,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Sidebar from "../../components/Sidebar/sidebar";
 
 
 
@@ -51,7 +52,8 @@ function Followed() {
     return (
         
         <>
-        <div>
+        <Sidebar/>
+        <div className="sidebar-offset">
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar variant="dense">

@@ -10,7 +10,6 @@ from service.views.comment import CommentView
 from service.views.liked import LikedView, LikesView
 from django.views.generic import TemplateView
 
-
 import os
 from django.http.response import HttpResponse, HttpResponseNotFound
 

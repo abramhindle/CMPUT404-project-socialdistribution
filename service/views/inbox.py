@@ -14,6 +14,8 @@ from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
 
@@ -22,6 +24,7 @@ from rest_framework.views import APIView
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InboxView(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "delete"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -31,7 +34,7 @@ class InboxView(APIView):
         size = int(request.GET.get('size', 5))
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
         
@@ -78,7 +81,7 @@ class InboxView(APIView):
         body = request.data
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -118,7 +121,7 @@ class InboxView(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -217,7 +220,7 @@ class InboxView(APIView):
         foreign_author.toObject(body["author"])
 
         try:
-            Author.objects.get(_id=foreign_author._id, is_active=True, is_local=True)
+            Author.objects.get(_id=foreign_author._id, is_active=True)
         except ObjectDoesNotExist:
             foreign_author.save()
 
@@ -229,7 +232,8 @@ class InboxView(APIView):
             like = Like()
             like._id = id
             like.context = body["context"]
-            if(body["object"].split("/")[-2] == "post"):
+
+            if(body["object"].split("/")[-2] == "posts"):
                 like.summary = f"{foreign_author.displayName} likes your post"
             else:
                 like.summary = f"{foreign_author.displayName} likes your comment"

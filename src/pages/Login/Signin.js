@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signInUser } from "../../reducer/userSlice";
 import { signIn_api } from "../../api/user_api";
+import "./signin.css";
 
 // Define the Login function.
 export const SignIn = () => {
@@ -26,12 +27,12 @@ export const SignIn = () => {
   };
 
   return (
-    <div className="Auth-form-container">
+    <div className="Auth-form-container Signin">
       <form className="Auth-form" onSubmit={submit}>
         <div className="Auth-form-content">
+          <h1>Social Distribution</h1>
           <h3 className="Auth-form-title">Sign In</h3>
           <div className="form-group mt-3">
-            <label>Username</label>
             <input
               className="form-control mt-1"
               placeholder="Enter Username"
@@ -43,7 +44,6 @@ export const SignIn = () => {
             />
           </div>
           <div className="form-group mt-3">
-            <label>Password</label>
             <input
               name="password"
               type="password"

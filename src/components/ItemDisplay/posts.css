@@ -1,0 +1,80 @@
+.comment, .post { /*Same for now, might change*/
+    background-color: #857F74;
+    padding: 1em;
+    border-radius: 1em;
+    border: 0.3em solid #37342F; 
+}
+
+.list-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: black;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.from {
+    border: none;
+    margin: 0;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.profile img {
+    height: 3em;
+    width:3em;
+    object-fit: cover;
+    overflow: hidden;
+    border-radius: 50%;
+    padding: 0.5em;
+}
+
+.content {
+    width: fit-content;
+    margin: 0;
+    padding: 0;
+    font-size: 12pt;
+    text-align: left;
+}
+
+.timestamp {
+    color: black;
+    font-size: small;
+    text-align: left;
+    margin-left: 9em;
+}
+
+h5 {
+    margin: 0;
+}
+
+h6 {
+    text-align: left;
+    margin: 0;
+    margin-left: 1.5em;
+    padding: 0.5em;
+}
+
+button.interact {
+    margin: 0.5em;
+    background-color:transparent;
+    border-color: transparent;
+}
+
+.post-body {
+    width:100%;
+}
+
+.vflex {
+    display: flex;
+    min-width: fit-content;
+    flex-direction: column;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.hflex {
+    display: flex;
+    flex-direction: row;
+}

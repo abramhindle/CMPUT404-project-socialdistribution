@@ -17,6 +17,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Sidebar from "../../components/Sidebar/sidebar";
 
 
 
@@ -54,6 +55,8 @@ function Realfriends() {
     return (
         
         <>
+        <Sidebar/>
+        <div className="sidebar-offset">
         <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
@@ -104,7 +107,6 @@ function Realfriends() {
           </TableBody>
         </Table>  
       </TableContainer>
-      
       </>
     );
   }

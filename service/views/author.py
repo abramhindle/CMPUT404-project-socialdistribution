@@ -7,14 +7,15 @@ from django.views import View
 from service.models.author import Author
 from service.service_constants import *
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-
 class MultipleAuthors(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        authors_queryset = Author.objects.filter(is_active=True, is_local=True).order_by('displayName')
+        authors_queryset = Author.objects.filter(is_active=True).order_by('displayName')
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
 
@@ -34,14 +35,16 @@ class MultipleAuthors(APIView):
 
         return HttpResponse(json.dumps(authors), content_type=CONTENT_TYPE_JSON)
 
+
 class SingleAuthor(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post"]
 
     def get(self, request, *args, **kwargs):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except:
             author = None
 
@@ -59,7 +62,7 @@ class SingleAuthor(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except:
             return HttpResponseNotFound()
 
@@ -77,7 +80,6 @@ class SingleAuthor(APIView):
         author_json = author.toJSON()
 
         return HttpResponse(json.dumps(author_json), status=202, content_type=CONTENT_TYPE_JSON)
-
 
 def encode_list(authors):
     return {

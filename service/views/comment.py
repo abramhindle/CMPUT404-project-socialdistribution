@@ -14,9 +14,12 @@ from service.models.post import Post
 from service.models.author import Author
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CommentView(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post"]
     def get(self, request, *args, **kwargs):
         self.author_id = kwargs['author_id']
@@ -56,7 +59,7 @@ class CommentView(APIView):
 
         try:
             post = Post.objects.get(_id=self.post_id)
-            author = Author.objects.get(_id=self.author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=self.author_id, is_active=True)
         except:
             return HttpResponseNotFound()
 

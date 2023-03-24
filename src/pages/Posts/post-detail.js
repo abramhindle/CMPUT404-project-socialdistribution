@@ -122,7 +122,7 @@ function PostDetail() {
 
   return (
     postInfo && (
-      <div className="Page">
+      <div className="Page detail">
         <Sidebar />
         <div className="Fragment">
           <div className="message">

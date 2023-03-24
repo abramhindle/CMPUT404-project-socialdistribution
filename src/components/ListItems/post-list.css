@@ -1,13 +1,16 @@
-.post {
-  background-color: lightgrey;
+.list-item {
+  background-color: none;
   list-style: none;
   padding: 1em;
-  margin: 1em;
+  margin: 0;
 }
 
-.post > h3 {
+.list-item > h3 {
   text-align: left;
   margin: 0;
   padding: 0;
-  padding-left: 0em;
+}
+
+ul {
+  padding: 0;
 }

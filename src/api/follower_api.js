@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const get_followers_for_author = async (authorId, success) => {
-  console.log("Attempting to retrieve follower list for", { authorId });
+  console.log("Attempting to retrieve followed list for", { authorId });
   await axios
     .get(`authors/${authorId}/followers/`, {
       headers: {
@@ -19,6 +19,7 @@ export const get_followers_for_author = async (authorId, success) => {
 
 export const get_followed_for_author = async (authorId, success) => {
   console.log("Attempting to retrieve followed list for", { authorId });
+
   await axios
     .get(`http://localhost:8000/authors/${authorId}/followed/`, {
       headers: {
@@ -104,7 +105,6 @@ export const get_request = async (authorId, success) => {
       console.log(error);
     });
 };
-
 
 export const add_request = async (authorId, object, success) => {
   console.log("sending request from", { authorId });
