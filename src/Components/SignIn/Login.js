@@ -39,6 +39,12 @@ function LOGIN() {
 		});
 	};
 
+	function delay(time) {
+		return new Promise((resolve) => setTimeout(resolve, time));
+	}
+
+	delay(1000).then(() => console.log("ran after 1 second1 passed"));
+
 	async function handleLoginClick() {
 		var params = {
 			username: username,
@@ -49,13 +55,14 @@ function LOGIN() {
 
 		let reqInstance = axios.create({
 			headers: { "X-CSRFToken": token },
+			baseURL: `http://127.0.0.1:8000/`,
 		});
 		reqInstance({ method: "post", url: "dlogin", data: params })
 			.then(async (res) => {
-				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();
 				setLoggedIn(true);
 				setCreds(params);
+				await setCurrentUser(res.data).then(navigate("/"));
 			})
 			.catch((err) => notifyFailedPost(err.response.data));
 	}

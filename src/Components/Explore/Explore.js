@@ -11,7 +11,7 @@ import COMMENTINBOX from "../Post/CommentInbox";
 import { unsetCurrentUser } from "../utils/auth";
 
 function EXPLORE() {
-	const [inbox, setInbox] = useState({ items: [] });
+	const [inbox, setInbox] = useState([]);
 	const [curPage, setCurPage] = useState("inbox");
 	const [open, setOpen] = useState(false);
 	let navigate = useNavigate();
@@ -23,7 +23,7 @@ function EXPLORE() {
 		} else {
 			const url = `posts/public/`;
 			reqInstance({ method: "get", url: url }).then((res) => {
-				console.log(res.data);
+				console.log(res);
 				setInbox(res.data);
 			});
 		}
