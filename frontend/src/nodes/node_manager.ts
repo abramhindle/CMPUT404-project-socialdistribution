@@ -57,11 +57,13 @@ class NodeManager  {
         throw new Error("No local node found");
     }
 
-    public async getAuthors(page:number = 0, size:number = 25, nodeId:string | 'all'):Promise<ListItem<Author>> {
+    public async getAuthors(page:number = 0, size:number = 25, nodeId:string = 'all', query=""):Promise<ListItem<Author>> {
+   
         if (nodeId === 'all') {
             let authors: Author[] = [];
             for (const node of Object.values(this.nodes)) {
-                const results = await node.getAuthors(page, size);
+                const results = await node.getAuthors(page, size, query);
+                
                 authors = authors.concat(results.items);
             }
             return {
@@ -69,14 +71,14 @@ class NodeManager  {
                 items: authors
             }
         } else {
-            return await this.nodes[nodeId].getAuthors(page, size);
+            return await this.nodes[nodeId].getAuthors(page, size, query);
         }
     }
 
-    public async updateAuthor(authorId: string): Promise<Author> {
+    public async updateAuthor(authorId: string, data:Author): Promise<Author | undefined> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
-                return await node.updateAuthor(authorId);
+                return await node.updateAuthor(authorId, data);
             }
         }
         throw new Error("No local node found");
@@ -98,6 +100,32 @@ class NodeManager  {
         }
     }
 
+    public async isPostLiked(postId: string, authorId: string): Promise<boolean> {
+        for (const node of Object.values(this.nodes)) {
+            const result = await node.isPostLiked(postId, authorId);
+            if (result) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public async isCommentLiked(commentId: string, authorId: string): Promise<boolean> {
+        for (const node of Object.values(this.nodes)) {
+            const result = await node.isCommentLiked(commentId, authorId);
+            if (result) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public async alertNewPost(authorId:string, post: Post): Promise<void> {
+        for (const node of Object.values(this.nodes)) {
+            return await node.alertNewPost(authorId, post);
+    }
+}
+
     public async addFollower(authorId: string, foreignAuthorId: string): Promise<void> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
@@ -107,14 +135,12 @@ class NodeManager  {
         throw new Error("No local node found");
     }
 
-    public async checkFollower(authorId: string, foreignAuthorId: string): Promise<boolean> {
+    public async checkFollowerStatus(authorId: string, foreignAuthorId: string): Promise<string> {
         for (const node of Object.values(this.nodes)) {
-            const result = await node.checkFollower(authorId, foreignAuthorId);
-            if (result) {
-                return true;
-            }
+            const result = await node.checkFollowerStatus(authorId, foreignAuthorId);
+            return result;
         }
-        return false;
+        return ''
     }
 
     public async removeFollower(authorId: string, foreignAuthorId: string): Promise<void> {
@@ -128,9 +154,14 @@ class NodeManager  {
 
     public async sendFollowRequest(authorTo:Author, authorFrom:Author):Promise<void> {
         for (const node of Object.values(this.nodes)) {
-            if (node.getNodeType() === "local") {
+            try {
                 return await node.sendFollowRequest(authorTo, authorFrom);
+            } catch (e) {
+                console.log(e)
             }
+            
+            
+            
         }
         throw new Error("No local node found");
     }
@@ -165,7 +196,7 @@ class NodeManager  {
         }
     }
 
-    public async createPost(authorId: string, post: Post): Promise<Post> {
+    public async createPost(authorId: string, post: Post): Promise<Post | undefined> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
                 return await node.createPost(authorId, post);
@@ -177,7 +208,7 @@ class NodeManager  {
     public async updatePost(authorId: string, postId: string, post: Post): Promise<Post> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
-                return await node.updatePost(postId, post);
+                return await node.updatePost(authorId, postId, post);
             }
         }
         throw new Error("No local node found");
@@ -199,8 +230,10 @@ class NodeManager  {
             let id = ''
             for (const node of Object.values(this.nodes)) {
                 const results = await node.getComments(authorId, postId, page, size);
+                
                 post = results.post;
                 id = results.id;
+                
                 comments = comments.concat(results.comments);
             }
             return {
@@ -216,7 +249,7 @@ class NodeManager  {
         }
     }
 
-    public async createComment(authorId: string, postId: string, comment: Comment): Promise<Comment> {
+    public async createComment(authorId: string, postId: string, comment: Comment): Promise<Comment | undefined> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
                 return await node.createComment(authorId, postId, comment);
@@ -258,6 +291,8 @@ class NodeManager  {
             return await this.nodes[nodeId].getLiked(authorId);
         }
     }
+
+    
 
     public async getInbox(authorId: string): Promise<InboxListItem> {
         for (const node of Object.values(this.nodes)) {

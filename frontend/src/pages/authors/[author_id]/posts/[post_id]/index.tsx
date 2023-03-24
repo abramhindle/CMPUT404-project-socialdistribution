@@ -12,30 +12,19 @@ import Head from 'next/head';
 import { GitHub } from 'react-feather';
 import { useRouter } from 'next/router';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import { Author, Post as PostType } from '@/index';
+import { Author, Post as PostType, Comment } from '@/index';
 import NodeManager from '@/nodes';
 
 interface Props {
-	post: PostType
+	post: PostType,
+	comments: Comment[]
 }
 
-const Page: NextPage<Props> = ({post}) => {
+const Page: NextPage<Props> = ({post, comments}) => {
 	const supabaseClient = useSupabaseClient()
   	const user = useUser();
 	const router = useRouter();
 
-	if (!user)
-    return (
-		<div className='container mx-auto mt-12'>
-      <Auth
-        redirectTo="http://localhost:3000/"
-        appearance={{ theme: ThemeSupa }}
-        supabaseClient={supabaseClient}
-        socialLayout="horizontal"
-		providers={[]}
-      />
-	  </div>
-    )
 		return (
 		<div className='flex flex-col h-screen'>
 		<Head>
@@ -46,7 +35,7 @@ const Page: NextPage<Props> = ({post}) => {
 		<SideBar/>
 		<div className='flex flex-1 flex-col overflow-y-auto w-full py-12'>
             <div className='w-full mx-auto bg-white px-6 max-w-5xl'>
-	        <Post {...post}/>
+	        <Post post={post} comments={comments}/>
             </div>
 			</div>
 		</div></div>);
@@ -72,10 +61,20 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		let [authorId, postId] = [context.params?.author_id, context.params?.post_id]
 
         let post = await NodeManager.getPost(authorId as string, postId as string);
-     
+		let comments = await NodeManager.getComments(authorId as string, postId as string)
+		
+		if (!post) {
+			return {
+				redirect: {
+					destination: '/onboarding',
+					permanent: false
+				}
+			}
+		}
 		return {
 			props: {
-				post: post
+				post: post,
+				comments: comments.comments
 			}
 	}	
 	  }

@@ -32,7 +32,8 @@ const Create: React.FC<createProps> = ({}) => {
         delete data.profile
         data.host = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
         data.url = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000' + '/authors/' + user?.id
-        try {
+		data.type = 'author'
+		try {
             await NodeManager.createAuthor(data);
             router.push('/')
         } catch (error) {
@@ -40,18 +41,7 @@ const Create: React.FC<createProps> = ({}) => {
         }
 	}
 
-	if (!user)
-    return (
-		<div className='container mx-auto mt-12'>
-		<Auth
-		  redirectTo="http://localhost:3000/"
-		  appearance={{ theme: ThemeSupa }}
-		  supabaseClient={supabaseClient}
-		  socialLayout="horizontal"
-		  providers={[]}
-		/>
-		</div>
-    )
+
 		return (<div className='flex flex-col h-screen'>
 		<Head>
 			<title>Create Profile</title>

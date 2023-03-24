@@ -42,6 +42,7 @@
     "react-dom": "18.2.0",
     "react-feather": "^2.0.10",
     "react-hook-form": "^7.43.3",
+    "react-use": "^17.4.0",
     "remark": "^14.0.2",
     "remark-html": "^15.0.2",
     "sass": "^1.58.3",

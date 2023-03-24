@@ -23,24 +23,12 @@ const SearchPage: React.FC<searchProps> = ({}) => {
 	const {register, handleSubmit} = useForm()
 
 	const searchSubmit = async (data:any) => {
-		const searchData = await NodeManager.getAuthors(undefined, undefined, data.search);
+		const searchData = await NodeManager.getAuthors(undefined, undefined, undefined, data.search);
 		let searchItems = searchData.items
 		setSearches(searchItems)
 		setSearch(true)
 	}
 
-  if (!user)
-  return (
-	  <div className='container mx-auto mt-12'>
-	<Auth
-	  redirectTo="http://localhost:3000/"
-	  appearance={{ theme: ThemeSupa }}
-	  supabaseClient={supabaseClient}
-	  socialLayout="horizontal"
-	  providers={[]}
-	/>
-	</div>
-  )
 
 		return (<div className='mb-8 '>
 	

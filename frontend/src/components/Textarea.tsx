@@ -1,5 +1,5 @@
 // https://flowbite.com/docs/forms/textarea/
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 import React from 'react'
 
 interface textareaProps {

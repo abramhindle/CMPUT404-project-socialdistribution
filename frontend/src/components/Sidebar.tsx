@@ -22,14 +22,9 @@ const Sidebar: React.FC<sidebarProps> = ({}) => {
 			<Home className={`w-6 h-6 mx-auto mt-4 text-gray-500 hover:text-gray-700 ${router.asPath === '/'? 'text-gray-800':''}`}/>
 			</Tooltip>
 			</Link>
-			<Link href='/posts/create'>
+			<Link href={`/authors/${user.id}/posts/create`}>
 			<Tooltip placement="right" content="Create Post">
 			<FilePlus className={`w-6 h-6 mx-auto mt-4 text-gray-500 hover:text-gray-700 ${router.asPath === '/posts/create'? 'text-gray-800':''}`}/>
-			</Tooltip>
-			</Link>
-			<Link href='/inbox'>
-			<Tooltip placement="right" content="Inbox">
-			<Inbox className={`w-6 h-6 mx-auto mt-4 text-gray-500 hover:text-gray-700 ${router.asPath === '/inbox'? 'text-gray-800':''}`}/>
 			</Tooltip>
 			</Link>
 			<Link href='/search'>

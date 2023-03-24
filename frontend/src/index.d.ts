@@ -1,5 +1,5 @@
 export interface Author {
-    type: string;
+    type: 'author';
     id: string;
     host: string;
     displayName: string;
@@ -31,13 +31,13 @@ export interface Post {
 export interface Like {
     "@context": string;
     summary: string;
-    type: "Like";
+    type: "like";
     author: Author;
     object: string;
 }
 
 export interface Follow {
-    type: "Follow";
+    type: "follow";
     summary: string;
     actor: Author;
     object: Author;
@@ -47,9 +47,9 @@ export interface Comment {
     type:"comment";
     author: Author;
     comment: string;
-    contentType: string;
-    published: string;
-    id: string;
+    contentType?: string;
+    published?: string;
+    id?: string;
 }
 
 export interface ListItem<T> {
@@ -71,3 +71,5 @@ export interface InboxListItem extends ListItem {
     author:string;
     items: (Like | Comment | Post | Follow)[];
 }
+
+export type Activity = Like | Follow | Comment | Post;

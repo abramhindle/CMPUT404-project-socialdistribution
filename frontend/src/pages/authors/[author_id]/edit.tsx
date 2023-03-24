@@ -12,7 +12,7 @@ import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useForm } from "react-hook-form";
 import { GetServerSideProps } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import axios from '@/utils/axios'
+import NodeManager from '@/nodes';
 import { getBase64 } from '@/utils';
 import { useRouter } from 'next/router';
 
@@ -44,29 +44,17 @@ const Create: React.FC<createProps> = ({displayName, github, profileImage}) => {
 			data.profileImage = await getBase64(data.profile[0])
 		}
 		
-        data.id = user?.id
         data.github = 'https://github.com/' + data.github
         delete data.profile
         try {
-           let res =  await axios.put(`/authors/${user?.id}`, data)
+           let res =  await NodeManager.updateAuthor(user?.id || '', data);
             router.push(`/authors/${user?.id}`)
         } catch (error) {
             console.log(error)
         }
 	}
 
-	if (!user)
-    return (
-		<div className='container mx-auto mt-12'>
-		<Auth
-		  redirectTo="http://localhost:3000/"
-		  appearance={{ theme: ThemeSupa }}
-		  supabaseClient={supabaseClient}
-		  socialLayout="horizontal"
-		  providers={[]}
-		/>
-		</div>
-    )
+
 		return (<div className='flex flex-col h-screen'>
 		<Head>
 			<title>Edit Profile</title>
@@ -104,24 +92,25 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		  }
 		}
 	  }
-	  try {
-		let res = await axios.get(`/authors/${user?.id}`)
-		let data = res.data
-		if (data.github) {
-			data.github = data.github.replace('https://github.com/', '')
-		}
-		return {
-			props: data
-		}
-	  }
-	  catch {
-		return {
-			redirect: {
-				destination: '/onboarding',
-				permanent: false
+	  
+		let author = await NodeManager.getAuthor(user.id)
+		
+		if (!author) {
+			return {
+				redirect: {
+					destination: '/onboarding',
+					permanent: false
+				}
 			}
 		}
-	  }
+		if (author.github) {
+			author.github = author.github.replace('https://github.com/', '')
+		}
+		return {
+			props: author
+		}
+	  
+
 
 	
   }

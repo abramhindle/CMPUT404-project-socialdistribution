@@ -5,8 +5,6 @@ import { NextPage } from 'next';
 import Link from 'next/link';
 import SideBar from '@/components/Sidebar';
 import Post from '@/components/Post';
-import { Auth } from '@supabase/auth-ui-react'
-import {ThemeSupa} from '@supabase/auth-ui-shared'
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Head from 'next/head';
 import { GitHub } from 'react-feather';
@@ -18,28 +16,17 @@ import { Author, Post as PostType } from '@/index';
 interface Props {
 	author:Author
 	posts: PostType[]
-	followStatus: boolean;
+	followStatus: 'not_friends' | 'friends' | 'true_friends' | 'pending'
 }
 
 const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, author,  posts, followStatus}) => {
 	const supabaseClient = useSupabaseClient()
   	const user = useUser()
-	const [followStatusState, setFollowStatusState] = useState(followStatus)
+	const [followStatusState, setFollowStatusState] = useState<'not_friends' | 'friends' | 'true_friends' | 'pending'>(followStatus)
 	
 	const router = useRouter()
 
-	if (!user)
-    return (
-		<div className='container mx-auto mt-12'>
-      <Auth
-        redirectTo="http://localhost:3000/"
-        appearance={{ theme: ThemeSupa }}
-        supabaseClient={supabaseClient}
-        socialLayout="horizontal"
-		providers={[]}
-      />
-	  </div>
-    )
+
 		return (
 		<div className='flex flex-col h-screen'>
 		<Head>
@@ -55,25 +42,31 @@ const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, 
 			<div className='flex flex-row items-center justify-between'>
 			<div className='text-xl font-medium'>{displayName}</div>
 			<div className='flex flex-row space-x-3'> 
-			{user.id === id ? <Button name='Edit Profile' onClick={() => {
-				router.push('/authors/' + id + '/edit')
+			{id.includes(user?.id || 'user') ? <Button name='Edit Profile' onClick={() => {
+				let author_id = router.query.author_id as string
+				router.push('/authors/' + author_id + '/edit')
 			}} className='bg-white text-gray-600 border-2 border-gray-100 hover:bg-gray-50 focus:ring-gray-100'/>:
 			
 			<Button
 			onClick={async () => {
 				try {
-					let authorTo = await NodeManager.getAuthor(id)
-					if (authorTo) {
-					await NodeManager.sendFollowRequest(authorTo, author)
-					setFollowStatusState(!followStatusState)
+					if (followStatusState === 'not_friends') {
+					let authorTo = await NodeManager.getAuthor(id.split('/').pop() || '')
+					let userAuthor = await NodeManager.getAuthor(user?.id || '')
+					if (authorTo && userAuthor) {
+					await NodeManager.sendFollowRequest(authorTo, userAuthor)
+					setFollowStatusState('pending')
 					}
+				} else if (followStatusState === 'friends' || followStatusState === 'true_friends') {
+					await NodeManager.removeFollower(id.split('/').pop() || '', user?.id || '')
+				} {}
 				}
 				catch {
 					console.log('error')
 				}
 			}}
 			name={
-				followStatusState ? 'Unfollow' : 'Follow'
+				followStatusState === 'not_friends' ? 'Follow' : followStatusState === 'friends' ? 'Unfollow' : followStatusState === 'true_friends' ? 'Unfriend' : 'Pending'
 			} className='text-white'/>}</div>
 			</div>
 			<div className='text-gray'>
@@ -84,7 +77,7 @@ const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, 
 			</div>
 			<div className='my-4'>
 			{posts.map((post) => {
-				return <Post key={post.id} {...post}/>
+				return <Post key={post.id} post={post}/>
 			})}
 			
 			</div>
@@ -111,8 +104,8 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 	  let res = null;
 	
 		
-	
-	  if (await NodeManager.checkAuthorExists(context.params?.author_id as string)) {
+	  
+	  if (!await NodeManager.checkAuthorExists(context.params?.author_id as string)) {
 		return {
 			redirect: {
 				destination: '/onboarding',
@@ -121,35 +114,41 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		}
 	  }
 	
-	  	let authorId = context.params?.author_id as string;
+	  	
 	  	let posts = await NodeManager.getPosts(context.params?.author_id as string);
 		let author = await NodeManager.getAuthor(context.params?.author_id as string);
-		let followStatus;
-		if (user.id !== context.params?.author_id) {
-			let resFollow = await NodeManager.getFollowers(authorId)
-			for (let i = 0; i < resFollow.items.length; i++) {
-				if (resFollow.items[i].id === user.id) {
-					followStatus = 'FOLLOWING'
-					break;
+	  	
+		if (!author) {
+			return {
+				redirect: {
+					destination: '/onboarding',
+					permanent: false,
 				}
 			}
-		} else {
-			followStatus = 'FRIENDS'
 		}
 		
+		let followStatus;
+		if (user.id !== context.params?.author_id) {
+			followStatus = await NodeManager.checkFollowerStatus(context.params?.author_id as string, user.id)
 		
 		return {
 			props: {
 				author: author,
-				posts: posts,
-				followStatus: (followStatus === 'FRIENDS' || followStatus === 'FOLLOWING')
+				posts: posts.items,
+				followStatus: followStatus
 			}
+		}
+	} else {
+		return {
+			props: {
+				author: author,
+				posts: posts.items,
+				followStatus: ''
+			}
+		}
 	}
-	
 }
 
 	
 
 export default Page;
-
-

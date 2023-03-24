@@ -10,7 +10,7 @@ import Select from "@/components/Select";
 import { Auth } from '@supabase/auth-ui-react'
 import {ThemeSupa} from '@supabase/auth-ui-shared'
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { getBase64 } from '@/utils';
 import NodeManager from '@/nodes';
 import { useRouter } from 'next/router';
@@ -30,13 +30,14 @@ interface createProps {
 const Create: React.FC<createProps> = ({authorId}) => {
 	const [selectValue, setSelectValue] = useState<string>("text/plain");
 	const [markDownValue, setMarkDownValue] = useState<string | undefined>("")
-	const { register, handleSubmit, watch, formState: { errors } } = useForm()
+	const form  = useForm()
 	const supabaseClient = useSupabaseClient()
   	const user = useUser()
 	const router = useRouter()
 
 
 	const onSubmit = async (data:any) => {
+		
 		if (data.contentType === 'text/markdown') {
 			data.content = markDownValue
 		}
@@ -50,38 +51,27 @@ const Create: React.FC<createProps> = ({authorId}) => {
 		}
 
 		data.categories = data.categories.split(',')
-
+		
 		try {
-			await NodeManager.createPost(authorId, {
+			let post = {
 			...data,
 			source: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 			origin: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 			unlisted: data.visibility === 'UNLISTED',
-			visibility: data.visibility === 'PUBLIC'
+			visibility: data.visibility,
+			}
+			let createdPost = await NodeManager.createPost(authorId, post)
+			if (createdPost) {
+				await NodeManager.alertNewPost(authorId, createdPost) 
+			}
 			
-		})
-		await router.push('/')
+			await router.push(`/authors/${authorId}`)
 		} catch (error) {
 			console.log(error)
 		}
 		
-
-		
-		
 }
 
-	if (!user)
-    return (
-		<div className='container mx-auto mt-12'>
-		<Auth
-		  redirectTo="http://localhost:3000/"
-		  appearance={{ theme: ThemeSupa }}
-		  supabaseClient={supabaseClient}
-		  socialLayout="horizontal"
-		  providers={[]}
-		/>
-		</div>
-    )
 		return (<div className='flex flex-col h-screen'>
 		<Head>
 			<title>Create Post</title>
@@ -89,17 +79,18 @@ const Create: React.FC<createProps> = ({authorId}) => {
 		<div className='flex flex-1 overflow-hidden'>
 		<Sidebar/>
 		<div className='overflow-y-auto w-full py-12'>
-		<form className='max-w-5xl mx-auto px-8' onSubmit={handleSubmit(onSubmit)}>
+		<FormProvider {...form}>
+		<form className='max-w-5xl mx-auto px-8' onSubmit={form.handleSubmit(onSubmit)}>
 			<h2 className='text-xl font-semibold mb-5'>Create Post</h2>
 			<Input 
-				register={register}
+				register={form.register}
 			extraClass='mb-6' id="title" name="Title" placeholder="Enter a title" required={true}/>
 			<TextArea 
-				register={register}
+				register={form.register}
 			id="description" name="Description" placeholder="Enter a description"/>
 
 			<Select 
-				register={register}
+				register={form.register}
 			id="contentType" name="Post Type" value={
 				selectValue
 			} 
@@ -120,24 +111,24 @@ const Create: React.FC<createProps> = ({authorId}) => {
 			}]}/>
 
 			<div className='mb-2'>
-			{selectValue === "image/*" && <File register={register} id="contentFile" />}
+			{selectValue === "image/*" && <File register={form.register} id="contentFile" />}
 			{selectValue === "image/link" && <Input
-				register={register}
+				register={form.register}
 			extraClass='mb-6' id="content" name="Image Link" placeholder="Enter an image link"/>}
 			{selectValue === "text/markdown" && <><MDEditor style={{ minWidth: 480 }} value={markDownValue} onChange={setMarkDownValue}/>
 			</>}
 			{selectValue === "text/plain" && <TextArea
-				register={register}
+				register={form.register}
 			id="content" name="Content" placeholder="Enter content"/>}
 			</div>
 			<div className='mb-6'>
 			
 			<Input
-				register={register}
+				register={form.register}
 			extraClass='mb-4' id="categories" name="Categories" placeholder="Enter categories, seperated via comma. " required={true}/>
 			<span className="block text-sm font-medium text-gray-900 dark:text-white">Post Visibility</span>
 			<Select
-				register={register}
+				register={form.register}
 				id="visibility"
 				name={"Post Visibility"}
 			options={
@@ -155,7 +146,9 @@ const Create: React.FC<createProps> = ({authorId}) => {
 			</div>
 			<Button name="Create Post" className="text-white"/>
 			
-		</form></div></div></div>);
+		</form>
+		</FormProvider>
+		</div></div></div>);
 }
 export default Create
 
