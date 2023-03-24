@@ -59,8 +59,8 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://cmput404-project-app.herokuapp.com/',  # Team 12 Frontend
-    'https://cmput404-project-data.herokuapp.com/', # Team 12 Backend
+    'https://cmput404-project-app.herokuapp.com',  # Team 12 Frontend
+    'https://cmput404-project-data.herokuapp.com', # Team 12 Backend
 ]
 
 ROOT_URLCONF = 'social_net.urls'
