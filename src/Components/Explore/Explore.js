@@ -21,11 +21,11 @@ function EXPLORE() {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
 		} else {
-			// const author_id = getAuthorId(null);
-			// const url = `authors/${author_id}/inbox/`;
-			// reqInstance({ method: "get", url: url }).then((res) => {
-			// 	setInbox(res.data.results);
-			// });
+			const url = `posts/public/`;
+			reqInstance({ method: "get", url: url }).then((res) => {
+				console.log(res.data);
+				setInbox(res.data);
+			});
 		}
 	}, []);
 
@@ -47,14 +47,14 @@ function EXPLORE() {
 	const handleProfileClick = () => {
 		if (curPage !== "profile") {
 			setCurPage("profile");
-			navigate("profile");
+			navigate("/profile");
 		}
 	};
 
 	const handleExploreClick = () => {
 		if (curPage !== "explore") {
 			setCurPage("explore");
-			navigate("explore");
+			navigate("/explore");
 		}
 	};
 
@@ -95,7 +95,7 @@ function EXPLORE() {
 					<Nav.Item onClick={handleOpen}>Add Friend</Nav.Item>
 				</Nav>
 			</Navbar>
-			{inbox.items.map((obj) => item(obj))}
+			{inbox.map((obj) => item(obj))}
 			<ADD_FRIEND_MODAL open={open} handleClose={handleModalClose} />
 		</div>
 	);

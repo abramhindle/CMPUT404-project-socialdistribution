@@ -463,9 +463,6 @@ PostLikes = {
     )}
 
 
-
-
-
 class post_list(APIView, PageNumberPagination):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -540,7 +537,7 @@ class post_list(APIView, PageNumberPagination):
 
         if serializer.is_valid():
             post = serializer.save()
-            # share_object(post,author)
+            share_object(post,author)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -685,7 +682,7 @@ class post_detail(APIView, PageNumberPagination):
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
             post = serializer.save()
-            # share_object(post,author)
+            share_object(post,author)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
