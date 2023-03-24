@@ -60,8 +60,11 @@ class PostCreation(APIView, RestService):
     def post(self, request: HttpRequest, *args, **kwargs):  # create a new post
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
-        
-        body = request.data
+        try:
+            body = request.data
+        except AttributeError:  # tests don't run without this
+            body = request.body
+            body = json.loads(body)
 
         author_id = kwargs['author_id']
 
@@ -140,7 +143,11 @@ class PostWithId(APIView, RestService):
         if request.content_type != CONTENT_TYPE_JSON:
             return HttpResponseBadRequest()
 
-        body = request.data
+        try:
+            body = request.data
+        except AttributeError:  # tests don't run without this
+            body = request.body
+            body = json.loads(body)
 
         post_id = kwargs["post_id"]
         author_id = kwargs["author_id"]

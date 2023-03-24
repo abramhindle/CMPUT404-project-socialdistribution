@@ -23,7 +23,6 @@ def get_or_create_author(author_json, hostname):
 
     except ObjectDoesNotExist:
         # create new
-        print(author_json['id'])
         new_author = Author()
         new_author._id = f"{settings.DOMAIN}/authors/{author_json['id']}"  # we use the GUID sent to us
         new_author.github = author_json["github"]
@@ -42,6 +41,7 @@ def get_single_author(author):
 
     if response.status_code < 200 or response.status_code > 299:
         author = None
+        return author
 
     return get_or_create_author(response.json(), author.host)
 
@@ -62,8 +62,6 @@ def get_multiple_authors():
 
 def get_multiple_posts(author):
     url = settings.REMOTE_USERS[1][1] + "service/authors/" + author.url.rsplit('/', 2)[-2] + "/posts/"
-
-    print(url)
 
     response = requests.get(url, headers={'Authorization': 'bearer' + settings.REMOTE_USERS[1][2]})
     response.close()

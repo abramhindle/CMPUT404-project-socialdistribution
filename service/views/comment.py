@@ -69,10 +69,14 @@ class CommentView(APIView):
         try:
             post = Post.objects.get(_id=self.post_id)
             author = Author.objects.get(_id=self.author_id)
-        except:
+        except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
-        body = request.data
+        try:
+            body = request.data
+        except AttributeError:  # tests don't run without this
+            body = request.body
+            body = json.loads(body)
 
         comment = Comment()
 

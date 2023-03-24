@@ -49,8 +49,11 @@ def get_single_author(author):
     return get_or_create_author(response.json(), author.host)
 
 def get_multiple_authors():
-    response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/", auth=settings.REMOTE_USERS[0][2])
-    response.close()
+    try:
+        response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/", auth=settings.REMOTE_USERS[0][2])
+        response.close()
+    except:
+        return
 
     if response.status_code < 200 or response.status_code > 299:  # unsuccessful
         return
@@ -66,8 +69,11 @@ def get_multiple_authors():
 def get_multiple_posts(author):
     url = settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/posts/"
 
-    response = requests.get(url, auth=settings.REMOTE_USERS[0][2])
-    response.close()
+    try:
+        response = requests.get(url, auth=settings.REMOTE_USERS[0][2])
+        response.close()
+    except:
+        return
 
     if response.status_code < 200 or response.status_code > 299:  # unsuccessful
         return
