@@ -10,13 +10,14 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import IsAuthenticated
 
 from django.views.decorators.csrf import csrf_exempt
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthorFollowRequests(View):
     """ GET an Authors's follow requests -> where they are being followed"""
-
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get']
     # see all author's follow requests -> i.e. who wants to follow them
     def get(self, request, author_id):
@@ -65,7 +66,7 @@ class FollowRequests(View):
         follow_requests = Follow.objects.all().filter(object=author_id)
         for request in follow_requests:
             if request.actor._id == foreign_author_id:
-                follow_requests.remove(request)
+                request.delete()
                 follow_requests.save()
 
         return HttpResponse(status=204)

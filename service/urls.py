@@ -20,6 +20,7 @@ AUTHOR_ID_REGEX = rf"(https|http)://[A-Za-z0-9\w.-]+/authors/{GUID_REGEX}"
 POST_ID = rf"(https|http)://[A-Za-z0-9\w.-]+/authors/{GUID_REGEX}/posts/{GUID_REGEX}"
 COMMENT_ID_REGEX = rf"(https|http)://[A-Za-z0-9\w.-]+/authors/{GUID_REGEX}/posts/{GUID_REGEX}/comments/{GUID_REGEX}"
 
+
 urlpatterns = [
     path('docs/', TemplateView.as_view(template_name='templates/docs/index.html'), name='docs'),
     #for every different model, create a new model file and view file in the /model and /view directories then link it up here

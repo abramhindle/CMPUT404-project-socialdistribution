@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
 import { add_followers_for_author } from '../../api/follower_api';
 import { add_request } from '../../api/follower_api';
+import { post_inbox } from "../../api/inbox_api";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -52,9 +53,20 @@ function Friends() {
     
     get_search_params();
 
-    const followAuthor= (follow_id) => {
-        add_request(user.id, follow_id, onSuccess)
-        add_followers_for_author(user.id, follow_id, onSuccess)
+    //no need to handle anything here
+    const followAuthor= (object) => {
+        const actor = user;
+        
+        const obj = {
+          "type":"follow",
+          "Summary":user.displayName + "wants to follow" + object.displayName,
+          "actor":actor,
+          "object":object
+        }
+
+        post_inbox(user.id,obj,onSuccess)
+        //add_request(user.id, obj, onSuccess)
+        //add_followers_for_author(user.id, follow_id, onSuccess)
     }
 
     const onSuccess = () => {
@@ -62,8 +74,6 @@ function Friends() {
     }
     
     const page_buttons = () => {
-
-    /*  need fix here! */
  
         if (follow_list.items.length < 5 && page === 1)
         {
@@ -149,7 +159,7 @@ function Friends() {
                 <TableCell align="right">
                   <Button
                     variant="contained"
-                    onClick={(e) => followAuthor(row.id)}
+                    onClick={(e) => followAuthor(row)}
                   >
                     follow
                   </Button>

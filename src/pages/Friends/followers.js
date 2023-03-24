@@ -33,7 +33,7 @@ function Followed() {
     const location = useLocation();
 
     useEffect(() => { 
-        get_follow_for_author(user.id, setList)
+        get_followers_for_author(user.id, setList)
       
     }, []);
 

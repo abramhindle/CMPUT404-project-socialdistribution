@@ -17,8 +17,9 @@ export const get_followers_for_author = async (authorId, success) => {
     });
 };
 
-export const get_follow_for_author = async (authorId, success) => {
-  console.log("Attempting to retrieve follower list for", { authorId });
+export const get_followed_for_author = async (authorId, success) => {
+  console.log("Attempting to retrieve followed list for", { authorId });
+
   await axios
     .get(`http://localhost:8000/authors/${authorId}/followed/`, {
       headers: {
@@ -105,11 +106,13 @@ export const get_request = async (authorId, success) => {
     });
 };
 
-// TODO need fix here, it return me 405 but I have defined post method 
-export const add_request = async (authorId, followId, success) => {
-  console.log("sending request from", { followId });
+export const add_request = async (authorId, object, success) => {
+  console.log("sending request from", { authorId });
   await axios
-    .post(`http://localhost:8000/authors/${authorId}/follow-request/${followId}`, {
+    //.post(`http://localhost:8000/authors/${authorId}/follow-request/${followId}`, { #this is our own endpoint
+      .post(`http://localhost:8000/authors/${authorId}/inbox/`,// this is what we need 
+      object,
+     {   
       headers: {
         Accept: "application/json",
       },

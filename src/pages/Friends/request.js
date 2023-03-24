@@ -6,6 +6,7 @@ import { get_followers_for_author } from '../../api/follower_api';
 import { get_request } from '../../api/follower_api';
 import { delete_request } from '../../api/follower_api';
 import { delete_followers_for_author } from '../../api/follower_api';
+import { add_followers_for_author } from '../../api/follower_api';
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -43,10 +44,14 @@ function Request() {
       
     }, []);
 
-
-    const DeleteRequest= (follow_id) => {
-        delete_request(user.id, follow_id, onSuccess)
+    const DeleteRequest= (actor_id) => {
+        delete_request(user.id, actor_id, onSuccess)
     }
+
+    const AcceptRequest= (actor_id) => {
+        add_followers_for_author(user.id, actor_id, onSuccess)
+        delete_request(user.id, actor_id, onSuccess)
+  }
 
     const onSuccess = () => {
         setSuccess(true);
@@ -91,18 +96,28 @@ function Request() {
           <TableBody>
             {follow_list.items.map((row) => (
               <TableRow
-                key={row.id}
+                key={row.actor.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.id}
+                  {row.actor.id}
                 </TableCell>
-                <TableCell align="right">{row.displayName}</TableCell>
+                <TableCell align="right">{row.actor.displayName}</TableCell>
+                <TableCell align="right">
+                  <Button
+                    variant="contained"
+                    color = "success"
+                    onClick={(e) => AcceptRequest(row.actor.id)}
+                  >
+                    Accept
+                  </Button>
+                </TableCell>
                 <TableCell align="right">
                   <Button
                     variant="contained"
                     color = "error"
-                    onClick={(e) => DeleteRequest(row.id)}
+                    onClick={(e) => DeleteRequest(row.actor.id)}
+
                   >
                     Delete
                   </Button>

@@ -57,58 +57,56 @@ function Realfriends() {
         <>
         <Sidebar/>
         <div className="sidebar-offset">
-          <div>
-            <Box sx={{ flexGrow: 1 }}>
-              <AppBar position="static">
-                <Toolbar variant="dense">
-                  <Button
-                      variant="contained"
-                      onClick={goBack}
-                      >
-                      back
-                  </Button>
-                <Typography variant="h6" align="left" color="inherit" component="div">
-                  Realfriends
-                </Typography>
-                </Toolbar>
-              </AppBar>
-            </Box>
-          </div>
-          <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell align="right">Name</TableCell>
-                <TableCell align="right">Follow</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {follow_list.items.map((row) => (
-                <TableRow
-                  key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+        <div>
+        <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static">
+          <Toolbar variant="dense">
+            <Button
+                variant="contained"
+                onClick={goBack}
                 >
-                  <TableCell component="th" scope="row">
-                    {row.id}
-                  </TableCell>
-                  <TableCell align="right">{row.displayName}</TableCell>
-                  <TableCell align="right">
-                    <Button
-                      variant="contained"
-                      color = "success"
-                      onClick={(e) => Details(row.id)}
-                    >
-                      Details
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>  
-        </TableContainer>
+                back
+            </Button>
+          <Typography variant="h6" align="left" color="inherit" component="div">
+            Realfriends
+          </Typography>
+          </Toolbar>
+        </AppBar>
+        </Box>
         </div>
-      
+        <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell align="right">Name</TableCell>
+              <TableCell align="right">Follow</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {follow_list.items.map((row) => (
+              <TableRow
+                key={row.id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.id}
+                </TableCell>
+                <TableCell align="right">{row.displayName}</TableCell>
+                <TableCell align="right">
+                  <Button
+                    variant="contained"
+                    color = "success"
+                    onClick={(e) => Details(row.id)}
+                  >
+                    Details
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>  
+      </TableContainer>
       </>
     );
   }
