@@ -51,7 +51,6 @@ class Post(models.Model):
     commentsSrc = models.CharField(max_length=255, default="", blank=True)
     
     image = models.ImageField(null=True,blank=True, default="")  # reference to an image in the DB
-    # sharedUsers = models.ForeignKey(Author, blank=True) # users that the post is shared to
 
     # make it pretty
     def __str__(self):

@@ -167,7 +167,7 @@ class post_list(APIView, PageNumberPagination):
         # for post in posts:
         #     if "PRIVATE" in post.visibility:
         #         # if the post author is not the auth'd user, don't show this post
-        #         if post.author != authenticated_user:
+        #         if post.author != authenticated_user or authenticated_user not in post.shared_users:
         #             posts.exclude(post)
                     
         #     if "FRIENDS" in post.visibility:
@@ -201,20 +201,22 @@ class post_list(APIView, PageNumberPagination):
         except Author.DoesNotExist:
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-        
+
         # if image post
         if 'image' in request.data['contentType']:
-            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
             # you will need to pass in a JSON object with a title, contentType, content, and image
             # image is passed in as a base64 string. it should look like data:image/png;base64,LOTSOFLETTERS
+            serializer = ImageSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         else:
             serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
 
         if serializer.is_valid():
             post = serializer.save()
-            share_object(post,author)
+            # pass in the shared authors on post creation
+            share_object(post,author,request.data['authors'])
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentDetailView(APIView):
     
@@ -246,19 +248,19 @@ class post_detail(APIView, PageNumberPagination):
 
             # unlisted does not need to be addressed here; only in the post list
             # if it is private or friends, only continue if author is trying to access it:
-            if "PRIVATE" in post.visibility:
+            #if "PRIVATE" in post.visibility:
                 # check if the author is not the one accessing it:
-                # TODO: specifically shared users
-                if post.author != authenticated_user:
-                    error_msg = {"message":"You do not have access to this post!"}
-                    return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
+            #    if post.author != authenticated_user or authenticated_user not in post.shared_users:
+            #        error_msg = {"message":"You do not have access to this post!"}
+            #        return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
 
             # otherwise, handle it for friends:
-            if "FRIENDS" in post.visibility:
+            #if "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
-                if post.author not in authenticated_user.friends and post.author != authenticated_user:
-                    error_msg = {"message":"You do not have access to this post!"}
-                    return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
+            #    if post.author not in authenticated_user.friends and post.author != authenticated_user:
+            #        error_msg = {"message":"You do not have access to this post!"}
+            #        return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
+
         except Post.DoesNotExist: 
             error_msg = "Comment not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
@@ -349,7 +351,7 @@ class post_detail(APIView, PageNumberPagination):
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
             post = serializer.save()
-            share_object(post,author)
+            share_object(post,author,[])
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -458,7 +460,6 @@ class ImageView(APIView):
             # otherwise, handle it for friends:
             elif "FRIENDS" in post.visibility:
                 # if the author or friends are trying to access it:
-                # this line will likely be bugged until auth is set up ┐(´～｀)┌
                 if post.author not in authenticated_user.friends and post.author != authenticated_user:
                     error_msg = {"message":"You do not have access to this image!"}
                     return Response(error_msg,status=status.HTTP_403_FORBIDDEN)
@@ -471,7 +472,6 @@ class ImageView(APIView):
             error_msg = {"message":"Post does not exist!"}
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
-# hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
     serializer_class = CommentSerializer
     pagination_class = PostSetPagination
@@ -574,19 +574,39 @@ class ShareView(APIView):
 
         # save the new post
         new_post.save()
-        share_object(new_post,sharing_author)
+        # this shared_user here is blank
+        share_object(new_post,sharing_author,[])
         serializer = PostSerializer(new_post)
         return Response(serializer.data)
         
-def share_object(item, author):
+# share a post to an inbox
+def share_object(item, author, shared_user):
     inbox_item = Inbox(content_object=item, author=author)
     inbox_item.save()
+    # TODO: refactor once auth is set up
+    authenticated_user = "joe"
 
+    # public post (send to all inboxes)
     if (item.visibility == 'PUBLIC'):
         for foreign_author in Author.objects.all().exclude(id=author.id):
             inbox_item = Inbox(content_object=item, author=foreign_author)
             inbox_item.save()
-    if (item.visibility == 'PRIVATE'):
+
+    # friend post (send to friend inbox)
+    if (item.visibility == 'FRIENDS'):
         for friend in author.friends.all():
             inbox_item = Inbox(content_object=item, author=friend)
+            inbox_item.save()
+
+    # unlisted post (send only to own inbox)
+    if (item.visibility == 'UNLISTED'):
+        if author == authenticated_user:
+            inbox_item = Inbox(content_object=item, author=author)
+            inbox_item.save()
+
+    # private post (send to shared users' inbox)
+    if (item.visibility == 'PRIVATE'):
+        for username in shared_user:
+            share = Author.objects.get(displayName=username)
+            inbox_item = Inbox(content_object=item, author=share)
             inbox_item.save()

@@ -32,6 +32,7 @@ function CREATEPOST() {
 		label: item["displayName"],
 		value: item["displayName"],
 	}));
+	const [image64, set_image64] = useState("");
 
 	function handleClick(eventkey) {
 		set_post_status(eventkey);
@@ -145,15 +146,15 @@ function CREATEPOST() {
 	};
 
 	async function readFileAsDataURL(file) {
-		let result_base64 = await new Promise((resolve) => {
+		return new Promise((resolve) => {
 			let fileReader = new FileReader();
-			fileReader.onloadend = (e) => resolve(fileReader.result);
+			fileReader.onloadend = (e) => resolve(set_image64(fileReader.result));
 			fileReader.readAsDataURL(file);
 		});
-		return result_base64;
+
 	}
 
-	const handlePostClick = () => {
+	async function handlePostClick () {
 		const author = JSON.parse(localStorage.getItem("user"));
 		const author_id = getAuthorId(null);
 		const url = `posts/authors/${author_id}/posts/`;
@@ -167,7 +168,7 @@ function CREATEPOST() {
 		};
 
 		if (post_status === 'PRIVATE') {
-			console.log(authors)
+			// console.log(authors);
 			params['authors'] = authors;
 
 		}
@@ -175,10 +176,11 @@ function CREATEPOST() {
 		if (post_type === "image/png" || post_type === "image/jpeg") {
 			imagefile = document.getElementById("file").files[0];
 			if (imagefile) {
-				readFileAsDataURL(imagefile).then((dataURL) => {
-					params["image"] = dataURL;
+				await readFileAsDataURL(imagefile).then(async (dataURL) => {
+					set_image64(dataURL);
 				});
 			}
+			params["image"] = image64;
 		}
 
 		if (categories.length > 0) {
@@ -224,7 +226,7 @@ function CREATEPOST() {
 				<Dropdown.Item eventKey="PUBLIC">Public</Dropdown.Item>
 				<Dropdown.Item eventKey="FRIENDS">Friends</Dropdown.Item>
 				<Dropdown.Item eventKey="PRIVATE">Private</Dropdown.Item>
-				<Dropdown.Item eventKey="Unlisted">Unlisted</Dropdown.Item>
+				<Dropdown.Item eventKey="UNLISTED">Unlisted</Dropdown.Item>
 			</Dropdown>
 			<Dropdown
 				title={post_type}
