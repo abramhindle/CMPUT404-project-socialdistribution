@@ -41,10 +41,10 @@ def getNodeAuthors_Yoshi():
 
 
 
-def getNodeAuthor_Yoshi():
+def getNodeAuthor_Yoshi(auhtor_id):
     url = 'https://yoshi-connect.herokuapp.com/authors'
 
-    
+
 
 
 
