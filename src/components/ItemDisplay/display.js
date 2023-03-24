@@ -1,5 +1,6 @@
 import Comment from "./comment";
 import PlainPost from "./post-text";
+import Like from "./like";
 
 //TODO : like / follow request objects
 
@@ -17,6 +18,7 @@ export default function DisplayItem(props) {
     }
     else if (data.type === "like"){
         //display like object
+        return (<Like data={data}/>);
     }
     else if (data.type === "follow"){
         //display follow request object

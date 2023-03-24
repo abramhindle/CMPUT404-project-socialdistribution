@@ -87,7 +87,7 @@ export const comment_like = async (
     type: "Like",
     context: context,
     author: likeAuthor,
-    object: `https://social-distribution-w23-t17.herokuapp.com/authors/${likedAuthorId /* URL Needs to be updated once hosted on heroku */
+    object: `https://social-distribution-w23-t17.herokuapp.com/authors/${likedAuthorId
       .split("/")
       .pop()}/posts/${postId.split("/").pop()}/comments/${commentId
       .split("/")

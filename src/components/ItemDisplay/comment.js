@@ -1,8 +1,7 @@
 import "./posts.css";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
-import { post_comment } from "../../api/comment_api";
 import { comment_like } from "../../api/like_api";
 import { get_liked } from "../../api/like_api";
 
@@ -42,7 +41,7 @@ export default function Comment(data) {
     }
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     console.log("Use effect triggered");
     get_liked(id, data.updateList);
   }, [changes]);
