@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
 import { comment_like } from "../../api/like_api";
 import { get_liked } from "../../api/like_api";
+import LikeHeart from "../Buttons/like_button";
 
 export default function Comment(data) {
   let id = useSelector((state) => state.user).id;
@@ -72,14 +73,7 @@ export default function Comment(data) {
           </div>
                   {/* Interaction Options (like, share) */}
         <div>
-            <button className="interact"
-              onClick={handleLike}
-            >
-              <svg version="1.1" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="2.5em" height="2.5em" viewBox="0 0 15 15">
-                <path className="heart" fill={liked ? "var(--scarlet)" : "var(--driftwood)"}
-                  d="M13.91,6.75c-1.17,2.25-4.3,5.31-6.07,6.94c-0.1903,0.1718-0.4797,0.1718-0.67,0C5.39,12.06,2.26,9,1.09,6.75&#xA;&#x9;C-1.48,1.8,5-1.5,7.5,3.45C10-1.5,16.48,1.8,13.91,6.75z"/>
-              </svg>
-            </button>
+            <LikeHeart handleLike={handleLike} liked={liked}/>
         </div>
         </div>
         <div className="timestamp">{data["data"]["published"]}</div>
