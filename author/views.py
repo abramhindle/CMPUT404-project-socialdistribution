@@ -229,7 +229,7 @@ class AuthorView(APIView):
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-    @swagger_auto_schema(responses= OneAuthor, operation_summary="Finds Author by iD")
+    @swagger_auto_schema(responses = OneAuthor, operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
 
         """
