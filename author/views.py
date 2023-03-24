@@ -28,7 +28,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-
+from client import *
 
 custom_parameter = openapi.Parameter(
     name='custom_param',
@@ -217,9 +217,16 @@ class AuthorsListView(APIView, PageNumberPagination):
         """
         
         authors = Author.objects.all()
-        authors=self.paginate_queryset(authors, request) 
+        authors=self.paginate_queryset(authors, request)
         serializer = AuthorSerializer(authors, many=True)
-        return self.get_paginated_response(serializer.data)
+        data_list = serializer.data
+        yoshi = getNodeAuthors_Yoshi()
+        for yoshi_author in yoshi:
+            data_list.append(yoshi_author)
+        social_distro = getNodeAuthors_social_distro()
+        for social_distro_author in social_distro:
+            data_list.append(social_distro_author)
+        return self.get_paginated_response(data_list)
 
 # @permission_classes([IsAuthenticated]) 
 class AuthorView(APIView):
