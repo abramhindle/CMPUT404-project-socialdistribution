@@ -39,7 +39,8 @@ CORS_ORIGIN_WHITELIST = [
     'https://social-distribution-w23-t17.herokuapp.com',
     'http://127.0.0.1:3000',
     'http://localhost:8000',
-    'http://31552.yeg.rac.sh:8000'
+    'http://31552.yeg.rac.sh:8000',
+    "https://cmput404-group-project.herokuapp.com"
 ]
 
 CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken']

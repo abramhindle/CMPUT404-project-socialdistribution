@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import *
 from django.utils.decorators import method_decorator
@@ -13,6 +14,9 @@ from service.models.inbox import Inbox
 from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
+from service.services import team_14
+
+import requests
 
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
@@ -75,16 +79,31 @@ class InboxView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs):
         author_id = kwargs['author_id']
 
+        # should also go out to the team and get their values
+        try:
+            author = Author.objects.get(_id=author_id)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
+
         try:
             body = request.data
         except AttributeError:  # tests don't run without this
             body = request.body
             body = json.loads(body)
 
-        try:
-            author = Author.objects.get(_id=author_id)
-        except ObjectDoesNotExist:
-            return HttpResponseNotFound()
+        # remote-user-t14
+        if author.host == settings.REMOTE_USERS[0][1]:
+            url = settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/inbox"
+            print(body)
+            try:
+                response = requests.post(url, json=body, auth=settings.REMOTE_USERS[0][2])
+                response.close()
+            except:
+                return HttpResponseServerError()
+
+            print(response.status_code)
+            print(response.json())
+            return HttpResponse()
 
         try:  # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
             inbox = Inbox.objects.get(author=author) # author_id is the primary key for an inbox
