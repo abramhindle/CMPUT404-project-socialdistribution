@@ -23,7 +23,7 @@ function INBOX() {
 			navigate("/login");
 		} else {
 			const author_id = getAuthorId(null);
-			const url = `authors/${author_id}/inbox`;
+			const url = `authors/${author_id}/inbox/`;
 			reqInstance({ method: "get", url: url }).then((res) => {
 				setInbox(res.data.results);
 			});

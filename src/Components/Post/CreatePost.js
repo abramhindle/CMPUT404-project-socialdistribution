@@ -26,12 +26,8 @@ function CREATEPOST() {
 	const [markdown, setMarkdown] = useState("");
 	const [authors, setAuthors] = useState({ items: [] });
 	let navigate = useNavigate();
-	const [friends, setFriends] = useState({ items: [] });
 	const toaster = useToaster();
-	const data = friends.items.map((item) => ({
-		label: item["displayName"],
-		value: item["displayName"],
-	}));
+	const [data, setData] = useState([]);
 
 	function handleClick(eventkey) {
 		set_post_status(eventkey);
@@ -41,6 +37,7 @@ function CREATEPOST() {
 			setDisabled(true);
 		}
 	}
+
 	useLayoutEffect(() => {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
@@ -51,7 +48,12 @@ function CREATEPOST() {
 				method: "get",
 				url: url,
 			}).then((res) => {
-				setFriends(res.data);
+				setData(
+					res.data.items.map((item) => ({
+						label: item["displayName"],
+						value: item["displayName"],
+					}))
+				);
 			});
 		}
 	}, []);
