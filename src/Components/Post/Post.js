@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Avatar, Panel, IconButton, Message, useToaster } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import ShareIcon from "@rsuite/icons/legacy/Reply";
@@ -71,6 +71,21 @@ function POST({ postobj, edit }) {
 			}
 		);
 	};
+
+
+	// Get the likes
+	useLayoutEffect(() => {
+		if (!localStorage.getItem("loggedIn")) {
+			navigate("/login");
+		} else {
+			const author_id = getAuthorId(postobj.author.id);
+			const post_id = getAuthorId(postobj.id);
+			const url = `posts/authors/${author_id}/posts/${post_id}/likes/`
+			axios({ method: "get", url: url }).then((res) => {
+				setLikes(res.data);
+			});
+		}
+	}, []);
 
 	async function sharePost() {
 		const author_id = getAuthorId(null);
@@ -199,7 +214,7 @@ function POST({ postobj, edit }) {
 				handleClose={handleModalClose}
 			/>
 			<LIKESMODAL
-				postobj={postobj}
+				postobj={likes}
 			/>
 		</div>
 	);

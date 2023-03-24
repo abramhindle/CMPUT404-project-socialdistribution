@@ -4,29 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { getAuthorId } from "../utils/auth";
 import axios from "axios";
 
-function LIKESMODAL({ postobj }) {
-  const [likes, setLikes] = useState({ items: [] });
+function LIKESMODAL({ likes }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  let navigate = useNavigate();
 
-  // Get the likes
-  useLayoutEffect(() => {
-    if (!localStorage.getItem("loggedIn")) {
-      navigate("/login");
-    } else {
-      const author_id = getAuthorId(postobj.author.id);
-      const post_id = getAuthorId(postobj.id);
-      const url = `posts/authors/${author_id}/posts/${post_id}/likes/`
-      axios({ method: "get", url: url }).then((res) => {
-        setLikes(res.data);
-        console.log("DATA", res.data)
-        console.log("LIKES", likes)
-      });
+  const getLikes = () => {
+    if (likes && likes.length > 0) {
+      return likes.items.map((obj) => item(obj))
     }
-  }, []);
-
+  }
 
   const item = (obj) => {
     return obj.author.displayName;
@@ -43,7 +30,7 @@ function LIKESMODAL({ postobj }) {
           <Modal.Title>Likes on this post</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {likes.items.map((obj) => item(obj))}
+          {getLikes()}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleClose} appearance="primary">

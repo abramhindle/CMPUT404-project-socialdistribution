@@ -414,22 +414,22 @@ def get_comments(request, pk_a, pk):
     serializer = CommentSerializer(comments, many=True)
     return Response(serializer.data)
 
+class PostLikesView(APIView):
 
-@swagger_auto_schema( method='get',operation_summary="Get a likes of a post")
-@api_view(['GET'])
-def get_likes(request, pk_a, pk):
-    """
-    Get the list of likes on a post
-    """
-    try:
-        post = Post.objects.get(id=pk)
-    except Post.DoesNotExist:
-        error_msg = "Post does not exist"
-        return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
-    url = post.url[:-1] #TODO: Fix after slash issue
-    likes = Like.objects.filter(object=url)
-    serializer = LikeSerializer(likes, many=True)
-    return Response(serializer.data)
+    @swagger_auto_schema(operation_summary="Get a likes of a post")
+    def get(self, request, pk_a, pk):
+        """
+        Get the list of likes on a post
+        """
+        try:
+            post = Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            error_msg = "Post does not exist"
+            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+        url = post.url[:-1] #TODO: Fix after slash issue
+        likes = Like.objects.filter(object=url)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
 
 # hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):

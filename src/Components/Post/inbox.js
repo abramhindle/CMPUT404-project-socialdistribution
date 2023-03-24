@@ -40,9 +40,9 @@ function INBOX() {
 		if (obj.type === "Follow") {
 			return <FOLLOWREQ key={obj.id} obj={obj} />;
 		}
-		// if (obj.type === "comment") {
-		// 	return <COMMENTINBOX key={obj.id} obj={obj} />;
-		// }
+		if (obj.type === "comment") {
+			return <COMMENTINBOX key={obj.id} obj={obj} />;
+		}
 	};
 
 	const handleProfileClick = () => {

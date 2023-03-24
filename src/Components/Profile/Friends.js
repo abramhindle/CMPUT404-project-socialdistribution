@@ -1,6 +1,6 @@
-import React, { useLayoutEffect, useState, IconButton, Message, useToaster } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import TrashIcon from "@rsuite/icons/Trash";
-import { Avatar } from "rsuite";
+import { Avatar, IconButton, Message, useToaster } from "rsuite";
 import axios from "axios";
 import { getAuthorId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
@@ -83,12 +83,12 @@ function FRIENDS() {
 					</h5>
 				</div>
 				<div>
-					{/* <IconButton
+					<IconButton
 						style={{ float: "right", marginRight: "10px" }}
 						appearance="subtle"
-						onClick={handleDeleteFollower}
+						onClick={() => handleDeleteFollower(obj)}
 						icon={<TrashIcon />}
-					/> */}
+					/>
 				</div>
 			</div>
 		);

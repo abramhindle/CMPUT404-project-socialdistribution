@@ -174,7 +174,7 @@ class FollowersView(APIView):
                 except Author.DoesNotExist:
                     error_msg = "Follower id not found"
                     return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
-                followers_list.append(follower_author.follower_to_object())
+                followers_list.append(AuthorSerializer(follower_author).data)
 
             results = {"type": "followers",
                     "items": followers_list
@@ -253,19 +253,9 @@ class FollowersView(APIView):
         followers = author.friends
         followers.remove(removed_follower)
         author.save()
-
-        followers = author.friends.all()
-        followers_list = []
-        for follower in followers:
-            try: 
-                follower_author = Author.objects.get(id=follower.id)
-            except Author.DoesNotExist:
-                error_msg = "Follower id not found"
-                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
-            followers_list.append(follower_author.follower_to_object())
         
         # return the new list of followers
-        return Response(followers_list)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 #request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 class FriendRequestView(APIView):
