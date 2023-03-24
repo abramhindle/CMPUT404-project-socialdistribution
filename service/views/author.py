@@ -7,10 +7,7 @@ from django.views import View
 from service.models.author import Author
 from service.service_constants import *
 from rest_framework.views import APIView
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from rest_framework.permissions import IsAuthenticated
-
-
 
 # Create your views here.
 class MultipleAuthors(APIView):
