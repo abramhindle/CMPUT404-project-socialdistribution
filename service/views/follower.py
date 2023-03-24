@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import *
 from django.utils.decorators import method_decorator
@@ -9,6 +10,7 @@ from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
+from service.services import team_14, team_22
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -19,7 +21,21 @@ class FollowersAPI(APIView):
 
     def get(self, request, author_id):
 
-        author = Author.objects.get(_id = author_id)
+        author = Author.objects.get(_id=author_id)
+
+        # reach out and get followers for an author that isn't our own
+
+        # remote-user-t14
+        if author.host == settings.REMOTE_USERS[0][1]:
+            #team_14.get_multiple_posts(author)
+
+            pass
+
+        # remote-user-t22
+        if author.host == settings.REMOTE_USERS[1][1]:
+            #team_22.get_multiple_posts(author)
+
+            pass
 
         followers_list = list()
 

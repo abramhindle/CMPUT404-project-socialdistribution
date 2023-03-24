@@ -35,9 +35,12 @@ def get_or_create_author(author_json, hostname):
 
 def get_single_author(author):
     author_guid = author.url.rsplit('/', 2)[-2]
-    response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/" + author_guid + "/",
-                            headers={'Authorization': 'bearer ' + settings.REMOTE_USERS[1][2]})
-    response.close()
+    try:
+        response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/" + author_guid + "/",
+                                headers={'Authorization': 'bearer ' + settings.REMOTE_USERS[1][2]})
+        response.close()
+    except:
+        return None
 
     if response.status_code < 200 or response.status_code > 299:
         author = None
@@ -46,9 +49,12 @@ def get_single_author(author):
     return get_or_create_author(response.json(), author.host)
 
 def get_multiple_authors():
-    response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/",
-                            headers={'Authorization': 'bearer ' + settings.REMOTE_USERS[1][2]})
-    response.close()
+    try:
+        response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/",
+                                headers={'Authorization': 'bearer ' + settings.REMOTE_USERS[1][2]})
+        response.close()
+    except:
+        return
 
     if response.status_code < 200 or response.status_code > 299:  # unsuccessful
         return
@@ -63,8 +69,11 @@ def get_multiple_authors():
 def get_multiple_posts(author):
     url = settings.REMOTE_USERS[1][1] + "service/authors/" + author.url.rsplit('/', 2)[-2] + "/posts/"
 
-    response = requests.get(url, headers={'Authorization': 'bearer' + settings.REMOTE_USERS[1][2]})
-    response.close()
+    try:
+        response = requests.get(url, headers={'Authorization': 'bearer' + settings.REMOTE_USERS[1][2]})
+        response.close()
+    except:
+        return
 
     if response.status_code < 200 or response.status_code > 299:  # unsuccessful
         return

@@ -37,9 +37,12 @@ def get_or_create_author(author_json, hostname):
         return new_author
 
 def get_single_author(author):
-    response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1],
-                            auth=settings.REMOTE_USERS[0][2])
-    response.close()
+    try:
+        response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1],
+                                auth=settings.REMOTE_USERS[0][2])
+        response.close()
+    except:
+        return None
 
     # not updating for now...
     if response.status_code < 200 or response.status_code > 299:
@@ -107,3 +110,7 @@ def get_or_create_post(post_json, author, hostname):
 
         return new_post
 
+# FOLLOWER HELPERS
+
+def get_all_followers(author):
+    pass
