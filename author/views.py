@@ -1,3 +1,4 @@
+import json
 from django.db import IntegrityError
 from django.forms import model_to_dict
 from django.shortcuts import render
@@ -245,8 +246,23 @@ class AuthorView(APIView):
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
-            error_msg = "Author id not found"
-            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+            try: 
+                author_json, status_code = getNodeAuthor_Yoshi(pk_a)
+                if status_code == 200:
+                    author_dict = json.loads(author_json)
+                    author = Author(**author_dict)
+                else:
+                    author_json, status_code = getNodeAuthor_social_distro(pk_a)
+                    if status_code == 200:
+                        author_dict = json.loads(author_json)
+                        author = Author(**author_dict)
+                    else:
+                        error_msg = "Author id not found"
+                        return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+            except:
+                error_msg = "Author id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
         serializer = AuthorSerializer(author,partial=True)
         return  Response(serializer.data)
     
@@ -588,11 +604,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
 @permission_classes([IsAuthenticated])
 def getAuthor(request, displayName):
     """
-<<<<<<< HEAD
     Details of particular author
-=======
-    Details of a particular author
->>>>>>> origin/dev
     """
     author = Author.objects.get(displayName=displayName)
     serializer = AuthorSerializer(author,partial=True)
