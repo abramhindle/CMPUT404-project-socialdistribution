@@ -52,7 +52,7 @@ class PostCreation(APIView, RestService):
         post = Post()
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except:
             return HttpResponseNotFound()
 
