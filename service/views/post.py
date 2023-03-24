@@ -11,10 +11,13 @@ from service.models.author import Author
 from service.models.post import Post, Category
 from service.service_constants import *
 from service.services.rest_service import RestService
+from rest_framework.permissions import IsAuthenticated
+
 
 # endpoints with just author_id
 @method_decorator(csrf_exempt, name='dispatch')
 class PostCreation(APIView, RestService):
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'post']
 
     def get(self, request: HttpRequest, *args, **kwargs): # get all recent posts for author_id
@@ -105,6 +108,7 @@ class PostCreation(APIView, RestService):
 # endpoints with post_id and author_id
 @method_decorator(csrf_exempt, name='dispatch')
 class PostWithId(APIView, RestService):
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'post', 'delete', 'put']
 
     def get(self, request: HttpRequest, *args, **kwargs):

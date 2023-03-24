@@ -9,12 +9,13 @@ from django.utils.decorators import method_decorator
 
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowersAPI(APIView):
     """ GET an Author's all followers """
-
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get']
 
     def get(self, request, author_id):
@@ -32,6 +33,7 @@ class FollowersAPI(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowerAPI(View):
     """ GET if is a follower PUT a new follower DELETE an existing follower"""
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'put', 'delete']
     
     def delete(self, request, author_id, foreign_author_id):
