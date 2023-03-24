@@ -26,13 +26,13 @@ function EDITPOST({ obj, handleClose }) {
 	const stringify = (arr) => {
 		let str = "";
 		for (let i = 0; i < arr.length; i++) {
-			str = str + arr[i];
+			str = str + + arr[i];
 		}
 		return str;
 	};
 
 	useEffect(() => {
-		let x = stringify(obj.categories);
+		let x = (obj.categories).toString();
 		setText(obj.content);
 		setDescription(obj.description);
 		setTitle(obj.title);
@@ -139,7 +139,7 @@ function EDITPOST({ obj, handleClose }) {
 			description: description,
 			content: text,
 			contentType: post_type,
-			visiblity: post_status,
+			visibility: post_status,
 			categories: categories,
 		};
 		axios({ method: "post", url: url, data: params })

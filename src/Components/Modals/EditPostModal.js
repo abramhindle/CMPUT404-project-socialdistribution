@@ -8,11 +8,6 @@ import {
 	useToaster,
 	Message,
 } from "rsuite";
-import { ToastContainer, toast } from "react-toastify";
-import SearchIcon from "@rsuite/icons/Search";
-import axios from "axios";
-import { getAuthorId } from "../utils/auth";
-import CREATEPOST from "../Post/CreatePost";
 import EDITPOST from "../Post/EditPost";
 
 function EDITPOSTMODAL({ open, obj, handleClose }) {
