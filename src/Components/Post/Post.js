@@ -198,11 +198,9 @@ function POST({ postobj, edit }) {
 				obj={postobj}
 				handleClose={handleModalClose}
 			/>
-			{/* <LIKESMODAL
-				open={open}
-				obj={postobj}
-				handleClose={handleModalClose}
-			/> */}
+			<LIKESMODAL
+				postobj={postobj}
+			/>
 		</div>
 	);
 }

@@ -1,15 +1,15 @@
 import React, { useLayoutEffect, useState, IconButton, Message, useToaster } from "react";
+import TrashIcon from "@rsuite/icons/Trash";
 import { Avatar } from "rsuite";
 import axios from "axios";
 import { getAuthorId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-import TrashIcon from "@rsuite/icons/Trash";
-import PROFILEIMAGE from "./ProfileImage";
 
 function FRIENDS() {
 	const [friends, setFriends] = useState({ items: [] });
 	let navigate = useNavigate();
 	// const toaster = useToaster();
+
 
 	useLayoutEffect(() => {
 		if (!localStorage.getItem("loggedIn")) {
@@ -82,7 +82,14 @@ function FRIENDS() {
 						{obj["displayName"]}
 					</h5>
 				</div>
-
+				<div>
+					{/* <IconButton
+						style={{ float: "right", marginRight: "10px" }}
+						appearance="subtle"
+						onClick={handleDeleteFollower}
+						icon={<TrashIcon />}
+					/> */}
+				</div>
 			</div>
 		);
 	};

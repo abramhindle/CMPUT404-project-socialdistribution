@@ -415,14 +415,19 @@ def get_comments(request, pk_a, pk):
     return Response(serializer.data)
 
 
-@swagger_auto_schema( method='get',operation_summary="Get a partdsfdidsf of an author")
+@swagger_auto_schema( method='get',operation_summary="Get a likes of a post")
 @api_view(['GET'])
 def get_likes(request, pk_a, pk):
     """
     Get the list of likes on a post
     """
-    post = Post.objects.get(id=pk)
-    likes = Like.objects.filter(object=post.url)
+    try:
+        post = Post.objects.get(id=pk)
+    except Post.DoesNotExist:
+        error_msg = "Post does not exist"
+        return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
+    url = post.url[:-1] #TODO: Fix after slash issue
+    likes = Like.objects.filter(object=url)
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
