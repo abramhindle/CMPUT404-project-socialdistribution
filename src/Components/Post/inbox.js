@@ -63,7 +63,7 @@ function INBOX() {
 
 	async function handleClearInboxClick() {
 		const author_id = getAuthorId(null);
-		const url = `authors/${author_id}/inbox`;
+		const url = `authors/${author_id}/inbox/`;
 		await reqInstance({ method: "delete", url: url }).then((res) => {
 			if (res.status === 204) {
 				setInbox({ items: [] });

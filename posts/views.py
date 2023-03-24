@@ -152,6 +152,7 @@ response_schema_dictComments = {
 class post_list(APIView, PageNumberPagination):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
+
     # for pagination
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
@@ -167,7 +168,7 @@ class post_list(APIView, PageNumberPagination):
         author = Author.objects.get(id=pk_a)
         posts = Post.objects.filter(author=author)
         posts = self.paginate_queryset(posts, request)
-        authenticated_user = Author.objects.get(id=pk_a)
+        #authenticated_user = Author.objects.get(id=pk_a)
 
         # for post in posts:
         #     if "PRIVATE" in post.visibility:
@@ -186,7 +187,7 @@ class post_list(APIView, PageNumberPagination):
         #         if post.author != authenticated_user:
         #             posts.exclude(post)
         
-        #posts = self.paginate_queryset(posts, request) 
+        posts = self.paginate_queryset(posts, request) 
         # if authenticated_user not in post.author.friends:
         #     posts.exclude(post) 
 
@@ -223,8 +224,7 @@ class post_list(APIView, PageNumberPagination):
 
 class CommentDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    
+    permission_classes = [IsAuthenticated]    
     @swagger_auto_schema(operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
@@ -292,6 +292,7 @@ class post_detail(APIView, PageNumberPagination):
         except Post.DoesNotExist:
             error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        # TODO: FIX AFTER SLASH
         if post.url == post.origin:
             if post.author != _:
                 return Response("Cannot edit a post you didnt create", status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -328,7 +329,7 @@ class post_detail(APIView, PageNumberPagination):
             except:
                 error_msg = "Author not found"
                 return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-            post = Post.objects.filter(id=pk)
+            post = Post.objects.get(id=pk)
             if post.author != author:
                 return Response("Cannot delete a post you dont own", status=status.HTTP_405_METHOD_NOT_ALLOWED)
             post.delete()
@@ -364,7 +365,6 @@ class post_detail(APIView, PageNumberPagination):
 class LikedView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
-
     # TODO: RESPONSE AND REQUESTS
     
     @swagger_auto_schema(operation_summary="List all objects liked by author")
@@ -397,7 +397,6 @@ class LikedView(APIView):
 class CommentLikesView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
-
     """
     Get the list of likes on our comments
     """
@@ -405,7 +404,6 @@ class CommentLikesView(APIView):
     def get(self, request, pk_a, pk, pk_m):
         try:
             comment = Comment.objects.get(id=pk_m)
-            print("URL",comment.url)
         except Author.DoesNotExist:
             error_msg = "Comment not found"
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
@@ -597,7 +595,11 @@ class ShareView(APIView):
         new_post.save()
         share_object(new_post,sharing_author)
         serializer = PostSerializer(new_post)
-        return Response(serializer.data)
+        if serializer.is_valid():
+            comment = serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 def share_object(item, author):
     inbox_item = Inbox(content_object=item, author=author)
@@ -607,7 +609,7 @@ def share_object(item, author):
         for foreign_author in Author.objects.all().exclude(id=author.id):
             inbox_item = Inbox(content_object=item, author=foreign_author)
             inbox_item.save()
-    if (item.visibility == 'PRIVATE'):
+    if (item.visibility == 'FRIENDS'):
         for friend in author.friends.all():
             inbox_item = Inbox(content_object=item, author=friend)
             inbox_item.save()

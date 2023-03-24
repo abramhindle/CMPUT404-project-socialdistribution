@@ -54,7 +54,17 @@ function POST({ postobj, edit }) {
 
 	const notifySuccessPost = () => {
 		toaster.push(
-			<Message type="success">Successful Edited this post</Message>,
+			<Message type="success">Successful edited this post</Message>,
+			{
+				placement: "topEnd",
+				duration: 5000,
+			}
+		);
+	};
+
+	const notifySuccessDeletePost = () => {
+		toaster.push(
+			<Message type="success">Successfully deleted this post</Message>,
 			{
 				placement: "topEnd",
 				duration: 5000,
@@ -66,10 +76,10 @@ function POST({ postobj, edit }) {
 		const author_id = getAuthorId(null);
 		const origin_author_id = getAuthorId(postobj.author.id);
 		const post_id = getAuthorId(postobj.id);
-		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}`;
+		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}/`;
 		reqInstance({ method: "post", url: url })
 			.then((res) => {
-				if (res.status === 204) {
+				if (res.status === 200) {
 					notifySuccessPost();
 				} else {
 					notifyFailedPost(res.data);
@@ -92,7 +102,7 @@ function POST({ postobj, edit }) {
 		reqInstance({ method: "delete", url: url })
 			.then((res) => {
 				if (res.status === 204) {
-					notifySuccessPost();
+					notifySuccessDeletePost();
 				} else {
 					notifyFailedPost(res.data);
 				}

@@ -9,8 +9,7 @@ function LIKE({ postObj }) {
 	// const [like, set_like] = useState(likeobj);
 	const [new_like, set_new_like] = useState("");
 	const toaster = useToaster();
-	const postObjUrl = postObj.url;
-
+	const postObjUrl = postObj.id;
 	//Confirm the name of the button
 	const handleSubmitClick = () => {
 		const FAID = getAuthorId(postObj.author["id"]);
@@ -20,7 +19,7 @@ function LIKE({ postObj }) {
 			author_id: author_id,
 			object: postObjUrl,
 		};
-		const url = `authors/${FAID}/inbox`;
+		const url = `authors/${FAID}/inbox/`;
 
 		//Confirm what to add into the params and send inbox
 		reqInstance({ method: "post", url: url, data: params })

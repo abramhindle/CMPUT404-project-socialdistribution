@@ -170,9 +170,9 @@ function CREATEPOST() {
 			visibility: post_status,
 		};
 
-		if (post_status === "PRIVATE") {
-			console.log(authors);
-			params["authors"] = authors;
+		if (post_status === 'PRIVATE') {
+			params['authors'] = authors;
+
 		}
 		var imagefile = "";
 		if (post_type === "image/png" || post_type === "image/jpeg") {

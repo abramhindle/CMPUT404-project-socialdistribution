@@ -22,7 +22,7 @@ function COMMENTS({ postobj }) {
 	useLayoutEffect(() => {
 		const author_id = getAuthorId(null);
 		const post_id = getAuthorId(postObj.id);
-		getComments(`posts/authors/${author_id}/posts/${post_id}/comments`);
+		getComments(`posts/authors/${author_id}/posts/${post_id}/comments/`);
 	}, []);
 
 	const handleSubmitClick = () => {

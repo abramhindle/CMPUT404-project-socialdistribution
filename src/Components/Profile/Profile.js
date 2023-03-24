@@ -15,7 +15,12 @@ import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
 import { reqInstance } from "../utils/axios";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
-import { getAuthorId, getCsrfToken, getProfileImageUrl } from "../utils/auth";
+import {
+	getAuthorId,
+	getCsrfToken,
+	getProfileImageUrl,
+	setCurrentUser,
+} from "../utils/auth";
 import PROFILEIMAGE from "./ProfileImage";
 
 function PROFILE() {
@@ -29,6 +34,7 @@ function PROFILE() {
 	const [open, setOpen] = useState(false);
 	const [imageurl, setImage] = useState("");
 	const [giturl, setGiturl] = useState("");
+	const [count, setCount] = useState(0);
 	let toaster = useToaster();
 
 	useEffect(() => {
@@ -96,7 +102,7 @@ function PROFILE() {
 			.then((res) => {
 				notifySuccessPost("successfully upadated the giturl");
 			})
-			.error((err) => notifyFailedPost(err));
+			.catch((err) => notifyFailedPost(err));
 	}
 
 	async function handleImageClick() {
@@ -108,9 +114,10 @@ function PROFILE() {
 			data: { profileImage: imageurl },
 		})
 			.then((res) => {
+				setCurrentUser(res.data).then(setCount(count + 1));
 				notifySuccessPost("successfully upadated the profile url");
 			})
-			.error((err) => notifyFailedPost(err));
+			.catch((err) => notifyFailedPost(err.data));
 	}
 
 	return (

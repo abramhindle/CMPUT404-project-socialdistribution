@@ -13,17 +13,15 @@ function FOLLOWREQ({ obj }) {
 		var FAID = getAuthorId(obj.actor.id);
 		const url2 = obj;
 
-		console.log(curr_author_id);
-		console.log(url2);
-		console.log(FAID);
-
 		const params = {};
-		const url = `authors/${curr_author_id}/followers/${FAID}`;
+		const url = `authors/${curr_author_id}/followers/${FAID}/`;
 
 		reqInstance({ method: "put", url: url, data: params })
 			.then((res) => {
 				toaster.push(
-					<Message type="success">User now follows you</Message>,
+					<Message type="success">
+						{res.data.displayName} now follows you
+					</Message>,
 					{
 						placement: "topEnd",
 						duration: 5000,
