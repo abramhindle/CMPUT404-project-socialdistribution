@@ -18,7 +18,7 @@ import mimetypes
 
 mimetypes.add_type("application/javascript", ".js", True)
 
-APP_NAME = 'http://127.0.0.1:8000'
+APP_NAME = 'https://sociallydistributed.herokuapp.com'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +31,8 @@ SECRET_KEY = '(e42^@_2fo+3!4%3y9t@50j#)ljo8+7r3_6e$z*p960-1-+g@y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+APPEND_SLASH = True
 
 # Application definition
 INSTALLED_APPS = [

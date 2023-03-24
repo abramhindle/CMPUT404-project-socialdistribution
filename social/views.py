@@ -18,6 +18,10 @@ from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+
 custom_parameter = openapi.Parameter(
     name='custom_param',
     in_=openapi.IN_QUERY,
@@ -32,7 +36,8 @@ from django.views import View
 from django.http import HttpResponse, HttpResponseNotFound
 import os
 
-
+@authentication_classes([])
+@permission_classes([])
 class register(APIView):
     def post(self, request):
         """Register a django user to make them an author"""
@@ -52,14 +57,15 @@ class register(APIView):
             if 'unique constraint' in e.args:
                return(Response("display name already in use", status=status.HTTP_400_BAD_REQUEST)) 
 
-
+@authentication_classes([])
+@permission_classes([])
 class login(APIView):
     def post(self, request):
         """deals with user auth"""
         username = request.data['username']
         password = request.data['password']
         auth = AllowAllUsersModelBackend()
-
+    
         user = auth.authenticate(request=request, username=username, password= password)
         if not user:
             return Response("user not registered", status=status.HTTP_401_UNAUTHORIZED)
@@ -75,6 +81,8 @@ def csrf(request):
     return JsonResponse({'csrfToken': get_token(request)})
     
 # class logout(APIView):
+@authentication_classes([])
+@permission_classes([])
 def logout_view(request):
     logout(request)
     return Response( status=status.HTTP_202_ACCEPTED)

@@ -1,4 +1,8 @@
 from django.http import HttpResponseRedirect
+from author.basic_auth import BasicAuthenticator
+from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse,reverse_lazy
 from django.views import generic
@@ -7,7 +11,7 @@ from django.views.generic import ListView,DetailView,CreateView,UpdateView,Delet
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import *
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from .serializers import *
 from .pagination import PostSetPagination
@@ -146,6 +150,8 @@ response_schema_dictComments = {
     )}
 
 class post_list(APIView, PageNumberPagination):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     # for pagination
     serializer_class = PostSerializer
@@ -162,7 +168,7 @@ class post_list(APIView, PageNumberPagination):
         author = Author.objects.get(id=pk_a)
         posts = Post.objects.filter(author=author)
         posts = self.paginate_queryset(posts, request)
-        authenticated_user = Author.objects.get(id=pk_a)
+        #authenticated_user = Author.objects.get(id=pk_a)
 
         # for post in posts:
         #     if "PRIVATE" in post.visibility:
@@ -181,7 +187,7 @@ class post_list(APIView, PageNumberPagination):
         #         if post.author != authenticated_user:
         #             posts.exclude(post)
         
-        #posts = self.paginate_queryset(posts, request) 
+        posts = self.paginate_queryset(posts, request) 
         # if authenticated_user not in post.author.friends:
         #     posts.exclude(post) 
 
@@ -219,7 +225,8 @@ class post_list(APIView, PageNumberPagination):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentDetailView(APIView):
-    
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]    
     @swagger_auto_schema(operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
@@ -287,6 +294,7 @@ class post_detail(APIView, PageNumberPagination):
         except Post.DoesNotExist:
             error_msg = "Post not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        # TODO: FIX AFTER SLASH
         if post.url == post.origin:
             if post.author != _:
                 return Response("Cannot edit a post you didnt create", status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -323,7 +331,7 @@ class post_detail(APIView, PageNumberPagination):
             except:
                 error_msg = "Author not found"
                 return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
-            post = Post.objects.filter(id=pk)
+            post = Post.objects.get(id=pk)
             if post.author != author:
                 return Response("Cannot delete a post you dont own", status=status.HTTP_405_METHOD_NOT_ALLOWED)
             post.delete()
@@ -357,7 +365,8 @@ class post_detail(APIView, PageNumberPagination):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LikedView(APIView):
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     # TODO: RESPONSE AND REQUESTS
     
     @swagger_auto_schema(operation_summary="List all objects liked by author")
@@ -388,7 +397,8 @@ class LikedView(APIView):
         return(dict) 
     
 class CommentLikesView(APIView):
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     """
     Get the list of likes on our comments
     """
@@ -396,7 +406,6 @@ class CommentLikesView(APIView):
     def get(self, request, pk_a, pk, pk_m):
         try:
             comment = Comment.objects.get(id=pk_m)
-            print("URL",comment.url)
         except Author.DoesNotExist:
             error_msg = "Comment not found"
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
@@ -406,6 +415,8 @@ class CommentLikesView(APIView):
 
 @swagger_auto_schema( method='get', operation_summary="Get the comments on a post")
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_comments(request, pk_a, pk):
     """
     Get the list of comments on the post
@@ -419,6 +430,8 @@ def get_comments(request, pk_a, pk):
 
 @swagger_auto_schema( method='get',operation_summary="Get a partdsfdidsf of an author")
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_likes(request, pk_a, pk):
     """
     Get the list of likes on a post
@@ -430,6 +443,8 @@ def get_likes(request, pk_a, pk):
 
 # hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
     def get(self, request, pk_a, pk):
@@ -473,6 +488,8 @@ class ImageView(APIView):
             return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
         
 class CommentView(APIView, PageNumberPagination):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = CommentSerializer
     pagination_class = PostSetPagination
     page_size_query_param = 'page_size'
@@ -536,6 +553,8 @@ class CommentView(APIView, PageNumberPagination):
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
 
 class ShareView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request, origin_author, post_id, author):       
         
         try:
@@ -577,7 +596,11 @@ class ShareView(APIView):
         # this shared_user here is blank
         share_object(new_post,sharing_author,[])
         serializer = PostSerializer(new_post)
-        return Response(serializer.data)
+        if serializer.is_valid():
+            comment = serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 # share a post to an inbox
 def share_object(item, author, shared_user):

@@ -27,7 +27,6 @@ class PostSerializer(WritableNestedModelSerializer):
 
     def to_representation(self, instance):
         id = instance.get_public_id()
-        id = id[:-1] if id.endswith('/') else id
         categories_list = instance.categories.split(",")
         comments_list = Comment.objects.filter(post=instance).order_by('-published')[0:5]
         commentsSrc = [CommentSerializer(comment,many=False).data for comment in comments_list]

@@ -9,7 +9,7 @@ import {
 	Button,
 	CheckPicker,
 } from "rsuite";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import "react-toastify/dist/ReactToastify.css";
 import { getAuthorId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
@@ -26,31 +26,39 @@ function CREATEPOST() {
 	const [markdown, setMarkdown] = useState("");
 	const [authors, setAuthors] = useState({ items: [] });
 	let navigate = useNavigate();
-	const [friends, setFriends] = useState({ items: [] });
 	const toaster = useToaster();
 	const data = friends.items.map((item) => ({
 		label: item["displayName"],
 		value: item["displayName"],
 	}));
 	const [image64, set_image64] = useState("");
+	const [data, setData] = useState([]);
 
 	function handleClick(eventkey) {
 		set_post_status(eventkey);
-		if (eventkey === 'PRIVATE') {
+		if (eventkey === "PRIVATE") {
 			setDisabled(false);
-		} else { setDisabled(true) }
+		} else {
+			setDisabled(true);
+		}
 	}
+
 	useLayoutEffect(() => {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
 		} else {
 			const AUTHOR_ID = getAuthorId(null);
 			const url = `authors/${AUTHOR_ID}/followers/`;
-			axios({
+			reqInstance({
 				method: "get",
 				url: url,
 			}).then((res) => {
-				setFriends(res.data);
+				setData(
+					res.data.items.map((item) => ({
+						label: item["displayName"],
+						value: item["displayName"],
+					}))
+				);
 			});
 		}
 	}, []);
@@ -168,7 +176,6 @@ function CREATEPOST() {
 		};
 
 		if (post_status === 'PRIVATE') {
-			// console.log(authors);
 			params['authors'] = authors;
 
 		}
@@ -187,7 +194,7 @@ function CREATEPOST() {
 			params["categories"] = categories;
 		}
 
-		axios({ method: "post", url: url, data: params })
+		reqInstance({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
 					notifySuccessPost();

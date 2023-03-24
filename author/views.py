@@ -1,6 +1,7 @@
+from django.db import IntegrityError
 from django.forms import model_to_dict
 from django.shortcuts import render
-
+from .basic_auth import BasicAuthenticator
 # Create your views here.
 
 from django.http import HttpResponseRedirect
@@ -14,8 +15,7 @@ from posts.serializers import *
 from .models import *
 from .serializers import *
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -26,6 +26,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 custom_parameter = openapi.Parameter(
     name='custom_param',
@@ -87,6 +88,8 @@ response_schema_dict = {
 
 
 class AuthorsListView(APIView, PageNumberPagination):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     # for pagination
     page_size = 10
     page_size_query_param = 'size'
@@ -98,6 +101,12 @@ class AuthorsListView(APIView, PageNumberPagination):
         """
         Get the list of authors on our website
         """
+        content = {
+
+            'user':str(request.user),
+
+            'auth': str(request.auth)
+        }
         
         authors = Author.objects.all()
         authors=self.paginate_queryset(authors, request) 
@@ -105,6 +114,10 @@ class AuthorsListView(APIView, PageNumberPagination):
         return self.get_paginated_response(serializer.data)
 
 class AuthorView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
     def validate(self, data):
         try:
             if 'displayName' not in data:
@@ -134,6 +147,7 @@ class AuthorView(APIView):
         """
         Update the authors profile
         """
+
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
@@ -141,7 +155,7 @@ class AuthorView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
            
         serializer = AuthorSerializer(author,data=request.data,partial=True)
-        
+         
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)                
@@ -149,6 +163,8 @@ class AuthorView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class FollowersView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = AuthorSerializer
 
     # The get function is called witha  get request. The function is called by using 
@@ -228,18 +244,8 @@ class FollowersView(APIView):
         except:
             pass
 
-        followers = author.friends.all()
-        followers_list = []
-        for follower in followers:
-            try: 
-                follower_author = Author.objects.get(id=follower.id)
-            except Author.DoesNotExist:
-                error_msg = "Follower id not found"
-                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
-            followers_list.append(follower_author.follower_to_object())
-        serializer = AuthorSerializer(follower_author)
         # return the new list of followers
-        return Response(serializer.data)
+        return Response(new_follower.follower_to_object())
 
     #For the delete request we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id
     #Implement later after talking to group 
@@ -278,6 +284,8 @@ class FollowersView(APIView):
 
 #request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 class FriendRequestView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
     
     def post(self,request,pk_a):
@@ -304,6 +312,10 @@ class FriendRequestView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
 class ViewRequests(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
     # @permission_classes([IsAuthenticated])
     def get(self,request,pk_a):
@@ -323,6 +335,8 @@ class ViewRequests(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
 class InboxSerializerObjects:
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def serialize_inbox_objects(self, item, context={}):
         # return the serializer data of all objects in inbox
         object_model = item.content_type.model_class()
@@ -368,7 +382,8 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     """
         URL: author/auhor_id/inbox
     """
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = InboxSerializer
     pagination_class = InboxSetPagination
 
@@ -453,6 +468,8 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         return(dict) 
 
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def getAuthor(request, displayName):
     """
     Get the list of comments on our website
@@ -460,3 +477,34 @@ def getAuthor(request, displayName):
     author = Author.objects.get(displayName=displayName)
     serializer = AuthorSerializer(author,partial=True)
     return Response(serializer.data)
+
+class registerNode(APIView):
+    def post(self, request):
+        """Register a django user to make them a Node"""
+        '''In the data provide "username":"the username they chose", 
+        "email":"Their email they provided", 
+        "password":"Their Password",
+        "url":"url to their site"
+        
+          '''
+        #   {"username":"jacob_node1", 
+        # "email":"jacob@node1", 
+        # "password":"jacobs_node1",
+        # "url":"url to their site"}
+
+        id_ = str(uuid.uuid4())
+        username = request.data['username']
+        email = request.data['email']
+        password = request.data['password']
+        application_url = request.data['url']
+        try:
+            #create a new user object
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.is_active = False
+            user.save()
+            node = Node(user=user, id = id_, name= 'Node', url=application_url)
+            node.save()
+            return Response("created", status=status.HTTP_201_CREATED)
+        except IntegrityError as e: 
+            print(e)
+            return Response("display name already in use", status=status.HTTP_400_BAD_REQUEST)

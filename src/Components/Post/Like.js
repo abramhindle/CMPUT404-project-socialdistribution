@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { IconButton, useToaster, Message } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { getAuthorId } from "../utils/auth";
 
 // Component Imports
@@ -9,8 +9,7 @@ function LIKE({ postObj }) {
 	// const [like, set_like] = useState(likeobj);
 	const [new_like, set_new_like] = useState("");
 	const toaster = useToaster();
-	const postObjUrl = postObj.url;
-
+	const postObjUrl = postObj.id;
 	//Confirm the name of the button
 	const handleSubmitClick = () => {
 		const FAID = getAuthorId(postObj.author["id"]);
@@ -20,10 +19,10 @@ function LIKE({ postObj }) {
 			author_id: author_id,
 			object: postObjUrl,
 		};
-		const url = `authors/${FAID}/inbox`;
+		const url = `authors/${FAID}/inbox/`;
 
 		//Confirm what to add into the params and send inbox
-		axios({ method: "post", url: url, data: params })
+		reqInstance({ method: "post", url: url, data: params })
 			.then((res) => {
 				toaster.push(
 					<Message type="success">Successful Like</Message>,
