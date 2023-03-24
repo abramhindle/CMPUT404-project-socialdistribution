@@ -755,11 +755,11 @@ class PostLikesView(APIView):
     @swagger_auto_schema(operation_summary="Get the likes on a post")
     @authentication_classes([BasicAuthentication])
     @permission_classes([IsAuthenticated])
-    def get(request, pk_a, pk):
+    def get(request, pk_a):
         """
         Get the list of likes on a post
         """
-        post = Post.objects.get(id=pk)
+        post = Post.objects.get(id=request[""])
         likes = Like.objects.filter(object=post.url)
         serializer = LikeSerializer(likes, many=True)
         return Response(serializer.data)

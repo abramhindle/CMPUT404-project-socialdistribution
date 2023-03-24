@@ -59,7 +59,7 @@ def getNodeAuthor_Yoshi(author_id):
 # getNodeAuthor_Yoshi('29c546d45f564a27871838825e3dbecb')
 
 def getNodeAuthor_social_distro(author_id):
-    url = 'https://social-distro.herokuapp.com/api/authors/'
+    url = 'https://social-distro.herokuapp.com/api/authors/https://social-distro.herokuapp.com/authors/'
 
     url = url + author_id
 
@@ -67,7 +67,7 @@ def getNodeAuthor_social_distro(author_id):
     status_code = response.status_code
     if status_code == 200:
         json_response = response.json()
-        return(json_response)
+        return(json_response, status_code)
     else: return (None, status_code)
 
 ####### GET POSTS
