@@ -24,5 +24,20 @@ yarn-error.log*
 
 package-lock.json
 db.sqlite3
+<<<<<<< HEAD
+db.sqlite3
+social/__pycache__
+db.sqlite3
+social/__pycache__/views.cpython-311.pyc
+social/__pycache__/views.cpython-311.pyc
+db.sqlite3
+posts/__pycache__/views.cpython-311.pyc
+social/__pycache__/settings.cpython-311.pyc
+social/__pycache__/views.cpython-311.pyc
+__pycache__/
+social/__pycache__
+db.sqlite3
+=======
 __pycache__
 
+>>>>>>> origin/dev
