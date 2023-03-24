@@ -8,6 +8,7 @@ import {
 	setCurrentUser,
 	setLoggedIn,
 	unsetCurrentUser,
+	setCreds,
 } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -54,6 +55,7 @@ function LOGIN() {
 				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();
 				setLoggedIn(true);
+				setCreds(params);
 			})
 			.catch((err) => notifyFailedPost(err.response.data));
 	}

@@ -1,6 +1,7 @@
+from django.db import IntegrityError
 from django.forms import model_to_dict
 from django.shortcuts import render
-
+from .basic_auth import BasicAuthenticator
 # Create your views here.
 
 from django.http import HttpResponseRedirect
@@ -14,8 +15,7 @@ from posts.serializers import *
 from .models import *
 from .serializers import *
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -26,6 +26,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 custom_parameter = openapi.Parameter(
     name='custom_param',
@@ -36,68 +37,178 @@ custom_parameter = openapi.Parameter(
 )
 
 
-response_schema_dict = {
-    "200": openapi.Response(
-        description="Successful Operation",
+GetAuthorsExample={
+    200: openapi.Response(
+        description='Success response',
         examples={
-            "application/json": {
-        "type": "author",
-        "id": "866ff975-bb49-4c75-8cc8-10e2a6af44a0",
-        "displayName": "Fahad",
-        "url": "",
-        "profileImage": ""
+            'application/json': {
+  "count": 2,
+  "next": 'null',
+  "previous": 'null',
+  "results": [
+    {
+      "type": "author",
+      "id": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+      "url": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+      "host": "",
+      "displayName": "LaraCroft",
+      "github": "",
+      "profileImage": ""
+    },
+    {
+      "type": "author",
+      "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+      "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+      "host": "",
+      "displayName": "TomHardy",
+      "github": "",
+      "profileImage": ""
     }
+  ]
+}
         }
-    )}
+    )
+}
 
-response_schema_dict = {
-    "200": openapi.Response(
-        description="Successful Operation",
+
+
+
+OneAuthor = {
+    200: openapi.Response(
+        description='Success response',
         examples={
-            "application/json": {
-            "type": "inbox",
-            "author": "http://127.0.0.1:8000/authors/a1",
-            "items": [
-                {
-                    "type": "post",
-                    "title": "A post title about a post about web dev",
-                    "id": "http://127.0.0.1:8000/posts/authors/a2/posts/p2",
-                    "source": "",
-                    "origin": "",
-                    "description": "This post discusses stuff -- brief",
-                    "contentType": "text/plain",
-                    "content": "Example content",
-                    "author": {
-                        "type": "author",
-                        "id": "http://127.0.0.1:8000/authors/a2",
-                        "displayName": "NewLeen",
-                        "profileImage": ""
-                    },
-                    "categories": [
-                        ""
-                    ],
-                    "comments": "http://127.0.0.1:8000/posts/authors/a2/posts/p2/comments/",
-                    "published": "2023-03-07T14:07:52.316462-07:00",
-                    "visibility": "PUBLIC"
-                },
-                ]
-            }
+            'application/json': {
+  "type": "author",
+  "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+  "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+  "host": "",
+  "displayName": "TomHardy",
+  "github": "",
+  "profileImage": ""
+}
         }
-    )}
+    )
+}
+
+OneAuthorUpdated = {
+    200: openapi.Response(
+        description='Successfully updated/added author',
+        examples={
+            'application/json': {
+  "type": "author",
+  "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+  "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+  "host": "",
+  "displayName": "TomHardyUpdated",
+  "github": "",
+  "profileImage": ""
+}
+        }
+    )
+}
+
+FollowersGet = {
+    200: openapi.Response(
+        description='Sucessfully retrieve followers',
+        examples={'application/json': {
+  "type": "followers",
+  "items": [
+    {
+      "type": "author",
+      "id": "cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+      "url": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+      "host": "",
+      "displayName": "LaraCroft",
+      "github": "",
+      "profileImage": ""
+    }
+  ]
+}}
+    )
+}
+
+InboxPOST = {
+    200: openapi.Response(
+        description='Sucessfully rPost to inbox',
+        examples={'application/json': {
+  "request": {
+    "type": "Follow",
+    "actor": {
+      "id": "cfd9d228-44df-4a95-836f-c0cb050c7ad6"
+    },
+    "object": {
+      "id": "971fa387-b101-4276-891f-d970f2cf0cad"
+    }
+  },
+  "saved": {
+    "author": "971fa387-b101-4276-891f-d970f2cf0cad",
+    "content_type": 6,
+    "object_id": 1
+  }
+}}
+    )
+}
+
+InboxGet = {
+    200: openapi.Response(
+        description='Sucessfully retrieve Inbox',
+        examples={'application/json': {
+  "count": 1,
+  "next": 'null',
+  "previous":'null',
+  "results": {
+    "type": "inbox",
+    "author": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+    "items": [
+      {
+        "type": "Follow",
+        "summary": "LaraCroft wants to follow TomHardyUpdated",
+        "actor": {
+          "type": "author",
+          "id": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+          "url": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+          "host": "",
+          "displayName": "LaraCroft",
+          "github": "",
+          "profileImage": ""
+        },
+        "object": {
+          "type": "author",
+          "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+          "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+          "host": "",
+          "displayName": "TomHardyUpdated",
+          "github": "",
+          "profileImage": ""
+        }
+      }
+    ]
+  }
+}}
+    )
+}
 
 
 class AuthorsListView(APIView, PageNumberPagination):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     # for pagination
     page_size = 10
     page_size_query_param = 'size'
     max_page_size = 100
 
-    @swagger_auto_schema(operation_summary="List of Authors registered")
+    @swagger_auto_schema(responses= GetAuthorsExample,operation_summary="List of Authors registered")
     def get(self, request):
         
         """
         Get the list of authors on our website
         """
+        content = {
+
+            'user':str(request.user),
+
+            'auth': str(request.auth)
+        }
         
         authors = Author.objects.all()
         authors=self.paginate_queryset(authors, request) 
@@ -105,6 +216,10 @@ class AuthorsListView(APIView, PageNumberPagination):
         return self.get_paginated_response(serializer.data)
 
 class AuthorView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
     def validate(self, data):
         try:
             if 'displayName' not in data:
@@ -114,7 +229,7 @@ class AuthorView(APIView):
             error_msg = "Author id not found"
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
-    @swagger_auto_schema(operation_summary="Finds Author by iD")
+    @swagger_auto_schema(responses= OneAuthor, operation_summary="Finds Author by iD")
     def get(self, request, pk_a):
 
         """
@@ -129,7 +244,9 @@ class AuthorView(APIView):
         serializer = AuthorSerializer(author,partial=True)
         return  Response(serializer.data)
     
-    @swagger_auto_schema(operation_summary="Update a particular Authors profile",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
+    @swagger_auto_schema(responses = OneAuthorUpdated, operation_summary="Update a particular Authors profile",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request', example={
+                'displayName': 'TomHardyUpdated'
+            }))
     def post(self, request, pk_a):
         """
         Update the authors profile
@@ -150,13 +267,17 @@ class AuthorView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class FollowersView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = AuthorSerializer
 
     # The get function is called witha  get request. The function is called by using 
     # ://authors/authors/{AUTHOR_ID}/followers/ to get a list of followers
     # or call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/ to check if foriegn author is following author
     #Implement later after talking to group 
+    
     # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Followers")
+    @swagger_auto_schema(responses=FollowersGet, operation_summary="List of Followers")
     def get(self, request, pk_a, pk=None):
         try:
             author = Author.objects.get(id=pk_a)
@@ -205,6 +326,7 @@ class FollowersView(APIView):
     #Implement later after talking to group 
     # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="New Follower")
     #request_body=openapi.Schema( operation_summary = "type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
+    @swagger_auto_schema(responses = OneAuthorUpdated, operation_summary="Add to followers",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
     def put(self, request, pk_a, pk):
         try:
             author = Author.objects.get(id=pk_a)
@@ -235,6 +357,7 @@ class FollowersView(APIView):
     #For the delete request we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id
     #Implement later after talking to group 
     # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="Delete Follower")
+    @swagger_auto_schema(operation_summary="Delete followers in the request")
     def delete(self, request, pk_a, pk):
         try:
             author = Author.objects.get(id=pk_a)
@@ -259,6 +382,8 @@ class FollowersView(APIView):
 
 #request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
 class FriendRequestView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
     
     def post(self,request,pk_a):
@@ -285,6 +410,10 @@ class FriendRequestView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
 class ViewRequests(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
     # @permission_classes([IsAuthenticated])
     def get(self,request,pk_a):
@@ -304,6 +433,8 @@ class ViewRequests(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
 
 class InboxSerializerObjects:
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def serialize_inbox_objects(self, item, context={}):
         # return the serializer data of all objects in inbox
         object_model = item.content_type.model_class()
@@ -349,11 +480,12 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
     """
         URL: author/auhor_id/inbox
     """
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = InboxSerializer
     pagination_class = InboxSetPagination
 
-    @swagger_auto_schema(operation_summary="Get all the objects in the inbox")
+    @swagger_auto_schema(responses = InboxGet, operation_summary="Get all the objects in the inbox")
     def get(self, request, pk_a):
         # GET all objects in inbox, only need auth in request
 
@@ -366,8 +498,12 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         # TODO: Fix pagination
         return self.get_paginated_response(data)
     
-    @swagger_auto_schema(operation_summary="Post a new object to the inbox",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
-
+    
+    @swagger_auto_schema(responses = InboxPOST, operation_summary="Post a new object to the inbox",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request', example = {
+        "type": "Follow",
+        "actor":{"id":"cfd9d228-44df-4a95-836f-c0cb050c7ad6"},
+        "object":{"id":"971fa387-b101-4276-891f-d970f2cf0cad"}
+        }))
     def post(self, request, pk_a):
         """
             POST a new object to inbox
@@ -434,10 +570,43 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         return(dict) 
 
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def getAuthor(request, displayName):
     """
-    Get the list of comments on our website
+    Details of a particular author
     """
     author = Author.objects.get(displayName=displayName)
     serializer = AuthorSerializer(author,partial=True)
     return Response(serializer.data)
+
+class registerNode(APIView):
+    def post(self, request):
+        """Register a django user to make them a Node"""
+        '''In the data provide "username":"the username they chose", 
+        "email":"Their email they provided", 
+        "password":"Their Password",
+        "url":"url to their site"
+        
+          '''
+        #   {"username":"jacob_node1", 
+        # "email":"jacob@node1", 
+        # "password":"jacobs_node1",
+        # "url":"url to their site"}
+
+        id_ = str(uuid.uuid4())
+        username = request.data['username']
+        email = request.data['email']
+        password = request.data['password']
+        application_url = request.data['url']
+        try:
+            #create a new user object
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.is_active = False
+            user.save()
+            node = Node(user=user, id = id_, name= 'Node', url=application_url)
+            node.save()
+            return Response("created", status=status.HTTP_201_CREATED)
+        except IntegrityError as e: 
+            print(e)
+            return Response("display name already in use", status=status.HTTP_400_BAD_REQUEST)

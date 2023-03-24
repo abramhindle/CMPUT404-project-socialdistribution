@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Input, Panel, InputGroup, Message, useToaster } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { getCsrfToken } from "../utils/auth";
 
 function REGISTER() {
@@ -39,11 +39,7 @@ function REGISTER() {
 			email: email,
 		};
 		getCsrfToken();
-		const token = localStorage.getItem("token");
 
-		let reqInstance = axios.create({
-			headers: { "X-CSRFToken": token },
-		});
 		reqInstance({ method: "post", url: "dregister", data: params })
 			.then((res) => {
 				notifySuccessPost("Registration Successful");

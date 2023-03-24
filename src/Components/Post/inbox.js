@@ -5,7 +5,7 @@ import CREATEPOST from "./CreatePost";
 import LIKEINBOX from "./LikeInbox";
 import { Navbar, Nav, Panel, useToaster, Message } from "rsuite";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import FOLLOWREQ from "./FollowReq";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
 import { getAuthorId, getCsrfToken, unsetCurrentUser } from "../utils/auth";
@@ -24,7 +24,7 @@ function INBOX() {
 		} else {
 			const author_id = getAuthorId(null);
 			const url = `authors/${author_id}/inbox/`;
-			axios({ method: "get", url: url }).then((res) => {
+			reqInstance({ method: "get", url: url }).then((res) => {
 				setInbox(res.data.results);
 			});
 		}
@@ -53,11 +53,6 @@ function INBOX() {
 	};
 
 	async function handleLogoutClick() {
-		await getCsrfToken();
-		const token = localStorage.getItem("token");
-		let reqInstance = axios.create({
-			headers: { "X-CSRFToken": token },
-		});
 		reqInstance.post("dlogout/").then((res) => {
 			if (res.status === 200) {
 				unsetCurrentUser();
@@ -69,7 +64,7 @@ function INBOX() {
 	async function handleClearInboxClick() {
 		const author_id = getAuthorId(null);
 		const url = `authors/${author_id}/inbox/`;
-		await axios({ method: "delete", url: url }).then((res) => {
+		await reqInstance({ method: "delete", url: url }).then((res) => {
 			if (res.status === 204) {
 				setInbox({ items: [] });
 			}

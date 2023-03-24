@@ -1,4 +1,8 @@
 from django.http import HttpResponseRedirect
+from author.basic_auth import BasicAuthenticator
+from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse,reverse_lazy
 from django.views import generic
@@ -7,7 +11,7 @@ from django.views.generic import ListView,DetailView,CreateView,UpdateView,Delet
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import *
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from .serializers import *
 from .pagination import PostSetPagination
@@ -145,7 +149,334 @@ response_schema_dictComments = {
         }
     )}
 
+
+
+ObjectsLikedGet = {
+    200: openapi.Response(
+        description='Sucessfully retrieve Liked objects',
+        examples={'application/json': {
+  "type": "liked",
+  "items": [
+    {
+      "summary": "TomHardyUpdated Likes your post",
+      "type": "Like",
+      "author": {
+        "type": "author",
+        "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+        "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+        "host": "",
+        "displayName": "TomHardyUpdated",
+        "github": "",
+        "profileImage": ""
+      },
+      "object": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561"
+    }
+  ]
+}}
+    )
+}
+
+PostsGet = {
+    "200": openapi.Response(
+        description="Successfully retrieved posts",
+        examples={
+            "application/json": {
+  "count": 1,
+  "next": 'null',
+  "previous": 'null',
+  "results": [
+    {
+      "type": "post",
+      "title": "Testing",
+      "id": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561",
+      "source": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561",
+      "origin": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561",
+      "description": "Good",
+      "contentType": "text/plain",
+      "content": "Yes",
+      "author": {
+        "type": "author",
+        "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+        "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+        "host": "",
+        "displayName": "TomHardyUpdated",
+        "github": "",
+        "profileImage": ""
+      },
+      "categories": [
+        "Hi"
+      ],
+      "count": 0,
+      "comments": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561/comments/",
+      "commentsSrc": [],
+      "published": "2023-03-23T15:18:18.709951-07:00",
+      "visibility": "PUBLIC"
+    }
+  ]
+}
+        }
+
+    )}
+
+PostsPOST = {
+    "200": openapi.Response(
+        description="Successfully created post",
+        examples={
+            "application/json": {
+  "type": "post",
+  "title": "test",
+  "id": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "source": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "origin": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "description": "testing testy test",
+  "contentType": "text/plain",
+  "content": "test",
+  "author": {
+    "type": "author",
+    "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+    "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+    "host": "",
+    "displayName": "TomHardyUpdated",
+    "github": "",
+    "profileImage": ""
+  },
+  "categories": [
+    ""
+  ],
+  "count": 0,
+  "comments": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece/comments/",
+  "commentsSrc": [],
+  "published": "2023-03-23T16:39:41.602108-07:00",
+  "visibility": "PUBLIC"
+}
+        }
+
+    )}
+
+IndividualPOSTGet = {
+    "200": openapi.Response(
+        description="Successfully Retrieved individual post",
+        examples={
+            "application/json": {
+  "type": "post",
+  "title": "test",
+  "id": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "source": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "origin": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "description": "testing testy test",
+  "contentType": "text/plain",
+  "content": "test",
+  "author": {
+    "type": "author",
+    "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+    "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+    "host": "",
+    "displayName": "TomHardyUpdated",
+    "github": "",
+    "profileImage": ""
+  },
+  "categories": [
+    ""
+  ],
+  "count": 0,
+  "comments": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece/comments/",
+  "commentsSrc": [],
+  "published": "2023-03-23T16:39:41.602108-07:00",
+  "visibility": "PUBLIC"
+}
+        }
+
+    )}
+
+IndividualPOSTPost = {
+    "200": openapi.Response(
+        description="Successfully Updated individual post",
+        examples={
+            "application/json": {
+  "type": "post",
+  "title": "Updated POST!!!",
+  "id": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "source": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "origin": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece",
+  "description": "testing testy test",
+  "contentType": "text/plain",
+  "content": "test",
+  "author": {
+    "type": "author",
+    "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+    "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+    "host": "",
+    "displayName": "TomHardyUpdated",
+    "github": "",
+    "profileImage": ""
+  },
+  "categories": [
+    ""
+  ],
+  "count": 0,
+  "comments": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/02fdf43f-294a-45ff-8df4-4516b9869ece/comments/",
+  "commentsSrc": [],
+  "published": "2023-03-23T16:39:41.602108-07:00",
+  "visibility": "PUBLIC"
+}
+        }
+
+    )}
+
+CreateComment = {
+    "200": openapi.Response(
+        description="Successfully Created comment",
+        examples={
+            "application/json": {
+  "type": "comment",
+  "author": {
+    "type": "author",
+    "id": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+    "url": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+    "host": "",
+    "displayName": "LaraCroft",
+    "github": "",
+    "profileImage": ""
+  },
+  "comment": "hi",
+  "contentType": "text/plain",
+  "published": "2023-03-23T17:04:10.945180-07:00",
+  "id": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
+}
+        }
+
+    )}
+
+
+GetComments = {
+    "200": openapi.Response(
+        description="Successfully Retrieve comment",
+        examples={
+            "application/json": {
+  "count": 1,
+  "next": 'null',
+  "previous": 'null',
+  "results": [
+    {
+      "type": "comment",
+      "author": {
+        "type": "author",
+        "id": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+        "url": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+        "host": "",
+        "displayName": "LaraCroft",
+        "github": "",
+        "profileImage": ""
+      },
+      "comment": "hi",
+      "contentType": "text/plain",
+      "published": "2023-03-23T17:04:10.945180-07:00",
+      "id": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
+    }
+  ]
+}
+        }
+
+    )}
+
+
+GetCommentLikes =  {
+    "200": openapi.Response(
+        description="Successfully Retrieve comment likes",
+        examples={
+            "application/json": [
+  {
+    "summary": "TomHardyUpdated Likes your comment",
+    "type": "Like",
+    "author": {
+      "type": "author",
+      "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+      "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+      "host": "",
+      "displayName": "TomHardyUpdated",
+      "github": "",
+      "profileImage": ""
+    },
+    "object": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
+  }
+]
+        }
+
+    )}
+
+
+
+
+GetInvdividualComment = {
+    "200": openapi.Response(
+        description="Successfully Retrieved comments",
+        examples={
+            "application/json": {
+  "type": "comment",
+  "author": {
+    "type": "author",
+    "id": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+    "url": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+    "host": "",
+    "displayName": "LaraCroft",
+    "github": "",
+    "profileImage": ""
+  },
+  "comment": "hi",
+  "contentType": "text/plain",
+  "published": "2023-03-23T17:04:10.945180-07:00",
+  "id": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
+}
+        }
+
+    )}
+
+
+PostLikes = {
+    "200": openapi.Response(
+        description="Successfully Retrieved Likes on a post",
+        examples={
+            "application/json": [
+  {
+    "summary": "LaraCroft Likes your post",
+    "type": "Like",
+    "author": {
+      "type": "author",
+      "id": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+      "url": "http://127.0.0.1:8000/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6",
+      "host": "",
+      "displayName": "LaraCroft",
+      "github": "",
+      "profileImage": ""
+    },
+    "object": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561"
+  },
+  {
+    "summary": "TomHardyUpdated Likes your post",
+    "type": "Like",
+    "author": {
+      "type": "author",
+      "id": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+      "url": "http://127.0.0.1:8000/authors/971fa387-b101-4276-891f-d970f2cf0cad",
+      "host": "",
+      "displayName": "TomHardyUpdated",
+      "github": "",
+      "profileImage": ""
+    },
+    "object": "http://127.0.0.1:8000/posts/authors/971fa387-b101-4276-891f-d970f2cf0cad/posts/c62938df-7b80-481a-bfda-07e768df6561"
+  }
+]
+        }
+
+    )}
+
+
+
+
+
 class post_list(APIView, PageNumberPagination):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     # for pagination
     serializer_class = PostSerializer
@@ -154,7 +485,7 @@ class post_list(APIView, PageNumberPagination):
 
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(operation_summary="List all Posts for an Author")
+    @swagger_auto_schema(responses =PostsGet, operation_summary="List all Posts for an Author")
     def get(self, request, pk_a):
         """
         Get the list of posts on our website
@@ -188,8 +519,13 @@ class post_list(APIView, PageNumberPagination):
         serializer = PostSerializer(posts, many=True)
         return self.get_paginated_response(serializer.data)
 
-    @swagger_auto_schema(operation_summary="Create a new Post for an Author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
-
+    @swagger_auto_schema(responses = PostsPOST, operation_summary="Create a new Post for an Author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request',example = {
+     "type":"post",
+     "title":"test",
+     "description":"testing testy test",
+     "contentType":"text/plain",
+     "content":"test"
+}))
     def post(self, request, pk_a):
         """
         New post for an Author
@@ -217,8 +553,9 @@ class post_list(APIView, PageNumberPagination):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentDetailView(APIView):
-    
-    @swagger_auto_schema(operation_summary="List specific comment")
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]    
+    @swagger_auto_schema(responses = GetInvdividualComment, operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
         Get the specific comment
@@ -235,7 +572,7 @@ class post_detail(APIView, PageNumberPagination):
     serializer_class = PostSerializer
     pagination_class = PostSetPagination
 
-    @swagger_auto_schema(operation_summary="Get a particular post of an author")
+    @swagger_auto_schema(responses = IndividualPOSTGet, operation_summary="Get a particular post of an author")
     def get(self, request, pk_a, pk):
         """
         Get a particular post of an author
@@ -269,7 +606,7 @@ class post_detail(APIView, PageNumberPagination):
     #{
     # Title, Description, Content type, Content, Categories, Visibility
     # }
-    @swagger_auto_schema(operation_summary="Update a particular post of an author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request')) 
+    @swagger_auto_schema(responses = IndividualPOSTPost, operation_summary="Update a particular post of an author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request',example = {"title":"Updated POST!!!"}))
     def post(self, request, pk_a, pk):       
         """
         Request: only include fields you want to update, not including id or author.
@@ -332,7 +669,13 @@ class post_detail(APIView, PageNumberPagination):
             return Response("Post does not exist",status=status.HTTP_404_NOT_FOUND)
       
 
-    @swagger_auto_schema(operation_summary="Create a post of an author whose id is the specified post id",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request')) 
+    @swagger_auto_schema(responses =PostsPOST, operation_summary="Create a post of an author whose id is the specified post id",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request',example = {
+  "type": "post",
+  "title": "test2",
+  "description": "testing testy test",
+  "contentType": "text/plain",
+  "content": "test"
+})) 
     def put(self, request, pk_a, pk):
         """
         Request: include mandatory fields of a post, not including author, id, origin, source, type, count, comments, commentsSrc, published
@@ -356,10 +699,11 @@ class post_detail(APIView, PageNumberPagination):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LikedView(APIView):
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     # TODO: RESPONSE AND REQUESTS
     
-    @swagger_auto_schema(operation_summary="List all objects liked by author")
+    @swagger_auto_schema(responses = ObjectsLikedGet, operation_summary="List all objects liked by author")
     def get(self, request, pk_a):
         """
         Get the liked objects by author
@@ -387,11 +731,12 @@ class LikedView(APIView):
         return(dict) 
     
 class CommentLikesView(APIView):
-
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     """
     Get the list of likes on our comments
     """
-    @swagger_auto_schema(responses=response_schema_dictposts,operation_summary="List all likes on a comment")
+    @swagger_auto_schema(responses=GetCommentLikes,operation_summary="List all likes on a comment")
     def get(self, request, pk_a, pk, pk_m):
         try:
             comment = Comment.objects.get(id=pk_m)
@@ -404,6 +749,8 @@ class CommentLikesView(APIView):
 
 @swagger_auto_schema( method='get', operation_summary="Get the comments on a post")
 @api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def get_comments(request, pk_a, pk):
     """
     Get the list of comments on the post
@@ -416,23 +763,23 @@ def get_comments(request, pk_a, pk):
 
 class PostLikesView(APIView):
 
-    @swagger_auto_schema(operation_summary="Get a likes of a post")
-    def get(self, request, pk_a, pk):
-        """
-        Get the list of likes on a post
-        """
-        try:
-            post = Post.objects.get(id=pk)
-        except Post.DoesNotExist:
-            error_msg = "Post does not exist"
-            return Response(error_msg,status=status.HTTP_404_NOT_FOUND)
-        url = post.url[:-1] #TODO: Fix after slash issue
-        likes = Like.objects.filter(object=url)
-        serializer = LikeSerializer(likes, many=True)
-        return Response(serializer.data)
+@swagger_auto_schema( method='get',operation_summary="Get the likes on a post")
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def get_likes(request, pk_a, pk):
+    """
+    Get the list of likes on a post
+    """
+    post = Post.objects.get(id=pk)
+    likes = Like.objects.filter(object=post.url)
+    serializer = LikeSerializer(likes, many=True)
+    return Response(serializer.data)
 
 # hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     renderer_classes = [JPEGRenderer, PNGRenderer]
 
     def get(self, request, pk_a, pk):
@@ -478,10 +825,14 @@ class ImageView(APIView):
         
 # hari, this is another section which takes in the authed user as an author.
 class CommentView(APIView, PageNumberPagination):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = CommentSerializer
     pagination_class = PostSetPagination
     page_size_query_param = 'page_size'
 
+    
+    @swagger_auto_schema(responses =GetComments, operation_summary="List all Comments on a post")
     def get(self, request, pk_a, pk):
         try:
             author = Author.objects.get(id=pk_a)
@@ -514,7 +865,7 @@ class CommentView(APIView, PageNumberPagination):
         return response
 
 
-    @swagger_auto_schema(request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
+    @swagger_auto_schema(responses =CreateComment, operation_summary="Create a comment on the post", request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request', example = {"author_id" : "cfd9d228-44df-4a95-836f-c0cb050c7ad6", "comment": "hi"}))
     def post(self, request,pk_a, pk):
         comment_id = uuid.uuid4()
         try:
@@ -541,6 +892,8 @@ class CommentView(APIView, PageNumberPagination):
 # post to url 'authors/<str:origin_author>/posts/<str:post_id>/share/<str:author>'
 
 class ShareView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request, origin_author, post_id, author):       
         
         try:

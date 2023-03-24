@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Panel, PanelGroup } from "rsuite";
 import COMMENTS from "../Post/Comment";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { useParams } from "react-router-dom";
 import POST from "../Post/Post";
 import EditIcon from "@rsuite/icons/Edit";
@@ -19,7 +19,7 @@ function AUTHORPOSTS() {
 		} else {
 			const author_id = getAuthorId(null);
 			const url = `posts/authors/${author_id}/posts/`;
-			axios({ method: "get", url: url })
+			reqInstance({ method: "get", url: url })
 				.then((res) => {
 					setPosts(res.data.results);
 				})
