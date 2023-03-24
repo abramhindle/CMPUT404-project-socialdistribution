@@ -1,3 +1,4 @@
+import json
 from django.db import IntegrityError
 from django.forms import model_to_dict
 from django.shortcuts import render
@@ -27,6 +28,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from client import *
 
 custom_parameter = openapi.Parameter(
     name='custom_param',
@@ -35,7 +37,6 @@ custom_parameter = openapi.Parameter(
     type=openapi.TYPE_STRING,
     required=True,
 )
-
 
 GetAuthorsExample={
     200: openapi.Response(
@@ -196,7 +197,6 @@ class AuthorsListView(APIView, PageNumberPagination):
     page_size = 10
     page_size_query_param = 'size'
     max_page_size = 100
-
     @swagger_auto_schema(responses= GetAuthorsExample,operation_summary="List of Authors registered")
     def get(self, request):
         
@@ -211,9 +211,16 @@ class AuthorsListView(APIView, PageNumberPagination):
         }
         
         authors = Author.objects.all()
-        authors=self.paginate_queryset(authors, request) 
+        authors=self.paginate_queryset(authors, request)
         serializer = AuthorSerializer(authors, many=True)
-        return self.get_paginated_response(serializer.data)
+        data_list = serializer.data
+        yoshi = getNodeAuthors_Yoshi()
+        for yoshi_author in yoshi:
+            data_list.append(yoshi_author)
+        social_distro = getNodeAuthors_social_distro()
+        for social_distro_author in social_distro:
+            data_list.append(social_distro_author)
+        return self.get_paginated_response(data_list)
 
 class AuthorView(APIView):
     authentication_classes = [BasicAuthentication]
@@ -239,8 +246,26 @@ class AuthorView(APIView):
         try:
             author = Author.objects.get(pk=pk_a)
         except Author.DoesNotExist:
-            error_msg = "Author id not found"
-            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+            try: 
+                author_json, status_code = getNodeAuthor_Yoshi(pk_a)
+                if status_code == 200:
+                    # author_dict = json.loads(author_json)
+                    author = Author(id = author_json['authorId'], displayName= author_json['displayname'], url=author_json['url'], profileImage=author_json['profileImage'], github=author_json['github'], host=author_json['host'])
+                    # return Response(author)
+
+                else:
+                    author_json, status_code = getNodeAuthor_social_distro(pk_a)
+                    if status_code == 200:
+                        author_dict = json.loads(author_json)
+                        author = Author(id = author_dict['id'], displayName= author_dict['displayName'], url=author_dict['url'], profileImage=author_json['profileImage'], github=author_json['github'], host=author_json['host'])
+                    else:
+                        error_msg = "Author id not found"
+                        return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                print(e)
+                error_msg = "Author id not found"
+                return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
         serializer = AuthorSerializer(author,partial=True)
         return  Response(serializer.data)
     
@@ -324,8 +349,6 @@ class FollowersView(APIView):
     #For this we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id 
     #call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/
     #Implement later after talking to group 
-    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="New Follower")
-    #request_body=openapi.Schema( operation_summary = "type=openapi.TYPE_STRING,description='A raw text input for the POST request'))
     @swagger_auto_schema(responses = OneAuthorUpdated, operation_summary="Add to followers",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request'))
     def put(self, request, pk_a, pk):
         try:
@@ -574,7 +597,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
 @permission_classes([IsAuthenticated])
 def getAuthor(request, displayName):
     """
-    Details of a particular author
+    Details of particular author
     """
     author = Author.objects.get(displayName=displayName)
     serializer = AuthorSerializer(author,partial=True)

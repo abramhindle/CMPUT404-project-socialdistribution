@@ -150,7 +150,6 @@ response_schema_dictComments = {
     )}
 
 
-
 ObjectsLikedGet = {
     200: openapi.Response(
         description='Sucessfully retrieve Liked objects',
@@ -215,7 +214,6 @@ PostsGet = {
   ]
 }
         }
-
     )}
 
 PostsPOST = {
@@ -250,7 +248,6 @@ PostsPOST = {
   "visibility": "PUBLIC"
 }
         }
-
     )}
 
 IndividualPOSTGet = {
@@ -285,7 +282,6 @@ IndividualPOSTGet = {
   "visibility": "PUBLIC"
 }
         }
-
     )}
 
 IndividualPOSTPost = {
@@ -320,7 +316,6 @@ IndividualPOSTPost = {
   "visibility": "PUBLIC"
 }
         }
-
     )}
 
 CreateComment = {
@@ -344,7 +339,6 @@ CreateComment = {
   "id": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
 }
         }
-
     )}
 
 
@@ -376,7 +370,6 @@ GetComments = {
   ]
 }
         }
-
     )}
 
 
@@ -401,7 +394,6 @@ GetCommentLikes =  {
   }
 ]
         }
-
     )}
 
 
@@ -428,7 +420,6 @@ GetInvdividualComment = {
   "id": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
 }
         }
-
     )}
 
 
@@ -548,7 +539,7 @@ class post_list(APIView, PageNumberPagination):
 
         if serializer.is_valid():
             post = serializer.save()
-            share_object(post,author)
+            # share_object(post,author)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -693,7 +684,7 @@ class post_detail(APIView, PageNumberPagination):
         serializer = PostSerializer(data=request.data, context={'author_id': pk_a, 'id':pk})
         if serializer.is_valid():
             post = serializer.save()
-            share_object(post,author)
+            # share_object(post,author)
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

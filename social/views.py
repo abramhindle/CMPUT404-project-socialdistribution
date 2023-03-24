@@ -52,10 +52,11 @@ class register(APIView):
             url = "authors/" + id_
             author = Author(user=user, id = id_, displayName= display_name, url=url)
             author.save()
-            return(Response(id_, status=status.HTTP_201_CREATED))
+            return(HttpResponse(id_, status=status.HTTP_201_CREATED))
         except IntegrityError as e: 
             if 'unique constraint' in e.args:
-               return(Response("display name already in use", status=status.HTTP_400_BAD_REQUEST)) 
+               return(HttpResponse("display name already in use", status=status.HTTP_400_BAD_REQUEST))
+        
 
 @authentication_classes([])
 @permission_classes([])
