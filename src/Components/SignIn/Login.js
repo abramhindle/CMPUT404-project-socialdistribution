@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Input, Panel, InputGroup } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import {
 	getCsrfToken,
 	setCurrentUser,
 	setLoggedIn,
 	unsetCurrentUser,
+	setCreds,
 } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -36,17 +37,12 @@ function LOGIN() {
 			username: username,
 			password: password,
 		};
-		await getCsrfToken();
-		const token = localStorage.getItem("token");
-		
-		let reqInstance = axios.create({
-			headers: { "X-CSRFToken": token },
-		});
 		reqInstance({ method: "post", url: "dlogin", data: params })
 			.then(async (res) => {
 				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();
 				setLoggedIn(true);
+				setCreds(params);
 			})
 			.catch((err) => console.log(err));
 	}

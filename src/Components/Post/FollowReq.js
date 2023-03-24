@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Avatar, Panel, useToaster, Message } from "rsuite";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { getAuthorId } from "../utils/auth";
 import PROFILEIMAGE from "../Profile/ProfileImage";
 
@@ -20,7 +20,7 @@ function FOLLOWREQ({ obj }) {
 		const params = {};
 		const url = `authors/${curr_author_id}/followers/${FAID}`;
 
-		axios({ method: "put", url: url, data: params })
+		reqInstance({ method: "put", url: url, data: params })
 			.then((res) => {
 				toaster.push(
 					<Message type="success">User now follows you</Message>,

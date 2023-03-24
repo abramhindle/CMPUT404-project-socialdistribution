@@ -1,6 +1,12 @@
-import React, { useLayoutEffect, useState, IconButton, Message, useToaster } from "react";
+import React, {
+	useLayoutEffect,
+	useState,
+	IconButton,
+	Message,
+	useToaster,
+} from "react";
 import { Avatar } from "rsuite";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { getAuthorId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 import TrashIcon from "@rsuite/icons/Trash";
@@ -17,7 +23,7 @@ function FRIENDS() {
 		} else {
 			const AUTHOR_ID = getAuthorId(null);
 			const url = `authors/${AUTHOR_ID}/followers/`;
-			axios({
+			reqInstance({
 				method: "get",
 				url: url,
 			}).then((res) => {
@@ -30,7 +36,7 @@ function FRIENDS() {
 		const author_id = getAuthorId(null);
 		const follower_id = getAuthorId(obj.id);
 		const url = `posts/authors/${author_id}/followers/${follower_id}/`;
-		axios({ method: "delete", url: url })
+		reqInstance({ method: "delete", url: url })
 			.then((res) => {
 				if (res.status === 204) {
 					notifySuccessPost();
@@ -82,7 +88,6 @@ function FRIENDS() {
 						{obj["displayName"]}
 					</h5>
 				</div>
-
 			</div>
 		);
 	};

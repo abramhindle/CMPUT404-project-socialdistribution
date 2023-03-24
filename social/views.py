@@ -18,6 +18,9 @@ from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 custom_parameter = openapi.Parameter(
     name='custom_param',
     in_=openapi.IN_QUERY,
@@ -59,7 +62,7 @@ class login(APIView):
         username = request.data['username']
         password = request.data['password']
         auth = AllowAllUsersModelBackend()
-
+    
         user = auth.authenticate(request=request, username=username, password= password)
 
         author= Author.objects.filter(displayName=username)[0]
@@ -68,6 +71,7 @@ class login(APIView):
         # params['user'] = UserSerializer(user)
         # params['token'] = get_token()
         params = AuthorSerializer(author)
+        
 
         if not user:
             return Response("user not registered", status=status.HTTP_401_UNAUTHORIZED)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { IconButton, useToaster, Message } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { getAuthorId } from "../utils/auth";
 
 // Component Imports
@@ -23,7 +23,7 @@ function LIKE({ postObj }) {
 		const url = `authors/${FAID}/inbox`;
 
 		//Confirm what to add into the params and send inbox
-		axios({ method: "post", url: url, data: params })
+		reqInstance({ method: "post", url: url, data: params })
 			.then((res) => {
 				toaster.push(
 					<Message type="success">Successful Like</Message>,

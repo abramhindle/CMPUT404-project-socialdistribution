@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Input, InputGroup } from "rsuite";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { getAuthorId } from "../utils/auth";
 // Component Imports
 import COMMENTLIKE from "./LikeComment";
@@ -11,7 +11,7 @@ function COMMENTS({ postobj }) {
 	const [new_comment, set_new_comment] = useState("");
 
 	const getComments = (url) => {
-		axios({ method: "get", url: url + "/" })
+		reqInstance({ method: "get", url: url + "/" })
 			.then((res) => {
 				console.log(res);
 				setCommentObj(res.data.results);
@@ -31,7 +31,7 @@ function COMMENTS({ postobj }) {
 		const post_id = getAuthorId(postObj.id);
 		const params = { comment: new_comment, author_id: author_id };
 		const url = `posts/authors/${FAID}/posts/${post_id}/comments/`;
-		axios({ method: "post", url: url, data: params })
+		reqInstance({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
 					getComments(url);

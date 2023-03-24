@@ -8,7 +8,7 @@ import {
 	Uploader,
 	Button,
 } from "rsuite";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import "react-toastify/dist/ReactToastify.css";
 import { getAuthorId } from "../utils/auth";
 import PROFILEIMAGE from "../Profile/ProfileImage";
@@ -142,7 +142,7 @@ function EDITPOST({ obj, handleClose }) {
 			visiblity: post_status,
 			categories: categories,
 		};
-		axios({ method: "post", url: url, data: params })
+		reqInstance({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
 					handleClose();
