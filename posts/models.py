@@ -95,10 +95,12 @@ class Post(models.Model):
 
     def get_source(self):
         #set post source (URL to source)
+        self.get_absolute_url()
         return self.url
         
     def get_origin(self):
         #set post origin (URL to origin)
+        self.get_absolute_url()
         return self.url
     
     @staticmethod
@@ -152,7 +154,6 @@ class Like(models.Model):
         return self.object if self.object.endswith('/') else self.object + '/' 
 
     def get_summary(self):
-        print("OBJECT",str(self.object))
         return self.author.displayName + " Likes your " + str(self.object).split('/')[-2][:-1]
 
     @staticmethod

@@ -54,7 +54,17 @@ function POST({ postobj, edit }) {
 
 	const notifySuccessPost = () => {
 		toaster.push(
-			<Message type="success">Successful Edited this post</Message>,
+			<Message type="success">Successful edited this post</Message>,
+			{
+				placement: "topEnd",
+				duration: 5000,
+			}
+		);
+	};
+
+	const notifySuccessDeletePost = () => {
+		toaster.push(
+			<Message type="success">Successfully deleted this post</Message>,
 			{
 				placement: "topEnd",
 				duration: 5000,
@@ -93,7 +103,7 @@ function POST({ postobj, edit }) {
 		axios({ method: "delete", url: url })
 			.then((res) => {
 				if (res.status === 204) {
-					notifySuccessPost();
+					notifySuccessDeletePost();
 				} else {
 					notifyFailedPost(res.data);
 				}
