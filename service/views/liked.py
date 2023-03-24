@@ -10,7 +10,7 @@ class LikedView(APIView):
 
     def get(self, request, author_id):
         try:
-            author_query = Author.objects.get(_id=author_id)
+            author_query = Author.objects.get(_id=author_id, is_active=True, is_local=True)
             liked = Like.objects.filter(author=author_query)
         except:
             return Response(status=404)
@@ -25,7 +25,7 @@ class LikedView(APIView):
 class LikesView(APIView):
 
     def get(self, request, author_id, post_id):
-        if not Author.objects.filter(_id=author_id).exists():
+        if not Author.objects.filter(_id=author_id, is_active=True, is_local=True).exists():
             return Response({"error": "No author exists!"}, status=404)
         if not Post.objects.filter(_id=post_id).exists(): 
             return Response({"error": "No post exists!"}, status=404)        
