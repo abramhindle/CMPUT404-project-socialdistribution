@@ -752,19 +752,19 @@ def get_comments(request, pk_a, pk):
     serializer = CommentSerializer(comments, many=True)
     return Response(serializer.data)
 
+class PostLikesView(APIView):
 
-@swagger_auto_schema( method='get',operation_summary="Get the likes on a post")
-@api_view(['GET'])
-@authentication_classes([BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def get_likes(request, pk_a, pk):
-    """
-    Get the list of likes on a post
-    """
-    post = Post.objects.get(id=pk)
-    likes = Like.objects.filter(object=post.url)
-    serializer = LikeSerializer(likes, many=True)
-    return Response(serializer.data)
+    @swagger_auto_schema(operation_summary="Get the likes on a post")
+    @authentication_classes([BasicAuthentication])
+    @permission_classes([IsAuthenticated])
+    def get(request, pk_a, pk):
+        """
+        Get the list of likes on a post
+        """
+        post = Post.objects.get(id=pk)
+        likes = Like.objects.filter(object=post.url)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
 
 # hari, I assumed that authenticated_user is an author object
 class ImageView(APIView):
@@ -929,15 +929,20 @@ class ShareView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PublicPostsView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        posts = Post.objects.filter(visbility='PUBLIC')
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
         
 def share_object(item, author):
     inbox_item = Inbox(content_object=item, author=author)
     inbox_item.save()
 
-    if (item.visibility == 'PUBLIC'):
-        for foreign_author in Author.objects.all().exclude(id=author.id):
-            inbox_item = Inbox(content_object=item, author=foreign_author)
-            inbox_item.save()
     if (item.visibility == 'FRIENDS'):
         for friend in author.friends.all():
             inbox_item = Inbox(content_object=item, author=friend)

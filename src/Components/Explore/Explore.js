@@ -47,14 +47,14 @@ function EXPLORE() {
 	const handleProfileClick = () => {
 		if (curPage !== "profile") {
 			setCurPage("profile");
-			navigate("profile");
+			navigate("/profile");
 		}
 	};
 
 	const handleExploreClick = () => {
 		if (curPage !== "explore") {
 			setCurPage("explore");
-			navigate("explore");
+			navigate("/explore");
 		}
 	};
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+
 export const setAxiosAuthToken = (token) => {
 	if (typeof token !== "undefined" && token) {
 		//Apply the TOKEN for every request that we will make in the future.
@@ -70,9 +71,7 @@ export function getAuthorId(a_id) {
 
 export const getProfileImageUrl = () => {
 	const user = JSON.parse(localStorage.getItem("user"));
-	if (localStorage.getItem("loggedIn")) {
-		return user.profileImage;
-	}
+	return user.profileImage;
 };
 
 export const setCreds = (obj) => {
