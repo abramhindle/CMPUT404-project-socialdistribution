@@ -23,8 +23,6 @@ export default function Comment(data) {
     .split("/")
     .pop()}`; // allows linking to the author who wrote the comment
 
-
-
   const like_success = (bool) => {
     /* Show Success Snackbar? */
     liked = bool;
@@ -48,7 +46,7 @@ export default function Comment(data) {
 
   return (
     <div className="vflex">
-      <h5><a href={authorUrl}>{data.data.author.displayName}</a> commented on your <a href={postUrl}>post</a></h5>
+      <h6><a href={authorUrl}>{data.data.author.displayName}</a> commented on your <a href={postUrl}>post</a></h6>
       
       <div className="list-item">
         {/* Profile image w/link to post author's profile */}

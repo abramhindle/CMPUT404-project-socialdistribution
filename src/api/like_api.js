@@ -69,6 +69,7 @@ export const post_like = async (
 
   if (res.status === 202) {
     console.log("Success!");
+    success(true);
   } else {
     console.log("Error Occured");
   }
