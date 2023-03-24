@@ -49,6 +49,7 @@ class SignInView(APIView):
         
         return Response({"error": "Error Authenticating"}, status=401)
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class SignOutView(APIView):
     permission_classes = ()
@@ -60,6 +61,7 @@ class SignOutView(APIView):
         except:
             return Response({ 'error': 'Something went wrong when logging out' }, status=401)
         
+
 @method_decorator(csrf_exempt, name='dispatch')
 class SignUpView(APIView):
     permission_classes = ()
@@ -90,7 +92,8 @@ class SignUpView(APIView):
             return Response({"error": "Username already in use"}, status=409)
         except:
             return Response({"error": "Error Occured"}, status=400)
-        
+
+
 def valid_url(to_validate):
     validator = URLValidator()
     try:
