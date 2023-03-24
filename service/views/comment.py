@@ -56,7 +56,7 @@ class CommentView(APIView):
 
         try:
             post = Post.objects.get(_id=self.post_id)
-            author = Author.objects.get(_id=self.author_id, is_active=True, is_local=True)
+            author = Author.objects.get(_id=self.author_id)
         except:
             return HttpResponseNotFound()
 

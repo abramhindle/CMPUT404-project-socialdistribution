@@ -19,7 +19,7 @@ class FollowersAPI(APIView):
 
     def get(self, request, author_id):
 
-        author = Author.objects.get(_id = author_id, is_active=True, is_local=True)
+        author = Author.objects.get(_id = author_id)
 
         followers_list = list()
 
@@ -35,8 +35,8 @@ class FollowerAPI(View):
     http_method_names = ['get', 'put', 'delete']
     
     def delete(self, request, author_id, foreign_author_id):
-        author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
-        foreign_author = Author.objects.get(_id=foreign_author_id, is_active=True, is_local=True)
+        author = Author.objects.get(_id=author_id)
+        foreign_author = Author.objects.get(_id=foreign_author_id)
 
         author.followers.remove(foreign_author)
         author.save()
@@ -49,8 +49,8 @@ class FollowerAPI(View):
         if author_id == foreign_author_id:
             return HttpResponseBadRequest() #can't follow yourself!
 
-        author = Author.objects.get(_id = author_id, is_active=True, is_local=True)
-        follower = Author.objects.get(_id = foreign_author_id, is_active=True, is_local=True)
+        author = Author.objects.get(_id = author_id)
+        follower = Author.objects.get(_id = foreign_author_id)
 
         try:
             author.followers.get(_id=foreign_author_id)
@@ -63,8 +63,8 @@ class FollowerAPI(View):
         return HttpResponse(status=409)
 
     def get(self, request, author_id, foreign_author_id):
-        author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
-        foreign = Author.objects.get(_id=foreign_author_id, is_active=True, is_local=True)
+        author = Author.objects.get(_id=author_id)
+        foreign = Author.objects.get(_id=foreign_author_id)
 
         try:
             follower = author.followers.get(_id=foreign._id)

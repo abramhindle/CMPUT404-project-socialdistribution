@@ -18,7 +18,7 @@ class AuthorFollowRequests(APIView):
     # see all author's follow requests -> i.e. who wants to follow them
     def get(self, request, author_id):
         # get all the Follow requests where author is the OBJECT
-        author = Author.objects.get(_id=author_id, is_active=True, is_local=True)
+        author = Author.objects.get(_id=author_id)
 
         follow_requests = Follow.objects.all().filter(object=author_id)
 

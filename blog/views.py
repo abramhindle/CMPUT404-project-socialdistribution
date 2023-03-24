@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers
 from service.models.author import Author
+from django.contrib.auth.models import User
 from django.contrib import auth
 from django.db import IntegrityError
 from rest_framework.authtoken.models import Token
@@ -14,6 +15,7 @@ import json
 class SignInSerializerForm(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
+
 
 class SignUpSerializerForm(serializers.Serializer):
     username = serializers.CharField()
@@ -39,9 +41,7 @@ class SignInView(APIView):
         user = auth.authenticate(username=username, password=password)
         if user:
             try:
-                author = Author.objects.get(username=username)
-                if(not author.is_local):
-                    raise Exception
+                author = Author.objects.get(user=user)
                 auth.login(request, user)
                 return Response({"success": "User authenticated", "author": author.toJSON()}, status=200)
             except:
@@ -60,7 +60,7 @@ class SignOutView(APIView):
             return Response({ 'success': 'Loggout Out' }, status=200)
         except:
             return Response({ 'error': 'Something went wrong when logging out' }, status=401)
-
+        
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SignUpView(APIView):
@@ -78,22 +78,22 @@ class SignUpView(APIView):
         displayName = data["displayName"]
         profileImage = data["profileImage"]
         github = data["github"]
-        
 
         if not valid_url(github):
             return Response({"error": "github field should be a url"}, status=400)
         if not valid_url(profileImage):
             return Response({"error": "profileImage field should be a url"}, status=400)
 
-
         try:
-            Author.objects.create_user(username=username, password=password, displayName=displayName, profileImage=profileImage, github=github)
+            user = User.objects.create_user(username=username, password=password, is_active=False)
+            Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github)
             return Response({"success": "Sign Up Requested!"}, status=202)
         except IntegrityError:
             return Response({"error": "Username already in use"}, status=409)
         except:
             return Response({"error": "Error Occured"}, status=400)
-        
+
+
 def valid_url(to_validate):
     validator = URLValidator()
     try:
