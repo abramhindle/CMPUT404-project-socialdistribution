@@ -44,7 +44,7 @@ export async function getCurrentUser(author_id) {
 
 export async function getCsrfToken() {
 	let _csrfToken = null;
-	const API_HOST = "http://127.0.0.1:8000";
+	const API_HOST = "https://sociallydistributed.herokuapp.com";
 	if (_csrfToken === null) {
 		const response = await fetch(`${API_HOST}/csrf/`, {
 			credentials: "include",
