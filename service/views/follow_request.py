@@ -38,14 +38,15 @@ class AuthorFollowRequests(View):
 #TODO: maybe an endpoint to delete a follow request?
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowRequests(View):
+    permission_classes = [IsAuthenticated]
     http_method_names = ['post', 'delete']
 
     def post(self, request, author_id, foreign_author_id):
         if author_id == foreign_author_id:
             return HttpResponseBadRequest() #can't follow yourself!
 
-        author = Author.objects.get(_id = author_id)
-        followed = Author.objects.get(_id = foreign_author_id)
+        author = Author.objects.get(_id = author_id, is_active=True)
+        followed = Author.objects.get(_id = foreign_author_id, is_active=True)
 
         try:
             author.followers.get(_id=foreign_author_id)

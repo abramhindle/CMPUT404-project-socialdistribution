@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux"
-import { get_followed_for_author } from '../../api/follower_api';
-import { delete_followers_for_author } from '../../api/follower_api';
+import { useSelector } from "react-redux";
+import { get_followed_for_author } from "../../api/follower_api";
+import { delete_followers_for_author } from "../../api/follower_api";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -14,65 +14,60 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-
-
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Sidebar from "../../components/Sidebar/sidebar";
 
 function Followed() {
+  const user = useSelector((state) => state.user);
+  const author_id = `http://localhost/authors/${user.id}/`;
+  const [follow_list, setList] = useState({ items: [] });
+  const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
 
-    const user = useSelector((state) => state.user);
-    const author_id = `http://localhost/authors/${user.id}/`
-    const [follow_list, setList] = useState({"items": []}); 
-    const [success, setSuccess] = useState(null); 
-    const navigate = useNavigate();
-    
+  const location = useLocation();
 
-    const location = useLocation();
+  useEffect(() => {
+    get_followed_for_author(user.id, setList);
+  }, []);
 
-    useEffect(() => { 
-        get_followed_for_author(user.id, setList)
-      
-    }, []);
+  const DeleteAuthor = (follow_id) => {
+    delete_followers_for_author(user.id, follow_id, onSuccess);
+  };
 
+  const onSuccess = () => {
+    setSuccess(true);
+  };
 
-    const DeleteAuthor= (follow_id) => {
-        delete_followers_for_author(user.id, follow_id, onSuccess)
-    }
+  const goBack = () => {
+    navigate("/");
+  };
 
-    const onSuccess = () => {
-        setSuccess(true);
-    }
-    
-    
-    const goBack = () => {
-        navigate("/");
-      };
-  
-  
-    return (
-        
-        <>
-        <div className="sidebar-offset">
+  return (
+    <>
+      <Sidebar />
+      <div className="sidebar-offset">
         <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar variant="dense">
-            <Button
-                variant="contained"
-                onClick={goBack}
-                >
+          <AppBar position="static">
+            <Toolbar variant="dense">
+              <Button variant="contained" onClick={goBack}>
                 back
-            </Button>
-          <Typography variant="h6" align="left" color="inherit" component="div">
-            Followed
-          </Typography>
-          </Toolbar>
-        </AppBar>
+              </Button>
+              <Typography
+                variant="h6"
+                align="left"
+                color="inherit"
+                component="div"
+              >
+                Followed
+              </Typography>
+            </Toolbar>
+          </AppBar>
         </Box>
-        </div>
-        <TableContainer component={Paper}>
+      </div>
+      <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -94,7 +89,7 @@ function Followed() {
                 <TableCell align="right">
                   <Button
                     variant="contained"
-                    color = "error"
+                    color="error"
                     onClick={(e) => DeleteAuthor(row.id)}
                   >
                     Delete
@@ -103,14 +98,10 @@ function Followed() {
               </TableRow>
             ))}
           </TableBody>
-        </Table>  
+        </Table>
       </TableContainer>
-
-      </>
-    );
-  }
-  
-
-
+    </>
+  );
+}
 
 export default Followed;
