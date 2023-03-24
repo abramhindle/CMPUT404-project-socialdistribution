@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from service.models.author import Author
 from service.models.post import Post, Category
 from service.service_constants import *
-from service.services import team_14
+from service.services import team_14, team_22
 from service.services.rest_service import RestService
 
 # endpoints with just author_id
@@ -21,7 +21,6 @@ class PostCreation(APIView, RestService):
     http_method_names = ['get', 'post']
 
     def get(self, request: HttpRequest, *args, **kwargs):  # get all recent posts for author_id
-        remote_filter = Q()
         author_id = kwargs['author_id']
         try:
             author = Author.objects.get(_id=author_id)
@@ -31,24 +30,28 @@ class PostCreation(APIView, RestService):
         page = request.GET.get('page', '')
         size = request.GET.get('size', '')
 
-        posts = list()
-
-        # LOCAL author
-        if author.host == settings.DOMAIN:
-            post_queryset = Post.objects.all().filter(author=author_id).filter().order_by('-published')  # only get posts from author_id in the URL, order by the published date
-            paged_posts = Paginator(post_queryset, size or 5) # default to size 5
-
-            try:
-                page = paged_posts.page(page or 1) # default to page 1
-            except:
-                page = list()
-
-            for post in page:
-                posts.append(post.toJSON())
+        # fetch remote posts for the author if they are marked as remote
 
         # remote-user-t14
         if author.host == settings.REMOTE_USERS[0][1]:
-            posts = team_14.get_multiple_posts(author)
+            team_14.get_multiple_posts(author)
+
+        # remote-user-t22
+        if author.host == settings.REMOTE_USERS[1][1]:
+            team_22.get_multiple_posts(author)
+
+        posts = list()
+
+        post_queryset = Post.objects.all().filter(author=author_id).order_by('-published')  # only get posts from author_id in the URL, order by the published date
+        paged_posts = Paginator(post_queryset, size or 5)  # default to size 5
+
+        try:
+            page = paged_posts.page(page or 1)  # default to page 1
+        except:
+            page = list()
+
+        for post in page:
+            posts.append(post.toJSON())
 
         posts_json = encode_list(posts)
 
@@ -66,7 +69,7 @@ class PostCreation(APIView, RestService):
 
         try:
             author = Author.objects.get(_id=author_id)
-        except:
+        except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
         post.author = author

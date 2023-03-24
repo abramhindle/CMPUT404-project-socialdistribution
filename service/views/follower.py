@@ -44,10 +44,8 @@ class FollowerAPI(View):
         return HttpResponse(status=200)
 
     def put(self, request, author_id, foreign_author_id):
-        #if request.user.is_authenticated:
-
         if author_id == foreign_author_id:
-            return HttpResponseBadRequest() #can't follow yourself!
+            return HttpResponseBadRequest()  # can't follow yourself!
 
         author = Author.objects.get(_id = author_id)
         follower = Author.objects.get(_id = foreign_author_id)
@@ -72,7 +70,7 @@ class FollowerAPI(View):
             return HttpResponseNotFound()
         
         follower_json = follower.toJSON()
-        return HttpResponse(json.dumps(follower_json), content_type = CONTENT_TYPE_JSON)
+        return HttpResponse(json.dumps(follower_json), content_type=CONTENT_TYPE_JSON)
         
 
 def encode_Follower_list(authors):

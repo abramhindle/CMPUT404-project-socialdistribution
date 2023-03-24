@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
-from service.services import team_14
+from service.services import team_14, team_22
 
 
 # Create your views here.
@@ -23,19 +23,11 @@ class MultipleAuthors(APIView):
         filter_host = Q(host=settings.DOMAIN) | Q(host="http://localhost")
 
         if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote host
-
             for remote_host in settings.REMOTE_USERS:
-                response = requests.get(remote_host[1] + "service/authors/", auth=remote_host[2])
-                response.close()
-
-                if response.status_code < 200 or response.status_code > 299:  # unsuccessful
-                    continue
-
-                response_json = response.json()
-
-                for author in response_json["items"]:
-                    if remote_host[0] == "remote-user-t14":
-                        team_14.get_or_create_author(author, remote_host[1])
+                if remote_host[0] == "remote-user-t14":
+                    team_14.get_multiple_authors()
+                elif remote_host[0] == "remote-user-t22":
+                    team_22.get_multiple_authors()
 
             filter_host = Q()  # no filter, since not a remote user
 
@@ -73,6 +65,9 @@ class SingleAuthor(APIView):
         if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:
             if author and author.host == settings.REMOTE_USERS[0][1]:
                 author = team_14.get_single_author(author)  # remote-user-t14
+
+            if author and author.host == settings.REMOTE_USERS[1][1]:
+                author = team_22.get_single_author(author)  # remote-user-t22
 
             # put other teams here
 

@@ -57,7 +57,7 @@ class InboxView(APIView):
         paged_inbox_items = list()
 
         for i in range(0, page): # do this for as many times as we need for paging
-            #get size of items out of inbox_items
+            # get size of items out of inbox_items
             paged_inbox_items = inbox_items[0:size]
             inbox_items = inbox_items[size:]
 
@@ -82,8 +82,8 @@ class InboxView(APIView):
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
-        try: # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
-            inbox = Inbox.objects.get(author=author) #author_id is the primary key for an inbox
+        try:  # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
+            inbox = Inbox.objects.get(author=author) # author_id is the primary key for an inbox
         except ObjectDoesNotExist:
             inbox = Inbox.objects.create(author=author)
 
