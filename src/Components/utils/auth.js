@@ -1,4 +1,5 @@
 import axios from "axios";
+
 export const setAxiosAuthToken = (token) => {
 	if (typeof token !== "undefined" && token) {
 		//Apply the TOKEN for every request that we will make in the future.

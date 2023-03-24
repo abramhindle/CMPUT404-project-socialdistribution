@@ -938,6 +938,15 @@ class ShareView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PublicPostsView(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        posts = Post.objects.filter(visbility='PUBLIC')
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
         
 def share_object(item, author):
     inbox_item = Inbox(content_object=item, author=author)
