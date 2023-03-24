@@ -58,7 +58,7 @@ h6 {
 
 button.interact {
     margin: 0.5em;
-    background-color:transparent;
+    background-color: transparent;
     border-color: transparent;
 }
 
@@ -77,4 +77,15 @@ button.interact {
 .hflex {
     display: flex;
     flex-direction: row;
+}
+
+svg.share {
+    width: 2.5em;
+    height: 2.5em;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    stroke: var(--driftwood);
+    stroke-width: 2;
+
 }

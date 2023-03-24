@@ -15,7 +15,7 @@ export default function CommentArrow(props){
             setCommentFieldVisibilty(commentFieldVisibilty ? false : true)
             }
         >
-            <svg width="100%" height="77%" viewBox="0 0 18 14" version="1.1" >
+            <svg width="calc(2.5em)" height="calc(0.77*2.5em)" viewBox="0 0 18 14" version="1.1" >
             {/*-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --*/}
             <title>Comment</title>
             <desc>Created with Sketch.</desc>
