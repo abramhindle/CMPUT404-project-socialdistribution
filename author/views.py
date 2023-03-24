@@ -2,7 +2,6 @@ from django.db import IntegrityError
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .basic_auth import BasicAuthenticator
-
 # Create your views here.
 
 from django.http import HttpResponseRedirect
@@ -16,10 +15,10 @@ from posts.serializers import *
 from .models import *
 from .serializers import *
 from django.http import HttpResponse
-from rest_framework.decorators import api_view
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework import status
@@ -190,31 +189,25 @@ InboxGet = {
 }
 
 
-
-
-
-# class AuthorsListView(BasicAuthenticator, APIView, PageNumberPagination):
 class AuthorsListView(APIView, PageNumberPagination):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    
     # for pagination
     page_size = 10
     page_size_query_param = 'size'
     max_page_size = 100
-    
     @swagger_auto_schema(responses= GetAuthorsExample,operation_summary="List of Authors registered")
     def get(self, request):
+        
+        """
+        Get the list of authors on our website
+        """
         content = {
 
             'user':str(request.user),
 
             'auth': str(request.auth)
         }
-        
-        """
-        Get the list of authors on our website
-        """
         
         authors = Author.objects.all()
         authors=self.paginate_queryset(authors, request)
@@ -228,11 +221,11 @@ class AuthorsListView(APIView, PageNumberPagination):
             data_list.append(social_distro_author)
         return self.get_paginated_response(data_list)
 
-# @permission_classes([IsAuthenticated]) 
 class AuthorView(APIView):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
+
     def validate(self, data):
         try:
             if 'displayName' not in data:
@@ -260,7 +253,7 @@ class AuthorView(APIView):
     @swagger_auto_schema(responses = OneAuthorUpdated, operation_summary="Update a particular Authors profile",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the PUT request', example={
                 'displayName': 'TomHardyUpdated'
             }))
-    def put(self, request, pk_a):
+    def post(self, request, pk_a):
         """
         Update the authors profile
         """
@@ -288,6 +281,8 @@ class FollowersView(APIView):
     # ://authors/authors/{AUTHOR_ID}/followers/ to get a list of followers
     # or call using ://authors/authors/{AUTHOR_ID}/followers/foreign_author_id/ to check if foriegn author is following author
     #Implement later after talking to group 
+    
+    # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="List of Followers")
     @swagger_auto_schema(responses=FollowersGet, operation_summary="List of Followers")
     def get(self, request, pk_a, pk=None):
         try:
@@ -360,22 +355,13 @@ class FollowersView(APIView):
         except:
             pass
 
-        followers = author.friends.all()
-        followers_list = []
-        for follower in followers:
-            try: 
-                follower_author = Author.objects.get(id=follower.id)
-            except Author.DoesNotExist:
-                error_msg = "Follower id not found"
-                return Response(error_msg, status=status.HTTP_404_NOT_FOUND) 
-            followers_list.append(follower_author.follower_to_object())
-
         # return the new list of followers
-        return Response(followers_list)
+        return Response(new_follower.follower_to_object())
 
     #For the delete request we need nothing in the content field only the url with the author id of the person that is being followed by foreign author id
     #Implement later after talking to group 
     # @swagger_auto_schema(method ='get',responses=response_schema_dict,operation_summary="Delete Follower")
+    @swagger_auto_schema(operation_summary="Delete followers in the request")
     def delete(self, request, pk_a, pk):
         try:
             author = Author.objects.get(id=pk_a)
@@ -438,6 +424,8 @@ class FriendRequestView(APIView):
             return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
     
 class ViewRequests(APIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = FollowRequestSerializer
@@ -524,6 +512,7 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
         # TODO: Fix pagination
         return self.get_paginated_response(data)
     
+    
     @swagger_auto_schema(responses = InboxPOST, operation_summary="Post a new object to the inbox",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request', example = {
         "type": "Follow",
         "actor":{"id":"cfd9d228-44df-4a95-836f-c0cb050c7ad6"},
@@ -599,7 +588,11 @@ class Inbox_list(APIView, InboxSerializerObjects, PageNumberPagination):
 @permission_classes([IsAuthenticated])
 def getAuthor(request, displayName):
     """
+<<<<<<< HEAD
     Details of particular author
+=======
+    Details of a particular author
+>>>>>>> origin/dev
     """
     author = Author.objects.get(displayName=displayName)
     serializer = AuthorSerializer(author,partial=True)

@@ -12,7 +12,7 @@ import EDITPOSTMODAL from "../Modals/EditPostModal";
 import LIKESMODAL from "../Modals/LikesModal";
 import { getAuthorId } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import PROFILEIMAGE from "../Profile/ProfileImage";
 // Component Imports
 
@@ -40,7 +40,7 @@ function POST({ postobj, edit }) {
 
 		// Peter you just need to return the image here
 		if (post["contentType"] === "image/jpeg") {
-			return <p>{ }</p>;
+			return <p>{}</p>;
 		}
 	};
 
@@ -54,7 +54,17 @@ function POST({ postobj, edit }) {
 
 	const notifySuccessPost = () => {
 		toaster.push(
-			<Message type="success">Successful Edited this post</Message>,
+			<Message type="success">Successful edited this post</Message>,
+			{
+				placement: "topEnd",
+				duration: 5000,
+			}
+		);
+	};
+
+	const notifySuccessDeletePost = () => {
+		toaster.push(
+			<Message type="success">Successfully deleted this post</Message>,
 			{
 				placement: "topEnd",
 				duration: 5000,
@@ -66,17 +76,16 @@ function POST({ postobj, edit }) {
 		const author_id = getAuthorId(null);
 		const origin_author_id = getAuthorId(postobj.author.id);
 		const post_id = getAuthorId(postobj.id);
-		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}`;
-		axios({ method: "post", url: url })
+		const url = `posts/authors/${origin_author_id}/posts/${post_id}/share/${author_id}/`;
+		reqInstance({ method: "post", url: url })
 			.then((res) => {
-				if (res.status === 204) {
+				if (res.status === 200) {
 					notifySuccessPost();
 				} else {
 					notifyFailedPost(res.data);
 				}
 			})
 			.catch((err) => console.log(err));
-
 	}
 
 	const notifyFailedPost = (error) => {
@@ -90,10 +99,10 @@ function POST({ postobj, edit }) {
 		const author_id = getAuthorId(null);
 		const post_id = getAuthorId(postobj.id);
 		const url = `posts/authors/${author_id}/posts/${post_id}/`;
-		axios({ method: "delete", url: url })
+		reqInstance({ method: "delete", url: url })
 			.then((res) => {
 				if (res.status === 204) {
-					notifySuccessPost();
+					notifySuccessDeletePost();
 				} else {
 					notifyFailedPost(res.data);
 				}

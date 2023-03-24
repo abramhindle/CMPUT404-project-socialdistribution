@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Panel, InputGroup } from "rsuite";
+import { Button, Input, Panel, InputGroup, Message, useToaster } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
 import axios from "axios";
@@ -8,6 +8,7 @@ import {
 	setCurrentUser,
 	setLoggedIn,
 	unsetCurrentUser,
+	setCreds,
 } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +16,7 @@ function LOGIN() {
 	const [username, set_username] = useState("");
 	const [password, set_password] = useState("");
 	const [visible, setVisible] = React.useState(false);
-
+	let toaster = useToaster();
 	let navigate = useNavigate();
 
 	useEffect(() => {
@@ -31,6 +32,13 @@ function LOGIN() {
 		setVisible(!visible);
 	};
 
+	const notifyFailedPost = (error) => {
+		toaster.push(<Message type="error">{error}</Message>, {
+			placement: "topEnd",
+			duration: 5000,
+		});
+	};
+
 	async function handleLoginClick() {
 		var params = {
 			username: username,
@@ -38,7 +46,7 @@ function LOGIN() {
 		};
 		await getCsrfToken();
 		const token = localStorage.getItem("token");
-		
+
 		let reqInstance = axios.create({
 			headers: { "X-CSRFToken": token },
 		});
@@ -47,8 +55,9 @@ function LOGIN() {
 				await setCurrentUser(res.data).then(navigate("/"));
 				getCsrfToken();
 				setLoggedIn(true);
+				setCreds(params);
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => notifyFailedPost(err.response.data));
 	}
 
 	return (

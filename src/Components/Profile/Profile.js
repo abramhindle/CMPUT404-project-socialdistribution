@@ -13,9 +13,14 @@ import {
 import FRIENDS from "./Friends";
 import AUTHORPOSTS from "./AuthorPosts";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
-import { getAuthorId, getCsrfToken, getProfileImageUrl } from "../utils/auth";
+import {
+	getAuthorId,
+	getCsrfToken,
+	getProfileImageUrl,
+	setCurrentUser,
+} from "../utils/auth";
 import PROFILEIMAGE from "./ProfileImage";
 
 function PROFILE() {
@@ -29,6 +34,7 @@ function PROFILE() {
 	const [open, setOpen] = useState(false);
 	const [imageurl, setImage] = useState("");
 	const [giturl, setGiturl] = useState("");
+	const [count, setCount] = useState(0);
 	let toaster = useToaster();
 
 	useEffect(() => {
@@ -57,12 +63,6 @@ function PROFILE() {
 	};
 
 	async function handleLogoutClick() {
-		await getCsrfToken();
-		const token = localStorage.getItem("token");
-
-		let reqInstance = axios.create({
-			headers: { "X-CSRFToken": token },
-		});
 		reqInstance.post("accounts/logout/").then((res) => {
 			if (res.status === 200) {
 				navigate("/login");
@@ -98,25 +98,26 @@ function PROFILE() {
 	async function handleGitClick() {
 		const author_id = getAuthorId(null);
 		const url = `authors/${author_id}/`;
-		axios({ method: "post", url: url, data: { github: giturl } })
+		reqInstance({ method: "post", url: url, data: { github: giturl } })
 			.then((res) => {
 				notifySuccessPost("successfully upadated the giturl");
 			})
-			.error((err) => notifyFailedPost(err));
+			.catch((err) => notifyFailedPost(err));
 	}
 
 	async function handleImageClick() {
 		const author_id = getAuthorId(null);
 		const url = `authors/${author_id}/`;
-		axios({
+		reqInstance({
 			method: "post",
 			url: url,
 			data: { profileImage: imageurl },
 		})
 			.then((res) => {
+				setCurrentUser(res.data).then(setCount(count + 1));
 				notifySuccessPost("successfully upadated the profile url");
 			})
-			.error((err) => notifyFailedPost(err));
+			.catch((err) => notifyFailedPost(err.data));
 	}
 
 	return (

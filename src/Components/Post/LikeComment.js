@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { IconButton, useToaster, Message } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import { getAuthorId } from "../utils/auth";
 
 // Component Imports
@@ -16,7 +16,7 @@ function COMMENTLIKE({ obj }) {
 		var FAID = "";
 		const url2 = obj;
 
-		await axios({ method: "get", url: url2 }).then((res) => {
+		await reqInstance({ method: "get", url: url2 }).then((res) => {
 			console.log(res.data.author);
 			FAID = getAuthorId(res.data.author.id);
 		});
@@ -26,10 +26,10 @@ function COMMENTLIKE({ obj }) {
 			author_id: curr_author_id,
 			object: url2,
 		};
-		const url = `authors/${FAID}/inbox`;
+		const url = `authors/${FAID}/inbox/`;
 
 		//Confirm what to add into the params and send inbox
-		axios({ method: "post", url: url, data: params })
+		reqInstance({ method: "post", url: url, data: params })
 			.then((res) => {
 				toaster.push(
 					<Message type="success">Successful Like</Message>,

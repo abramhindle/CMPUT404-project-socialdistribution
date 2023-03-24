@@ -18,7 +18,7 @@ import mimetypes
 
 mimetypes.add_type("application/javascript", ".js", True)
 
-APP_NAME = 'http://127.0.0.1:8000'
+APP_NAME = 'https://sociallydistributed.herokuapp.com'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +31,8 @@ SECRET_KEY = '(e42^@_2fo+3!4%3y9t@50j#)ljo8+7r3_6e$z*p960-1-+g@y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+APPEND_SLASH = True
 
 # Application definition
 INSTALLED_APPS = [
@@ -70,10 +72,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-    ],}
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',}
 
 ROOT_URLCONF = 'social.urls'
 
@@ -94,7 +93,7 @@ TEMPLATES = [
 ]
 ALLOWED_HOSTS = ['*']
 WSGI_APPLICATION = 'social.wsgi.application'
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', "http://127.0.0.1:8000"]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000/', "http://127.0.0.1:8000/"]
 CORS_ORIGIN_WHITELIST = ['http://localhost:3000', 'http://localhost:8000']
 CORS_ALLOW_CREDENTIALS = True
 

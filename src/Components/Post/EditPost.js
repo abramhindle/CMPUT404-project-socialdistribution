@@ -8,7 +8,7 @@ import {
 	Uploader,
 	Button,
 } from "rsuite";
-import axios from "axios";
+import { reqInstance } from "../utils/axios";
 import "react-toastify/dist/ReactToastify.css";
 import { getAuthorId } from "../utils/auth";
 import PROFILEIMAGE from "../Profile/ProfileImage";
@@ -23,16 +23,8 @@ function EDITPOST({ obj, handleClose }) {
 	const [markdown, setMarkdown] = useState("");
 	const toaster = useToaster();
 
-	const stringify = (arr) => {
-		let str = "";
-		for (let i = 0; i < arr.length; i++) {
-			str = str + arr[i];
-		}
-		return str;
-	};
-
 	useEffect(() => {
-		let x = stringify(obj.categories);
+		let x = (obj.categories).toString();
 		setText(obj.content);
 		setDescription(obj.description);
 		setTitle(obj.title);
@@ -139,10 +131,10 @@ function EDITPOST({ obj, handleClose }) {
 			description: description,
 			content: text,
 			contentType: post_type,
-			visiblity: post_status,
+			visibility: post_status,
 			categories: categories,
 		};
-		axios({ method: "post", url: url, data: params })
+		reqInstance({ method: "post", url: url, data: params })
 			.then((res) => {
 				if (res.status === 200) {
 					handleClose();
@@ -219,7 +211,7 @@ function EDITPOST({ obj, handleClose }) {
 				appearance="primary"
 				block
 			>
-				Post Edit
+				Edit Post
 			</Button>
 		</div>
 	);
