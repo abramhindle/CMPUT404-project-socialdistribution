@@ -12,6 +12,7 @@ export let reqInstance = axios.create({
 		"X-CSRFToken": token,
 		Authorization: "Basic " + base64String,
 	},
+	baseURL: `http://${username}:${password}@127.0.0.1:8000/`,
 	auth: {
 		username: username,
 		password: password,
