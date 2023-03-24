@@ -83,7 +83,8 @@ def AuthorsView(request):
     Example query: GET ://service/authors?page=10&size=5
         Gets the 5 authors, authors 45 to 49.
         
-    See Also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#authors
+    See Also:
+    https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#authors
     """
     
     if request.method == 'GET':

@@ -16,7 +16,7 @@ schema_view = get_schema_view(
       contact=openapi.Contact(email="contact@snippets.local"),
       license=openapi.License(name="BSD License"),
    ),
-   public=True,
+   public=True,   # TODO: Possibly make this false. Assignment specs says stuff like 'gib public api docs' but I don't think it's referring to this, and limiting what people can see to only the things they can access sounds more useful to other nodes and more secure too.
    permission_classes=[permissions.AllowAny],
 )
 
