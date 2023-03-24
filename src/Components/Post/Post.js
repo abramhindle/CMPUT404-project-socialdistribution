@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Avatar, Panel, IconButton, Message, useToaster } from "rsuite";
 import ThumbsUpIcon from "@rsuite/icons/legacy/ThumbsUp";
 import ShareIcon from "@rsuite/icons/legacy/Reply";
@@ -18,9 +18,7 @@ import PROFILEIMAGE from "../Profile/ProfileImage";
 
 function POST({ postobj, edit }) {
 	const [post, set_post] = useState(postobj);
-	const [comment, set_comment] = useState("");
-	const [authorPosts, set_authorPosts] = useState(edit);
-	const [likes, setLikes] = useState(edit);
+	const [likes, setLikes] = useState(({ items: [] }));
 	const [open, setOpen] = useState(false);
 	const toaster = useToaster();
 	let navigate = useNavigate();
@@ -197,11 +195,9 @@ function POST({ postobj, edit }) {
 				obj={postobj}
 				handleClose={handleModalClose}
 			/>
-			{/* <LIKESMODAL
-				open={open}
-				obj={postobj}
-				handleClose={handleModalClose}
-			/> */}
+			<LIKESMODAL
+				postobj={postobj}
+			/>
 		</div>
 	);
 }
