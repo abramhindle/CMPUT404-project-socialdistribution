@@ -57,8 +57,8 @@ class FollowerAPI(APIView):
         author = Author.objects.get(_id=author_id, is_active=True)
         foreign_author = Author.objects.get(_id=foreign_author_id, is_active=True)
 
-        author.followers.remove(foreign_author)
-        author.save()
+        foreign_author.followers.remove(author)
+        foreign_author.save()
 
         return HttpResponse(status=204)
 
