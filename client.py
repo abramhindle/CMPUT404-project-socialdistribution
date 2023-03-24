@@ -19,7 +19,6 @@ def getNodeAuthors_social_distro():
     authors = json_response['results']
     return authors
 
-getNodeAuthors_social_distro()
 
 def getNodeAuthors_Yoshi():
 
