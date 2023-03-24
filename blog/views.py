@@ -41,7 +41,7 @@ class SignInView(APIView):
         user = auth.authenticate(username=username, password=password)
         if user:
             try:
-                author = Author.objects.get(user=user)
+                author = Author.objects.get(user=user, is_active=True)
                 auth.login(request, user)
                 return Response({"success": "User authenticated", "author": author.toJSON()}, status=200)
             except:
@@ -85,8 +85,8 @@ class SignUpView(APIView):
             return Response({"error": "profileImage field should be a url"}, status=400)
 
         try:
-            user = User.objects.create_user(username=username, password=password, is_active=False)
-            Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github)
+            user = User.objects.create_user(username=username, password=password)
+            Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github, is_active=False)
             return Response({"success": "Sign Up Requested!"}, status=202)
         except IntegrityError:
             return Response({"error": "Username already in use"}, status=409)

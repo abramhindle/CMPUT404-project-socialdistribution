@@ -10,7 +10,7 @@ class LikedView(APIView):
 
     def get(self, request, author_id):
         try:
-            author_query = Author.objects.get(_id=author_id)
+            author_query = Author.objects.get(_id=author_id, is_active=True)
             liked = Like.objects.filter(author=author_query)
         except:
             return Response(status=404)

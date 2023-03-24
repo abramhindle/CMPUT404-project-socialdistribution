@@ -15,8 +15,8 @@ class Author(models.Model):
     displayName = models.CharField(max_length=128)
     github = models.URLField()
     profileImage = models.URLField()
-
     followers = models.ManyToManyField('Author', blank=True)
+    is_active = models.BooleanField(default=True)
 
     def toJSON(self):
         return {

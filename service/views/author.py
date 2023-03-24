@@ -14,7 +14,7 @@ class MultipleAuthors(APIView):
     http_method_names = ["get"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        authors_queryset = Author.objects.all().order_by('displayName')
+        authors_queryset = Author.objects.filter(is_active=True).order_by('displayName')
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
 
@@ -41,7 +41,7 @@ class SingleAuthor(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except:
             author = None
 
@@ -59,7 +59,7 @@ class SingleAuthor(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except:
             return HttpResponseNotFound()
 
