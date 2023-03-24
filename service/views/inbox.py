@@ -14,6 +14,8 @@ from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
 
@@ -22,6 +24,7 @@ from rest_framework.views import APIView
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InboxView(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "delete"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
