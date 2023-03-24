@@ -1,17 +1,16 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 // Component Imports
-import POST from "./Post";
-import CREATEPOST from "./CreatePost";
-import LIKEINBOX from "./LikeInbox";
 import { Navbar, Nav, Panel, useToaster, Message } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { reqInstance } from "../utils/axios";
-import FOLLOWREQ from "./FollowReq";
+import FOLLOWREQ from "../Post/FollowReq";
+import LIKEINBOX from "../Post/LikeInbox";
 import ADD_FRIEND_MODAL from "../Modals/AddFriendModal";
-import { getAuthorId, getCsrfToken, unsetCurrentUser } from "../utils/auth";
-import COMMENTINBOX from "./CommentInbox";
+import POST from "../Post/Post";
+import COMMENTINBOX from "../Post/CommentInbox";
+import { unsetCurrentUser } from "../utils/auth";
 
-function INBOX() {
+function EXPLORE() {
 	const [inbox, setInbox] = useState({ items: [] });
 	const [curPage, setCurPage] = useState("inbox");
 	const [open, setOpen] = useState(false);
@@ -22,11 +21,11 @@ function INBOX() {
 		if (!localStorage.getItem("loggedIn")) {
 			navigate("/login");
 		} else {
-			const author_id = getAuthorId(null);
-			const url = `authors/${author_id}/inbox/`;
-			reqInstance({ method: "get", url: url }).then((res) => {
-				setInbox(res.data.results);
-			});
+			// const author_id = getAuthorId(null);
+			// const url = `authors/${author_id}/inbox/`;
+			// reqInstance({ method: "get", url: url }).then((res) => {
+			// 	setInbox(res.data.results);
+			// });
 		}
 	}, []);
 
@@ -68,16 +67,6 @@ function INBOX() {
 		});
 	}
 
-	async function handleClearInboxClick() {
-		const author_id = getAuthorId(null);
-		const url = `authors/${author_id}/inbox/`;
-		await reqInstance({ method: "delete", url: url }).then((res) => {
-			if (res.status === 204) {
-				setInbox({ items: [] });
-			}
-		});
-	}
-
 	const handleOpen = () => {
 		setOpen(true);
 	};
@@ -94,14 +83,7 @@ function INBOX() {
 					<Nav.Item onClick={handleLogoutClick}>Logout</Nav.Item>
 				</Nav>
 				<Nav pullRight>
-					<Nav.Menu title="Inbox">
-						<Nav.Item
-							style={{ color: "red" }}
-							onClick={handleClearInboxClick}
-						>
-							Clear Inbox
-						</Nav.Item>
-					</Nav.Menu>
+					<Nav.Menu title="Inbox"></Nav.Menu>
 				</Nav>
 				<Nav pullRight>
 					<Nav.Item onClick={handleProfileClick}>Profile</Nav.Item>
@@ -113,13 +95,10 @@ function INBOX() {
 					<Nav.Item onClick={handleOpen}>Add Friend</Nav.Item>
 				</Nav>
 			</Navbar>
-			<Panel bordered header="New Post" collapsible>
-				<CREATEPOST></CREATEPOST>
-			</Panel>
 			{inbox.items.map((obj) => item(obj))}
 			<ADD_FRIEND_MODAL open={open} handleClose={handleModalClose} />
 		</div>
 	);
 }
 
-export default INBOX;
+export default EXPLORE;
