@@ -150,10 +150,6 @@ response_schema_dictComments = {
     )}
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/dev
 ObjectsLikedGet = {
     200: openapi.Response(
         description='Sucessfully retrieve Liked objects',
@@ -179,10 +175,6 @@ ObjectsLikedGet = {
     )
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/dev
 PostsGet = {
     "200": openapi.Response(
         description="Successfully retrieved posts",
@@ -222,11 +214,6 @@ PostsGet = {
   ]
 }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 PostsPOST = {
@@ -261,11 +248,6 @@ PostsPOST = {
   "visibility": "PUBLIC"
 }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 IndividualPOSTGet = {
@@ -300,11 +282,6 @@ IndividualPOSTGet = {
   "visibility": "PUBLIC"
 }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 IndividualPOSTPost = {
@@ -339,11 +316,6 @@ IndividualPOSTPost = {
   "visibility": "PUBLIC"
 }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 CreateComment = {
@@ -367,11 +339,6 @@ CreateComment = {
   "id": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
 }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 
@@ -403,11 +370,6 @@ GetComments = {
   ]
 }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 
@@ -432,11 +394,6 @@ GetCommentLikes =  {
   }
 ]
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 
@@ -463,11 +420,6 @@ GetInvdividualComment = {
   "id": "http://127.0.0.1:8000/posts/authors/cfd9d228-44df-4a95-836f-c0cb050c7ad6/posts/2aa56a61-85df-4dee-8b00-7c2cabf2b161/comments/c5c03638-47ce-412f-b23c-d785c2ea7525"
 }
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> origin/dev
     )}
 
 
@@ -506,10 +458,6 @@ PostLikes = {
   }
 ]
         }
-<<<<<<< HEAD
-        
-    )}
-=======
 
     )}
 
@@ -517,7 +465,6 @@ PostLikes = {
 
 
 
->>>>>>> origin/dev
 class post_list(APIView, PageNumberPagination):
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -570,10 +517,6 @@ class post_list(APIView, PageNumberPagination):
      "contentType":"text/plain",
      "content":"test"
 }))
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/dev
     def post(self, request, pk_a):
         """
         New post for an Author
@@ -602,12 +545,7 @@ class post_list(APIView, PageNumberPagination):
 
 class CommentDetailView(APIView):
     authentication_classes = [BasicAuthentication]
-<<<<<<< HEAD
-    permission_classes = [IsAuthenticated]
-    
-=======
     permission_classes = [IsAuthenticated]    
->>>>>>> origin/dev
     @swagger_auto_schema(responses = GetInvdividualComment, operation_summary="List specific comment")
     def get(self, request, pk_a, pk, pk_m):
         """
@@ -659,11 +597,7 @@ class post_detail(APIView, PageNumberPagination):
     #{
     # Title, Description, Content type, Content, Categories, Visibility
     # }
-<<<<<<< HEAD
-    @swagger_auto_schema(responses = IndividualPOSTPost, operation_summary="Update a particular post of an author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request',example = {"title":"Updated POST!!!"})) 
-=======
     @swagger_auto_schema(responses = IndividualPOSTPost, operation_summary="Update a particular post of an author",request_body=openapi.Schema( type=openapi.TYPE_STRING,description='A raw text input for the POST request',example = {"title":"Updated POST!!!"}))
->>>>>>> origin/dev
     def post(self, request, pk_a, pk):       
         """
         Request: only include fields you want to update, not including id or author.
@@ -819,11 +753,7 @@ def get_comments(request, pk_a, pk):
     return Response(serializer.data)
 
 
-<<<<<<< HEAD
-@swagger_auto_schema( method='get',operation_summary="Get the likes on a post", responses = PostLikes)
-=======
 @swagger_auto_schema( method='get',operation_summary="Get the likes on a post")
->>>>>>> origin/dev
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
@@ -891,10 +821,7 @@ class CommentView(APIView, PageNumberPagination):
     pagination_class = PostSetPagination
     page_size_query_param = 'page_size'
 
-<<<<<<< HEAD
-=======
     
->>>>>>> origin/dev
     @swagger_auto_schema(responses =GetComments, operation_summary="List all Comments on a post")
     def get(self, request, pk_a, pk):
         try:
