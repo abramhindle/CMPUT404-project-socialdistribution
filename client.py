@@ -70,7 +70,35 @@ def getNodeAuthor_social_distro(author_id):
         return(json_response)
     else: return (None, status_code)
 
+####### GET POSTS
 
+def getNodePost_Yoshi(author_id):
+    url = 'https://yoshi-connect.herokuapp.com/authors/'
+
+    url = url + author_id + '/posts/'
+
+    response = requests.get(url)
+    status_code = response.status_code
+    print(status_code)
+    if status_code == 200:
+        json_response = response.json()
+        return(json_response, status_code)
+    else: return (None, status_code)
+
+#29c546d45f564a27871838825e3dbecb
+# getNodeAuthor_Yoshi('asgasdfgdsfgd')
+# getNodeAuthor_Yoshi('29c546d45f564a27871838825e3dbecb')
+
+def getNodePost_social_distro(author_id):
+    url = 'https://social-distro.herokuapp.com/api/authors/'
+
+    url = url + author_id + '/posts/'
+
+    response = requests.get(url)
+    status_code = response.status_code
+    if status_code == 200:
+        json_response = response.json()
+        return(json_response)
 
 # import socket
 
