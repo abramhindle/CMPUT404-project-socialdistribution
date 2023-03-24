@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Input, Panel, InputGroup, Message, useToaster } from "rsuite";
 import EyeIcon from "@rsuite/icons/legacy/Eye";
 import EyeSlashIcon from "@rsuite/icons/legacy/EyeSlash";
-import { reqInstance } from "../utils/axios";
+import axios from "axios";
 import {
 	getCsrfToken,
 	setCurrentUser,
