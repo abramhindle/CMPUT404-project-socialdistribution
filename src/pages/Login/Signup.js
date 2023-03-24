@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp_api } from "../../api/user_api";
+import "./signup.css";
 
 // Define the Login function.
 export const SignUp = () => {
@@ -44,12 +45,11 @@ export const SignUp = () => {
     <div className="Auth-form-container">
       <form className="Auth-form" onSubmit={submit}>
         <div className="Auth-form-content">
-          <h3 className="Auth-form-title">Sign Up</h3>
+          <h1 className="Auth-form-title">Sign Up</h1>
           <div className="form-group mt-3">
-            <label>Username</label>
             <input
               className="form-control mt-1"
-              placeholder="Enter Username"
+              placeholder="Username"
               name="username"
               type="text"
               value={username}
@@ -58,34 +58,31 @@ export const SignUp = () => {
             />
           </div>
           <div className="form-group mt-3">
-            <label>Password</label>
             <input
               name="password"
               type="password"
               className="form-control mt-1"
-              placeholder="Enter password"
+              placeholder="Password"
               value={password}
               required
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="form-group mt-3">
-            <label>Confirm Password</label>
             <input
               name="password"
               type="password"
               className="form-control mt-1"
-              placeholder="Confirm password"
+              placeholder="Confirm Password"
               value={confirmPassword}
               required
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
           <div className="form-group mt-3">
-            <label>DisplayName</label>
             <input
               className="form-control mt-1"
-              placeholder="Enter DisplayName"
+              placeholder="DisplayName"
               name="displayName"
               type="text"
               value={displayName}
@@ -94,10 +91,9 @@ export const SignUp = () => {
             />
           </div>
           <div className="form-group mt-3">
-            <label>ProfileImage</label>
             <input
               className="form-control mt-1"
-              placeholder="Enter ProfileImage URL"
+              placeholder="ProfileImage URL"
               name="profileImage"
               type="url"
               value={profileImage}
@@ -106,10 +102,9 @@ export const SignUp = () => {
             />
           </div>
           <div className="form-group mt-3">
-            <label>Github</label>
             <input
               className="form-control mt-1"
-              placeholder="Enter Github URL"
+              placeholder="Github URL"
               name="github"
               type="url"
               value={github}

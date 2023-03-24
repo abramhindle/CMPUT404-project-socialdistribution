@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signInUser } from "../../reducer/userSlice";
 import { signIn_api } from "../../api/user_api";
+import "./signin.css";
 
 // Define the Login function.
 export const SignIn = () => {
@@ -28,41 +29,37 @@ export const SignIn = () => {
   return (
     <div className="Auth-form-container">
       <form className="Auth-form" onSubmit={submit}>
-        <div className="Auth-form-content">
-          <h3 className="Auth-form-title">Sign In</h3>
-          <div className="form-group mt-3">
-            <label>Username</label>
-            <input
-              className="form-control mt-1"
-              placeholder="Enter Username"
-              name="username"
-              type="text"
-              value={username}
-              required
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className="form-group mt-3">
-            <label>Password</label>
-            <input
-              name="password"
-              type="password"
-              className="form-control mt-1"
-              placeholder="Enter password"
-              value={password}
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="d-grid gap-2 mt-3">
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-          </div>
+        <h1 className="Auth-form-title">Sign In</h1>
+        <div className="form-group mt-3">
+          <input
+            className="form-control mt-1"
+            placeholder="Username"
+            name="username"
+            type="text"
+            value={username}
+            required
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </div>
+        <div className="form-group mt-3">
+          <input
+            name="password"
+            type="password"
+            className="form-control mt-1"
+            placeholder="Password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="d-grid gap-2 mt-3">
+          <button type="submit" className="btn btn-primary">
+            Submit
+          </button>
+        </div>
+        Don't have a account? &nbsp;
+        <Link to="/signup">Sign Up Here!</Link>
       </form>
-      Don't have a account? &nbsp;
-      <Link to="/signup">Sign Up Here!</Link>
     </div>
   );
 };
