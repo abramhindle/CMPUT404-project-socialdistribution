@@ -1,11 +1,7 @@
-//import './friends.css';
-import '../pages.css'
-import { get_author }from '../../api/author_api'
-import { get_all_authors }from '../../api/author_api'
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
-import { add_followers_for_author } from '../../api/follower_api';
-import { add_request } from '../../api/follower_api';
+import { get_followers_for_author } from '../../api/follower_api';
+import { delete_followers_for_author } from '../../api/follower_api';
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -22,11 +18,10 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Sidebar from '../../components/Sidebar/sidebar';
 
 
 
-function Friends() {
+function Followed() {
 
     const user = useSelector((state) => state.user);
     const author_id = `http://localhost/authors/${user.id}/`
@@ -34,71 +29,23 @@ function Friends() {
     const [success, setSuccess] = useState(null); 
     const navigate = useNavigate();
     
-    let page = 1;
 
     const location = useLocation();
 
     useEffect(() => { 
-      get_all_authors(page, setList)
+        get_followers_for_author(user.id, setList)
       
     }, []);
 
-    const get_search_params = () => {
-      const queryParams = new URLSearchParams(location.search);
-      const query_page = queryParams.get("page");
-  
-      if (query_page) page = parseInt(query_page);
-    };
-    
-    get_search_params();
 
-    const followAuthor= (follow_id) => {
-        add_request(user.id, follow_id, onSuccess)
-        add_followers_for_author(user.id, follow_id, onSuccess)
+    const DeleteAuthor= (follow_id) => {
+        delete_followers_for_author(user.id, follow_id, onSuccess)
     }
 
     const onSuccess = () => {
         setSuccess(true);
     }
     
-    const page_buttons = () => {
-
-    /*  need fix here! */
- 
-        if (follow_list.items.length < 5 && page === 1)
-        {
-          return;
-        }
-        if (page === 1)
-        {
-            return (<button onClick={forward_page}>Next Page</button>);
-        } 
-        else if (follow_list.items.length < 5)
-        {
-          return <button onClick={back_page}>Prev Page</button>
-        } 
-        else 
-        {
-          return (
-          <div>
-            <button onClick={back_page}>Prev Page</button>
-            <button onClick={forward_page}>Next Page</button>
-          </div>);
-        }
-      };
-
-
-    const forward_page = () => {
-        page = page + 1;
-        navigate(`/friends/?page=${page}`);
-        navigate(0)
-      };
-    
-    const back_page = () => {
-        page = page - 1;
-        navigate(`/friends/?page=${page}`);
-        navigate(0)
-      };
     
     const goBack = () => {
         navigate("/");
@@ -108,9 +55,7 @@ function Friends() {
     return (
         
         <>
-        <Sidebar/>
         <div className="sidebar-offset">
-        <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar variant="dense">
@@ -121,7 +66,7 @@ function Friends() {
                 back
             </Button>
           <Typography variant="h6" align="left" color="inherit" component="div">
-            Add friends
+            Followed
           </Typography>
           </Toolbar>
         </AppBar>
@@ -149,9 +94,10 @@ function Friends() {
                 <TableCell align="right">
                   <Button
                     variant="contained"
-                    onClick={(e) => followAuthor(row.id)}
+                    color = "error"
+                    onClick={(e) => DeleteAuthor(row.id)}
                   >
-                    follow
+                    Delete
                   </Button>
                 </TableCell>
               </TableRow>
@@ -159,11 +105,6 @@ function Friends() {
           </TableBody>
         </Table>  
       </TableContainer>
-      <div style={{ width: "100%", textAlign: "center", paddingTop: 16 }}>
-          {page_buttons()}
-      </div>
-      </div>
-      
 
       </>
     );
@@ -172,4 +113,4 @@ function Friends() {
 
 
 
-export default Friends;
+export default Followed;

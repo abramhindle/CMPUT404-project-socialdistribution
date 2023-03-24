@@ -202,7 +202,8 @@ class InboxView(APIView):
             like = Like()
             like._id = id
             like.context = body["context"]
-            if(body["object"].split("/")[-2] == "post"):
+
+            if(body["object"].split("/")[-2] == "posts"):
                 like.summary = f"{foreign_author.displayName} likes your post"
             else:
                 like.summary = f"{foreign_author.displayName} likes your comment"
