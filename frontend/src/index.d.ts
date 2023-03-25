@@ -24,7 +24,7 @@ export interface Post {
     count: number;
     comments: string;
     commentSrc: CommentListItem<Comment>;
-    visibility: boolean;
+    visibility: string;
     unlisted: boolean;
 }
 

@@ -83,24 +83,27 @@ class FollowersView(generics.ListAPIView):
     queryset = FollowModel.objects.all()
     serializer_class = FollowSerializer
 
+
+
     def get(self, request, *args, **kwargs):
         # find all followers of a given author_id in the url
         author_id = kwargs['author_id']
         author_id = build_author_url(author_id)
 
-
+        
         follows = self.queryset.filter(follower=author_id)
         ## go through all followers and get the author object
         ## and add it to the list of followers
         followers_list = []
         for follow in follows:
-            author = AuthorModel.objects.filter(id=follow.follower).first()
+            if follow.status == 'pending':
+                continue
+            author = AuthorSerializer(AuthorModel.objects.filter(id=follow.following).first()).data
             followers_list.append(author)
         
-        serializer = self.serializer_class(followers_list, many=True)
         return Response({
             "type": "followers",
-            "items": serializer.data[::-1],
+            "items": followers_list,
         })
         
 class FollowView(generics.RetrieveUpdateDestroyAPIView):
@@ -133,10 +136,11 @@ class FollowView(generics.RetrieveUpdateDestroyAPIView):
 
         follower_id = build_author_url(follower_id)
         following_id = build_author_url(following_id)
-
+        
         follow = self.queryset.filter(follower=follower_id, following=following_id).first()
         if not follow:
             return Response({'detail': 'Follow not found.'}, status=404)
+        
         serializer = self.serializer_class(follow, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -147,12 +151,15 @@ class FollowView(generics.RetrieveUpdateDestroyAPIView):
         # find the follow object with the given author_id and follower_id
         follower_id = kwargs['author_id']
         following_id = kwargs['foreign_author_id']
+
+        follower_id = build_author_url(follower_id)
+        following_id = build_author_url(following_id)
+
         follow = self.queryset.filter(follower=follower_id, following=following_id).first()
         if not follow:
             return Response({'detail': 'Follow not found.'}, status=404)
         follow.delete()
         return Response(status=204)
-
 
     @staticmethod
     def create_follow(data, **kwargs):
@@ -194,7 +201,12 @@ class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView
         if not post:
             return Response({'detail': 'Post not found.'}, status=404)
         serializer = self.serializer_class(post)
-        return Response(serializer.data)
+
+        comment_count = CommentsModel.objects.filter(post=post_id).count()
+        
+        data = dict(serializer.data)
+        data['count'] = comment_count
+        return Response(data)
         
     def put(self, request, *args, **kwargs):
         # find the post with the given post_id
@@ -353,16 +365,14 @@ class CommentsView(generics.ListCreateAPIView):
         ## add the comment to the post given the post_id in the url
         post_id = kwargs['post_id']
         author_id = kwargs['author_id']
-        
         post_id = build_post_url(author_id, post_id)
         author_id = build_author_url(author_id)
         post = PostsModel.objects.filter(id=post_id).first()
-        author = AuthorModel.objects.filter(id=author_id).first()
+
         if not post:
             return Response({'detail': 'Post not found.'}, status=404)
         
         request.data['post'] = PostsSerializer(post).data
-        request.data['author'] = AuthorSerializer(author).data
         
         serializer = self.serializer_class(data=request.data)
         
@@ -505,7 +515,8 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         
         author_id = kwargs['author_id']
         ## only get the object column.
-        
+        #FollowModel.objects.all().delete()
+        #InboxModel.objects.all().delete()
         inbox = self.queryset.filter(author=build_author_url(author_id)).values_list('object', 'type')
         
         for val in inbox:
@@ -526,8 +537,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         if not author:
             return Response({'detail': 'Author not found.'}, status=404)
         
-
-        author_serialized = AuthorSerializer(author)
+        
         
         if request.data.get('type', '').lower() == 'like':
             data_like = request.data
@@ -535,10 +545,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                 LikeView.create_like(data_like)
             except Exception as e:
                 return Response(str(e), status=400)
-
-            #author_data = request.data.pop('author', None)
-            #if author_data.get('id', None) == author_id:
-            #    return Response({}, status=201)
+            
             
         
         elif request.data.get('type', '').lower() == 'follow':
@@ -553,17 +560,16 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                 })
             except Exception as e:
                 return Response(str(e), status=400)
-            
-            #author_data = request.data.pop('author', None)
-            #if author_data.get('id', None) == author_id:
-            #    return Response({}, status=201)
 
-        else:
-            #author_data = request.data.pop('author', None)
-            #if author_data.get('id', None) == author_id and request.data.get('type', '').lower() != 'post':
-            #    return Response({}, status=201)
-            pass
 
+        author_data = request.data.get('author', None)
+
+        if author_data and request.data.get('type', '').lower() != 'post':
+            ## we dont want to add to our own inbox
+            if author_data.get('id', None) == author_id:
+                return Response({}, status=201)
+        author_serialized = AuthorSerializer(author)
+        
         data = {
             'object': request.data,
             'type': request.data.get('type', 'like'),

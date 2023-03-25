@@ -54,11 +54,13 @@ const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, 
 					let authorTo = await NodeManager.getAuthor(id.split('/').pop() || '')
 					let userAuthor = await NodeManager.getAuthor(user?.id || '')
 					if (authorTo && userAuthor) {
+
 					await NodeManager.sendFollowRequest(authorTo, userAuthor)
 					setFollowStatusState('pending')
 					}
-				} else if (followStatusState === 'friends' || followStatusState === 'true_friends') {
-					await NodeManager.removeFollower(id.split('/').pop() || '', user?.id || '')
+				} else if (followStatusState === 'friends') {
+					await NodeManager.removeFollower(id.split('/').pop() || '', user?.id || '');
+					setFollowStatusState('not_friends')
 				} {}
 				}
 				catch {
@@ -130,7 +132,11 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		let followStatus;
 		if (user.id !== context.params?.author_id) {
 			followStatus = await NodeManager.checkFollowerStatus(context.params?.author_id as string, user.id)
-		
+			if (followStatus !== 'true_friends') {
+				posts.items = posts.items.filter((post) => post.visibility === 'PUBLIC')
+			} else {
+				posts.items = posts.items.filter((post) => post.visibility === 'PUBLIC' || post.visibility === 'PRIVATE')
+			}
 		return {
 			props: {
 				author: author,

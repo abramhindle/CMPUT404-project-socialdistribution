@@ -94,7 +94,7 @@ class LikeModel(models.Model):
     summary = models.TextField(blank=False, default='')
     type = models.CharField(max_length=100, default='like')
     author = models.ForeignKey('AuthorModel', on_delete=models.CASCADE, null=True, blank=True, to_field='id')
-    object = models.URLField(default='', unique=True)
+    object = models.URLField(default='')
     post = models.ForeignKey('PostsModel', on_delete=models.CASCADE, null=True, blank=True, to_field='id')
     comment = models.ForeignKey('CommentsModel', on_delete=models.CASCADE, null=True, blank=True, to_field='id')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -117,7 +117,6 @@ class FollowModel(models.Model):
     class Status(models.TextChoices):
         PENDING = 'pending'
         FRIENDS = 'friends'
-        TRUE_FRIENDS = 'true_friends'
         NOT_FRIENDS = 'not_friends'
 
     type = models.CharField(max_length=100, blank=False, default='follow')

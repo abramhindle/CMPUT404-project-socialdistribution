@@ -62,6 +62,7 @@ const Post: React.FC<PostPr> = ({post, comments}) => {
 		let authorId = post.author.id.split('/').pop() || '';
 		let postId = post.id.split('/').pop() || '';
 		let authorUser = await NodeManager.getAuthor(user?.id || ``)
+		
 		if (authorUser) {
 			let comment:CommentI = {
 			type:'comment',
@@ -69,7 +70,6 @@ const Post: React.FC<PostPr> = ({post, comments}) => {
 			contentType: 'text/plain',
 			published: new Date().toISOString(),
 			author:authorUser
-
 		}
 		await NodeManager.createComment(authorId, postId, comment);
 		let link = `/authors/${post.author.id.split('/').pop()}/posts/${post.id.split('/').pop()}`;

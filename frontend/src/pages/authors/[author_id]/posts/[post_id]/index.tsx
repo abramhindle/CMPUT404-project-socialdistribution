@@ -5,11 +5,8 @@ import { NextPage } from 'next';
 import Link from 'next/link';
 import SideBar from '@/components/Sidebar';
 import Post from '@/components/Post';
-import { Auth } from '@supabase/auth-ui-react'
-import {ThemeSupa} from '@supabase/auth-ui-shared'
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Head from 'next/head';
-import { GitHub } from 'react-feather';
 import { useRouter } from 'next/router';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { Author, Post as PostType, Comment } from '@/index';
@@ -62,7 +59,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 
         let post = await NodeManager.getPost(authorId as string, postId as string);
 		let comments = await NodeManager.getComments(authorId as string, postId as string)
-		
+
 		if (!post) {
 			return {
 				redirect: {

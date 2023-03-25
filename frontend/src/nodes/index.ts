@@ -21,7 +21,7 @@ const RemoteNode = new API('https://sd7-api.herokuapp.com/api', {
     headers:{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-         'Access-Control-Allow-Credentials':true
+        'Access-Control-Allow-Credentials':true
     }
 }, 'remote');
 

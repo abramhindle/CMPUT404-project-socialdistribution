@@ -98,6 +98,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 			let id = url[url.length - 1]
 			let authorId = url[url.length - 3] 
 			let it = await NodeManager.getPost(authorId, id);
+			
 			if (!it) {
 				return item;
 			}
@@ -106,6 +107,7 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 			return item;
 		}
 		}	 catch (error) {
+			console.log(error)
 			return item;
 		}
 		

@@ -93,7 +93,8 @@ class CommentsSerializer(serializers.ModelSerializer):
         fields = ('id', 'type', 'comment', 'host', 'contentType', 'published', 'author', 'created_at', 'post')
 
 class LikeSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer()
+    author = AuthorSerializer(required=False)
+    
 
     def create(self, validated_data):
         author_data = validated_data.pop('author')

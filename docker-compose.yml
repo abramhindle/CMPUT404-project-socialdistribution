@@ -10,7 +10,7 @@ services:
     ports:
       - 8000:8000
     build:
-      context: ./backend/social_net
+      context: ./backend
       target: builder
     depends_on:
       - db

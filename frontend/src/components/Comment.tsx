@@ -11,8 +11,6 @@ const Comment: React.FC<CommentProps> = ({
     
 }) => {
 
-        
-
         const [commentLiked, setCommentLiked] = React.useState(false)
         const user = useUser()
 

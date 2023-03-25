@@ -122,12 +122,14 @@ class API {
             throw new Error("Remote nodes do not support this operation");
          }
         try {
-        await this.axiosInstance.put<void, any>(`/authors/${authorId}/followers/${foreignAuthorId}`);
+        await this.axiosInstance.put<void, any>(`/authors/${authorId}/followers/${foreignAuthorId}`, {
+            status:'friends'
+        });
         
         let actor = await this.getAuthor(foreignAuthorId);
         let object = await this.getAuthor(authorId);
         if (actor && object) {
-        await this.sendToInbox(authorId, {
+        await this.sendToInbox(foreignAuthorId, {
                 type: 'follow',
                 summary: `${object.displayName} accepted your follow request`,
                 actor: actor,
@@ -156,6 +158,7 @@ class API {
             throw new Error("Remote nodes do not support this operation");
         }
             try {
+                console.log(authorId, foreignAuthorId)
         return await this.axiosInstance.delete<void, any>(`/authors/${authorId}/followers/${foreignAuthorId}`);
         } 
         catch (e) {
@@ -224,12 +227,27 @@ class API {
         // Goes to everyones inbox
             let followers = await this.getFollowers(authorId);
             let followerList = followers.items;
-            for (let follower of followerList) {
-                let followerId = follower.id.split('/').pop();
-                await this.sendToInbox(followerId || '',
+            Promise.all(followerList.map(async follower => {
+                 let followerId = follower.id.split('/').pop();
+                 if (post.visibility === 'UNLISTED') {
+                        return; 
+                 } else if (post.visibility === 'PRIVATE') {
+                        let status = await this.checkFollowerStatus(followerId || '', authorId);
+                        if (status == 'true_friends') {
+                            await this.sendToInbox(followerId || '',
+                            post
+                        )
+                        }
+                 } else {
+                    await this.sendToInbox(followerId || '',
                     post
                 )
-            }
+                 }
+                 
+
+                
+            }));
+           
         // Add to author's inbox
         await this.sendToInbox(authorId,  post)
     }
@@ -281,7 +299,7 @@ class API {
 
         try {
             const result = await this.axiosInstance.post<Comment>(`/authors/${authorId}/posts/${postId}/comments`, comment);
-                await this.sendToInbox(authorId || '', result.data);
+                await this.sendToInbox(authorId || '', comment);
         }
         catch (e) {
             return undefined;
@@ -294,7 +312,7 @@ class API {
 
         await this.sendToInbox(authorId, {
                 "@context": "https://www.w3.org/ns/activitystreams",
-                "summary": `${authorFrom.displayName} likes your post: ${post.title}`,
+                "summary": `${authorFrom.displayName} liked your post: ${post.title}`,
                 type: 'like',
                 author: authorFrom,
                 object: post.id,
@@ -315,7 +333,7 @@ class API {
 
         await this.sendToInbox(authorId, {
                     "@context": "https://www.w3.org/ns/activitystreams",
-                    "summary": `${authorFrom.displayName} likes your comment`,
+                    "summary": `${authorFrom.displayName} liked your comment`,
                     type: 'like',
                     author: authorFrom,
                     object: comment?.id || '',
