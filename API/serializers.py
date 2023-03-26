@@ -1,93 +1,157 @@
 #from django.contrib.auth.models import User, Group
-from .models import AuthorModel, PostsModel, CommentsModel, LikeModel
 from rest_framework import serializers
+from .models import AuthorModel, PostsModel, ImageModel,  CommentsModel, LikeModel, FollowModel, InboxModel
+from rest_framework import validators
 
 class AuthorSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(max_length=100, default='')
-    id = serializers.CharField(max_length=150, default='')
-    url = serializers.CharField(max_length=100, default='')
-    host = serializers.CharField(max_length=150,default='')
-    displayName = serializers.CharField(max_length=150, default='')
-    github = serializers.CharField(max_length=150, default='')
-    profileImage = serializers.CharField(max_length=500, default='')
-
-    #TODO: create a method to create a new author
-    def update(self, instance, validated_data):
-        instance.type = validated_data.get('type', instance.type)
-        instance.id = validated_data.get('id', instance.id)
-        instance.url = validated_data.get('url', instance.url)
-        instance.host = validated_data.get('host', instance.host)
-        instance.displayName = validated_data.get('displayName', instance.displayName)
-        instance.github = validated_data.get('github', instance.github)
-        instance.profileImage = validated_data.get('profileImage', instance.profileImage)
-        return instance
+    id = serializers.URLField(required=False)
+    
     class Meta:
         model = AuthorModel
-        # Tuple of serialized model fields (see link [2])
-        fields = ('type', 'id', 'host', 'displayName', 'github', 'url', 'profileImage')
+        fields = ('id', 'type', 'host', 'url', 'displayName', 'github', 'profileImage', 'created_at')
+    
+    def create(self, validated_data):
+        author = AuthorModel.objects.create(**validated_data)
+        return author
+
+    
 
 class PostsSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(max_length=100, default='post')
-    title = serializers.CharField(max_length=100, default='')
-    id = serializers.CharField(max_length=100)
-    source = serializers.CharField(max_length=100, default="")
-    origin = serializers.CharField(max_length=100, default='')
-    description = serializers.CharField(max_length=500, default='')
-    contentType = serializers.CharField(max_length=100, default='')
-    content = serializers.CharField(max_length=500, default='')
-    author = serializers.CharField(max_length=100, default='')
-    categories = serializers.ListField(child=serializers.CharField())
-    count = serializers.IntegerField(default=1023)
-    comments = serializers.CharField(max_length=100, default='')
-    commentsSrc = serializers.ListField(child=serializers.CharField())
-    published = serializers.DateTimeField()
-    visibility = serializers.BooleanField(default=True)
-    unlisted = serializers.BooleanField(default=False)
-
+    author = AuthorSerializer(required=False)
+    id = serializers.URLField(required=False)
+    def create(self, validated_data):
+        
+        author_data = validated_data.pop('author', None)
+        
+        author = AuthorModel.objects.get(**author_data)
+        post = PostsModel.objects.create(author=author, **validated_data)
+        return post
+    
     def update(self, instance, validated_data):
+        author_data = validated_data.pop('author', None)
+        author = AuthorModel.objects.get(**author_data)
+        instance.author = author
         instance.type = validated_data.get('type', instance.type)
         instance.title = validated_data.get('title', instance.title)
-        instance.id = validated_data.get('id', instance.id)
+        instance.source = validated_data.get('source', instance.source)
         instance.origin = validated_data.get('origin', instance.origin)
         instance.description = validated_data.get('description', instance.description)
         instance.contentType = validated_data.get('contentType', instance.contentType)
         instance.content = validated_data.get('content', instance.content)
-        instance.author = validated_data.get('author', instance.author)
         instance.categories = validated_data.get('categories', instance.categories)
         instance.count = validated_data.get('count', instance.count)
-        instance.comments = validated_data.get('comments', instance.comments)
-        instance.commentsSrc = validated_data.get('commentsSrc', instance.commentsSrc)
         instance.published = validated_data.get('published', instance.published)
         instance.visibility = validated_data.get('visibility', instance.visibility)
         instance.unlisted = validated_data.get('unlisted', instance.unlisted)
+        instance.id = validated_data.get('id', instance.id)
+        instance.save()
         return instance
-    
+
     class Meta:
         model = PostsModel
-        # Tuple of serialized model fields (see link [2])
-        fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'comments', 'commentsSrc', 'published', 'visibility', 'unlisted')
+        fields = ('id', 'type', 'author', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'categories', 'count', 'published', 'visibility', 'unlisted')
+        extra_kwargs = {
+           'author': {
+            'validators': []
+            },
+        }
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(required=False)
+    post = PostsSerializer(required=False)
+    
+    def create(self, validated_data):
+        author = validated_data.pop('author', None)
+        post = validated_data.pop('post', None)
+        
+        if author:
+            author = AuthorModel.objects.get(**author)
+            image = ImageModel.object.create(author=author, **validated_data)
+            return image
+        
+        if post:
+            post = PostsModel.objects.get(**post)
+            image = ImageModel.objects.create(post=post, **validated_data)
+            return image
+        
+        
+            
+
+
+    class Meta:
+        model = ImageModel
+        fields = ('image', 'author', 'post')
+
+    
 class CommentsSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(max_length=100, default='comment')
-    author = serializers.CharField(max_length=100)
-    comment = serializers.CharField(max_length=100)
-    host = serializers.CharField(max_length=100, default='')
-    contentType = serializers.CharField(max_length=100, default='')
-    published = serializers.DateTimeField()
-    id = serializers.CharField(max_length=500, default='')
+    author = AuthorSerializer(required=False)
+    post = PostsSerializer(required=False)
+
+    def create(self, validated_data):
+        
+        author = validated_data.pop('author')
+        post = validated_data.pop('post')
+        post.pop('author')
+        
+        author = AuthorModel.objects.get(**author)
+        post = PostsModel.objects.filter(**post).first()
+        
+        comment = CommentsModel.objects.create(
+            post=post,
+            author=author,
+            **validated_data)
+        return comment
+    
+    def update(self, instance, validated_data):
+        author_data = validated_data.pop('author', None)
+        author = AuthorModel.objects.get(**author_data)
+        instance.author = author
+        instance.type = validated_data.get('type', instance.type)
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.host = validated_data.get('host', instance.host)
+        instance.contentType = validated_data.get('contentType', instance.contentType)
+        instance.published = validated_data.get('published', instance.published)
+        instance.save()
+        return instance
 
     class Meta:
         model = CommentsModel
-        # Tuple of serialized model fields (see link [2])
-        fields = ('type', 'author', 'comment', 'host', 'contentType', 'published', 'id')
+        fields = ('id', 'type', 'comment', 'host', 'contentType', 'published', 'author', 'created_at', 'post')
 
 class LikeSerializer(serializers.ModelSerializer):
-    summary = serializers.CharField(max_length=200)
-    type = serializers.CharField(max_length=100)
-    author = serializers.CharField(max_length=100)
-    object = serializers.CharField(max_length=255)
+    author = AuthorSerializer(required=False)
+    
+
+    def create(self, validated_data):
+        author_data = validated_data.pop('author')
+        author = AuthorModel.objects.get(**author_data)
+
+        like = LikeModel.objects.create(author=author, **validated_data)
+        return like
 
     class Meta:
         model = LikeModel
-        # Tuple of serialized model fields (see link [2])
-        fields = ('summary', 'type', 'author', 'object')
+        fields = ('id', 'summary', 'type', 'author', 'object', 'post', 'comment', 'created_at')
 
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FollowModel
+        fields = ('status', 'follower', 'following', 'created_at')
+
+
+class InboxSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer()
+
+    def create(self, validated_data):
+        author_data = validated_data.pop('author')
+        author = AuthorModel.objects.get(**author_data)
+        inbox = InboxModel.objects.create(author=author, **validated_data)
+        return inbox
+
+    class Meta:
+        model = InboxModel
+        fields = ('id', 'type', 'author', 'object', 'created_at')
+
+    
