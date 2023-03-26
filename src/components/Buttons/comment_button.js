@@ -19,7 +19,7 @@ export default function CommentArrow(props){
             {/*-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch --*/}
             <title>Comment</title>
             <desc>Created with Sketch.</desc>
-            <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                 <g id="Rounded" transform="translate(-579.000000, -1532.000000)">
                     <g id="Content" transform="translate(100.000000, 1428.000000)">
                         <g id="-Round-/-Content-/-reply" transform="translate(476.000000, 98.000000)">

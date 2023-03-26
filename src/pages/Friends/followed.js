@@ -18,6 +18,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Sidebar from "../../components/Sidebar/sidebar";
 
 
 
@@ -50,12 +51,53 @@ function Followed() {
     const goBack = () => {
         navigate("/");
       };
+
+    
+      let page = 1;
+      const page_buttons = () => {
+ 
+        if (follow_list.items.length < 5 && page === 1)
+        {
+          return;
+        }
+        if (page === 1)
+        {
+            return (<button onClick={forward_page}>Next Page</button>);
+        } 
+        else if (follow_list.items.length < 5)
+        {
+          return <button onClick={back_page}>Prev Page</button>
+        } 
+        else 
+        {
+          return (
+          <div>
+            <button onClick={back_page}>Prev Page</button>
+            <button onClick={forward_page}>Next Page</button>
+          </div>);
+        }
+      };
+
+
+    const forward_page = () => {
+        page = page + 1;
+        navigate(`/friends/?page=${page}`);
+        navigate(0)
+      };
+    
+    const back_page = () => {
+        page = page - 1;
+        navigate(`/friends/?page=${page}`);
+        navigate(0)
+      };
   
   
     return (
         
         <>
+        <Sidebar/>
         <div className="sidebar-offset">
+          <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar variant="dense">
@@ -105,7 +147,10 @@ function Followed() {
           </TableBody>
         </Table>  
       </TableContainer>
-
+      <div style={{ width: "100%", textAlign: "center", paddingTop: 16 }}>
+        {page_buttons()}
+      </div>
+      </div>
       </>
     );
   }

@@ -18,13 +18,13 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Sidebar from "../../components/Sidebar/sidebar";
+import { get_followers_for_author } from "../../api/follower_api";
 
 
 
 function Followed() {
 
     const user = useSelector((state) => state.user);
-    const author_id = `http://localhost/authors/${user.id}/`
     const [follow_list, setList] = useState({"items": []}); 
     const [success, setSuccess] = useState(null); 
     const navigate = useNavigate();
@@ -54,6 +54,7 @@ function Followed() {
         <>
         <Sidebar/>
         <div className="sidebar-offset">
+        <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar variant="dense">
@@ -103,6 +104,7 @@ function Followed() {
           </TableBody>
         </Table>  
       </TableContainer>
+      </div>
       
       </>
     );

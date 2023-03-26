@@ -30,7 +30,6 @@ import Sidebar from '../../components/Sidebar/sidebar';
 function Friends() {
 
     const user = useSelector((state) => state.user);
-    const author_id = `http://localhost/authors/${user.id}/`
     const [follow_list, setList] = useState({"items": []}); 
     const [success, setSuccess] = useState(null); 
     const navigate = useNavigate();
@@ -55,17 +54,15 @@ function Friends() {
 
     //no need to handle anything here
     const followAuthor= (object) => {
-        const actor = user;
         
         const obj = {
           "type":"follow",
-          "Summary":user.displayName + "wants to follow" + object.displayName,
-          "actor":actor,
+          "Summary": user.displayName + " wants to follow " + object.displayName,
+          "actor":user,
           "object":object
         }
 
-        post_inbox(user.id,obj,onSuccess)
-        //add_request(user.id, obj, onSuccess)
+        add_request(object.id, obj, onSuccess);
         //add_followers_for_author(user.id, follow_id, onSuccess)
     }
 

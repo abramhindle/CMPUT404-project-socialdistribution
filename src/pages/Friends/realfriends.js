@@ -1,3 +1,4 @@
+import "../pages.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
 import { get_friends_for_author } from '../../api/follower_api';
@@ -51,62 +52,103 @@ function Realfriends() {
         navigate("/");
       };
   
-  
+      let page = 1;
+      const page_buttons = () => {
+ 
+        if (follow_list.items.length < 5 && page === 1)
+        {
+          return;
+        }
+        if (page === 1)
+        {
+            return (<button onClick={forward_page}>Next Page</button>);
+        } 
+        else if (follow_list.items.length < 5)
+        {
+          return <button onClick={back_page}>Prev Page</button>
+        } 
+        else 
+        {
+          return (
+          <div>
+            <button onClick={back_page}>Prev Page</button>
+            <button onClick={forward_page}>Next Page</button>
+          </div>);
+        }
+      };
+
+
+    const forward_page = () => {
+        page = page + 1;
+        navigate(`/friends/?page=${page}`);
+        navigate(0)
+      };
+    
+    const back_page = () => {
+        page = page - 1;
+        navigate(`/friends/?page=${page}`);
+        navigate(0)
+      };
+
     return (
         
-        <>
+      <>
         <Sidebar/>
         <div className="sidebar-offset">
-        <div>
-        <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar variant="dense">
-            <Button
-                variant="contained"
-                onClick={goBack}
-                >
-                back
-            </Button>
-          <Typography variant="h6" align="left" color="inherit" component="div">
-            Realfriends
-          </Typography>
-          </Toolbar>
-        </AppBar>
-        </Box>
-        </div>
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Follow</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {follow_list.items.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell align="right">{row.displayName}</TableCell>
-                <TableCell align="right">
-                  <Button
-                    variant="contained"
-                    color = "success"
-                    onClick={(e) => Details(row.id)}
+          <div>
+          <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static">
+            <Toolbar variant="dense">
+              <Button
+                  variant="contained"
+                  onClick={goBack}
                   >
-                    Details
-                  </Button>
-                </TableCell>
+                  back
+              </Button>
+            <Typography variant="h6" align="left" color="inherit" component="div">
+              Realfriends
+            </Typography>
+            </Toolbar>
+          </AppBar>
+          </Box>
+          </div>
+          <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell align="right">Name</TableCell>
+                <TableCell align="right">Follow</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>  
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {follow_list.items.map((row) => (
+                <TableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.id}
+                  </TableCell>
+                  <TableCell align="right">{row.displayName}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="contained"
+                      color = "success"
+                      onClick={(e) => Details(row.id)}
+                    >
+                      Details
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>  
+          </TableContainer>
+          <div style={{ width: "100%", textAlign: "center", paddingTop: 16 }}>
+          {page_buttons()}
+          </div>
+        </div>
       </>
     );
   }
