@@ -60,6 +60,27 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
         let post = await NodeManager.getPost(authorId as string, postId as string);
 		let comments = await NodeManager.getComments(authorId as string, postId as string)
 
+
+		let visibility = post?.visibility;
+		
+		if (visibility === 'PRIVATE') {
+			if (authorId != user.id) {
+				let followStatus = await NodeManager.checkFollowerStatus(authorId as string, user.id);
+				
+				if (followStatus !== 'true_friends') {
+					return {
+						redirect: {
+							destination: '/',
+							permanent: false
+						}
+					}
+				}
+				
+			}
+		}
+
+		
+
 		if (!post) {
 			return {
 				redirect: {

@@ -1,6 +1,6 @@
 #from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import AuthorModel, PostsModel, CommentsModel, LikeModel, FollowModel, InboxModel
+from .models import AuthorModel, PostsModel, ImageModel,  CommentsModel, LikeModel, FollowModel, InboxModel
 from rest_framework import validators
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -13,6 +13,8 @@ class AuthorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author = AuthorModel.objects.create(**validated_data)
         return author
+
+    
 
 class PostsSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(required=False)
@@ -53,9 +55,34 @@ class PostsSerializer(serializers.ModelSerializer):
             'validators': []
             },
         }
-    
 
+
+class ImageSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(required=False)
+    post = PostsSerializer(required=False)
     
+    def create(self, validated_data):
+        author = validated_data.pop('author', None)
+        post = validated_data.pop('post', None)
+        
+        if author:
+            author = AuthorModel.objects.get(**author)
+            image = ImageModel.object.create(author=author, **validated_data)
+            return image
+        
+        if post:
+            post = PostsModel.objects.get(**post)
+            image = ImageModel.objects.create(post=post, **validated_data)
+            return image
+        
+        
+            
+
+
+    class Meta:
+        model = ImageModel
+        fields = ('image', 'author', 'post')
+
     
 class CommentsSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(required=False)

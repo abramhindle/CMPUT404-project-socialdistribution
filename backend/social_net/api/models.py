@@ -30,11 +30,13 @@ class AuthorModel(models.Model):
 
     class Meta:
         ordering = ('created_at',)
+        
+        
+
 
 class PostsModel(models.Model):
     pkid = models.BigAutoField(primary_key=True, editable=False)
     id = models.URLField(default='', unique=True)
-
     type = models.CharField(max_length=100, blank=False, default='post')
     title = models.CharField(max_length=100, blank=False, default='')
     source = models.URLField(default="")
@@ -64,6 +66,14 @@ class PostsModel(models.Model):
 
     class Meta:
         ordering = ('published', )
+
+
+class ImageModel(models.Model):
+    url_id = models.URLField(default='')
+    post = models.OneToOneField('PostsModel',  on_delete=models.CASCADE, to_field='id', blank=True, null=True)
+    author = models.OneToOneField('AuthorModel', on_delete=models.CASCADE, to_field='id', blank=True, null=True)
+    image = models.ImageField(upload_to='uploads/')
+
 
 class CommentsModel(models.Model):
     pkid = models.BigAutoField(primary_key=True, editable=False)

@@ -67,13 +67,19 @@ const Edit: React.FC<createProps> = ({post, postId, authorId}) => {
 		data.categories = data.categories.split(',')
 
 		try {
-			await NodeManager.updatePost(authorId, postId, {
+			
+			let post = {
 				...data,
 				source: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 				origin: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
 				unlisted: data.visibility === 'UNLISTED',
 				visibility: data.visibility,
-			})
+			}
+
+			let updatedPost = await NodeManager.updatePost(authorId, postId, post)
+			if (updatedPost) {
+				await NodeManager.alertNewPost(authorId, post)
+			}
 		
 			console.log(`/authors/${authorId}/posts/${postId}`)
 		await router.push(`/authors/${authorId}/posts/${postId}`)

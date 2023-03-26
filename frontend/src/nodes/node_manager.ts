@@ -34,7 +34,7 @@ class NodeManager  {
         return false;
     }
 
-    public async getAuthor(authorId: string, nodeId:string = 'all'): Promise<Author | undefined> {
+    public async getAuthor(authorId: string, nodeId:string = 'all'): Promise<Author | null> {
         if (nodeId === 'all') {
             for (const node of Object.values(this.nodes)) {
                 const author = await node.getAuthor(authorId);
@@ -42,7 +42,7 @@ class NodeManager  {
                     return author;
                 }
             }
-            return undefined;
+            return null;
         } else {
             return await this.nodes[nodeId].getAuthor(authorId);
         }
@@ -75,7 +75,7 @@ class NodeManager  {
         }
     }
 
-    public async updateAuthor(authorId: string, data:Author): Promise<Author | undefined> {
+    public async updateAuthor(authorId: string, data:Author): Promise<Author | null> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
                 return await node.updateAuthor(authorId, data);
@@ -166,7 +166,7 @@ class NodeManager  {
         throw new Error("No local node found");
     }
 
-    public async getPost(authorId:string, postId: string, nodeId:string = 'all'): Promise<Post | undefined> {
+    public async getPost(authorId:string, postId: string, nodeId:string = 'all'): Promise<Post | null> {
         if (nodeId === 'all') {
             for (const node of Object.values(this.nodes)) {
                 const post = await node.getPost(authorId, postId);
@@ -174,7 +174,7 @@ class NodeManager  {
                     return post;
                 }
             }
-            return undefined;
+            return null;
         } else {
             return await this.nodes[nodeId].getPost(authorId, postId);
         }
@@ -196,7 +196,7 @@ class NodeManager  {
         }
     }
 
-    public async createPost(authorId: string, post: Post): Promise<Post | undefined> {
+    public async createPost(authorId: string, post: Post): Promise<Post | null> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
                 return await node.createPost(authorId, post);
@@ -249,7 +249,7 @@ class NodeManager  {
         }
     }
 
-    public async createComment(authorId: string, postId: string, comment: Comment): Promise<Comment | undefined> {
+    public async createComment(authorId: string, postId: string, comment: Comment): Promise<Comment | null> {
         for (const node of Object.values(this.nodes)) {
             if (node.getNodeType() === "local") {
                 return await node.createComment(authorId, postId, comment);

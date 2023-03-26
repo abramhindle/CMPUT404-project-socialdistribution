@@ -8,13 +8,14 @@ django = "*"
 djangorestframework = "*"
 django-filter = "*"
 "backports.zoneinfo" = "==0.2.1"
-psycopg2 = "*"
+psycopg2-binary = "*"
 django-cors-headers = "*"
 django-rest-swagger = "*"
 drf-yasg = "*"
 pylint-django = "*"
 pyyaml = "*"
 django-jsonfield = "*"
+pillow = "*"
 
 [dev-packages]
 

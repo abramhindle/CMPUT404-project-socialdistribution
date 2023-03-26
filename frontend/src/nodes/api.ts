@@ -22,11 +22,14 @@ class API {
     public async getAuthors(page:number = 0, size:number = 25, query:string = ''):Promise<ListItem<Author>> {
         
         try {
-            const results = await this.axiosInstance.get<ListItem<Author>>(`/authors?page=${page}&size=${size}&query=${query}`);
+            const results = await this.axiosInstance.get<ListItem<Author>>(`/authors/?page=${page}&size=${size}&query=${query}`);
+            if (results.data.items === undefined) {
+                throw new Error("items is undefined");
+            }
             return results.data;
         }
         catch (e) {
-
+            console.error(e);
             return {
                 type: "authors",
                 items: []
@@ -46,6 +49,7 @@ class API {
             return false;
         }
         catch (e) {
+            console.error(e);
             return false;
         }
     }
@@ -65,17 +69,19 @@ class API {
             return false;
         }
         catch (e) {
+            console.error(e);
             return false;
         }
     }
 
-    public async getAuthor(authorId:string):Promise<Author | undefined> {
+    public async getAuthor(authorId:string):Promise<Author | null> {
         try {
             const result = await this.axiosInstance.get<Author>(`/authors/${authorId}`);
             return result.data;
         }
         catch (e) {
-            return undefined;
+            console.error(e);
+            return null;
         }
     }
 
@@ -84,14 +90,14 @@ class API {
             throw new Error("Remote nodes do not support this operation");
         }
         try {
-            await this.axiosInstance.post<void>(`/authors`, author);
+            await this.axiosInstance.post<void>(`/authors/`, author);
         } catch (e) {
             console.log(e);
         }
         
     }
 
-    public async updateAuthor(authorId:string, data:Author):Promise<Author | undefined> {
+    public async updateAuthor(authorId:string, data:Author):Promise<Author | null> {
         if (this.nodeType === "remote") {
             throw new Error("Remote nodes do not support this operation");
         }
@@ -100,16 +106,21 @@ class API {
             return result.data;
         }
         catch (e) {
-            return;
+            console.error(e);
+            return null;
         }
     }
 
     public async getFollowers(authorId:string):Promise<ListItem<Author>> {
         try {
             const results = await this.axiosInstance.get<ListItem<Author>>(`/authors/${authorId}/followers`);
+            if (results.data.items === undefined) {
+                throw new Error("items is undefined");
+            }
             return results.data;
         }
         catch (e) {
+            console.error(e);
             return {
                 type: "authors",
                 items: []
@@ -149,6 +160,7 @@ class API {
         return result.data;
         }
         catch (e) {
+            console.error(e);
             return 'not_friends'
         }
     }
@@ -184,14 +196,14 @@ class API {
         
     }
 
-    public async getPost(authorId:string, postId:string):Promise<Post | undefined> {
+    public async getPost(authorId:string, postId:string):Promise<Post | null> {
         try {
             const result = await this.axiosInstance.get<Post>(`/authors/${authorId}/posts/${postId}`);
         return result.data;
         } catch (e) {
-            return undefined;
-        }
-        
+            console.error(e);
+            return null;
+        } 
     }
 
     public async deletePost(authorId: string, postId: string): Promise<void> {
@@ -209,12 +221,14 @@ class API {
 
     public async getPosts(authorId:string, page:number = 1, size:number = 10):Promise<ListItem<Post>> {
         try {
-            const results = await this.axiosInstance.get<ListItem<Post>>(`/authors/${authorId}/posts?page=${page}&size=${size}`);
-            
+            const results = await this.axiosInstance.get<ListItem<Post>>(`/authors/${authorId}/posts/?page=${page}&size=${size}`);
+            if (results.data.items === undefined) {
+                throw new Error("items is undefined");
+            }
             return results.data;
         }
         catch (e) {
-            
+            console.error(e);
             return {
                 type: "posts",
                 items: []
@@ -260,27 +274,31 @@ class API {
         return result.data;
     }
 
-    public async createPost(authorId:string, post:Post):Promise<Post | undefined> {
+    public async createPost(authorId:string, post:Post):Promise<Post | null> {
         if (this.nodeType === "remote") {
             throw new Error("Remote nodes do not support this operation");
         }
         try {
             
-            let result = await this.axiosInstance.post<Post>(`/authors/${authorId}/posts`, post);
+            let result = await this.axiosInstance.post<Post>(`/authors/${authorId}/posts/`, post);
             return result.data;
         }
         catch (e) {
-            return undefined;
+            console.error(e);
+            return null;
         }
     }
 
     public async getComments(authorId:string, postId: string, page:number=0, size:number=10): Promise<CommentListItem> {
         try {
             const results = await this.axiosInstance.get<CommentListItem>(`/authors/${authorId}/posts/${postId}/comments?page=${page}&size=${size}`);
-            
+            if (results.data.comments === undefined) {
+                throw new Error("items is undefined");
+            }
             return results.data;
         }
         catch (e) {
+            console.error(e);
             return {
                 type: "comments",
                 page: 0,
@@ -292,17 +310,19 @@ class API {
         }
     }
 
-    public async createComment(authorId:string, postId: string, comment: Comment): Promise<Comment | undefined> {
+    public async createComment(authorId:string, postId: string, comment: Comment): Promise<Comment | null> {
         if (this.nodeType === "remote") {
             throw new Error("Remote nodes do not support this operation");
         }
 
         try {
             const result = await this.axiosInstance.post<Comment>(`/authors/${authorId}/posts/${postId}/comments`, comment);
-                await this.sendToInbox(authorId || '', comment);
+            await this.sendToInbox(authorId || '', comment);
+            return result.data;
         }
         catch (e) {
-            return undefined;
+            console.error(e);
+            return null;
         }
     }
 
@@ -361,7 +381,7 @@ class API {
     }
 
     public async sendToInbox(authorId:string, activity:Activity):Promise<void> {
-        const result = await this.axiosInstance.post(`/authors/${authorId}/inbox`, activity);
+        const result = await this.axiosInstance.post(`/authors/${authorId}/inbox/`, activity);
         return result.data;
     }
 
@@ -370,7 +390,7 @@ class API {
             throw new Error("Remote nodes do not support this operation");
         }
         try {
-            const results = await this.axiosInstance.get<InboxListItem>(`/authors/${authorId}/inbox`);
+            const results = await this.axiosInstance.get<InboxListItem>(`/authors/${authorId}/inbox/`);
         return results.data;
         }
         catch (e) {

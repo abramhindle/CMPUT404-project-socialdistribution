@@ -61,7 +61,10 @@ const Page: NextPage<Props> = ({author:{id, displayName, github, profileImage}, 
 				} else if (followStatusState === 'friends') {
 					await NodeManager.removeFollower(id.split('/').pop() || '', user?.id || '');
 					setFollowStatusState('not_friends')
-				} {}
+				} else if (followStatusState === 'true_friends') {
+					await NodeManager.removeFollower(id.split('/').pop() || '', user?.id || '');
+					setFollowStatusState('not_friends')
+				}
 				}
 				catch {
 					console.log('error')
@@ -132,11 +135,14 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 		let followStatus;
 		if (user.id !== context.params?.author_id) {
 			followStatus = await NodeManager.checkFollowerStatus(context.params?.author_id as string, user.id)
-			if (followStatus !== 'true_friends') {
-				posts.items = posts.items.filter((post) => post.visibility === 'PUBLIC')
+			if (followStatus === 'true_friends') {
+				posts.items = posts.items.filter((post) => post.visibility === 'PUBLIC' || post.visibility === 'PRIVATE');
 			} else {
-				posts.items = posts.items.filter((post) => post.visibility === 'PUBLIC' || post.visibility === 'PRIVATE')
+				posts.items = posts.items.filter((post) => post.visibility === 'PUBLIC');
 			}
+			// for (let post of posts.items) {
+			// 	console.log(post);
+			// }
 		return {
 			props: {
 				author: author,
@@ -145,6 +151,9 @@ export const getServerSideProps:GetServerSideProps = async (context) => {
 			}
 		}
 	} else {
+		// for (let post of posts.items) {
+		// 	console.log(post);
+		// }
 		return {
 			props: {
 				author: author,
