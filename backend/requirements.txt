@@ -1,5 +1,0 @@
-psycopg2-binary
-django 
-djangorestframework
-django-filter
-backports.zoneinfo==0.2.1;python_version<"3.8"
