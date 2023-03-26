@@ -9,6 +9,7 @@ from django.http import HttpResponse
 import base64
 import re
 
+
 class PermittedForRemote(BasePermission):
     """
     Custom permission class that determines permissions based on the endpoint
@@ -32,15 +33,24 @@ class PermittedForRemote(BasePermission):
                             'AuthorFollowersOperationsView', 'PostsView',
                             'PostView', 'CommentsView', 'PostLikeView',
                             'LikeView', 'GetLikeCommentView', 'LikedView',
-                            'CommentLikeView', 'LikedView', 'FollowView', 'ImageView'],      # NOTE: FollowView may or may not be the same thing as AuthorFollowersOperationsView, except AuthorFollowersOperationsView seems to have a bug in urls.py.
+                            'CommentLikeView', 'LikedView', 'FollowView', 'ImageView'],
                     'POST': ['InboxView']}      # XXX: There's some funky stuff in the spec for POSTing to the inbox and likes endpoint. May cause problems later. See: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox and https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#likes
     def has_permission(self, request, view):
         name = view.__class__.__name__
         return name in self.remote_views[request.method]
 
+
 class AuthorView(generics.RetrieveUpdateAPIView):
     """
     Class for handling a single author
+    
+    URL: ://service/authors/{AUTHOR_ID}/
+        GET [local, remote]: retrieve AUTHOR_ID’s profile
+        POST [local]: update AUTHOR_ID’s profile
+    
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#single-author
+        
+    Example Format:
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -71,6 +81,17 @@ class AuthorView(generics.RetrieveUpdateAPIView):
 class AuthorsView(generics.ListCreateAPIView):
     """
     Class for handling authors, with pagination and query params
+    
+    URL: ://service/authors/
+        GET [local, remote]: retrieve all profiles on the server (paginated)
+            page: how many pages
+            size: how big is a page
+    Example query: GET ://service/authors?page=10&size=5
+        Gets the 5 authors, authors 45 to 49.   
+         
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#authors
+ 
+    Example: GET ://service/authors/
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -100,11 +121,7 @@ class AuthorsView(generics.ListCreateAPIView):
         if request.data.get('id'):
             request.data['id'] = build_author_url(request.data['id'])
         serializer = self.serializer_class(data=request.data)
-        
-       
-                
         if serializer.is_valid():
-            
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
@@ -113,13 +130,18 @@ class AuthorsView(generics.ListCreateAPIView):
 class FollowersView(generics.ListAPIView):
     """
     Class for handling followers of a given author
+    
+    URL: ://service/authors/{AUTHOR_ID}/followers
+        GET [local, remote]: get a list of authors who are AUTHOR_ID’s followers
+        
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#followers
+ 
+    Example: GET ://service/authors/{AUTHOR_ID}/followers
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
     queryset = FollowModel.objects.all()
     serializer_class = FollowSerializer
-
-
 
     def get(self, request, *args, **kwargs):
         # find all followers of a given author_id in the url
@@ -142,9 +164,17 @@ class FollowersView(generics.ListAPIView):
             "items": followers_list,
         })
         
+
 class FollowView(generics.RetrieveUpdateDestroyAPIView):
     """
     Class for handling follows, can be used to create a new follow, get a follow, update a follow, delete a follow based on a given author_id and foreign_author_id.
+    
+    URL: ://service/authors/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
+        DELETE [local]: remove FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID
+        PUT [local]: Add FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID (must be authenticated)
+        GET [local, remote] check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#followers
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -220,10 +250,24 @@ class FollowView(generics.RetrieveUpdateDestroyAPIView):
         if serializer.is_valid():
             serializer.save()
 
+
 ## post view can be used to create a new post, get a post, update a post, delete a post
 class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView):
     """
     Class for handling posts, can be used to create a new post, get a post, update a post, delete a post based on a given post_id.
+    
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
+        GET [local, remote] get the public post whose id is POST_ID
+        POST [local] update the post whose id is POST_ID (must be authenticated)
+        DELETE [local] remove the post whose id is POST_ID
+        PUT [local] create a post where its id is POST_ID
+        
+    Be aware that Posts can be images that need base64 decoding.
+        posts can also hyperlink to images that are public
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#post
+ 
+    Example Format:
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -298,7 +342,6 @@ class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView
             request.data['id'] = post_id
         request.data['author'] = AuthorSerializer(author).data
       
-    
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -308,7 +351,13 @@ class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView
 
 class PostsView(generics.ListCreateAPIView):
     """
-        Class for handling the posts of a given author, can be used to create a new post or get all posts of a given author
+    Class for handling the posts of a given author, can be used to create a new post or get all posts of a given author
+    
+    Creation URL ://service/authors/{AUTHOR_ID}/posts/
+        GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
+        POST [local] create a new post but generate a new id
+    Be aware that Posts can be images that need base64 decoding.
+        posts can also hyperlink to images that are public
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -344,7 +393,6 @@ class PostsView(generics.ListCreateAPIView):
                 "size": min(len(post_comments.data), 10),
             }
             post['count'] = min(len(post_comments.data), 10)
-            
 
         return Response({
             "type": "posts",
@@ -360,17 +408,32 @@ class PostsView(generics.ListCreateAPIView):
             return Response({'detail': 'Author not found.'}, status=404)
         request.data['author'] = AuthorSerializer(author).data
 
-        
         serializer = self.serializer_class(data=request.data)
-        
         if serializer.is_valid():
             serializer.save()
-            
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
 
 class ImageView(generics.RetrieveAPIView):
+    """
+    Class for returning the image data of an author or post.
+    
+    If you go to this url in browser, it should display only the image.
+    The HTTP response only contains the image portion of the post. This only
+    applies to images hosted on our node. Image links from other domains do not
+    count for this endpoint.
+
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
+        GET [local, remote] get the public post converted to binary as an image
+            return 404 if not an image
+    URL: ://service/authors/{AUTHOR_ID}/image
+        GET [local, remote] get the author's profile image converted to binary
+    This end point decodes image posts as images. This allows the use of image tags in markdown.
+    You can use this to proxy or cache images.
+        
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#image-posts
+    """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
 
@@ -398,7 +461,15 @@ class ImageView(generics.RetrieveAPIView):
 
 class CommentsView(generics.ListCreateAPIView):
     """
-        Class for handling the comments of a given post, can be used to create a new comment or get all comments of a given post
+    Class for handling the comments of a given post, can be used to create a new comment or get all comments of a given post
+    
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
+        GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)
+        POST [local] if you post an object of “type”:”comment”, it will add your comment to the post whose id is POST_ID
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#comments
+
+    example comment from ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -455,9 +526,17 @@ class CommentsView(generics.ListCreateAPIView):
 
 class LikeView(generics.ListCreateAPIView):
     """
-        Class for handling the likes of a given post, can be used to get all likes of a given post
-    """
+    Class for handling the likes of a given post, can be used to get all likes of a given post
+    
+    You can like posts and comments
+    Send them to the inbox of the author of the post or comment
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/likes
+        GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#likes
 
+    Example like object:
+    """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
     queryset = LikeModel.objects.all()
@@ -527,7 +606,14 @@ class LikeView(generics.ListCreateAPIView):
 
 class GetLikeCommentView(generics.ListAPIView):
     """
-        Class for handling the likes of a given comment, can be used to get all likes of a given comment
+    Class for handling the likes of a given comment, can be used to get all likes of a given comment
+    
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments/{COMMENT_ID}/likes
+        GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID comment COMMENT_ID
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#likes
+
+    Example like object:
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -546,9 +632,18 @@ class GetLikeCommentView(generics.ListAPIView):
             "items": serializer.data,
         })
 
+
 class LikedView(generics.ListAPIView):
     """
-        Class for handling the likes of a given post, can be used to get all likes of a given post
+    Class for handling the likes of a given post, can be used to get all likes of a given post
+    
+    URL: ://service/authors/{AUTHOR_ID}/liked
+        GET [local, remote] list what public things AUTHOR_ID liked.
+            It’s a list of of likes originating from this author
+                
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#liked
+
+    Example liked object:
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -573,7 +668,21 @@ class LikedView(generics.ListAPIView):
 ## create InboxView, capabe of handling GET, DELETE, POST requests
 class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
     """
-        Class for handling the inbox of a given author, can be used to get all inbox items of a given author, delete all inbox items of a given author, or create a new inbox item for a given author
+    Class for handling the inbox of a given author, can be used to get all inbox items of a given author, delete all inbox items of a given author, or create a new inbox item for a given author
+    
+    The inbox is all the new posts from who you follow
+    URL: ://service/authors/{AUTHOR_ID}/inbox
+        GET [local]: if authenticated get a list of posts sent to AUTHOR_ID (paginated)
+        POST [local, remote]: send a post to the author
+            if the type is “post” then add that post to AUTHOR_ID’s inbox
+            if the type is “follow” then add that follow is added to AUTHOR_ID’s inbox to approve later
+            if the type is “like” then add that like to AUTHOR_ID’s inbox
+            if the type is “comment” then add that comment to AUTHOR_ID’s inbox
+        DELETE [local]: clear the inbox
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox
+
+    Example, retrieving an inbox
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
@@ -606,17 +715,13 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         author = AuthorModel.objects.filter(id=author_id).first()
         if not author:
             return Response({'detail': 'Author not found.'}, status=404)
-        
-        
-        
+
         if request.data.get('type', '').lower() == 'like':
             data_like = request.data
             try:
                 LikeView.create_like(data_like)
             except Exception as e:
                 return Response(str(e), status=400)
-            
-            
         
         elif request.data.get('type', '').lower() == 'follow':
             data_follow = request.data
@@ -630,7 +735,6 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                 })
             except Exception as e:
                 return Response(str(e), status=400)
-
 
         author_data = request.data.get('author', None)
 
@@ -651,7 +755,6 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             
             return Response(serializer.data, status=201)
 
-        
         return Response(serializer.errors, status=400)
 
     def delete(self, request, *args, **kwargs):

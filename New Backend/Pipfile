@@ -16,6 +16,8 @@ pylint-django = "*"
 pyyaml = "*"
 django-jsonfield = "*"
 pillow = "*"
+gunicorn = "*"
+django-on-heroku = "*"
 
 [dev-packages]
 
