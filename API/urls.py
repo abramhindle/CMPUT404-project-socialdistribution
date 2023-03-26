@@ -1,20 +1,18 @@
-from django.urls import path, include, re_path
-# from . import views
-
-from API import views
+from django.urls import path
+from . import views
 
 urlpatterns = [
-  path('authors/<slug:uid>', views.AuthorView, name='AuthorView'),
-  path('authors/<slug:uid>/followers', views.AuthorFollowersView, name='AuthorFollowersView'),
-  path('authors/<slug:uid>/followers<slug:foreign_uid>', views.AuthorFollowersOperationsView, name='AuthorFollowersOperationsView'),  # FIXME: WHERE'S THE '/' BETWEEN FOLLOWERS AND FOLLOWER_ID, AND WHY IS THERE ALSO A FOLLOWERSVIEW WITH THE SAME URL?
-  path('authors/', views.AuthorsView, name='AuthorsView'),     # CHANGED: "authors" to "authors/"
-  path('authors/<slug:author_uid>/followers/<slug:foreign_uid>', views.FollowView, name='FollowView'),
-  path('authors/<slug:author_id>/posts/<slug:post_id>/comments', views.CommentsView, name='CommentsView'),
-  path('authors/<slug:author_id>/posts/<slug:post_id>', views.PostsRetrieveView, name='PostsRetrieveView'),
-  path('authors/<slug:author_id>/posts/', views.PostsView, name='PostsView'),    # CHANGED: "/posts" to "/posts/"
-  path('authors/<slug:author_id>/inbox/', views.InboxView, name='InboxView'),    # CHANGED: "/inbox" to "/inbox/"
-  path('authors/<slug:author_id>/posts/<slug:post_id>/likes', views.PostLikeView, name='PostLikeView'),
-  path('authors/<slug:author_id>/posts/<slug:post_id>/comments/<slug:comment_id>/likes', views.CommentLikeView, name='CommentLikeView'),
-  path('authors/<slug:author_id>/liked', views.LikedView, name='LikedView'),
-  path('search', views.SearchView, name='SearchView')
+    path('authors/', views.AuthorsView.as_view(), name='Index'),
+    path('authors/<str:author_id>', views.AuthorView.as_view(), name='Author'),
+    path('authors/<str:author_id>/image', views.ImageView.as_view(), name='Author Image'),
+    path('authors/<str:author_id>/followers', views.FollowersView.as_view(), name='Followers'),
+    path('authors/<str:author_id>/followers/<str:foreign_author_id>', views.FollowView.as_view(), name='Follow'),
+    path('authors/<str:author_id>/posts/', views.PostsView.as_view(), name='Posts'),
+    path('authors/<str:author_id>/posts/<str:post_id>', views.PostView.as_view(), name='Post'),
+    path('authors/<str:author_id>/posts/<str:post_id>/image', views.ImageView.as_view(), name='Post Image'),
+    path('authors/<str:author_id>/posts/<str:post_id>/comments', views.CommentsView.as_view(), name='Comments'),
+    path('authors/<str:author_id>/posts/<str:post_id>/likes', views.LikeView.as_view(), name='Likes'),
+    path('authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes', views.GetLikeCommentView.as_view(), name='Comment Likes'),
+    path('authors/<str:author_id>/liked', views.LikedView.as_view(), name='Liked'),
+    path('authors/<str:author_id>/inbox/', views.InboxView.as_view(), name='Inbox'),
 ]

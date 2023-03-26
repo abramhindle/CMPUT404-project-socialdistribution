@@ -1,11 +1,13 @@
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import BasicAuthentication
+from rest_framework import generics
+from rest_framework.response import Response
+from .serializers import AuthorSerializer, FollowSerializer, PostsSerializer, ImageSerializer, CommentsSerializer, LikeSerializer, InboxSerializer
+from .models import AuthorModel, FollowModel, PostsModel, CommentsModel, LikeModel, InboxModel, ImageModel
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission
-from django.http import JsonResponse
-from .models import AuthorModel, PostsModel, CommentsModel, LikeModel
-from .serializers import PostsSerializer, AuthorSerializer, CommentsSerializer, LikeSerializer
-import json
-import uuid
+from .utils import build_author_url, build_post_url, build_comment_url
+from django.http import HttpResponse
+import base64
+import re
 
 
 class PermittedForRemote(BasePermission):
@@ -26,364 +28,647 @@ class PermittedForRemote(BasePermission):
     probably a terrible way of accomplishing this. Feel free to make better
     (perhaps an API token would be a better solution for the frontend.)
     """
-    
-    remote_views = {'GET': ['AuthorsView', 'AuthorView', 'AuthorFollowersView',
+
+    remote_views = {'GET': ['AuthorsView', 'AuthorView', 'FollowersView',
                             'AuthorFollowersOperationsView', 'PostsView',
-                            'PostsRetrieveView', 'CommentsView', 'PostLikeView',     # TODO: Add ImagePostView once it exists
-                            'CommentLikeView', 'LikedView', 'FollowView'],      # NOTE: FollowView may or may not be the same thing as AuthorFollowersOperationsView, except AuthorFollowersOperationsView seems to have a bug in urls.py.
+                            'PostView', 'CommentsView', 'PostLikeView',
+                            'LikeView', 'GetLikeCommentView', 'LikedView',
+                            'CommentLikeView', 'LikedView', 'FollowView', 'ImageView'],
                     'POST': ['InboxView']}      # XXX: There's some funky stuff in the spec for POSTing to the inbox and likes endpoint. May cause problems later. See: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox and https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#likes
     def has_permission(self, request, view):
         name = view.__class__.__name__
         return name in self.remote_views[request.method]
 
 
-# FIXME: According to the spec, it should be POST, not PUT: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#single-author
-@api_view(['GET', 'PUT'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def AuthorView(request, uid):
+class AuthorView(generics.RetrieveUpdateAPIView):
     """
-    API endpoint that allows users to be viewed or edited.
+    Class for handling a single author
     
     URL: ://service/authors/{AUTHOR_ID}/
         GET [local, remote]: retrieve AUTHOR_ID’s profile
         POST [local]: update AUTHOR_ID’s profile
-        
-    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#single-author
-    """
     
-    if request.method == 'GET':
-        try:
-            author_object = AuthorModel.objects.get(id=uid)
-        except AuthorModel.DoesNotExist:
-            return JsonResponse({"Error": "Author does not exist"}, status = 404)
-
-        serialized_object = AuthorSerializer(author_object)
-
-        output = serialized_object.data
-        return JsonResponse(output, status = 200)
-    # FIXME: According to the spec, it should be POST, not PUT: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#single-author
-    elif request.method == 'PUT':
-        parameters = json.loads(request.body)
-        AuthorModel.objects.filter(id=uid).update(**parameters)
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#single-author
         
-        return JsonResponse({"success":True,}, status = 200)
-
-
-# FIXME: According to the spec, this should only support GET, and not POST: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#authors
-@api_view(['GET', 'POST'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def AuthorsView(request):
+    Example Format:
     """
-    API endpoint for getting all authors on the server
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = AuthorModel.objects.all()
+    serializer_class = AuthorSerializer
+
+    def get(self, request, *args, **kwargs):
+        author_id = kwargs.pop('author_id', None)
+        author = self.queryset.filter(id=build_author_url(author_id)).first()
+        if not author:
+            return Response(status=404)
+        serializer = self.serializer_class(author)
+        return Response(serializer.data)
+    
+    def put(self, request, *args, **kwargs):
+        author_id = kwargs.pop('author_id', None)
+        author = self.queryset.filter(id=build_author_url(author_id)).first()
+        if not author:
+            return Response(status=404)
+        serializer = self.serializer_class(author, data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(status=400)
+
+        
+class AuthorsView(generics.ListCreateAPIView):
+    """
+    Class for handling authors, with pagination and query params
     
     URL: ://service/authors/
         GET [local, remote]: retrieve all profiles on the server (paginated)
             page: how many pages
             size: how big is a page
     Example query: GET ://service/authors?page=10&size=5
-        Gets the 5 authors, authors 45 to 49.
-        
-    See Also:
-    https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#authors
+        Gets the 5 authors, authors 45 to 49.   
+         
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#authors
+ 
+    Example: GET ://service/authors/
     """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = AuthorModel.objects.all()
+    serializer_class = AuthorSerializer
+
+    def get(self, request, *args, **kwargs):
+        # return all authors based on the page, size and query params
+        page = int(request.query_params.get('page', 1))
+        size = int(request.query_params.get('size', 10))
+        page = page if page > 0 else 1
+        size = size if size > 0 else 10
+
+        query = request.query_params.get('query', '')
+        try:
+            authors = self.queryset.filter(displayName__icontains=query)[(page-1)*size:page*size]
+        except IndexError:
+            ## get all authors
+            authors = self.queryset.filter(displayName__icontains=query)
+        serializer = self.serializer_class(authors, many=True)
+        return Response({
+            "type": "authors",
+            "items": serializer.data[::-1],
+        })
     
-    if request.method == 'GET':
-        page = int(request.GET.get('page', '1'))
-        size = int(request.GET.get('size', '5'))
-        authors_list = AuthorModel.objects.order_by('-displayName')[page*size-5:page*size-1]
-        serialized_authors_list = list([AuthorSerializer(author).data for author in authors_list])
-        output = {
-        "type": "authors",      
-        "items": serialized_authors_list,
-        }
-        return JsonResponse(output, status = 200)
+    def post(self, request, *args, **kwargs):
+        if request.data.get('id'):
+            request.data['id'] = build_author_url(request.data['id'])
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
-    elif request.method == 'POST':
-        parameters = json.loads(request.body)
-        AuthorModel.objects.create(**parameters)
 
-        return JsonResponse({"success":True,}, status = 200)
-   
-
-@api_view(['GET'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def AuthorFollowersView(request, uid):
+class FollowersView(generics.ListAPIView):
     """
-    API endpoint to get a list of an author's followers.
+    Class for handling followers of a given author
     
     URL: ://service/authors/{AUTHOR_ID}/followers
         GET [local, remote]: get a list of authors who are AUTHOR_ID’s followers
-                
+        
     See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#followers
+ 
+    Example: GET ://service/authors/{AUTHOR_ID}/followers
     """
-    
-    author_object = AuthorModel.objects.get(id=uid).followers
-    # serialized_object = AuthorSerializer(author_object)
-    # output = serialized_object.data
-    return JsonResponse({uid:author_object}, status = 200)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = FollowModel.objects.all()
+    serializer_class = FollowSerializer
 
+    def get(self, request, *args, **kwargs):
+        # find all followers of a given author_id in the url
+        author_id = kwargs['author_id']
+        author_id = build_author_url(author_id)
 
-@api_view(['DELETE', 'PUT', 'GET'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def AuthorFollowersOperationsView(request, uid, foreign_uid):
+        
+        follows = self.queryset.filter(follower=author_id)
+        ## go through all followers and get the author object
+        ## and add it to the list of followers
+        followers_list = []
+        for follow in follows:
+            if follow.status == 'pending':
+                continue
+            author = AuthorSerializer(AuthorModel.objects.filter(id=follow.following).first()).data
+            followers_list.append(author)
+        
+        return Response({
+            "type": "followers",
+            "items": followers_list,
+        })
+        
+
+class FollowView(generics.RetrieveUpdateDestroyAPIView):
     """
-    API endpoint doing things with an author's followers.
+    Class for handling follows, can be used to create a new follow, get a follow, update a follow, delete a follow based on a given author_id and foreign_author_id.
     
     URL: ://service/authors/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
         DELETE [local]: remove FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID
         PUT [local]: Add FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID (must be authenticated)
         GET [local, remote] check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID
-        
+            
     See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#followers
     """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = FollowModel.objects.all()
+    serializer_class = FollowSerializer
 
-    if request.method == 'GET':
-        author_object = AuthorModel.objects.get(id=uid).followers
-        if foreign_uid in author_object:
-            return JsonResponse({"status": "success"}, status = 200)
-        else:
-            return JsonResponse({"status": "failure"}, status = 200)
-
-    elif request.method == 'PUT':
-        author_object = AuthorModel.objects.get(id=uid)
-        author_object.followers.append(foreign_uid)
-        serialized_object = AuthorSerializer(author_object)
-        parameters = json.loads(request.body)
-        output = serialized_object.data
-        author_object.save()
-        return JsonResponse(output, status = 200)
-    
-    elif request.method == 'DELETE':
-        author_object = AuthorModel.objects.get(id=uid)
-        author_object.followers.remove(foreign_uid)
-        serialized_object = AuthorSerializer(author_object)
-        parameters = json.loads(request.body)
-        output = serialized_object.data
-        author_object.save()
-        return JsonResponse(output, status = 200)
-    
-
-# XXX Please Check: I think this is supposed to just go to the inbox and let the
-# inbox handle the GETing and POSTing and such.
-# See: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#friendfollow-request
-# And: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox
-# NOTE: Currently this is set to the same url as AuthorFollowersOperationsView,
-# except that view also has a bug in the urls.py (missing a / between a
-# directory and a follower_id)
-@api_view(['GET', 'POST'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def FollowView(request, author_uid, foreign_uid):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    #checks friendship
-    if request.method == 'GET':
-        print("author_uid: ", author_uid)
-        print("foreign_uid: ", foreign_uid)
-        author_object_followers = AuthorModel.objects.get(id=author_uid).followers
-        foreign_object_followers = AuthorModel.objects.get(id=foreign_uid).followers
-        if foreign_uid in author_object_followers and author_uid in foreign_object_followers:
-            return JsonResponse({"status": "FRIENDS"}, status = 200)
-        elif foreign_uid in author_object_followers:
-            return JsonResponse({"status": "FOLLOWED_BY"}, status = 200)
-        elif author_uid in foreign_object_followers:
-            return JsonResponse({"status": "FOLLOWING"}, status = 200)
-        else:
-            return JsonResponse({"status": "NOT_FRIENDS"}, status = 200)
+    def get(self, request, *args, **kwargs):
+        # find the follow object with the given author_id and follower_id
+        follower_id = kwargs['author_id']
+        following_id = kwargs['foreign_author_id']
         
-    elif request.method == 'POST':
-        author_object = AuthorModel.objects.get(id=author_uid)
-        foreign_object = AuthorModel.objects.get(id=foreign_uid)
-        ## check if already friends
-        if author_object.id in foreign_object.followers:
-            author_object.following.remove(foreign_uid)
-            foreign_object.followers.remove(author_uid)
-            ## make a set to remove duplicates
-            author_object.following = list(set(author_object.following))
-            foreign_object.followers = list(set(foreign_object.followers))
-            author_object.save()
-            foreign_object.save()
-            return JsonResponse({"status": "success"}, status = 200)
+        follower_id = build_author_url(follower_id)
+        following_id = build_author_url(following_id)
+        follow = self.queryset.filter(follower=follower_id, following=following_id).first()
+        other_follow = self.queryset.filter(following=follower_id, follower=following_id).first()
+        
+        if follow and other_follow:
+            return Response('true_friends')
+        
+        if not follow:
+            return Response({'detail': 'Follow not found.'}, status=404)
+        serializer = self.serializer_class(follow)
+        return Response(serializer.data['status'])
+        
+    def put(self, request, *args, **kwargs):
+        # find the follow object with the given author_id and follower_id
+        follower_id = kwargs['author_id']
+        following_id = kwargs['foreign_author_id']
 
-        author_object.following.append(foreign_uid)
-        foreign_object.followers.append(author_uid)
-        ## make a set to remove duplicates
-        author_object.following = list(set(author_object.following))
-        foreign_object.followers = list(set(foreign_object.followers))
-        author_object.save()
-        foreign_object.save()
-        return JsonResponse({"status": "success"}, status = 200)
+        follower_id = build_author_url(follower_id)
+        following_id = build_author_url(following_id)
+        
+        follow = self.queryset.filter(follower=follower_id, following=following_id).first()
+        if not follow:
+            return Response({'detail': 'Follow not found.'}, status=404)
+        
+        serializer = self.serializer_class(follow, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
 
+    def delete(self, request, *args, **kwargs):
+        # find the follow object with the given author_id and follower_id
+        follower_id = kwargs['author_id']
+        following_id = kwargs['foreign_author_id']
 
-@api_view(['GET'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def SearchView(request):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    #checks friendship
-    if request.method == 'GET':
-        query = request.GET.get('query')
-        authors_list = AuthorModel.objects.filter(displayName__icontains=query)
-        serialized_authors_list = list([AuthorSerializer(author).data for author in authors_list])
-        output = {
-        "type": "authors",      
-        "items": serialized_authors_list,
+        follower_id = build_author_url(follower_id)
+        following_id = build_author_url(following_id)
+
+        follow = self.queryset.filter(follower=follower_id, following=following_id).first()
+        if not follow:
+            return Response({'detail': 'Follow not found.'}, status=404)
+        follow.delete()
+        return Response(status=204)
+
+    @staticmethod
+    def create_follow(data, **kwargs):
+        follower_id = kwargs['author_id']
+        following_id = kwargs['foreign_author_id']
+        if 'http' not in follower_id:
+            follower_id = build_author_url(follower_id)
+        if 'http' not in following_id:
+            following_id = build_author_url(following_id)
+        
+        follow_data = {
+            'follower': follower_id,
+            'following': following_id,
+            'status': 'pending'
         }
-        return JsonResponse(output, status = 200)
-
-
-@api_view(['GET', 'POST'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def PostsView(request, author_id):
-    """
-    API endpoint for getting multiple posts drom an author (or making a new post
-    with random id).
-    
-    Creation URL ://service/authors/{AUTHOR_ID}/posts/
-        GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
-        POST [local] create a new post but generate a new id
-    Be aware that Posts can be images that need base64 decoding.
-        posts can also hyperlink to images that are public
         
-    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#post
+        serializer = FollowSerializer(data=follow_data)
+        if serializer.is_valid():
+            serializer.save()
+
+
+## post view can be used to create a new post, get a post, update a post, delete a post
+class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView):
     """
-    #checks friendship
-    posts_paginated = []
-    if request.method == 'GET':
-        page = int(request.GET.get('page', '0'))
-        count = int(request.GET.get('count', '10'))
-        following = request.GET.get('following')
-        count = max(count, 25)
-        post_object = PostsModel.objects.filter(author=author_id).order_by('-published')[page*count:page*count+count]
-        for post in post_object:
-            serialized_object = PostsSerializer(post)
-            author_data = AuthorModel.objects.get(id=post.author)
-            serialized_author = AuthorSerializer(author_data)
-            data = dict(serialized_object.data)
-            data['author'] = serialized_author.data
-            posts_paginated.append(data)
-
-        if following:
-            author_object = AuthorModel.objects.get(id=author_id)
-            for follower in author_object.following:
-                follower_posts = PostsModel.objects.filter(author=follower).order_by('-published')[page*count:page*count+count]
-                for post in follower_posts:
-                    serialized_object = PostsSerializer(post)
-                    author_data = AuthorModel.objects.get(id=post.author)
-                    serialized_author = AuthorSerializer(author_data)
-                    data = dict(serialized_object.data)
-                    data['author'] = serialized_author.data
-                    if data['unlisted'] == False:
-                        posts_paginated.append(data)
-
-        ## sort by published
-        posts_paginated = sorted(posts_paginated, key=lambda k: k['published'], reverse=True)
-        output = {"posts": posts_paginated}
-
-        return JsonResponse(output, status = 200)
-    elif request.method == 'POST':
-        json_data = json.loads(request.body)
-        PostsModel.objects.create(author=author_id, id=str(uuid.uuid4()), **json_data)
-        return JsonResponse({"status":"success"}, status = 200)
-
-
-@api_view(['GET', 'POST', 'DELETE', 'PUT'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def PostsRetrieveView(request, author_id, post_id):
-    """
-    API endpoint for CRUD operations on a post with specified id.
+    Class for handling posts, can be used to create a new post, get a post, update a post, delete a post based on a given post_id.
     
     URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
         GET [local, remote] get the public post whose id is POST_ID
         POST [local] update the post whose id is POST_ID (must be authenticated)
         DELETE [local] remove the post whose id is POST_ID
         PUT [local] create a post where its id is POST_ID
+        
     Be aware that Posts can be images that need base64 decoding.
         posts can also hyperlink to images that are public
-        
+            
     See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#post
+ 
+    Example Format:
     """
-    if request.method == 'GET':
-        post_object = PostsModel.objects.get(id=post_id)
-        author_data = AuthorModel.objects.get(id=post_object.author)
-        serialized_author = AuthorSerializer(author_data)
-        serialized_object = PostsSerializer(post_object)
-        data = dict(serialized_object.data)
-        data['author'] = serialized_author.data
-        return JsonResponse(data, status = 200)
-    elif request.method == 'POST':
-        post_object = PostsModel.objects.get(id=post_id)
-        serialized_object = PostsSerializer(post_object)
-        parameters = json.loads(request.body)
-        serialized_object.update(post_object, parameters)
-        return JsonResponse({"status":"success"}, status = 200)
-    elif request.method == 'DELETE':
-        PostsModel.objects.filter(author=author_id, id=post_id).delete()
-        return JsonResponse({"status":"success"}, status = 200)
-    elif request.method == 'PUT':
-        json_data = json.loads(request.body)
-        PostsModel.objects.filter(author=author_id, id=post_id).update(**json_data)
-        return JsonResponse({"status":"success"}, status = 200)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = PostsModel.objects.all()
+    serializer_class = PostsSerializer
+
+    def get(self, request, *args, **kwargs):
+        # find the post with the given post_id
+
+        post_id = kwargs['post_id']
+        author_id = kwargs['author_id']
+        post_id = build_post_url(author_id, post_id)
+
+        post = self.queryset.filter(id=post_id).first()
+        if not post:
+            return Response({'detail': 'Post not found.'}, status=404)
+        serializer = self.serializer_class(post)
+
+        comment_count = CommentsModel.objects.filter(post=post_id).count()
+        
+        data = dict(serializer.data)
+        data['count'] = comment_count
+        return Response(data)
+        
+    def put(self, request, *args, **kwargs):
+        # find the post with the given post_id
+        post_id = kwargs['post_id']
+        author_id = kwargs['author_id']
+        post_id = build_post_url(author_id, post_id)
+        author_id = build_author_url(author_id)
+
+        post = self.queryset.filter(id=post_id).first()
+        author = AuthorModel.objects.filter(id=author_id).first()
+        if not post:
+            return Response({'detail': 'Post not found.'}, status=404)
+        
+        if post.author.id != author_id:
+            return Response({'detail': 'You are not the author of this post.'}, status=403)
+        
+      
+        request.data['author'] = AuthorSerializer(author).data
+        serializer = self.serializer_class(post, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request, *args, **kwargs):
+        # find the post with the given post_id
+        post_id = kwargs['post_id']
+        author_id = kwargs['author_id']
+
+        post_id = build_post_url(author_id, post_id)
+        post = self.queryset.filter(id=post_id).first()
+        if not post:
+            return Response({'detail': 'Post not found.'}, status=404)
+        post.delete()
+        return Response(status=204)
+    
+    def post(self, request, *args, **kwargs):
+        post_id = kwargs.pop('post_id', None)
+        author_id = kwargs['author_id']
+
+        post_id = build_post_url(author_id, post_id)
+        author_id = build_author_url(author_id)
+
+        author = AuthorModel.objects.filter(id=author_id).first()
+        if not author:
+            return Response({'detail': 'Author not found.'}, status=404)
+        if post_id:
+            request.data['id'] = post_id
+        request.data['author'] = AuthorSerializer(author).data
+      
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
-# TODO: IMAGE POST ENDPOINT: URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
-# https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#image-posts
-
-
-@api_view(['GET', 'POST'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def CommentsView(request, author_id, post_id):
+class PostsView(generics.ListCreateAPIView):
     """
-    API endpoint getting and making comments on an author's post.
+    Class for handling the posts of a given author, can be used to create a new post or get all posts of a given author
+    
+    Creation URL ://service/authors/{AUTHOR_ID}/posts/
+        GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
+        POST [local] create a new post but generate a new id
+    Be aware that Posts can be images that need base64 decoding.
+        posts can also hyperlink to images that are public
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = PostsModel.objects.all()
+    serializer_class = PostsSerializer
+
+    def get(self, request, *args, **kwargs):
+        # find all posts of a given author_id in the url
+        author_id = kwargs['author_id']
+        author_id = build_author_url(author_id)
+        author = AuthorModel.objects.filter(id=author_id).first()
+        posts = self.queryset.filter(author=author)
+        
+        page = int(request.query_params.get('page', 0))
+        size = int(request.query_params.get('size', 10))
+        page = max(page, 0)
+        size = max(size, 1)
+        
+        serializer = self.serializer_class(posts, many=True)
+        if size > len(serializer.data):
+            size = len(serializer.data)
+
+        ## get the comments for each post
+        for post in serializer.data:
+            post_id = post['id']
+
+            post_comments = CommentsModel.objects.filter(post=post_id)
+            post_comments = CommentsSerializer(post_comments, many=True)
+            post['commentsSrc'] = {
+                "type": "comments",
+                "comments": post_comments.data[:10],
+                "page": 1,
+                "size": min(len(post_comments.data), 10),
+            }
+            post['count'] = min(len(post_comments.data), 10)
+
+        return Response({
+            "type": "posts",
+            "items": serializer.data[ page * size : (page + 1) * size ][::-1],
+        })
+
+    def post(self, request, *args, **kwargs):
+        author_id = kwargs.pop('author_id', None)
+        author_id = build_author_url(author_id)
+        
+        author = AuthorModel.objects.filter(id=author_id).first()
+        if not author:
+            return Response({'detail': 'Author not found.'}, status=404)
+        request.data['author'] = AuthorSerializer(author).data
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+class ImageView(generics.RetrieveAPIView):
+    """
+    Class for returning the image data of an author or post.
+    
+    If you go to this url in browser, it should display only the image.
+    The HTTP response only contains the image portion of the post. This only
+    applies to images hosted on our node. Image links from other domains do not
+    count for this endpoint.
+
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
+        GET [local, remote] get the public post converted to binary as an image
+            return 404 if not an image
+    URL: ://service/authors/{AUTHOR_ID}/image
+        GET [local, remote] get the author's profile image converted to binary
+    This end point decodes image posts as images. This allows the use of image tags in markdown.
+    You can use this to proxy or cache images.
+        
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#image-posts
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+
+    def get(self, request, *args, **kwargs):
+        url_id = request.build_absolute_uri().split('/image')[0] 
+        print(url_id)
+        author = AuthorModel.objects.filter(id=url_id).first()
+        post = PostsModel.objects.filter(id=url_id).first() 
+        
+        if not author and not post:
+            return Response("Image not found", status=404)
+        
+        if not author:
+            if post.contentType.startswith('image') and 'link' not in post.contentType:
+                image_data = post.content.partition('base64,')[2]
+                binary = base64.b64decode(image_data)
+                return HttpResponse(binary, content_type="image/png")
+            else:
+                return HttpResponse("Not an image", status=400)
+        elif not post:
+            image_data = author.profileImage.partition('base64,')[2]
+            binary = base64.b64decode(image_data)
+            return HttpResponse(binary, content_type="image/png")
+        
+
+class CommentsView(generics.ListCreateAPIView):
+    """
+    Class for handling the comments of a given post, can be used to create a new comment or get all comments of a given post
     
     URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
         GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)
         POST [local] if you post an object of “type”:”comment”, it will add your comment to the post whose id is POST_ID
-        
+            
     See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#comments
+
+    example comment from ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
     """
-    posts_paginated = []
-    page = int(request.GET.get('page', '1'))
-    size = int(request.GET.get('size', '5'))
-    if request.method == 'GET':
-        post_object = CommentsModel.objects.filter(post_id=post_id).order_by('-published')[page*size-5:page*size-1]
-        for post in post_object:
-            serialized_object = CommentsSerializer(post)
-            serialized_object.data["author"] = AuthorSerializer(AuthorModel.objects.get(id=serialized_object.data["author"])).data
-            posts_paginated.append(serialized_object.data)
-        output = {"type":"comments",
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = CommentsModel.objects.all()
+    serializer_class = CommentsSerializer
+
+    def get(self, request, *args, **kwargs):
+        # find all comments of a given post_id in the url
+        post_id = kwargs['post_id']
+        author_id = kwargs['author_id']
+        post_id = build_post_url(author_id, post_id)
+        post = PostsModel.objects.filter(id=post_id).first()
+        page = int(request.query_params.get('page', 1))
+        size = int(request.query_params.get('size', 10))
+        page = max(page, 1)
+        size = max(size, 1)
+        
+        try:
+            comments = self.queryset.filter(post=post).order_by('-created_at')[size*(page-1):size*page]
+        except IndexError:
+            ## get all comments if the page is out of range
+            comments = self.queryset.filter(post=post).order_by('-created_at')
+        serializer = self.serializer_class(comments, many=True)
+        return Response({
+            "type": "comments",
             "page": page,
             "size": size,
             "post": post_id,
-            "id": post_id, #TODO: i have no idea what is going on here?
-            "comments": posts_paginated}
-        return JsonResponse(output, status = 200)
-    elif request.method == 'POST':
-        parameters = json.loads(request.body)
-        if parameters["type"] == "comment":
-            CommentsModel.objects.create(**parameters)
-        post_object = CommentsModel.objects.filter(post_id=post_id).order_by('-published')[page*size-5:page*size-1]
-        for post in post_object:
-            serialized_object = CommentsSerializer(post)
-            serialized_object.data["author"] = AuthorSerializer(AuthorModel.objects.get(id=serialized_object.data["author"])).data
-            posts_paginated.append(serialized_object.data)
-        output = {"type":"comments",
-            "page": page,
-            "size": size,
-            "post": post_id,
-            "id": post_id, #TODO: i have no idea what is going on here?
-            "comments": posts_paginated}
-        return JsonResponse(output, status = 200)
+            "id": post_id,
+            "comments": serializer.data,
+        })
 
+    def post(self, request, *args, **kwargs):
+        ## add the comment to the post given the post_id in the url
+        post_id = kwargs['post_id']
+        author_id = kwargs['author_id']
+        post_id = build_post_url(author_id, post_id)
+        author_id = build_author_url(author_id)
+        post = PostsModel.objects.filter(id=post_id).first()
 
+        if not post:
+            return Response({'detail': 'Post not found.'}, status=404)
+        
+        request.data['post'] = PostsSerializer(post).data
+        
+        serializer = self.serializer_class(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
 
-@api_view(['POST'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def InboxView(request, author_id):
+        return Response(serializer.errors, status=400)
+    
+
+class LikeView(generics.ListCreateAPIView):
     """
-    API endpoint for sending and retrieving new content for authors across nodes.
-    One of the only endpoints that allows POSTs to remote nodes.
+    Class for handling the likes of a given post, can be used to get all likes of a given post
+    
+    You can like posts and comments
+    Send them to the inbox of the author of the post or comment
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/likes
+        GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#likes
+
+    Example like object:
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = LikeModel.objects.all()
+    serializer_class = LikeSerializer
+
+    def get(self, request, *args, **kwargs):
+        # find all likes of a given post_id in the url
+        post_id = kwargs['post_id']
+        post_id = build_post_url(kwargs['author_id'], post_id)
+        post = PostsModel.objects.filter(id=post_id).first()
+        if not post:
+            return Response({'detail': 'Post not found.'}, status=404)
+        likes = self.queryset.filter(post=post)
+        serializer = self.serializer_class(likes, many=True)
+        return Response({
+            "type": "likes",
+            "post": post_id,
+            "items": serializer.data,
+        })
+    
+    def post(self, request, *args, **kwargs):
+        object = request.data.get('object', None)
+        if not object:
+            return Response({'detail': 'Object not found.'}, status=404)
+    
+        post = PostsModel.objects.filter(id=object).first()
+        comment = CommentsModel.objects.filter(id=object).first()
+
+        if not post and not comment:
+            return Response({'detail': 'Post or comment not found.'}, status=404)
+        if post:
+            request.data['post'] = object
+        if comment:
+            request.data['comment'] = object
+        
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    
+    @staticmethod
+    def create_like(data):
+        object = data.get('object', None)
+        
+        if not object:
+            raise Exception({'detail': 'Object not found.'})
+
+        post = PostsModel.objects.filter(id=object).first()
+        comment = CommentsModel.objects.filter(id=object).first()
+        data['type'] = 'like'
+
+        if not post and not comment:
+            raise Exception({'detail': 'Post or comment not found.'})
+        if post:
+            data['post'] = object
+        if comment:
+            data['comment'] = object
+        
+        serializer = LikeSerializer(data=data)
+        if serializer.is_valid():
+            
+            serializer.save()
+        else:
+            raise Exception(serializer.errors)
+        
+
+class GetLikeCommentView(generics.ListAPIView):
+    """
+    Class for handling the likes of a given comment, can be used to get all likes of a given comment
+    
+    URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments/{COMMENT_ID}/likes
+        GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID comment COMMENT_ID
+            
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#likes
+
+    Example like object:
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = LikeModel.objects.all()
+    serializer_class = LikeSerializer
+
+    def get(self, request, *args, **kwargs):
+        # find all likes of a given comment_id in the url
+        comment_id = kwargs['comment_id']
+        comment_id = build_comment_url(kwargs['author_id'], kwargs['post_id'], comment_id)
+        likes = self.queryset.filter(comment=comment_id)
+        serializer = self.serializer_class(likes, many=True)
+        return Response({
+            "type": "likes",
+            "comment": comment_id,
+            "items": serializer.data,
+        })
+
+
+class LikedView(generics.ListAPIView):
+    """
+    Class for handling the likes of a given post, can be used to get all likes of a given post
+    
+    URL: ://service/authors/{AUTHOR_ID}/liked
+        GET [local, remote] list what public things AUTHOR_ID liked.
+            It’s a list of of likes originating from this author
+                
+    See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#liked
+
+    Example liked object:
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = LikeModel.objects.all()
+    serializer_class = LikeSerializer
+
+    def get(self, request, *args, **kwargs):
+        # ffind all likes of an author given the author_id in the url
+        author_id = kwargs['author_id']
+        author_id = build_author_url(author_id)
+
+        author = AuthorModel.objects.filter(id=author_id).first()
+
+        likes = self.queryset.filter(author=author)
+        serializer = self.serializer_class(likes, many=True)
+        return Response({
+            "type": "likes",
+            "items": serializer.data,
+        })
+    
+
+## create InboxView, capabe of handling GET, DELETE, POST requests
+class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
+    """
+    Class for handling the inbox of a given author, can be used to get all inbox items of a given author, delete all inbox items of a given author, or create a new inbox item for a given author
     
     The inbox is all the new posts from who you follow
     URL: ://service/authors/{AUTHOR_ID}/inbox
@@ -394,99 +679,89 @@ def InboxView(request, author_id):
             if the type is “like” then add that like to AUTHOR_ID’s inbox
             if the type is “comment” then add that comment to AUTHOR_ID’s inbox
         DELETE [local]: clear the inbox
-        
+            
     See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox
+
+    Example, retrieving an inbox
     """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+    queryset = InboxModel.objects.all()
+    serializer_class = InboxSerializer
+
+    def get(self, request, *args, **kwargs):
+        # find all inbox items of a given author_id in the url
+        
+        author_id = kwargs['author_id']
+        ## only get the object column.
+        #FollowModel.objects.all().delete()
+        #InboxModel.objects.all().delete()
+        inbox = self.queryset.filter(author=build_author_url(author_id)).values_list('object', 'type')
+        
+        for val in inbox:
+            val[0]['type'] = val[1]
+        inbox = [val[0] for val in inbox]
+        
+        return Response({
+            "type": "inbox",
+            "items":inbox[::-1]
+        })
     
-    parameters = json.loads(request.body)["object"]
-    liker_author_id = parameters["author"].split("/")[3]
-    liker_author_object = AuthorModel.objects.get(id=liker_author_id)
-    liker_serialized = AuthorSerializer(liker_author_object).data
-    liker_author_displayName = liker_serialized["displayName"]
-    if "comment" in parameters:
-        output = {
-        "@context": "https://www.w3.org/ns/activitystreams",
-        "summary": liker_author_displayName + " Likes your comment",
-        "type": "Like",
-        "author": liker_serialized,
-        "object": parameters
+    def post(self, request, *args, **kwargs):
+        # add the inbox item to the author given the author_id in the url
+        author_id = kwargs['author_id']
+        
+        author_id = build_author_url(author_id)
+        author = AuthorModel.objects.filter(id=author_id).first()
+        if not author:
+            return Response({'detail': 'Author not found.'}, status=404)
+
+        if request.data.get('type', '').lower() == 'like':
+            data_like = request.data
+            try:
+                LikeView.create_like(data_like)
+            except Exception as e:
+                return Response(str(e), status=400)
+        
+        elif request.data.get('type', '').lower() == 'follow':
+            data_follow = request.data
+            
+            foreign_author_id = data_follow.get('actor', {}).get('id')
+
+            try:
+                FollowView.create_follow(data_follow, **{
+                    'author_id': author_id,
+                    'foreign_author_id': foreign_author_id
+                })
+            except Exception as e:
+                return Response(str(e), status=400)
+
+        author_data = request.data.get('author', None)
+
+        if author_data and request.data.get('type', '').lower() != 'post':
+            ## we dont want to add to our own inbox
+            if author_data.get('id', None) == author_id:
+                return Response({}, status=201)
+        author_serialized = AuthorSerializer(author)
+        
+        data = {
+            'object': request.data,
+            'type': request.data.get('type', 'like'),
+            'author': author_serialized.data
         }
-    else:
-        output = {
-        "@context": "https://www.w3.org/ns/activitystreams",
-        "summary": liker_author_displayName + " Likes your post",
-        "type": "Like",
-        "author": liker_serialized,
-        "object": parameters
-        }
-    #post_request should be a json object with link to inbox
-    LikeModel.objects.create(**output)
-    return JsonResponse({"status":"success"}, status = 200)
+        serializer = self.serializer_class(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            
+            return Response(serializer.data, status=201)
 
+        return Response(serializer.errors, status=400)
 
-@api_view(['GET'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def PostLikeView(request, author_id, post_id):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    post_likes_paginated = []
-    object = "http://127.0.0.1:5454/authors/"+ author_id+ "/posts/"+ post_id
-    post_likes_object = LikeModel.objects.filter(object=object)
-    for likes in post_likes_object:
-        serialized_object = LikeSerializer(likes)
-        post_likes_paginated.append(serialized_object.data)
-    output = {"object": object, "likes": post_likes_paginated}
-    return JsonResponse(output, status = 200)
-
-
-@api_view(['GET'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def PostLikeView(request, author_id, post_id):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    post_likes_paginated = []
-    object = "http://127.0.0.1:5454/authors/"+ author_id+ "/posts/"+ post_id + "/"  # XXX: Is it really necessary to copy all this other code just so we can also handle the trailing '/'? Also, I think the spec doesn't have a trailing '/' for this endpoint.
-    post_likes_object = LikeModel.objects.filter(object=object)
-    for likes in post_likes_object:
-        serialized_object = LikeSerializer(likes)
-        post_likes_paginated.append(serialized_object.data)
-    output = {"object": object, "likes": post_likes_paginated}
-    return JsonResponse(output, status = 200)
-
-
-
-@api_view(['GET'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def CommentLikeView(request, author_id, post_id, comment_id):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    comment_likes_paginated = []
-    object = "http://127.0.0.1:5454/authors/"+ author_id+ "/posts/"+ post_id+ "/comments/"+ comment_id + "/"
-    comment_likes_object = LikeModel.objects.filter(object=object)
-    for likes in comment_likes_object:
-        serialized_object = LikeSerializer(likes)
-        comment_likes_paginated.append(serialized_object.data)
-    output = {"object": object, "likes": comment_likes_paginated}
-    return JsonResponse(output, status = 200)
-
-
-@api_view(['GET'])
-@permission_classes([IsAdminUser|IsAuthenticated&PermittedForRemote])
-def LikedView(request, author_id):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    liked_paginated = []
-    liked_object = LikeModel.objects.filter(author=author_id)
-    for liked in liked_object:
-        serialized_object = LikeSerializer(liked).data
-        if "comments" not in serialized_object["object"]:
-            post_id = liked["object"].split("/")[6]
-            post_object = PostsSerializer(PostsModel.objects.get(id=post_id)).data["visibility"]
-            if post_object == "PUBLIC":
-                liked_paginated.append(serialized_object.data)
-    output = {"author_id": author_id, "likes": liked_paginated}
-    return JsonResponse(output, status = 200)
+    def delete(self, request, *args, **kwargs):
+        # delete all inbox items of a given author_id in the url
+        author_id = kwargs['author_id']
+        author_id = build_author_url(author_id)
+        author = AuthorModel.objects.filter(id=author_id).first()
+        inbox = self.queryset.filter(author=author)
+        inbox.delete()
+        return Response(status=204)
