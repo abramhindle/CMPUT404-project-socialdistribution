@@ -32,7 +32,7 @@ class PermittedForRemote(BasePermission):
                             'AuthorFollowersOperationsView', 'PostsView',
                             'PostView', 'CommentsView', 'PostLikeView',
                             'LikeView', 'GetLikeCommentView', 'LikedView',
-                            'CommentLikeView', 'LikedView', 'FollowView'],      # NOTE: FollowView may or may not be the same thing as AuthorFollowersOperationsView, except AuthorFollowersOperationsView seems to have a bug in urls.py.
+                            'CommentLikeView', 'LikedView', 'FollowView', 'ImageView'],      # NOTE: FollowView may or may not be the same thing as AuthorFollowersOperationsView, except AuthorFollowersOperationsView seems to have a bug in urls.py.
                     'POST': ['InboxView']}      # XXX: There's some funky stuff in the spec for POSTing to the inbox and likes endpoint. May cause problems later. See: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#inbox and https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#likes
     def has_permission(self, request, view):
         name = view.__class__.__name__
