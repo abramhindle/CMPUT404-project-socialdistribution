@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 
 function PostList({ user_list }) {
   //gets a json object, and returns a list item for it
+  console.log("USER LIST:", user_list);
   const [liked, setLiked] = useState([]);
   const user = useSelector((state) => state.user);
 

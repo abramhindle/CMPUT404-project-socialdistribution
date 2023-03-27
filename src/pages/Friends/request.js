@@ -1,3 +1,5 @@
+import "./friends.css";
+
 import { get_author }from '../../api/author_api'
 import { get_all_authors }from '../../api/author_api'
 import { useEffect, useState } from "react";
@@ -29,38 +31,37 @@ import Typography from '@mui/material/Typography';
 
 function Request() {
 
-    const user = useSelector((state) => state.user);
-    const author_id = `http://localhost/authors/${user.id}/`
-    const [follow_list, setList] = useState({"items": []}); 
-    const [success, setSuccess] = useState(null); 
-    const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
+  const [follow_list, setList] = useState({"items": []}); 
+  const [success, setSuccess] = useState(null); 
+  const navigate = useNavigate();
+  
+
+  useEffect(() => { 
+      get_request(user.id, setList)
     
-    
+  }, []);
 
-    const location = useLocation();
-
-    useEffect(() => { 
-        get_request(user.id, setList)
-      
-    }, []);
-
-    const DeleteRequest= (actor_id) => {
-        delete_request(user.id, actor_id, onSuccess)
-    }
-
-    const AcceptRequest= (actor_id) => {
-        add_followers_for_author(user.id, actor_id, onSuccess)
-        delete_request(user.id, actor_id, onSuccess)
+  const DeleteRequest= (actor_id) => {
+      delete_request(user.id, actor_id, onSuccess)
+      window.location.reload();
   }
 
-    const onSuccess = () => {
-        setSuccess(true);
-    }
-    
-   
-    const goBack = () => {
-        navigate("/");
-      };
+  const AcceptRequest= (actor_id) => {
+      add_followers_for_author(user.id, actor_id, onSuccess)
+      delete_request(user.id, actor_id, onSuccess)
+      window.location.reload();
+  }
+
+  const onSuccess = () => {
+      setSuccess(true);
+  }
+  
+  
+  const goBack = () => {
+      navigate("/");
+  };
+
   
   
     return (
@@ -68,29 +69,32 @@ function Request() {
         <>
         <Sidebar />
         <div className="sidebar-offset">
+          <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
-          <Toolbar variant="dense">
-            <Button
+          <Toolbar variant="dense" className="table-head">
+          <Typography variant="h6" align="left" color="inherit" component="div">
+            Requests
+          </Typography>
+          <Button
                 variant="contained"
+                id="back"
                 onClick={goBack}
                 >
                 back
             </Button>
-          <Typography variant="h6" align="left" color="inherit" component="div">
-            Request
-          </Typography>
           </Toolbar>
         </AppBar>
         </Box>
         </div>
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
+        <TableContainer component={Paper} className="table-container">
+        <Table sx={{ minWidth: 650 }} aria-label="simple table" className="table">
+          <TableHead className="table-titles">
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Follow</TableCell>
+              <TableCell id="title">ID</TableCell>
+              <TableCell id="title" align="right">Name</TableCell>
+              <TableCell id="title" align="right"></TableCell>
+              <TableCell id="title" align="right"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -127,7 +131,7 @@ function Request() {
           </TableBody>
         </Table>  
       </TableContainer>
-     
+      </div>
       
 
       </>

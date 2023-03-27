@@ -1,3 +1,6 @@
+import "../pages.css";
+import "./friends.css";
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { get_friends_for_author } from "../../api/follower_api";
@@ -44,55 +47,58 @@ function Realfriends() {
     navigate("/");
   };
 
-  return (
-    <div>
-      <Sidebar />
+  
+
+  return ( 
+    <>
+      <Sidebar/>
       <div className="sidebar-offset">
         <div>
-          <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
-              <Toolbar variant="dense">
-                <Button variant="contained" onClick={goBack}>
-                  Back
-                </Button>
-                <Typography
-                  variant="h6"
-                  align="left"
-                  color="inherit"
-                  component="div"
+        <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static">
+          <Toolbar variant="dense" className="table-head">
+          <Typography variant="h6" align="left" color="inherit" component="div">
+            Realfriends
+          </Typography>
+          <Button
+                variant="contained"
+                id="back"
+                onClick={goBack}
                 >
-                  Realfriends
-                </Typography>
-              </Toolbar>
-            </AppBar>
-          </Box>
+                back
+            </Button>
+          </Toolbar>
+        </AppBar>
+        </Box>
         </div>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell align="right">Name</TableCell>
+        <TableContainer component={Paper} className="table-container">
+        <Table sx={{ minWidth: 650 }} aria-label="simple table" className="table">
+          <TableHead className="table-titles">
+            <TableRow>
+              <TableCell id="title">ID</TableCell>
+              <TableCell id="title" align="right">Name</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {follow_list.items.map((row) => (
+              <TableRow
+                key={row.id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.id}
+                </TableCell>
+                <TableCell align="right">{row.displayName}</TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {follow_list.items.map((row) => (
-                <TableRow
-                  key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.id}
-                  </TableCell>
-                  <TableCell align="right">{row.displayName}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+            ))}
+          </TableBody>
+        </Table>  
         </TableContainer>
+  
       </div>
-    </div>
+    </>
   );
 }
+  
 
 export default Realfriends;
