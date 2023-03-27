@@ -16,5 +16,5 @@ urlpatterns = [
     path('authors/<str:author_id>/liked', views.LikedView.as_view(), name='Liked'),
     path('authors/<str:author_id>/inbox/', views.InboxView.as_view(), name='Inbox'),
     
-    path('nodes/<str:method>', views.NodeView.as_view(), name='Node Request'),
+    path('nodes/', views.NodeView.as_view(), name='Node Request'),
 ]
