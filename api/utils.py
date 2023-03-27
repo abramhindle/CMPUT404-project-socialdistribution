@@ -1,6 +1,6 @@
 import os
 import uuid
-host_url = os.getenv('HOST', 'http://localhost:8000')
+host_url = os.getenv('HOST', 'http://localhost:8000/service')
 
 def build_url(*args, host:str=host_url):
     """

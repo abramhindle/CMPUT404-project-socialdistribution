@@ -60,9 +60,7 @@ class NodeView(generics.GenericAPIView):
     
     def post(self, request, *args, **kwargs):
         node = self.queryset.filter(node_url=request.data.get('host', '')).first()
-        print(request.data)
-        print(node)
-        print(request.data)
+        
         serializer = self.serializer_class(node)
         if not node:
             return Response(status=404)
@@ -97,6 +95,8 @@ class AuthorView(generics.RetrieveUpdateAPIView):
         if not author:
             return Response(status=404)
         serializer = self.serializer_class(author)
+        serializer.data['profileImage'] = serializer.data['id'] + '/image'
+        
         return Response(serializer.data)
     
     # FIXME: Why this still put? should be post according to spec.
@@ -147,9 +147,12 @@ class AuthorsView(generics.ListCreateAPIView):
             ## get all authors
             authors = self.queryset.filter(displayName__icontains=query)
         serializer = self.serializer_class(authors, many=True)
+        authors_data = serializer.data[::-1]
+        for author in authors_data:
+            author['profileImage'] = author['id'] + '/image'
         return Response({
             "type": "authors",
-            "items": serializer.data[::-1],
+            "items": authors_data,
         })
     
     def post(self, request, *args, **kwargs):
@@ -318,7 +321,7 @@ class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView
 
     def get(self, request, *args, **kwargs):
         # find the post with the given post_id
-
+        
         post_id = kwargs['post_id']
         author_id = kwargs['author_id']
         post_id = build_post_url(author_id, post_id)
@@ -332,6 +335,8 @@ class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView
         
         data = dict(serializer.data)
         data['count'] = comment_count
+        if data.get('contentType', '') == 'image/*':
+            data['content'] = data['id'] + '/image'
         return Response(data)
         
     def put(self, request, *args, **kwargs):
@@ -434,6 +439,10 @@ class PostsView(generics.ListCreateAPIView):
                 "page": 1,
                 "size": min(len(post_comments.data), 10),
             }
+            
+            if post['contentType'] == 'image/*':
+                
+                post['content'] = post['id'] + '/image'
             post['count'] = min(len(post_comments.data), 10)
 
         return Response({
@@ -476,12 +485,11 @@ class ImageView(generics.RetrieveAPIView):
         
     See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#image-posts
     """
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
+
 
     def get(self, request, *args, **kwargs):
         url_id = request.build_absolute_uri().split('/image')[0] 
-        print(url_id)
+        
         author = AuthorModel.objects.filter(id=url_id).first()
         post = PostsModel.objects.filter(id=url_id).first() 
         
@@ -788,21 +796,22 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         
         # start hacky stuff
         post_link = request.data.get('object', '')
-        if post_link:
-            if 'sd7' in post_link:
-                r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')))
-                object_data = r.json()
+        if post_link and 'sd7' in post_link:
+            r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')))
+            object_data = r.json()
         else:
             object_data = request.data
         # object_data = request.data
         # end hacky stuff
         
-        # figure_out_type = {'title':'post', }
         data = {
             'object': object_data,
             'type': request.data.get('type', ''),
             'author': author_serialized.data
         }
+
+        
+        
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()
