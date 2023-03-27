@@ -5,7 +5,7 @@ from .models import AuthorModel, FollowModel, PostsModel, CommentsModel, LikeMod
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission
 from .utils import build_author_url, build_post_url, build_comment_url
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import base64
 import re
 import os
@@ -55,16 +55,16 @@ class NodeView(generics.GenericAPIView):
         node = self.queryset.filter(node_url=request.data.get('host', '')).first()
         print(request.data)
         print(node)
-        print(request.data.get('host', ''))
+        print(request.data)
         serializer = self.serializer_class(node)
-        # if not node:
-            # return Response(status=404)
+        if not node:
+            return Response(status=404)
         
         methods = {'GET': requests.get, 'POST':requests.post, 'PUT':requests.put}
         uri = serializer.data['node_url'] + request.data.get('resource', '/') + request.data.get('query', '')
         print(uri, request.data.get('method', 'GET'), request.data.get('data', ''))
         r = methods[request.data.get('method', 'GET')](uri, data=request.data.get('data', ''), auth=(serializer.data['t16_uname'], serializer.data['t16_pw']))
-        return r.json()
+        return JsonResponse(r.json())
 
 
 class AuthorView(generics.RetrieveUpdateAPIView):
