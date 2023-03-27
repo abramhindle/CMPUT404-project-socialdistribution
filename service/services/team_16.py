@@ -13,7 +13,8 @@ from service.models.post import Post
 def get_or_create_author(author_json, hostname):
     try:
         # update old -> don't change host_url or id
-        old_author = Author.objects.get(url=author_json["url"])
+        old_author = Author.objects.get(url=author_json["id"])
+        print("OLD")
 
         old_author.github = author_json["github"]
         old_author.displayName = author_json["displayName"]
@@ -22,6 +23,7 @@ def get_or_create_author(author_json, hostname):
         return old_author
 
     except ObjectDoesNotExist:
+        print("NEW")
         # create new
         new_author = Author()
         #new_author._id = f"{settings.DOMAIN}/authors/{author_json['id']}"  # we use the GUID sent to us

@@ -119,8 +119,6 @@ class InboxView(APIView):
             except:
                 return HttpResponseServerError()
 
-            print(url)
-
             return HttpResponse()
 
         try:  # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
