@@ -227,7 +227,14 @@ class FollowView(generics.RetrieveUpdateDestroyAPIView):
         other_follow = self.queryset.filter(following=follower_id, follower=following_id).first()
         
         if follow and other_follow:
-            return Response('true_friends')
+            status = self.serializer_class(follow).data['status']
+            other_status = self.serializer_class(other_follow).data['status']
+            if status == 'friends' and other_status == 'friends':
+                return Response('true_friends')
+            elif status == 'pending' or other_status == 'pending':
+                return Response('pending')
+            elif status == 'not_friends' or other_status == 'not_friends':
+                return Response('not_friends')
         
         if not follow:
             return Response({'detail': 'Follow not found.'}, status=404)
