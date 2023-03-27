@@ -1,6 +1,5 @@
 /*List Item*/
 .follower li {
-  background-color: grey;
   display: flex;
 }
 
@@ -13,11 +12,12 @@
 
 h6 {
   margin-top: 0.2em;
+  margin-left: 0;
 }
 
 /*List Div*/
 .followersList {
-  background-color: lightgrey;
+  background-color: none;
   list-style: none;
   padding: 1em;
   margin: 1em;
@@ -32,12 +32,13 @@ h6 {
 }
 
 .followers li {
-  border: grey;
-  background-color: lightgrey;
+  background-color: white;
+  border: var(--driftwood);
   padding: 1em;
   margin-inline: 1em;
   margin-bottom: 1em;
   border-style: solid;
-  border-width: 0.5pt;
+  border-width: 2pt;
+  border-radius: 4pt;
 }
 
