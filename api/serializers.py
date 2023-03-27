@@ -7,7 +7,7 @@ from rest_framework import validators
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = NodeModel
-        fields = ['node_url', 'node_name', 'node_user', 't16_uname', 't16_pw']
+        fields = ['id', 'node_url', 'node_name', 'node_user', 't16_uname', 't16_pw']
 
 
 class AuthorSerializer(serializers.ModelSerializer):
