@@ -47,7 +47,8 @@ CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-le
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    'http://31552.yeg.rac.sh:8000'
+    'http://31552.yeg.rac.sh:8000',
+    "https://cmput404-group-project.herokuapp.com"
 ]
 
 # Application definition
