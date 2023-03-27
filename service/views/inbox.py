@@ -14,7 +14,7 @@ from service.models.inbox import Inbox
 from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
-from service.services import team_14
+from service.services import team_14, team_16, team_22
 
 import requests
 
@@ -80,11 +80,14 @@ class InboxView(APIView):
         return HttpResponse(json.dumps(inbox_json), content_type=CONTENT_TYPE_JSON)
 
     def post(self, request: HttpRequest, *args, **kwargs):
-        author_id = kwargs['author_id']
+        self.author_id = kwargs['author_id']
+
+        # if remote user, get_or_create the author they give us
+
 
         # should also go out to the team and get their values
         try:
-            author = Author.objects.get(_id=author_id, is_active=True)
+            author = Author.objects.get(_id=self.author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -97,7 +100,6 @@ class InboxView(APIView):
         # remote-user-t14
         if author.host == settings.REMOTE_USERS[0][1]:
             url = settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/inbox"
-            print(body)
             try:
                 response = requests.post(url, json=body, auth=settings.REMOTE_USERS[0][2])
                 response.close()
@@ -108,15 +110,28 @@ class InboxView(APIView):
             print(response.json())
             return HttpResponse()
 
+        # remote-user-t16
+        if author.host == settings.REMOTE_USERS[2][1]:
+            url = settings.REMOTE_USERS[2][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/inbox/"
+            try:
+                response = requests.post(url, json=body, auth=settings.REMOTE_USERS[2][2])
+                response.close()
+            except:
+                return HttpResponseServerError()
+
+            print(url)
+
+            return HttpResponse()
+
         try:  # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
             inbox = Inbox.objects.get(author=author) # author_id is the primary key for an inbox
         except ObjectDoesNotExist:
             inbox = Inbox.objects.create(author=author)
 
-        try:    #TODO check if requires additional tweaking
+        try:
             if body["type"] == "post":
                 id = body["id"]
-                self.handle_post(inbox, id, body, author)
+                self.handle_post(inbox, id, body, author, request.user)
             elif body["type"] == "comment":
                 id = body["id"]
                 self.handle_comment(inbox, id, body, author)
@@ -165,25 +180,46 @@ class InboxView(APIView):
 
         return HttpResponse(status=202)
     
-    def handle_post(self, inbox: Inbox, id, body, author):
+    def handle_post(self, inbox: Inbox, id, body, author, user):
         post = inbox.posts.all().filter(_id=id)
-
-        #TODO: make request and PUT post to DB if it isnt already there -> for now, we assume it IS there
-
-        # post_author = body["author"]["id"]
-        # post_id = body["id"]
-        # url = f"{settings.DOMAIN}/authors/{post_author}/posts/{post_id}"
-        # requests.put()
 
         if post.exists():
             raise ConflictException # conflict, item is already in inbox
+
+        #create post if not already there
+        if user.username == "remote-user-t14": #get the post from each DB
+            team_14.get_or_create_post(body, author, author.host)
+        elif user.username == "remote-user-t22":
+            team_22.get_or_create_post(body, author, author.host)
+        elif user.username == "remote-user-t16":
+            team_16.get_or_create_post(body, author, author.host)
 
         post = Post.objects.get(_id=id)
         inbox.posts.add(post)
 
     def handle_comment(self, inbox: Inbox, id, body, author):
+        post = Post.objects.get(_id=self.post_id)
+
+        try:
+            comment = Comment.objects.get(_id=id)
+        except ObjectDoesNotExist:
+            comment._id = Comment.create_comment_id(self.author_id, self.post_id)
+            comment.comment = body["comment"]
+            comment.author = author
+            comment.post = post
+
+            is_valid = False
+            if (body["contentType"] in ("text/markdown", "text/plain")):
+                is_valid = True
+
+            if not is_valid:
+                raise KeyError #probably not a good choice
+
+            comment.contentType = body["contentType"]
+            comment.published = body["published"]
+
         comment = inbox.comments.all().filter(_id=id)
-        
+
         if comment.exists():
             raise ConflictException # conflict, item is already in inbox
 
@@ -191,6 +227,7 @@ class InboxView(APIView):
         inbox.comments.add(comment)
         inbox.save()
 
+#TODO: get or create author from the user
     def handle_follow(self, inbox: Inbox, id, body, author: Author): # we actually create the follow request here
         foreign_author = Author()
         foreign_author.toObject(body["object"])
@@ -198,11 +235,9 @@ class InboxView(APIView):
         if author._id == foreign_author._id:
             return HttpResponseBadRequest() #can't follow yourself!
 
-        #author = Author.objects.get(_id = author._id)
-        #followed = Author.objects.get(_id = foreign_author_id)
-
         try:
             foreign_author.followers.get(_id=author._id)
+            raise ConflictException # request already exists
         except ObjectDoesNotExist:
             r = Follow()
             r._id = Follow.create_follow_id(foreign_author._id,author._id)
@@ -210,28 +245,10 @@ class InboxView(APIView):
             r.object = foreign_author
             r.save()
 
-            r_json = r.toJSON()
-
-            return HttpResponse(json.dumps(r_json), status=201, content_type = CONTENT_TYPE_JSON)
+        inbox.follow_requests.add(r)
+        inbox.save()
 
         return HttpResponse(status=409)
-
-        """
-        follow_req = inbox.follow_requests.all().filter(_id=id)
-
-        if follow_req.exists():
-            raise ConflictException
-
-        foreign_author = Author()
-        foreign_author.toObject(body["actor"])
-
-        try:
-            author.followers.get(_id=foreign_author._id)
-        except ObjectDoesNotExist:  # only create request if they are NOT already being followed
-            follow_request = Follow.objects.create(actor=foreign_author, object=author)
-            inbox.follow_requests.add(follow_request)
-        """
-       
 
     def handle_like(self, inbox: Inbox, id, body, author: Author):
         like = inbox.likes.all().filter(_id=id)
