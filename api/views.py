@@ -789,9 +789,10 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         #     object_data = request.data
         # # end hacky stuff
         
+        # figure_out_type = {'title':'post', }
         data = {
             'object': request.data,#object_data,
-            'type': request.data.get('type', 'like'),
+            'type': request.data.get('type', ''),
             'author': author_serialized.data
         }
         serializer = self.serializer_class(data=data)
