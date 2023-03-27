@@ -6,9 +6,9 @@ from django.conf import settings
 from datetime import datetime, timezone
 
 class Follow(models.Model): # list of an author's followers
-    _id = models.URLField(default=None, primary_key=True)
-    actor = models.OneToOneField(Author, on_delete=models.CASCADE, related_name="actor") #this is the person DOING THE FOLLOWING -> i.e. author of the follow request
-    object = models.OneToOneField(Author, on_delete=models.CASCADE, related_name="object") #this is the person being FOLLOWED!
+    _id = models.URLField(primary_key=True, default=None)
+    actor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="actor") #this is the person DOING THE FOLLOWING -> i.e. author of the follow request
+    object = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="object") #this is the person being FOLLOWED!
 
     published = models.DateTimeField()
 

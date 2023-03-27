@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import PlainPost from "../../components/Posts/post-text";
 import "./post-list.css";
+import DisplayItem from "../ItemDisplay/display";
+import React, { useEffect, useState } from "react";
 import { get_liked } from "../../api/like_api";
+import { useSelector } from "react-redux";
 
 function PostList({ user_list }) {
-  const user = useSelector((state) => state.user);
   //gets a json object, and returns a list item for it
-
-  const [liked, setLiked] = useState(null);
+  const [liked, setLiked] = useState([]);
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     get_liked(user.id, setLiked);
@@ -24,19 +23,17 @@ function PostList({ user_list }) {
   }
 
   return (
-    liked && (
-      <div className="posts">
-        <ul className="postsList">
-          {console.log(user_list)}
-          {user_list.items.map((list_item) => (
-            <li className="post" key={list_item.id}>
-              <PlainPost post={list_item} liked={checkLiked(list_item)} />
-            </li>
-          ))}
-          ;
-        </ul>
-      </div>
-    )
+    <div className="posts">
+      <ul className="postsList">
+        {console.log(user_list)}
+        {user_list.items.map((list_item) => (
+          <li key={list_item.id}>
+            <DisplayItem data={list_item} liked={checkLiked(list_item)} updateList={setLiked}/>
+          </li>
+        ))}
+        end of items
+      </ul>
+    </div>
   );
 }
 

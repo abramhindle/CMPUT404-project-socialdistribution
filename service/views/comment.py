@@ -11,24 +11,18 @@ from service.models.post import Post
 from service.models.author import Author
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
-import json
-from datetime import datetime, timezone
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator
-from django.http import *
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.models.comment import Comment
 from service.models.post import Post
 from service.service_constants import *
 
+from rest_framework.permissions import IsAuthenticated
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CommentView(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post"]
     def get(self, request, *args, **kwargs):
         self.author_id = kwargs['author_id']
@@ -68,7 +62,7 @@ class CommentView(APIView):
 
         try:
             post = Post.objects.get(_id=self.post_id)
-            author = Author.objects.get(_id=self.author_id)
+            author = Author.objects.get(_id=self.author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 

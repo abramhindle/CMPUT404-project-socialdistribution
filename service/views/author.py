@@ -12,10 +12,11 @@ from service.models.author import Author
 from service.service_constants import *
 from service.services import team_14, team_22
 
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-
 class MultipleAuthors(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -31,7 +32,7 @@ class MultipleAuthors(APIView):
 
             filter_host = Q()  # no filter, since not a remote user
 
-        authors_queryset = Author.objects.all().order_by('displayName').filter(filter_host)
+        authors_queryset = Author.objects.filter(is_active=True).order_by('displayName').filter(filter_host)
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
 
@@ -51,14 +52,16 @@ class MultipleAuthors(APIView):
 
         return HttpResponse(json.dumps(authors), content_type=CONTENT_TYPE_JSON)
 
+
 class SingleAuthor(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post"]
 
     def get(self, request, *args, **kwargs):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             author = None
 
@@ -85,7 +88,7 @@ class SingleAuthor(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 

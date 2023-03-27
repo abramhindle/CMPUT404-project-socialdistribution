@@ -14,10 +14,13 @@ from service.models.post import Post, Category
 from service.service_constants import *
 from service.services import team_14, team_22
 from service.services.rest_service import RestService
+from rest_framework.permissions import IsAuthenticated
+
 
 # endpoints with just author_id
 @method_decorator(csrf_exempt, name='dispatch')
 class PostCreation(APIView, RestService):
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'post']
 
     def get(self, request: HttpRequest, *args, **kwargs):  # get all recent posts for author_id
@@ -71,7 +74,7 @@ class PostCreation(APIView, RestService):
         post = Post()
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -124,6 +127,7 @@ class PostCreation(APIView, RestService):
 # endpoints with post_id and author_id
 @method_decorator(csrf_exempt, name='dispatch')
 class PostWithId(APIView, RestService):
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'post', 'delete', 'put']
 
     def get(self, request: HttpRequest, *args, **kwargs):

@@ -4,13 +4,14 @@ from rest_framework.views import APIView
 from service.models.author import Author
 from service.models.like import Like
 from service.models.post import Post
+from rest_framework.permissions import IsAuthenticated
 
 
 class LikedView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, author_id):
         try:
-            author_query = Author.objects.get(_id=author_id)
+            author_query = Author.objects.get(_id=author_id, is_active=True)
             liked = Like.objects.filter(author=author_query)
         except:
             return Response(status=404)
@@ -21,9 +22,10 @@ class LikedView(APIView):
             likes.append(item.toJSON())
 
         return Response(encode_list(likes))
+    
 
 class LikesView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, author_id, post_id):
         if not Author.objects.filter(_id=author_id).exists():
             return Response({"error": "No author exists!"}, status=404)

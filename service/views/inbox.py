@@ -18,6 +18,8 @@ from service.services import team_14
 
 import requests
 
+from rest_framework.permissions import IsAuthenticated
+
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
 
@@ -26,6 +28,7 @@ import requests
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InboxView(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "delete"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -35,7 +38,7 @@ class InboxView(APIView):
         size = int(request.GET.get('size', 5))
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
         
@@ -81,7 +84,7 @@ class InboxView(APIView):
 
         # should also go out to the team and get their values
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -141,7 +144,7 @@ class InboxView(APIView):
         author_id = kwargs['author_id']
 
         try:
-            author = Author.objects.get(_id=author_id)
+            author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
@@ -189,6 +192,31 @@ class InboxView(APIView):
         inbox.save()
 
     def handle_follow(self, inbox: Inbox, id, body, author: Author): # we actually create the follow request here
+        foreign_author = Author()
+        foreign_author.toObject(body["object"])
+        
+        if author._id == foreign_author._id:
+            return HttpResponseBadRequest() #can't follow yourself!
+
+        #author = Author.objects.get(_id = author._id)
+        #followed = Author.objects.get(_id = foreign_author_id)
+
+        try:
+            foreign_author.followers.get(_id=author._id)
+        except ObjectDoesNotExist:
+            r = Follow()
+            r._id = Follow.create_follow_id(foreign_author._id,author._id)
+            r.actor = author
+            r.object = foreign_author
+            r.save()
+
+            r_json = r.toJSON()
+
+            return HttpResponse(json.dumps(r_json), status=201, content_type = CONTENT_TYPE_JSON)
+
+        return HttpResponse(status=409)
+
+        """
         follow_req = inbox.follow_requests.all().filter(_id=id)
 
         if follow_req.exists():
@@ -202,6 +230,8 @@ class InboxView(APIView):
         except ObjectDoesNotExist:  # only create request if they are NOT already being followed
             follow_request = Follow.objects.create(actor=foreign_author, object=author)
             inbox.follow_requests.add(follow_request)
+        """
+       
 
     def handle_like(self, inbox: Inbox, id, body, author: Author):
         like = inbox.likes.all().filter(_id=id)
@@ -213,7 +243,7 @@ class InboxView(APIView):
         foreign_author.toObject(body["author"])
 
         try:
-            Author.objects.get(_id=foreign_author._id)
+            Author.objects.get(_id=foreign_author._id, is_active=True)
         except ObjectDoesNotExist:
             foreign_author.save()
 
@@ -223,7 +253,11 @@ class InboxView(APIView):
             like = Like()
             like._id = id
             like.context = body["context"]
-            like.summary = f"{foreign_author.displayName} likes your post"
+
+            if(body["object"].split("/")[-2] == "posts"):
+                like.summary = f"{foreign_author.displayName} likes your post"
+            else:
+                like.summary = f"{foreign_author.displayName} likes your comment"
             like.author = foreign_author
             like.object = body["object"]
             like.published

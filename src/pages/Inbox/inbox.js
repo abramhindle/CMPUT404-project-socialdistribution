@@ -1,4 +1,5 @@
 import Sidebar from "../../components/Sidebar/sidebar";
+import '../pages.css';
 import "./inbox.css";
 import { get_inbox_posts } from "../../api/post_display_api";
 import { useEffect, useState } from "react";
@@ -50,11 +51,10 @@ function Inbox(filter) {
   return (
     post_list && (
       <div className="Page">
-        <div>
-          <Sidebar />
-        </div>
-        <div className="Inbox">
-          <div className="profileContent">{populateList()};</div>
+        <Sidebar />
+        <div className="Inbox sidebar-offset">
+          <div className="pageContent">{populateList()}</div>
+          {/*{page_buttons()}*/}
         </div>
       </div>
     )

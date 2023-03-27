@@ -11,17 +11,18 @@ from rest_framework.views import APIView
 from service.models.author import Author
 from service.service_constants import *
 from service.services import team_14, team_22
+from rest_framework.permissions import IsAuthenticated
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowersAPI(APIView):
     """ GET an Author's all followers """
-
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get']
 
     def get(self, request, author_id):
 
-        author = Author.objects.get(_id=author_id)
+        author = Author.objects.get(_id=author_id, is_active=True)
 
         # reach out and get followers for an author that isn't our own
 
@@ -44,27 +45,45 @@ class FollowersAPI(APIView):
 
         followers_json = encode_Follower_list(followers_list)
         return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)
-        
-@method_decorator(csrf_exempt, name='dispatch')
-class FollowerAPI(View):
+
+class Follower_API(APIView):
+    # for follower page
+    permission_classes = [IsAuthenticated]   
+    http_method_names = ['get']
+    def get(self, request, author_id):
+        authors = Author.objects.filter(is_active=True).order_by('displayName')
+        followers = list()
+
+        for author in authors:
+            for follower in list(author.followers.all().order_by('displayName')):
+                if follower._id == author_id:
+                    followers.append(author.toJSON())
+
+        followers_json = encode_Follower_list(followers)
+
+        return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)
+
+
+class FollowerAPI(APIView):
     """ GET if is a follower PUT a new follower DELETE an existing follower"""
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'put', 'delete']
     
     def delete(self, request, author_id, foreign_author_id):
-        author = Author.objects.get(_id=author_id)
-        foreign_author = Author.objects.get(_id=foreign_author_id)
+        author = Author.objects.get(_id=author_id, is_active=True)
+        foreign_author = Author.objects.get(_id=foreign_author_id, is_active=True)
 
-        author.followers.remove(foreign_author)
-        author.save()
+        foreign_author.followers.remove(author)
+        foreign_author.save()
 
-        return HttpResponse(status=200)
+        return HttpResponse(status=204)
 
     def put(self, request, author_id, foreign_author_id):
         if author_id == foreign_author_id:
             return HttpResponseBadRequest()  # can't follow yourself!
 
-        author = Author.objects.get(_id = author_id)
-        follower = Author.objects.get(_id = foreign_author_id)
+        author = Author.objects.get(_id = author_id, is_active=True)
+        follower = Author.objects.get(_id = foreign_author_id, is_active=True)
 
         try:
             author.followers.get(_id=foreign_author_id)
@@ -77,8 +96,8 @@ class FollowerAPI(View):
         return HttpResponse(status=409)
 
     def get(self, request, author_id, foreign_author_id):
-        author = Author.objects.get(_id=author_id)
-        foreign = Author.objects.get(_id=foreign_author_id)
+        author = Author.objects.get(_id=author_id, is_active=True)
+        foreign = Author.objects.get(_id=foreign_author_id, is_active=True)
 
         try:
             follower = author.followers.get(_id=foreign._id)
@@ -87,7 +106,35 @@ class FollowerAPI(View):
         
         follower_json = follower.toJSON()
         return HttpResponse(json.dumps(follower_json), content_type=CONTENT_TYPE_JSON)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class FriendAPI(View):
+      # for friend page
+      permission_classes = [IsAuthenticated]
+      http_method_names = ['get']
+
+      def get(self, request, author_id): 
+        authors = Author.objects.filter(is_active=True).order_by('displayName')
+        followers = list()
+        for author in authors:
+            for follower in list(author.followers.all().order_by('displayName')):
+                if follower._id == author_id:
+                    followers.append(author.toJSON())
+
+
+        author = Author.objects.get(_id = author_id, is_active=True)
+        followed = list()
+        for follower in list(author.followers.all().order_by('displayName')):
+            followed.append(follower.toJSON())
         
+        friends = list()
+        for person in followers:
+            if person in followed:
+                friends.append(person)
+
+
+        friends_json = encode_Follower_list(friends)
+        return HttpResponse(json.dumps(friends_json), content_type = CONTENT_TYPE_JSON)
 
 def encode_Follower_list(authors):
     return {
