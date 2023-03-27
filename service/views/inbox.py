@@ -186,16 +186,18 @@ class InboxView(APIView):
         if post.exists():
             raise ConflictException # conflict, item is already in inbox
 
+        post = Post.objects.get(_id=id)
+
         #create post if not already there
         if user.username == "remote-user-t14": #get the post from each DB
-            team_14.get_or_create_post(body, author, author.host)
+            post = team_14.get_or_create_post(body, author, author.host)
         elif user.username == "remote-user-t22":
-            team_22.get_or_create_post(body, author, author.host)
+            post = team_22.get_or_create_post(body, author, author.host)
         elif user.username == "remote-user-t16":
-            team_16.get_or_create_post(body, author, author.host)
+            post = team_16.get_or_create_post(body, author, author.host)
 
-        post = Post.objects.get(_id=id)
         inbox.posts.add(post)
+        inbox.save()
 
     def handle_comment(self, inbox: Inbox, id, body, author):
         post = Post.objects.get(_id=self.post_id)

@@ -89,24 +89,6 @@ def get_multiple_posts(author):
 
     return items
 
-# def get_single_post(author):
-#     url = settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/posts/"
-#
-#     try:
-#         response = requests.get(url, auth=settings.REMOTE_USERS[0][2])
-#         response.close()
-#     except:
-#         return
-#
-#     if response.status_code < 200 or response.status_code > 299:  # unsuccessful
-#         return
-#
-#
-#     post = get_or_create_post(response.json(), author, author.host)
-#     post = post.toJSON()
-#
-#     return post
-
 def get_or_create_post(post_json, author, hostname):
     # use source as the id for the remote
     # use origin as the host name
