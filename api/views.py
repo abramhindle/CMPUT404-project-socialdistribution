@@ -42,7 +42,7 @@ class PermittedForRemote(BasePermission):
         return name in self.remote_views[request.method]
     
     
-class NodeView(generics.APIView):
+class NodeView(generics.GenericAPIView):
     """
     Hacky stuff. Make a request to a node on behalf of poor soul blocked by cors.
     """
