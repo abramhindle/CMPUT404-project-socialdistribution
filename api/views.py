@@ -65,6 +65,7 @@ class AuthorView(generics.RetrieveUpdateAPIView):
         serializer = self.serializer_class(author)
         return Response(serializer.data)
     
+    # FIXME: Why this still put? should be post according to spec.
     def put(self, request, *args, **kwargs):
         author_id = kwargs.pop('author_id', None)
         author = self.queryset.filter(id=build_author_url(author_id)).first()
