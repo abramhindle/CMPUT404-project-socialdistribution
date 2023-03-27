@@ -779,18 +779,18 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                 return Response({}, status=201)
         author_serialized = AuthorSerializer(author)
         
-        # start hacky stuff
-        post_link = request.data.get('object', '')
-        if post_link:
-            if 'sd7' in post_link:
-                r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')))
-                object_data = r.json()
-        else:
-            object_data = request.data
-        # end hacky stuff
+        # # start hacky stuff
+        # post_link = request.data.get('object', '')
+        # if post_link:
+        #     if 'sd7' in post_link:
+        #         r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')))
+        #         object_data = r.json()
+        # else:
+        #     object_data = request.data
+        # # end hacky stuff
         
         data = {
-            'object': object_data,
+            'object': request.data,#object_data,
             'type': request.data.get('type', 'like'),
             'author': author_serialized.data
         }
