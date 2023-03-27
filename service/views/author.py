@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
-from service.services import team_14, team_22
+from service.services import team_14, team_22, team_16
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -23,18 +23,23 @@ class MultipleAuthors(APIView):
 
         filter_host = Q(host=settings.DOMAIN) | Q(host="http://localhost")
 
+        page = request.GET.get('page', 1)
+        size = request.GET.get('size', 5)
+
         if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote host
             for remote_host in settings.REMOTE_USERS:
                 if remote_host[0] == "remote-user-t14":
-                    team_14.get_multiple_authors()
+                    # team_14.get_multiple_authors() #sending us dupe data
+                    pass
                 elif remote_host[0] == "remote-user-t22":
                     team_22.get_multiple_authors()
+                elif remote_host[0] == "remote-user-t16":
+                    #uses paging
+                    team_16.get_multiple_authors(page, size)
 
             filter_host = Q()  # no filter, since not a remote user
 
-        authors_queryset = Author.objects.filter(is_active=True).order_by('displayName').filter(filter_host)
-        page = request.GET.get('page', 1)
-        size = request.GET.get('size', 5)
+        authors_queryset = Author.objects.filter(is_active=True).filter(filter_host).order_by('displayName')
 
         paged_authors = Paginator(authors_queryset, size)
 
@@ -71,6 +76,9 @@ class SingleAuthor(APIView):
 
             if author and author.host == settings.REMOTE_USERS[1][1]:
                 author = team_22.get_single_author(author)  # remote-user-t22
+
+            if author and author.host == settings.REMOTE_USERS[2][1]:
+                author = team_16.get_single_author(author)  # remote-user-t16
 
             # put other teams here
 

@@ -74,6 +74,10 @@ class AuthorTests(TestCase):
 
         self.assertTrue(len(json_authors), 2)
 
+        
+
+        list(Author.objects.all())
+
         self.assertEqual(json_authors[0]["id"], str(self.author1._id))
         self.assertEqual(json_authors[0]["displayName"], str(self.author1.displayName))
         self.assertEqual(json_authors[1]["id"], str(self.author2._id))

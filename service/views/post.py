@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from service.models.author import Author
 from service.models.post import Post, Category
 from service.service_constants import *
-from service.services import team_14, team_22
+from service.services import team_14, team_22, team_16
 from service.services.rest_service import RestService
 from rest_framework.permissions import IsAuthenticated
 
@@ -30,8 +30,8 @@ class PostCreation(APIView, RestService):
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
-        page = request.GET.get('page', '')
-        size = request.GET.get('size', '')
+        page = request.GET.get('page', 1)
+        size = request.GET.get('size', 5)
 
         # fetch remote posts for the author if they are marked as remote
 
@@ -42,6 +42,10 @@ class PostCreation(APIView, RestService):
         # remote-user-t22
         if author.host == settings.REMOTE_USERS[1][1]:
             team_22.get_multiple_posts(author)
+
+        # remote-user-t16
+        if author.host == settings.REMOTE_USERS[2][1]:
+            team_16.get_multiple_posts(author, page, size)
 
         posts = list()
 

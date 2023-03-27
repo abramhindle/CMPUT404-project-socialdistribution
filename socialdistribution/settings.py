@@ -182,7 +182,7 @@ DOMAIN = "https://social-distribution-w23-t17.herokuapp.com"
 REMOTE_USERS = [
     ("remote-user-t14", "http://[2605:fd00:4:1001:f816:3eff:fe37:a65e]:8000/", ("ajinator", "ajinator")),
     ("remote-user-t22", 'https://cmput404-group-project.herokuapp.com/', "9b9b6ecc595fc7208e702c4108ef1f9a54d71d4a"),
-    ("remote-user-t16")
+    ("remote-user-t16", "https://sd16-api.herokuapp.com/", ("Team17", "P*ssw0rd!"))
 ]
 
 REST_FRAMEWORK = {
