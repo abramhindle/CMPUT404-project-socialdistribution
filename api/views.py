@@ -8,6 +8,8 @@ from .utils import build_author_url, build_post_url, build_comment_url
 from django.http import HttpResponse
 import base64
 import re
+import os
+import requests
 
 
 class PermittedForRemote(BasePermission):
@@ -749,8 +751,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         post_link = request.data.get('object', '')
         if post_link:
             if 'sd7' in post_link:
-                import requests
-                r = requests.get(post_link, auth=('node01', 'P*ssw0rd!'))
+                r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')))
                 object_data = r.json()
         else:
             object_data = request.data
