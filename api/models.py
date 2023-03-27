@@ -3,6 +3,17 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 import uuid
 from .utils import create_author_url, build_url, create_post_url, create_comment_url
+from django.contrib.auth.models import User
+
+
+class NodeModel(models.Model):
+    node_url = models.URLField()
+    node_name = models.CharField(max_length=25, default='anonymous node')
+    node_user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # Note: we're team 16... this is our credentials to their node.
+    t16_uname = models.CharField(max_length=25)
+    t16_pw = models.CharField(max_length=25)
+
 
 class AuthorModel(models.Model):
     pkid = models.BigAutoField(primary_key=True, editable=False)

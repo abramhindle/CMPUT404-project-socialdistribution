@@ -1,7 +1,14 @@
 #from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import AuthorModel, PostsModel, ImageModel,  CommentsModel, LikeModel, FollowModel, InboxModel
+from .models import AuthorModel, PostsModel, ImageModel,  CommentsModel, LikeModel, FollowModel, InboxModel, NodeModel
 from rest_framework import validators
+
+
+class NodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NodeModel
+        fields = ['node_url', 'node_name', 'node_user', 't16_uname', 't16_pw']
+
 
 class AuthorSerializer(serializers.ModelSerializer):
     id = serializers.URLField(required=False)
@@ -13,8 +20,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author = AuthorModel.objects.create(**validated_data)
         return author
-
-    
+ 
 
 class PostsSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(required=False)

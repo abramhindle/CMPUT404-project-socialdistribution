@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import AuthorSerializer, FollowSerializer, PostsSerializer, ImageSerializer, CommentsSerializer, LikeSerializer, InboxSerializer
-from .models import AuthorModel, FollowModel, PostsModel, CommentsModel, LikeModel, InboxModel, ImageModel
+from .serializers import AuthorSerializer, FollowSerializer, PostsSerializer, ImageSerializer, CommentsSerializer, LikeSerializer, InboxSerializer, NodeSerializer
+from .models import AuthorModel, FollowModel, PostsModel, CommentsModel, LikeModel, InboxModel, NodeModel
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, BasePermission
 from .utils import build_author_url, build_post_url, build_comment_url
@@ -40,6 +40,27 @@ class PermittedForRemote(BasePermission):
     def has_permission(self, request, view):
         name = view.__class__.__name__
         return name in self.remote_views[request.method]
+    
+    
+class NodeView(generics.RetrieveUpdateAPIView):
+    """
+    Hacky stuff. Make a request to a node on behalf of poor soul blocked by cors.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser]
+    queryset = NodeModel.objects.all()
+    serializer_class = NodeSerializer
+    
+    def post(self, request, *args, **kwargs):
+        node = self.queryset.filter(node_url=request.data.get('host', '')).first()
+        serializer = self.serializer_class(node)
+        if not node:
+            return Response(status=404)
+        
+        methods = {'GET': requests.get, 'POST':requests.post, 'PUT':requests.put}
+        uri = serializer.data['node_url'] + request.data.get('resource', '/') + request.data.get('query', '')
+        r = methods[request.data.get('method', 'GET')](uri, data=request.data.get('data', ''), auth=(serializer.data['t16_uname'], serializer.data['t16_pw']))
+        return r.json()
 
 
 class AuthorView(generics.RetrieveUpdateAPIView):
