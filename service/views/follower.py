@@ -32,10 +32,11 @@ class FollowersAPI(APIView):
         return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)
 
 class Follower_API(APIView):
-    # for follower page   
+    # for follower page
+    permission_classes = [IsAuthenticated]   
     http_method_names = ['get']
     def get(self, request, author_id):
-        authors = Author.objects.all().order_by('displayName')
+        authors = Author.objects.filter(is_active=True).order_by('displayName')
         followers = list()
 
         for author in authors:
@@ -96,10 +97,11 @@ class FollowerAPI(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class FriendAPI(View):
       # for friend page
+      permission_classes = [IsAuthenticated]
       http_method_names = ['get']
 
       def get(self, request, author_id): 
-        authors = Author.objects.all().order_by('displayName')
+        authors = Author.objects.filter(is_active=True).order_by('displayName')
         followers = list()
         for author in authors:
             for follower in list(author.followers.all().order_by('displayName')):
@@ -107,7 +109,7 @@ class FriendAPI(View):
                     followers.append(author.toJSON())
 
 
-        author = Author.objects.get(_id = author_id)
+        author = Author.objects.get(_id = author_id, is_active=True)
         followed = list()
         for follower in list(author.followers.all().order_by('displayName')):
             followed.append(follower.toJSON())
