@@ -5,11 +5,11 @@ div.Page {
 }
 
 .Fragment {
-  background-color: #57534c;
+  background-color: var(--champagne);
   text-align: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--bark);
   position: static;
   flex: 2;
   float: right;
@@ -30,7 +30,7 @@ div.Page {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  color: white;
+  color: var(--bark);
 }
 
 .from {
@@ -52,7 +52,7 @@ div.Page {
 }
 
 .line {
-  border-top: 1px solid black;
+  border-top: 1px solid var(--mud);
   padding-inline: 1em;
 }
 

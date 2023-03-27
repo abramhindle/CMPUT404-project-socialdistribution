@@ -6,6 +6,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--champagne);
+  height: 100vh;
+  align-items: center;
 }
 
 code {

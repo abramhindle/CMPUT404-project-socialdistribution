@@ -128,7 +128,8 @@ function Request() {
             <TableRow>
               <TableCell id="title">ID</TableCell>
               <TableCell id="title" align="right">Name</TableCell>
-              <TableCell id="title" align="right">Follow</TableCell>
+              <TableCell id="title" align="right"></TableCell>
+              <TableCell id="title" align="right"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
