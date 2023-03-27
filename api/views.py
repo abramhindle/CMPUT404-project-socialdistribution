@@ -54,8 +54,8 @@ class NodeView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         node = self.queryset.filter(node_url=request.data.get('host', '')).first()
         serializer = self.serializer_class(node)
-        if not node:
-            return Response(status=404)
+        # if not node:
+            # return Response(status=404)
         
         methods = {'GET': requests.get, 'POST':requests.post, 'PUT':requests.put}
         uri = serializer.data['node_url'] + request.data.get('resource', '/') + request.data.get('query', '')
