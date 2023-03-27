@@ -45,6 +45,13 @@ class PermittedForRemote(BasePermission):
 class NodeView(generics.GenericAPIView):
     """
     Hacky stuff. Make a request to a node on behalf of poor soul blocked by cors.
+    
+    e.g.
+    POST "https://sd16-api.herokuapp.com/service/nodes/",
+        auth=('admin','123'),
+        data={'host':"https://sd7-api.herokuapp.com",
+        "resource":"/api/authors/",
+        "query":"?page=1&size=25&query="}).json()
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAdminUser]
