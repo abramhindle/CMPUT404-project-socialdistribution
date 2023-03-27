@@ -794,6 +794,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         #         object_data = r.json()
         # else:
         #     object_data = request.data
+        object_data = request.data
         # # end hacky stuff
         
         # figure_out_type = {'title':'post', }
