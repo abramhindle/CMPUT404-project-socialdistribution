@@ -17,6 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from django.views.decorators.csrf import csrf_exempt
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthorFollowRequests(View):
     """ GET an Authors's follow requests -> where they are being followed"""
