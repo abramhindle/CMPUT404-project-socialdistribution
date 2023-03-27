@@ -13,6 +13,8 @@ class NodeModel(models.Model):
     # Note: we're team 16... this is our credentials to their node.
     t16_uname = models.CharField(max_length=25)
     t16_pw = models.CharField(max_length=25)
+    class Meta:
+        ordering = ('node_url',)
 
 
 class AuthorModel(models.Model):
