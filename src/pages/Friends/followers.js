@@ -72,7 +72,6 @@ function Followed() {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Follow</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -85,15 +84,6 @@ function Followed() {
                   {row.id}
                 </TableCell>
                 <TableCell align="right">{row.displayName}</TableCell>
-                <TableCell align="right">
-                  <Button
-                    variant="contained"
-                    color="success"
-                    onClick={(e) => Details(row.id)}
-                  >
-                    Details
-                  </Button>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>

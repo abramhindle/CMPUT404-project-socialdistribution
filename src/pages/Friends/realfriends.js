@@ -53,7 +53,7 @@ function Realfriends() {
             <AppBar position="static">
               <Toolbar variant="dense">
                 <Button variant="contained" onClick={goBack}>
-                  back
+                  Back
                 </Button>
                 <Typography
                   variant="h6"
@@ -73,7 +73,6 @@ function Realfriends() {
               <TableRow>
                 <TableCell>ID</TableCell>
                 <TableCell align="right">Name</TableCell>
-                <TableCell align="right">Follow</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -86,15 +85,6 @@ function Realfriends() {
                     {row.id}
                   </TableCell>
                   <TableCell align="right">{row.displayName}</TableCell>
-                  <TableCell align="right">
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={(e) => Details(row.id)}
-                    >
-                      Details
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
