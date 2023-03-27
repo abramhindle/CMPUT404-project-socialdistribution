@@ -1,0 +1,32 @@
+.table-container {
+    justify-items: center; /*Might not need*/
+}
+
+.table-head {
+    background-color: var(--sea);
+    width: 100%;
+}
+
+/* Buttons */
+#back {
+    float: right;
+    background-color: var(--sea);
+}
+
+#follow {
+    background-color: var(--bark);
+}
+
+.table-titles {
+    background-color: var(--island);
+    color: white;
+    font-weight: bold;
+}
+
+#title {
+    color: white;
+}
+
+.table {
+    background-color: var(--champagne);
+}

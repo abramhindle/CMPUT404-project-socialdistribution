@@ -86,10 +86,10 @@ function Sidebar() {
             </li>
         </menu>
     </div>
-    <div className='Right Sidebar'>
+    {/*<div className='Right Sidebar'>
 
-    </div>
-    </div>
+    </div>*/}
+  </div>
   );
 }
 

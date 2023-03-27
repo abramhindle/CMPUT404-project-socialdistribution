@@ -1,4 +1,4 @@
-//import './friends.css';
+import './friends.css';
 import '../pages.css'
 import { get_author }from '../../api/author_api'
 import { get_all_authors }from '../../api/author_api'
@@ -62,7 +62,8 @@ function Friends() {
           "object":object
         }
 
-        add_request(object.id, obj, onSuccess);
+        post_inbox(user.id,obj,onSuccess);
+        //add_request(user.id, obj, onSuccess)
         //add_followers_for_author(user.id, follow_id, onSuccess)
     }
 
@@ -120,27 +121,28 @@ function Friends() {
         <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
-          <Toolbar variant="dense">
-            <Button
+          <Toolbar variant="dense" className="table-head">
+          <Typography variant="h6" align="left" color="inherit" component="div">
+            Add friends
+          </Typography>
+          <Button
                 variant="contained"
+                id="back"
                 onClick={goBack}
                 >
                 back
             </Button>
-          <Typography variant="h6" align="left" color="inherit" component="div">
-            Add friends
-          </Typography>
           </Toolbar>
         </AppBar>
         </Box>
         </div>
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
+        <TableContainer component={Paper} className="table-container">
+        <Table sx={{ minWidth: 650 }} aria-label="simple table" className="table">
+          <TableHead className="table-titles">
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Follow</TableCell>
+              <TableCell id="title">ID</TableCell>
+              <TableCell id="title" align="right">Name</TableCell>
+              <TableCell id="title" align="right">Follow</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -156,6 +158,7 @@ function Friends() {
                 <TableCell align="right">
                   <Button
                     variant="contained"
+                    id="follow"
                     onClick={(e) => followAuthor(row)}
                   >
                     follow

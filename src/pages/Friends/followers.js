@@ -1,3 +1,5 @@
+import "./friends.css";
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
 import { get_follow_for_author } from '../../api/follower_api';
@@ -57,27 +59,28 @@ function Followed() {
         <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
-          <Toolbar variant="dense">
-            <Button
+          <Toolbar variant="dense" className="table-head">
+          <Typography variant="h6" align="left" color="inherit" component="div">
+            Followers
+          </Typography>
+          <Button 
                 variant="contained"
+                id="back"
                 onClick={goBack}
                 >
                 back
             </Button>
-          <Typography variant="h6" align="left" color="inherit" component="div">
-            Followers
-          </Typography>
           </Toolbar>
         </AppBar>
         </Box>
         </div>
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
+        <TableContainer component={Paper} className="table-container">
+        <Table sx={{ minWidth: 650 }} aria-label="simple table" className="table">
+          <TableHead className="table-titles">
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Follow</TableCell>
+              <TableCell id="title">ID</TableCell>
+              <TableCell id="title" align="right">Name</TableCell>
+              <TableCell id="title" align="right">Follow</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
