@@ -20,7 +20,6 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Sidebar from "../../components/Sidebar/sidebar";
-import { get_followers_for_author } from "../../api/follower_api";
 
 function Followed() {
   const user = useSelector((state) => state.user);
