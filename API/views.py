@@ -59,6 +59,7 @@ class NodeView(generics.RetrieveUpdateAPIView):
         
         methods = {'GET': requests.get, 'POST':requests.post, 'PUT':requests.put}
         uri = serializer.data['node_url'] + request.data.get('resource', '/') + request.data.get('query', '')
+        print(uri, request.data.get('method', 'GET'), request.data.get('data', ''))
         r = methods[request.data.get('method', 'GET')](uri, data=request.data.get('data', ''), auth=(serializer.data['t16_uname'], serializer.data['t16_pw']))
         return r.json()
 
