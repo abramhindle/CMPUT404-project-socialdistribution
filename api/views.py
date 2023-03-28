@@ -99,7 +99,7 @@ class AuthorView(generics.RetrieveUpdateAPIView):
         
         return Response(serializer.data)
     
-    # FIXME: Why this still put? should be post according to spec.
+    
     def put(self, request, *args, **kwargs):
         author_id = kwargs.pop('author_id', None)
         author = self.queryset.filter(id=build_author_url(author_id)).first()
@@ -109,6 +109,7 @@ class AuthorView(generics.RetrieveUpdateAPIView):
         
         if serializer.is_valid():
             serializer.save()
+            
             return Response(serializer.data)
         return Response(status=400)
 
@@ -238,11 +239,12 @@ class FollowView(generics.RetrieveUpdateDestroyAPIView):
                 return Response('pending')
             elif status == 'not_friends' or other_status == 'not_friends':
                 return Response('not_friends')
+        elif follow:
+            return Response(self.serializer_class(follow).data['status'])
         
-        if not follow:
+        else:
             return Response({'detail': 'Follow not found.'}, status=404)
-        serializer = self.serializer_class(follow)
-        return Response(serializer.data['status'])
+
         
     def put(self, request, *args, **kwargs):
         # find the follow object with the given author_id and follower_id
@@ -574,16 +576,25 @@ class CommentsView(generics.ListCreateAPIView):
         return Response(serializer.errors, status=400)
     
 
+
     @staticmethod
     def create_comment(comment_data):
         post = comment_data.get('post_id')
         post = PostsModel.objects.filter(id=post).first()
         comment_data['post'] = PostsSerializer(post).data
+        comment_data.pop('id', None)
         serializer = CommentsSerializer(data=comment_data)
+        author_id = comment_data.get('author', {}).get('id', None)
+        if author_id:
+            author = AuthorModel.objects.filter(id=author_id).first()
+            if author:
+                comment_data['author'] = AuthorSerializer(author).data
         if serializer.is_valid():
             serializer.save()
+            
             return serializer.data
         else:
+            
             return serializer.errors
     
 
@@ -627,7 +638,7 @@ class LikeView(generics.ListCreateAPIView):
     
         post = PostsModel.objects.filter(id=object).first()
         comment = CommentsModel.objects.filter(id=object).first()
-
+        
         if not post and not comment:
             return Response({'detail': 'Post or comment not found.'}, status=404)
         if post:
@@ -651,7 +662,13 @@ class LikeView(generics.ListCreateAPIView):
         post = PostsModel.objects.filter(id=object).first()
         comment = CommentsModel.objects.filter(id=object).first()
         data['type'] = 'like'
-
+        author = data.get('author', None)
+        author_local = AuthorModel.objects.filter(id=author.get('id', None)).first()
+        if author_local:
+            author = author_local
+        else:
+            author = AuthorModel.objects.create(**author)
+        
         if not post and not comment:
             raise Exception({'detail': 'Post or comment not found.'})
         if post:
@@ -659,11 +676,14 @@ class LikeView(generics.ListCreateAPIView):
         if comment:
             data['comment'] = object
         
+        data['author'] = AuthorSerializer(author).data
+
+        
         serializer = LikeSerializer(data=data)
         if serializer.is_valid():
-            
             serializer.save()
         else:
+            
             raise Exception(serializer.errors)
         
 
@@ -784,6 +804,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             try:
                 LikeView.create_like(data_like)
             except Exception as e:
+                
                 return Response(str(e), status=400)
         
         elif request.data.get('type', '').lower() == 'follow':
@@ -801,12 +822,19 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         
         elif request.data.get('type', '').lower() == 'comment':
             data_comment = request.data
-            post_id = kwargs['post_id']
+
             author_id = kwargs['author_id']
+            comment_id:str =data_comment.get('id')
+            post_id = comment_id.split('/')[-3]
+            
             post_id = build_post_url(author_id, post_id)
+            data_comment['post_id'] = post_id
+            
             try:
                 CommentsView.create_comment(data_comment)
             except Exception as e:
+                print(e)
+
                 return Response(str(e), status=400)
 
         author_data = request.data.get('author', None)
@@ -824,7 +852,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             object_data = r.json()
         else:
             object_data = request.data
-        # object_data = request.data
+        
         # end hacky stuff
         
         data = {
@@ -833,8 +861,6 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             'author': author_serialized.data
         }
 
-        
-        
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()
