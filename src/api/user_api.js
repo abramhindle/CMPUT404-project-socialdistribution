@@ -1,6 +1,6 @@
 import axios from "axios";
 
-//TODO: cite this
+//From: https://docs.djangoproject.com/en/3.2/ref/csrf/#ajax Djnago official Document
 function getCookie(name) {
   //stolen from django docs
   let cookieValue = null;
