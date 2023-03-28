@@ -5,6 +5,5 @@ div.Page {
 }
 
 .sidebar-offset {
-    margin-left: calc(23vh + 2em);
-    margin-right: calc(23vh + 2em);
+    margin-left: 26vh; /* width of sidebar = width profile image + 2*profile padding */
 }

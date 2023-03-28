@@ -1,9 +1,9 @@
   .Fragment {
-    background-color: #57534C;
+    background-color: var(--blush);
     text-align: center;
     justify-content: center;
     font-size: calc(10px + 2vmin);
-    color: white;
+    color: var(--bark);
     position: static;
     flex: 2;
     float: right;

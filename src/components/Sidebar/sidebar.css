@@ -2,13 +2,13 @@
     display: flex;
     flex-direction: column;
     height: fit-content;
-    background-color: #37342F;
+    background-color: white;
     align-items: center;
-    padding: 1em;
+    padding: 3vh;
 }
 
 .Profile p {
-    color: #FCEDE3;
+    color: var(--mud);
     text-align: center;
     margin: 0.2em;
 }
@@ -20,8 +20,8 @@
 
 
 .Profile img.profile-pic {
-    height: 23vh;
-    width: 23vh;
+    height: 20vh;
+    width: 20vh;
     border-radius: 50%;
     object-fit: cover;
     overflow: hidden;
@@ -33,15 +33,15 @@
 }
 
 .Sidebar .Profile button {
-    color: #37342F;
+    color: var(--mud);
     font-size: x-small;
     size: 1em;
-    background-color: #FCEDE3;
+    background-color: var(--champagne);
     max-width: fit-content;
 }
 
 .Sidebar .Profile button:hover {
-    background-color: #FF4242;
+    background-color: var(--scarlet);
     color: white;
 }
 
@@ -51,7 +51,7 @@
     display: flex;
     flex-direction: column;
     font-size: calc(10px + 2vmin);
-    background-color: #37342F;
+    background-color: white;
     margin: 0;
     padding: 0;
     position: fixed;
@@ -81,7 +81,7 @@
     padding: 0.5em;
     border-bottom-right-radius: 0.4em;
     border-top-right-radius: 0.4em;
-    box-shadow: 5px 5px 5px #292724;
+    box-shadow: 3px 3px 3px var(--blush);
 }
 
 /* Page Menu */
@@ -107,27 +107,27 @@
 .Sidebar button.Page {
     font-weight: bold;
     border-style: none;
-    background-color: #FF8A5B;
+    background-color: var(--sea);
     text-align: left;
     max-width: 88%;
 }
 
     .Sidebar button.Page:hover {
-        background-color: #FF4242;
+        background-color: var(--scarlet);
     }
 
 /* Option Buttons */
 .Sidebar button.Options {
     font-size: medium;
     border-style: none;
-    background-color: #25CED1;
+    background-color: var(--island);
     max-width: 80%;
 }
 
     .Sidebar button.Options:hover {
-        background-color: #1C9AB0;
+        background-color: var(--sea);
     }
 
 .current {
-    background-color: #FF4242;
+    background-color: var(--scarlet);
 }
