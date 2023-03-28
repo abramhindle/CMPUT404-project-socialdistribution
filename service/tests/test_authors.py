@@ -2,8 +2,27 @@ from django.test import *
 from service.models.author import Author
 from django.contrib.auth.models import User
 from service.views.author import *
+import unittest
+from unittest import mock
 
-class AuthorTests(TestCase):
+#mock helper
+def mocked_requests_get(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+    # if args[0] == 'http://someurl.com/test.json':
+    #     return MockResponse({"key1": "value1"}, 200)
+    # elif args[0] == 'http://someotherurl.com/anothertest.json':
+    #     return MockResponse({"key2": "value2"}, 200)
+
+    return MockResponse({}, 200)
+
+class AuthorTests(unittest.TestCase):
 
     def setUp(self):
 
@@ -23,6 +42,7 @@ class AuthorTests(TestCase):
         self.author1.delete()
         self.author2.delete()
 
+    #@mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_get_single_author(self):
         get_request = self.request_factory.get("/service/", user = self.user1)
         get_request.user = self.user1
@@ -37,6 +57,7 @@ class AuthorTests(TestCase):
         self.assertEqual(author["displayName"], self.author1.displayName)
         self.assertEqual(author["url"], str(self.author1._id))
 
+    #@mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_post_single_author(self):
 
         body = {
@@ -54,7 +75,8 @@ class AuthorTests(TestCase):
 
         self.assertEqual(author.displayName, body["displayName"]) # author.displayName should be the new value of displayName
 
-    def test_get_multiple_authors(self):
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_get_multiple_authors(self, *args, **kwargs):
         get_multiple_request = self.request_factory.get("/service/", QUERY_STRING="page=1&size=2")
         get_multiple_request.user = self.user1
         authors_response = self.multiple_view.get(get_multiple_request)
@@ -73,8 +95,6 @@ class AuthorTests(TestCase):
         json_authors = json_paged["items"]
 
         self.assertTrue(len(json_authors), 2)
-
-        
 
         list(Author.objects.all())
 

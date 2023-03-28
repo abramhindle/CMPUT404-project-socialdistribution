@@ -11,6 +11,7 @@ import { get_liked } from "../../api/like_api";
 import ReactMarkdown from "react-markdown";
 import LikeHeart from "../Buttons/like_button";
 import CommentArrow from "../Buttons/comment_button";
+import ShareIcon from "../Buttons/share_button";
 
 export default function PlainPost(data) {
   // Visibility
@@ -108,7 +109,7 @@ export default function PlainPost(data) {
           <CommentArrow setCommentType={setCommentType} setComment={setComment} submit={submitComment}/>
           {/* Share Button */}
           {shareable && (
-          <button>share</button>
+          <ShareIcon/>
           )}
         </div>
       </div>

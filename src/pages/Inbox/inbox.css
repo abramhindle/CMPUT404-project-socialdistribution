@@ -1,8 +1,8 @@
 .Inbox {
-  background-color: #57534C;
+  background-color: var(--champagne);
   text-align: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--bark);
   flex: 1;
   scrollbar-width: 0;
   -ms-overflow-style: none;
@@ -14,5 +14,5 @@
 }
 
 .pageContent {
-  background-color: #57534C;
+  background-color: var(--champagne);
 }

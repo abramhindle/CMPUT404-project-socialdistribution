@@ -21,7 +21,7 @@ export const get_followed_for_author = async (authorId, success) => {
   console.log("Attempting to retrieve followed list for", { authorId });
 
   await axios
-    .get(`http://localhost:8000/authors/${authorId}/followed/`, {
+    .get(`authors/${authorId}/followed/`, {
       headers: {
         Accept: "application/json",
       },
@@ -38,7 +38,7 @@ export const get_followed_for_author = async (authorId, success) => {
 export const get_friends_for_author = async (authorId, success) => {
   console.log("Attempting to retrieve follower list for", { authorId });
   await axios
-    .get(`http://localhost:8000/authors/${authorId}/friends/`, {
+    .get(`authors/${authorId}/friends/`, {
       headers: {
         Accept: "application/json",
       },
@@ -74,7 +74,7 @@ export const add_followers_for_author = async (authorId, followId, success) => {
 export const delete_followers_for_author = async (authorId, followId, success) => {
   console.log("Deleting follower", { followId });
   await axios
-    .delete(`http://localhost:8000/authors/${authorId}/followers/${followId}`, {
+    .delete(`authors/${authorId}/followers/${followId}`, {
       headers: {
         Accept: "application/json",
       },
@@ -92,7 +92,7 @@ export const delete_followers_for_author = async (authorId, followId, success) =
 export const get_request = async (authorId, success) => {
   console.log("Geting request", {authorId  });
   await axios
-    .get(`http://localhost:8000/authors/${authorId}/follow-requests/`, {
+    .get(`authors/${authorId}/follow-requests/`, {
       headers: {
         Accept: "application/json",
       },
@@ -107,10 +107,10 @@ export const get_request = async (authorId, success) => {
 };
 
 export const add_request = async (authorId, object, success) => {
-  console.log("sending request from", { authorId });
+  console.log("sending request to", authorId, "from ", object.actor.id);
   await axios
     //.post(`http://localhost:8000/authors/${authorId}/follow-request/${followId}`, { #this is our own endpoint
-      .post(`http://localhost:8000/authors/${authorId}/inbox/`,// this is what we need 
+      .post(`authors/${authorId}/inbox/`,// this is what we need 
       object,
      {   
       headers: {
@@ -130,7 +130,7 @@ export const add_request = async (authorId, object, success) => {
 export const delete_request = async (authorId, followId, success) => {
   console.log("Deleting request", { followId });
   await axios
-    .delete(`http://localhost:8000/authors/${authorId}/follow-request/${followId}`, {
+    .delete(`authors/${authorId}/follow-request/${followId}`, {
       headers: {
         Accept: "application/json",
       },

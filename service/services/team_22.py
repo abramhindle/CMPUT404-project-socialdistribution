@@ -1,3 +1,5 @@
+import json
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from service.models import Author
@@ -8,6 +10,9 @@ import requests
 from service.models.post import Post
 
 
+AUTH = {'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]}
+HOST = settings.REMOTE_USERS[1][1]
+
 # AUTHOR HELPERS
 
 def get_or_create_author(author_json, hostname):
@@ -16,7 +21,7 @@ def get_or_create_author(author_json, hostname):
         old_author = Author.objects.get(url=author_json["url"])
 
         old_author.github = author_json["github"]
-        old_author.displayName = author_json["username"]
+        old_author.displayName = author_json["displayName"]
         old_author.save()
 
         return old_author
@@ -26,7 +31,7 @@ def get_or_create_author(author_json, hostname):
         new_author = Author()
         new_author._id = f"{settings.DOMAIN}/authors/{author_json['id']}"  # we use the GUID sent to us
         new_author.github = author_json["github"]
-        new_author.displayName = author_json["username"]
+        new_author.displayName = author_json["displayName"]
         new_author.url = author_json["url"]
         new_author.host = hostname
         new_author.save()
@@ -36,8 +41,8 @@ def get_or_create_author(author_json, hostname):
 def get_single_author(author):
     author_guid = author.url.rsplit('/', 2)[-2]
     try:
-        response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/" + author_guid + "/",
-                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response = requests.get(HOST + "service/authors/" + author_guid + "/",
+                                headers=AUTH)
         response.close()
     except:
         return None
@@ -50,8 +55,7 @@ def get_single_author(author):
 
 def get_multiple_authors():
     try:
-        response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/",
-                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response = requests.get(HOST + "service/authors/", headers=AUTH)
         response.close()
     except Exception as e:
         return
@@ -63,15 +67,15 @@ def get_multiple_authors():
     response_json = response.json()
 
     for author in response_json["items"]:
-        get_or_create_author(author, settings.REMOTE_USERS[1][1])
+        get_or_create_author(author, HOST)
 
 # POST HELPERS
 
 def get_multiple_posts(author):
-    url = settings.REMOTE_USERS[1][1] + "service/authors/" + author.url.rsplit('/', 2)[-2] + "/posts/"
+    url = HOST + "service/authors/" + author.url.rsplit('/', 2)[-2] + "/posts/"
 
     try:
-        response = requests.get(url, headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response = requests.get(url, headers=AUTH)
         response.close()
     except:
         return
@@ -120,4 +124,90 @@ def post_to_object(post, json_object, author):
     post.unlisted = bool(json_object["unlisted"])
     return post
 
+def serialize_follow_request(request):
+    author_guid = request["object"]["url"].rsplit('/', 2)[-2]
+    try:
+        response = requests.get(HOST + "service/authors/" + author_guid + "/",
+                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response.close()
+    except:
+        return None
 
+    author = response.json()
+
+    if response.status_code < 200 or response.status_code > 299:
+        author = None
+        return author
+
+    request["actor"]["type"] = "author"
+
+    json_request = {
+        "type": "Follow",
+        "summary": request["Summary"],
+        "actor": request["actor"], #our own author
+        "object": author
+    }
+
+    url = HOST + "service/authors/" + author_guid + "/inbox/"
+    try:  # try get Author
+        response = requests.post(url, json=json_request, headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response.close()
+    except Exception as e:
+        print(e)
+        return None  # just say not found
+
+    print(response.status_code)
+    print(response.json())
+    return response
+
+def serialize_post(request):
+    author_guid = request["object"]["url"].rsplit('/', 2)[-2]
+    try:
+        response = requests.get(HOST + "service/authors/" + author_guid + "/",
+                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response.close()
+    except:
+        return None
+
+    author = response.json()
+
+    if response.status_code < 200 or response.status_code > 299:
+        author = None
+        return author
+
+    request["actor"]["type"] = "author"
+
+    json_request = {
+        "type": "Follow",
+        "summary": request["Summary"],
+        "actor": request["actor"], #our own author
+        "object": author
+    }
+
+    url = HOST + "service/authors/" + author_guid + "/inbox/"
+    try:  # try get Author
+        response = requests.post(url, json=json_request, headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response.close()
+    except Exception as e:
+        print(e)
+        return None  # just say not found
+
+    print(response.status_code)
+    print(response.json())
+    return response
+
+def handle_inbox(body):
+    response = None
+    if body["type"] == "post":
+        pass
+        #self.handle_post(inbox, id, body, author, request.user)
+    elif body["type"] == "comment":
+        #self.handle_comment(inbox, id, body, author)
+        pass
+    elif body["type"] == "follow":
+        response = serialize_follow_request(body)
+    elif body["type"] == "Like":
+        pass
+        #id = Like.create_like_id(body["author"]["id"], body["object"])
+
+    return response

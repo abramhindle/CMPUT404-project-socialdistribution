@@ -96,30 +96,19 @@ class InboxView(APIView):
 
         # remote-user-t14
         if author.host == settings.REMOTE_USERS[0][1]:
-            url = settings.REMOTE_USERS[0][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/inbox"
-            try:
-                response = requests.post(url, json=body, auth=settings.REMOTE_USERS[0][2])
-                response.close()
-            except:
+            return HttpResponse()
+
+        # remote-user-t22
+        if author.host == settings.REMOTE_USERS[1][1]:
+            response = team_22.handle_inbox(body)
+
+            if response is None:
                 return HttpResponseServerError()
 
-            return HttpResponse()
+            return HttpResponse(status=202)
 
         # remote-user-t16
         if author.host == settings.REMOTE_USERS[2][1]:
-            url = settings.REMOTE_USERS[2][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/inbox/"
-            try: #try get Author
-                response = requests.get()
-                response.close()
-            except:
-                return HttpResponseNotFound() #just say not found
-
-            try:
-                response = requests.post(url, json=body, auth=settings.REMOTE_USERS[2][2])
-                response.close()
-            except:
-                return HttpResponseServerError()
-
             return HttpResponse()
 
         try:  # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
@@ -187,7 +176,6 @@ class InboxView(APIView):
 
         post = Post.objects.get(_id=id)
 
-        #create post if not already there
         if user.username == "remote-user-t14": #get the post from each DB
             author = team_14.get_or_create_author(body["author"])
             post = team_14.get_or_create_post(body, author, author.host)
@@ -204,7 +192,6 @@ class InboxView(APIView):
     def handle_comment(self, inbox: Inbox, id, body, author):
         # no idea how to handle this remotely with the spec
         #post = Post.objects.get(_id=post_id)
-        comment = Comment.objects.get(_id=id)
 
         # try:
         #
@@ -229,6 +216,8 @@ class InboxView(APIView):
 
         if comment.exists():
             raise ConflictException # conflict, item is already in inbox
+
+        comment = Comment.objects.get(_id=id)
 
         inbox.comments.add(comment)
         inbox.save()
@@ -288,7 +277,7 @@ class InboxView(APIView):
 
         inbox.likes.add(like)
         inbox.save()
-    
+
 
 class ConflictException(Exception):
     pass
