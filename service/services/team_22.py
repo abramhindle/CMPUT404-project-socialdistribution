@@ -18,6 +18,7 @@ HOST = settings.REMOTE_USERS[1][1]
 def get_or_create_author(author_json, hostname):
     try:
         # update old -> don't change host_url or id
+        print(author_json["url"])
         old_author = Author.objects.get(url=author_json["url"])
 
         old_author.github = author_json["github"]
