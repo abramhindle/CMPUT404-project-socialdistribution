@@ -9,8 +9,8 @@ import LikeHeart from "../Buttons/like_button";
 export default function Comment(data) {
   let id = useSelector((state) => state.user).id;
   const user = useSelector((state) => state.user);
-  const [changes, setChanges] = useState(0);
   const [liked, setLiked] = useState(data.liked);
+  console.log("Liked", data.liked);
 
   //Check if markdown
   let markdown = data["data"]["contentType"] === "text/markdown" ? true : false;
@@ -27,7 +27,7 @@ export default function Comment(data) {
   const like_success = (bool) => {
     /* Show Success Snackbar? */
     setLiked(bool);
-    setChanges(changes + 1);
+    get_liked(id, data.updateList);
   };
 
   const handleLike = () => {
@@ -45,11 +45,6 @@ export default function Comment(data) {
       console.log("Liked already");
     }
   };
-
-  useEffect(() => {
-    console.log("Use effect triggered");
-    get_liked(id, data.updateList);
-  }, [changes]);
 
   return (
     <div className="vflex">
