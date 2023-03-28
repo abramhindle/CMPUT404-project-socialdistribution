@@ -1,6 +1,7 @@
 import Comment from "./comment";
 import PlainPost from "./post-text";
 import Like from "./like";
+import FollowRequest from "./follow-request";
 
 //TODO : follow request objects
 
@@ -22,6 +23,7 @@ export default function DisplayItem(props) {
     }
     else if (data.type === "follow"){
         //display follow request object
+        return (<FollowRequest data={data.object}/>);
     }
     else{
         return;

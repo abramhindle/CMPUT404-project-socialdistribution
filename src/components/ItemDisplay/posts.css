@@ -1,8 +1,8 @@
 .comment, .post { /*Same for now, might change*/
-    background-color: #857F74;
+    background-color: white;
     padding: 1em;
     border-radius: 1em;
-    border: 0.3em solid #37342F; 
+    border: 0.3em solid var(--driftwood); 
 }
 
 .list-item {
@@ -46,10 +46,12 @@
 }
 
 h5 {
+    color: var(--bark);
     margin: 0;
 }
 
 h6 {
+    color: var(--bark);
     text-align: left;
     margin: 0;
     margin-left: 1.5em;
@@ -58,7 +60,7 @@ h6 {
 
 button.interact {
     margin: 0.5em;
-    background-color:transparent;
+    background-color: transparent;
     border-color: transparent;
 }
 
@@ -77,4 +79,15 @@ button.interact {
 .hflex {
     display: flex;
     flex-direction: row;
+}
+
+svg.share {
+    width: 2.5em;
+    height: 2.5em;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    stroke: var(--driftwood);
+    stroke-width: 2;
+
 }

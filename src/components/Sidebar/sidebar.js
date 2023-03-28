@@ -2,13 +2,13 @@ import './sidebar.css';
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { clearUser } from "../../reducer/userSlice";
+import { Link } from 'react-router-dom';
 
 function Sidebar() {
     //Get user & url info
     const user = useSelector((state) => state.user);
     const port = window.location.port ? `:${window.location.port}` : "";
     const authorUrl = `//${window.location.hostname}${port}/user/${(user.id ?? "").split('/').pop()}`; // allows linking to the author who wrote the post
-    const followUrl = `//${window.location.hostname}${port}/user/${(user.id ?? "").split('/').pop()}?tab=followers`
    
     //Handle Navigations
     const navigate = useNavigate();
@@ -21,16 +21,8 @@ function Sidebar() {
     };//Navigate to Requests page
     const goToRequests = () => {
         navigate("/friends/requests");
-    };//Navigate to Requests page
-    const goToTrue = () => {
-        navigate("/friends/true");
-    };//Navigate to Followed page
-    const goToFollowed = () => {
-        navigate("/friends/followed");
-    };//Navigate to Followers page
-    const goToFollowers = () => {
-        navigate("/friends/followers");     
-    };//Navigate to Post creation page
+    };      
+    //Navigate to Post creation page
     const goToNewPost = () => {
         navigate("/posts/new");
     };
@@ -46,12 +38,6 @@ function Sidebar() {
     var numFollowers = 99;
     var numFriends = 27;
 
-    //John Au-Yeung
-    //https://javascript.plainenglish.io/how-to-check-if-a-scrollbar-is-visible-with-javascript-95aced8b420d
-    const scrollbarVisible = (element) => {
-        return element.scrollHeight > element.clientHeight;
-    }
-
   return (
     <div>
     <div className="Sidebar">
@@ -60,9 +46,9 @@ function Sidebar() {
             <img className="profile-pic" src={user.profileImage} alt="profile" href={authorUrl}/>
             <p><a href={authorUrl}>{user.displayName}</a></p>
             <div className="stats">
-                <p><a href={followUrl}>Friends: {numFriends}</a></p>
-                <p><a href={followUrl}>Followers: {numFollowers}</a></p>
-                <p><a href={followUrl}>Followed: {numFollowed}</a></p>
+                <p><Link to={"/friends/true"}>Friends: {numFriends}</Link></p>
+                <p><Link to={"/friends/followers"}>Followers: {numFollowers}</Link></p>
+                <p><Link to={"/friends/followed"}>Followed: {numFollowed}</Link></p>
             </div>
             
         </div>
@@ -75,9 +61,6 @@ function Sidebar() {
                     <li>
                         <button className='Options' id="inbox">Inbox</button>
                     </li>
-                    <li>
-                        <button className='Options'>Likes</button>
-                    </li>
                 </ul>
             </li>
             <li>
@@ -86,15 +69,6 @@ function Sidebar() {
                 <ul className="Options-bar">
                     <li>
                         <button className='Options' onClick={goToRequests}>Pending</button>
-                    </li>
-                    <li>
-                        <button className='Options' onClick={goToTrue}>True Friends</button>
-                    </li>
-                    <li>
-                        <button className='Options' onClick={goToFollowed}>Followed</button>
-                    </li>
-                    <li>
-                        <button className='Options' onClick={goToFollowers}>Followers</button>
                     </li>
                 </ul>
             </li>
@@ -112,10 +86,10 @@ function Sidebar() {
             </li>
         </menu>
     </div>
-    <div className='Right Sidebar'>
+    {/*<div className='Right Sidebar'>
 
-    </div>
-    </div>
+    </div>*/}
+  </div>
   );
 }
 

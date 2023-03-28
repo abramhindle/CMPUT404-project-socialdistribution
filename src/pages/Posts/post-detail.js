@@ -121,7 +121,7 @@ function PostDetail() {
     postInfo && (
       <div className="Page detail">
         <Sidebar />
-        <div className="Fragment">
+        <div className="Fragment sidebar-offset">
           <div className="message">
             <div className="from">
               <h6>

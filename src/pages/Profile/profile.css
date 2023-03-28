@@ -7,19 +7,30 @@
 }
 
 .profileHead {
-  background-color: #37342F;
+  background-color: var(--driftwood);
   padding: 1em;
   float: top;
 }
 
 .navbar a {
-  color: black;
+  color: white;
+  background-color: var(--bark);
+  flex-grow: 1;
+  text-decoration: none;
   list-style-type: none;
   margin: 0;
   padding: 1;
   padding-inline: 3em;
-  margin-inline: 1em;
   display: inline;
+}
+
+.navbar a:hover {
+  background-color: var(--mud);
+}
+
+.navbar ul {
+  margin: 0;
+  display: flex;
 }
 
 .emptyList {
