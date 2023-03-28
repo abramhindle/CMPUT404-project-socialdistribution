@@ -8,6 +8,9 @@ import "./post-detail.css";
 import { get_post } from "../../api/post_display_api";
 import { get_post_comments, post_comment } from "../../api/comment_api";
 import { get_post_like, post_like } from "../../api/like_api.js";
+import LikeHeart from "../../components/Buttons/like_button";
+import ShareIcon from "../../components/Buttons/share_button";
+import PostList from "../../components/ListItems/post-list";
 
 function PostDetail() {
   const { author_id, post_id } = useParams();
@@ -17,12 +20,22 @@ function PostDetail() {
   const [markdown, setMarkdown] = useState(false);
   const [shareable, setShareable] = useState(false);
   const [likeInfo, setLikeInfo] = useState(null);
+  const [liked, setLiked] = useState(false);
   const [commentsInfo, setCommentsInfo] = useState(null);
   const [comment, setComment] = useState("");
   const [commentType, setCommentType] = useState("text/plain");
   const [commentPage, setCommentPage] = useState(1);
   const [commentSize, setCommentSize] = useState(5);
   const [nextCommentPageInfo, setNextCommentPageInfo] = useState(null);
+
+  const successPostLike = (success) => {
+    setLiked(success);
+    get_post_like(
+      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
+      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}/posts/${post_id}`,
+      successLike
+    );
+  };
 
   const nextCommentPage = () => {
     setCommentPage(commentPage + 1);
@@ -92,6 +105,17 @@ function PostDetail() {
   };
 
   useEffect(() => {
+    if (likeInfo) {
+      for (var i = 0; i < likeInfo.items.length; i++) {
+        if (likeInfo.items[i].author.id === user.id) {
+          setLiked(true);
+          break;
+        }
+      }
+    }
+  }, [likeInfo]);
+
+  useEffect(() => {
     get_post(
       `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
       `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}/posts/${post_id}`,
@@ -150,24 +174,19 @@ function PostDetail() {
           <div className="Social">
             {likeInfo && <div>{likeInfo.items.length} Liked this post</div>}
             <div className="interaction-options">
-              <button
-                onClick={() =>
+              <LikeHeart
+                handleLike={() =>
                   post_like(
                     `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
                     user,
                     `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}/posts/${post_id}`,
-                    "context"
+                    "context",
+                    successPostLike
                   )
                 }
-              >
-                Like
-              </button>
-              {shareable && (
-                <div className="share">
-                  {/* Only show if shareable */}
-                  <button>share</button>
-                </div>
-              )}
+                liked={liked}
+              />
+              {shareable && <ShareIcon />}
             </div>
           </div>
 
@@ -198,25 +217,23 @@ function PostDetail() {
               />
               <button onClick={submitComment}>Submit</button>
             </div>
-            <div>
-              {commentsInfo &&
-                commentsInfo.items.map((comment) => (
-                  /** TODO: Use Comment View once it is implemented */
-                  <div key={comment.id}>{comment.comment}</div>
-                ))}
-              <button
-                onClick={prevCommentPage}
-                disabled={commentPage === 1 ? true : false}
-              >
-                prev
-              </button>
-              <button
-                onClick={nextCommentPage}
-                disabled={nextCommentPageInfo ? false : true}
-              >
-                next
-              </button>
-            </div>
+            {commentsInfo && (
+              <div>
+                <PostList user_list={commentsInfo} />
+                <button
+                  onClick={prevCommentPage}
+                  disabled={commentPage === 1 ? true : false}
+                >
+                  prev
+                </button>
+                <button
+                  onClick={nextCommentPage}
+                  disabled={nextCommentPageInfo ? false : true}
+                >
+                  next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

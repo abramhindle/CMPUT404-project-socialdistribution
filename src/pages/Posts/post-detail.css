@@ -49,6 +49,7 @@ div.Page {
 
 #title {
   margin: 0;
+  color: black;
 }
 
 .line {
@@ -64,7 +65,7 @@ div.Page {
 }
 
 .detail .timestamp {
-  color: white;
+  color: black;
   font-size: small;
   text-align: right;
   margin-right: 1.5em;

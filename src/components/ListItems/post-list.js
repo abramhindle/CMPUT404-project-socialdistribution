@@ -16,7 +16,7 @@ function PostList({ user_list }) {
 
   function checkLiked(item) {
     for (var i = 0; i < liked.length; i++) {
-      if (liked[i].object === item.id) {
+      if (liked[i].object == item.id) {
         return true;
       }
     }
@@ -24,17 +24,21 @@ function PostList({ user_list }) {
   }
 
   return (
-    <div className="posts">
-      <ul className="postsList">
-        {console.log(user_list)}
-        {user_list.items.map((list_item) => (
-          <li key={list_item.id}>
-            <DisplayItem data={list_item} liked={checkLiked(list_item)} updateList={setLiked}/>
-          </li>
-        ))}
-        end of items
-      </ul>
-    </div>
+    liked && (
+      <div className="posts">
+        <ul className="postsList">
+          {user_list.items.map((list_item) => (
+            <li key={list_item.id}>
+              <DisplayItem
+                data={list_item}
+                liked={checkLiked(list_item)}
+                updateList={setLiked}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
   );
 }
 
