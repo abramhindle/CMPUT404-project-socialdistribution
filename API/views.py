@@ -96,7 +96,6 @@ class AuthorView(generics.RetrieveUpdateAPIView):
             return Response(status=404)
         serializer = self.serializer_class(author)
         serializer.data['profileImage'] = serializer.data['id'] + '/image'
-        
         return Response(serializer.data)
     
     # FIXME: Why this still put? should be post according to spec.
@@ -439,9 +438,8 @@ class PostsView(generics.ListCreateAPIView):
                 "page": 1,
                 "size": min(len(post_comments.data), 10),
             }
-            
+            print(post['contentType'])
             if post['contentType'] == 'image/*':
-                
                 post['content'] = post['id'] + '/image'
             post['count'] = min(len(post_comments.data), 10)
 
@@ -485,11 +483,12 @@ class ImageView(generics.RetrieveAPIView):
         
     See also: https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org#image-posts
     """
-
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAdminUser|IsAuthenticated&PermittedForRemote]
 
     def get(self, request, *args, **kwargs):
         url_id = request.build_absolute_uri().split('/image')[0] 
-        
+        print(url_id)
         author = AuthorModel.objects.filter(id=url_id).first()
         post = PostsModel.objects.filter(id=url_id).first() 
         
@@ -572,19 +571,6 @@ class CommentsView(generics.ListCreateAPIView):
             return Response(serializer.data, status=201)
 
         return Response(serializer.errors, status=400)
-    
-
-    @staticmethod
-    def create_comment(comment_data):
-        post = comment_data.get('post_id')
-        post = PostsModel.objects.filter(id=post).first()
-        comment_data['post'] = PostsSerializer(post).data
-        serializer = CommentsSerializer(data=comment_data)
-        if serializer.is_valid():
-            serializer.save()
-            return serializer.data
-        else:
-            return serializer.errors
     
 
 class LikeView(generics.ListCreateAPIView):
@@ -798,16 +784,6 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                 })
             except Exception as e:
                 return Response(str(e), status=400)
-        
-        elif request.data.get('type', '').lower() == 'comment':
-            data_comment = request.data
-            post_id = kwargs['post_id']
-            author_id = kwargs['author_id']
-            post_id = build_post_url(author_id, post_id)
-            try:
-                CommentsView.create_comment(data_comment)
-            except Exception as e:
-                return Response(str(e), status=400)
 
         author_data = request.data.get('author', None)
 
@@ -819,9 +795,10 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         
         # start hacky stuff
         post_link = request.data.get('object', '')
-        if post_link and 'sd7' in post_link:
-            r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')), timeout=5)
-            object_data = r.json()
+        if post_link:
+            if 'sd7' in post_link:
+                r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')))
+                object_data = r.json()
         else:
             object_data = request.data
         # object_data = request.data
@@ -832,9 +809,6 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             'type': request.data.get('type', ''),
             'author': author_serialized.data
         }
-
-        
-        
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()
