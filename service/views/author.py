@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
-from service.services import team_14, team_22, team_16
+from service.services import team_14, team_22, team_16, team_10
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -37,7 +37,9 @@ class MultipleAuthors(APIView):
                 elif remote_host[0] == "remote-user-t16":
                     #uses paging
                     pass
-                    #team_16.get_multiple_authors(page, size)
+                    team_16.get_multiple_authors(page, size)
+                elif remote_host[0] == "remote-user-t10":
+                    team_10.get_multiple_authors(page, size)
 
             filter_host = Q()  # no filter, since not a remote user
 
