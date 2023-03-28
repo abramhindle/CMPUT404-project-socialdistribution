@@ -100,7 +100,7 @@ class InboxView(APIView):
 
         # remote-user-t22
         if author.host == settings.REMOTE_USERS[1][1]:
-            response = team_22.handle_inbox(body)
+            #response = team_22.handle_inbox(body)
 
             if response is None:
                 return HttpResponseServerError()
