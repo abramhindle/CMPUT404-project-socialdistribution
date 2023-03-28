@@ -148,10 +148,10 @@ function PostDetail() {
         <div className="Fragment sidebar-offset">
           <div className="message">
             <div className="from">
+              <img alt="author" src={postInfo.author.profileImage}></img>
               <h6>
                 <Link to={authorUrl}>{postInfo.author.displayName}</Link>
               </h6>
-              <img alt="author" src={postInfo.author.profileImage}></img>
             </div>
             <div className="postBody">
               {/* Will need to handle other post types here, plain for now */}
@@ -187,53 +187,59 @@ function PostDetail() {
                 liked={liked}
               />
               {shareable && <ShareIcon />}
-            </div>
-          </div>
-
-          <div className="comments">
-            <div className="comment-input-form">
-              <input
-                type="radio"
-                id="text"
-                name="contentType"
-                value="text/plain"
-                defaultChecked
-                onChange={(e) => setCommentType(e.target.value)}
-              />
-              <label htmlFor="text">Text</label>
-              <input
-                type="radio"
-                id="markdown"
-                name="contentType"
-                value="text/markdown"
-                onChange={(e) => setCommentType(e.target.value)}
-              />
-              <label htmlFor="markdown">Markdown</label>
-              <input
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Enter the comment here"
-                type="text"
-              />
-              <button onClick={submitComment}>Submit</button>
-            </div>
-            {commentsInfo && (
-              <div>
-                <PostList user_list={commentsInfo} />
+              <div className="comment-input-form">
+                <input
+                  type="radio"
+                  id="text"
+                  name="contentType"
+                  value="text/plain"
+                  defaultChecked
+                  onChange={(e) => setCommentType(e.target.value)}
+                />
+                <label htmlFor="text">Text</label>
+                <input
+                  type="radio"
+                  id="markdown"
+                  name="contentType"
+                  value="text/markdown"
+                  onChange={(e) => setCommentType(e.target.value)}
+                />
+                <label htmlFor="markdown">Markdown</label>
+                <input
+                  id="comment-input"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Enter the comment here"
+                  type="text"
+                />
                 <button
-                  onClick={prevCommentPage}
-                  disabled={commentPage === 1 ? true : false}
+                  id="comment-submit"
+                  disabled={comment ? false : true}
+                  onClick={submitComment}
                 >
-                  prev
-                </button>
-                <button
-                  onClick={nextCommentPage}
-                  disabled={nextCommentPageInfo ? false : true}
-                >
-                  next
+                  Submit
                 </button>
               </div>
-            )}
+            </div>
+            <div className="comments">
+              {commentsInfo && (
+                <div>
+                  <PostList user_list={commentsInfo} />
+                  <button
+                    onClick={prevCommentPage}
+                    disabled={commentPage === 1 ? true : false}
+                  >
+                    prev
+                  </button>
+                  <button
+                    onClick={nextCommentPage}
+                    disabled={nextCommentPageInfo ? false : true}
+                  >
+                    next
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ div.Page {
   position: static;
   flex: 2;
   float: right;
+  padding: 1em;
 }
 
 .postBody {
@@ -22,8 +23,6 @@ div.Page {
 .content-container {
   display: flex;
   flex-direction: column;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
 }
 
 .message {
@@ -37,8 +36,10 @@ div.Page {
   border: none;
   margin: 0;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  align-items: center;
 }
+
 .from img {
   height: 3em;
   width: 3em;
@@ -48,17 +49,17 @@ div.Page {
 }
 
 #title {
-  margin: 0;
+  margin: 0.5em;
   color: black;
 }
 
 .line {
   border-top: 1px solid var(--mud);
   padding-inline: 1em;
+  width: 100%;
 }
 
 .content {
-  width: fit-content;
   padding: 0.5em;
   font-size: 12pt;
   text-align: left;
@@ -74,7 +75,7 @@ div.Page {
 
 .Social {
   text-align: left;
-  margin-top: 1em;
+  margin-top: 2.5em;
   margin-left: 0.5em;
   font-size: medium;
 }
@@ -89,11 +90,21 @@ div.Page {
   vertical-align: top;
 }
 
+.comment-input-form {
+  margin-left: 5em;
+}
+
+#comment-input {
+  height: 3em;
+  border-radius: 5pt;
+  border-style: solid;
+  border-width: 2pt;
+  margin-left: 1em;
+  margin-right: 1em;
+  width: 25em;
+}
+
 .comments {
   margin-top: 2.5em;
   font-size: 14pt;
-}
-
-.comment-input-form {
-  margin-bottom: 1em;
 }
