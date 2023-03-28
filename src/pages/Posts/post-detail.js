@@ -14,6 +14,8 @@ function PostDetail() {
   const user = useSelector((state) => state.user);
 
   const [postInfo, setPostInfo] = useState(null);
+  const [markdown, setMarkdown] = useState(false);
+  const [shareable, setShareable] = useState(false);
   const [likeInfo, setLikeInfo] = useState(null);
   const [commentsInfo, setCommentsInfo] = useState(null);
   const [comment, setComment] = useState("");
@@ -54,6 +56,12 @@ function PostDetail() {
 
   const successPost = (postData) => {
     setPostInfo(postData);
+    if (postData.contentType === "text/markdown") {
+      setMarkdown(true);
+    }
+    if (postData.visibility === "PUBLIC" || postData.visibility === "FRIENDS") {
+      setShareable(true);
+    }
   };
 
   const successLike = (likeData) => {
@@ -109,17 +117,6 @@ function PostDetail() {
   const port = window.location.port ? `:${window.location.port}` : "";
   const authorUrl = `//${window.location.hostname}${port}/user/${author_id}`;
 
-  let markdown;
-  let shareable;
-  if (postInfo) {
-    markdown = postInfo.contentType === "text/markdown" ? true : false;
-    //Decide if shareable
-    shareable =
-      postInfo.visibility === "PUBLIC" || postInfo.visibility === "FRIENDS"
-        ? true
-        : false;
-  }
-
   return (
     postInfo && (
       <div className="Page detail">
@@ -136,15 +133,14 @@ function PostDetail() {
               {/* Will need to handle other post types here, plain for now */}
               <div className="content-container">
                 <h3 id="title">{postInfo.title}</h3>
-                {markdown && (
+                {markdown ? (
                   <ReactMarkdown
                     className="content line"
                     children={postInfo.content}
                   >
                     {/* Mardown doesn't like leading whitespace */}
                   </ReactMarkdown>
-                )}
-                {!markdown && (
+                ) : (
                   <div className="content line">{postInfo.content}</div>
                 )}
               </div>
