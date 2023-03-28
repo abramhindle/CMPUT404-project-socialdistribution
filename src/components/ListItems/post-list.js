@@ -16,7 +16,7 @@ function PostList({ user_list }) {
 
   function checkLiked(item) {
     for (var i = 0; i < liked.length; i++) {
-      if (liked[i].object == item.id) {
+      if (liked[i].object === item.id) {
         return true;
       }
     }
