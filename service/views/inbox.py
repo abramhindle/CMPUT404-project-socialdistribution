@@ -103,13 +103,17 @@ class InboxView(APIView):
             except:
                 return HttpResponseServerError()
 
-            print(response.status_code)
-            print(response.json())
             return HttpResponse()
 
         # remote-user-t16
         if author.host == settings.REMOTE_USERS[2][1]:
             url = settings.REMOTE_USERS[2][1] + "service/authors/" + author.url.rsplit('/', 1)[-1] + "/inbox/"
+            try: #try get Author
+                response = requests.get()
+                response.close()
+            except:
+                return HttpResponseNotFound() #just say not found
+
             try:
                 response = requests.post(url, json=body, auth=settings.REMOTE_USERS[2][2])
                 response.close()
@@ -198,32 +202,34 @@ class InboxView(APIView):
         inbox.save()
 
     def handle_comment(self, inbox: Inbox, id, body, author):
-        post = Post.objects.get(_id=self.post_id)
+        # no idea how to handle this remotely with the spec
+        #post = Post.objects.get(_id=post_id)
+        comment = Comment.objects.get(_id=id)
 
-        try:
-            comment = Comment.objects.get(_id=id)
-        except ObjectDoesNotExist:
-            comment._id = Comment.create_comment_id(self.author_id, self.post_id)
-            comment.comment = body["comment"]
-            comment.author = author
-            comment.post = post
-
-            is_valid = False
-            if (body["contentType"] in ("text/markdown", "text/plain")):
-                is_valid = True
-
-            if not is_valid:
-                raise KeyError #probably not a good choice
-
-            comment.contentType = body["contentType"]
-            comment.published = body["published"]
+        # try:
+        #
+        # except ObjectDoesNotExist:
+        #     # comment._id = Comment.create_comment_id(self.author_id, self.post_id)
+        #     # comment.comment = body["comment"]
+        #     # comment.author = author
+        #     # comment.post = post
+        #     #
+        #     # is_valid = False
+        #     # if (body["contentType"] in ("text/markdown", "text/plain")):
+        #     #     is_valid = True
+        #     #
+        #     # if not is_valid:
+        #     #     raise KeyError #probably not a good choice
+        #     #
+        #     # comment.contentType = body["contentType"]
+        #     # comment.published = body["published"]
+        #     raise Exception
 
         comment = inbox.comments.all().filter(_id=id)
 
         if comment.exists():
             raise ConflictException # conflict, item is already in inbox
 
-        comment = Comment.objects.get(_id=id)
         inbox.comments.add(comment)
         inbox.save()
 

@@ -37,7 +37,7 @@ def get_single_author(author):
     author_guid = author.url.rsplit('/', 2)[-2]
     try:
         response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/" + author_guid + "/",
-                                headers={'Authorization': 'bearer ' + settings.REMOTE_USERS[1][2]})
+                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
         response.close()
     except:
         return None
@@ -51,12 +51,13 @@ def get_single_author(author):
 def get_multiple_authors():
     try:
         response = requests.get(settings.REMOTE_USERS[1][1] + "service/authors/",
-                                headers={'Authorization': 'bearer ' + settings.REMOTE_USERS[1][2]})
+                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
         response.close()
-    except:
+    except Exception as e:
         return
 
     if response.status_code < 200 or response.status_code > 299:  # unsuccessful
+        print(response.status_code)
         return
 
     response_json = response.json()
@@ -70,7 +71,7 @@ def get_multiple_posts(author):
     url = settings.REMOTE_USERS[1][1] + "service/authors/" + author.url.rsplit('/', 2)[-2] + "/posts/"
 
     try:
-        response = requests.get(url, headers={'Authorization': 'bearer' + settings.REMOTE_USERS[1][2]})
+        response = requests.get(url, headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
         response.close()
     except:
         return
