@@ -82,9 +82,6 @@ class InboxView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs):
         self.author_id = kwargs['author_id']
 
-        # if remote user, get_or_create the author they give us
-
-
         # should also go out to the team and get their values
         try:
             author = Author.objects.get(_id=self.author_id, is_active=True)
@@ -188,10 +185,13 @@ class InboxView(APIView):
 
         #create post if not already there
         if user.username == "remote-user-t14": #get the post from each DB
+            author = team_14.get_or_create_author(body["author"])
             post = team_14.get_or_create_post(body, author, author.host)
         elif user.username == "remote-user-t22":
+            author = team_22.get_or_create_author(body["author"])
             post = team_22.get_or_create_post(body, author, author.host)
         elif user.username == "remote-user-t16":
+            author = team_16.get_or_create_author(body["author"])
             post = team_16.get_or_create_post(body, author, author.host)
 
         inbox.posts.add(post)

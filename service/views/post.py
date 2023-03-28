@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.http import *
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
@@ -26,6 +27,7 @@ class PostCreation(APIView, RestService):
     def get(self, request: HttpRequest, *args, **kwargs):  # get all recent posts for author_id
         author_id = kwargs['author_id']
         try:
+            request_author = Author.objects.get(user=request.user)
             author = Author.objects.get(_id=author_id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
@@ -38,18 +40,27 @@ class PostCreation(APIView, RestService):
         # remote-user-t14
         if author.host == settings.REMOTE_USERS[0][1]:
             team_14.get_multiple_posts(author)
-
         # remote-user-t22
-        if author.host == settings.REMOTE_USERS[1][1]:
+        elif author.host == settings.REMOTE_USERS[1][1]:
             team_22.get_multiple_posts(author)
-
         # remote-user-t16
-        if author.host == settings.REMOTE_USERS[2][1]:
+        elif author.host == settings.REMOTE_USERS[2][1]:
             team_16.get_multiple_posts(author, page, size)
 
         posts = list()
 
         post_queryset = Post.objects.all().filter(author=author_id).order_by('-published')  # only get posts from author_id in the URL, order by the published date
+
+        if author._id != request_author._id:
+            post_queryset = post_queryset.filter(unlisted=False)
+
+            author_is_follower = author.followers.filter(_id=request_author._id).exists()
+            request_author_is_follower = request_author.followers.filter(_id=author._id).exists()
+
+            if not author_is_follower or not request_author_is_follower: #don't show friend posts
+                print("NOT FRIENDS")
+                post_queryset = post_queryset.filter(visibility="PUBLIC") #only public visibility
+
         paged_posts = Paginator(post_queryset, size or 5)  # default to size 5
 
         try:
