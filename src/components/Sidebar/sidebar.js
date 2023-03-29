@@ -26,6 +26,9 @@ function Sidebar() {
     const goToNewPost = () => {
         navigate("/posts/new");
     };
+    const goToImageUpload = () => {
+        navigate("/posts/image");
+    }
     //Signout functionality
     const dispatch = useDispatch();
     const signOut = () => {
@@ -77,7 +80,7 @@ function Sidebar() {
                 {/* Post Options Submenu, only show if Post selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options'>My Posts</button>
+                        <button className='Options' onClick={goToImageUpload}>Upload Image</button>
                     </li>
                 </ul>
             </li>

@@ -30,6 +30,11 @@
     padding: 0.5em;
 }
 
+img.posted-image {
+    max-width: 60vw;
+    max-height: 100vh;
+}
+
 .content {
     width: fit-content;
     margin: 0;
@@ -89,5 +94,8 @@ svg.share {
     fill: none;
     stroke: var(--driftwood);
     stroke-width: 2;
+}
 
+.buttons {
+    float: right;
 }
