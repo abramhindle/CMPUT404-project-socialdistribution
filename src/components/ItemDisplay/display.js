@@ -9,6 +9,7 @@ export default function DisplayItem(props) {
   const data = props.data;
   const liked = props.liked;
 
+<<<<<<< Updated upstream
   if (data.type === "comment") {
     //display comment
     return <Comment data={data} liked={liked} updateList={props.updateList} />;
@@ -27,3 +28,25 @@ export default function DisplayItem(props) {
     return;
   }
 }
+=======
+    if (data.type === "comment"){
+        //display comment
+        return (<Comment data={data} liked={liked} updateList={props.updateList}/>);
+    }
+    else if (data.type === "post"){
+        //display post
+        return (<PlainPost post={data} liked={liked} updateList={props.updateList}/>);
+    }
+    else if (data.type === "like"){
+        //display like object
+        return (<Like data={data}/>);
+    }
+    else if (data.type === "follow"){
+        //display follow request object
+        return (<FollowRequest data={props.data}/>);
+    }
+    else{
+        return;
+    }
+}
+>>>>>>> Stashed changes

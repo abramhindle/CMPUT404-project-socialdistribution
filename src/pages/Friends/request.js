@@ -39,7 +39,6 @@ function Request() {
 
   useEffect(() => { 
       get_request(user.id, setList)
-    
   }, []);
 
   const DeleteRequest= (actor_id) => {

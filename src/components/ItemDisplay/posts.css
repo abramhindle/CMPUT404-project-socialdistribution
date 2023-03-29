@@ -89,5 +89,8 @@ svg.share {
     fill: none;
     stroke: var(--driftwood);
     stroke-width: 2;
+}
 
+.buttons {
+    float: right;
 }

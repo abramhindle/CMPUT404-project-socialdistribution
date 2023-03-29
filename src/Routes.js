@@ -10,6 +10,7 @@ import Stream from "./pages/Stream";
 import Profile from "./pages/Profile/profile";
 import Realfriends from "./pages/Friends/realfriends";
 import PostDetail from "./pages/Posts/post-detail";
+import ImagePost from "./pages/Posts/image-post-page";
 
 function App() {
   return (
@@ -76,13 +77,19 @@ function App() {
               </PrivateRoute>
             }>
             <Route path="new"
-            element={
-              <PrivateRoute>
-                <Posts />
-              </PrivateRoute>
-            }/>
+              element={
+                <PrivateRoute>
+                  <Posts />
+                </PrivateRoute>
+              }/>
             <Route path="sent"/>
           </Route>
+          <Route exact path="/posts/image"
+            element={
+              <PrivateRoute>
+                <ImagePost />
+              </PrivateRoute>
+          }/>
           <Route
             path="user/:author_id"
             element={

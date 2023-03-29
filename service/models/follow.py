@@ -25,7 +25,7 @@ class Follow(models.Model): # list of an author's followers
 
     def toJSON(self):
         return {
-            "type": "Follow",
+            "type": "follow",
             "summary": f"{self.actor.displayName} wants to follow {self.object.displayName}",
             "actor": self.actor.toJSON(), #wants to follow
             "object": self.object.toJSON()
