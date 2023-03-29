@@ -230,13 +230,13 @@ class InboxView(APIView):
             return HttpResponseBadRequest() #can't follow yourself!
 
         try:
-            foreign_author.followers.get(_id=author._id)
+            author.followers.get(_id=foreign_author._id)
             raise ConflictException # request already exists
         except ObjectDoesNotExist:
             r = Follow()
-            r._id = Follow.create_follow_id(foreign_author._id, author._id)
-            r.actor = author
-            r.object = foreign_author
+            r._id = Follow.create_follow_id(author._id, foreign_author._id)
+            r.actor = foreign_author
+            r.object = author
             r.save()
 
         inbox.follow_requests.add(r)
