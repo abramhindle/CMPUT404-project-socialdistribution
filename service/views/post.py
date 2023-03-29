@@ -28,12 +28,16 @@ class PostCreation(APIView, RestService):
         author_id = kwargs['author_id']
         try:
             request_author = Author.objects.get(user=request.user)
+        except ObjectDoesNotExist:
+            if request.user.username in [host[0] for host in settings.REMOTE_USERS]: #if remote user
+                request_author = None # special case for remote hosts
+            else:
+                return HttpResponseNotFound()
+
+        try:
             author = Author.objects.get(_id=author_id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
-
-        if request.user.username in [host[0] for host in settings.REMOTE_USERS]:
-            request_author = author
 
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
@@ -57,7 +61,7 @@ class PostCreation(APIView, RestService):
 
         post_queryset = Post.objects.all().filter(author=author_id).order_by('-published')  # only get posts from author_id in the URL, order by the published date
 
-        if author._id != request_author._id:
+        if request_author is not None and author._id != request_author._id:
             post_queryset = post_queryset.filter(unlisted=False)
 
             author_is_follower = author.followers.filter(_id=request_author._id).exists()
