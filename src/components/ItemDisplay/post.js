@@ -16,7 +16,8 @@ import ShareIcon from "../Buttons/share_button";
 export default function Post(data) {
   // Visibility
   let markdown = data["post"]["contentType"] === "text/markdown" ? true : false;
-  let image = data["post"]["contentType"].split("/")[0] === "image" ? true : false;
+  let image =
+    data["post"]["contentType"].split("/")[0] === "image" ? true : false;
   console.log(data);
   let shareable =
     data["post"]["visibility"] === "PUBLIC" ||
@@ -40,27 +41,27 @@ export default function Post(data) {
     .pop()}/post/${(data.post.id ?? "").split("/").pop()}`;
 
   // Like Handling
-  const [changes, setChanges] = useState(0);
-  var liked = data.liked;
+  const [liked, setLiked] = useState(data.liked);
 
   const like_success = (bool) => {
-    liked = bool;           // Changes heart colour
-    setChanges(changes+1);  // Triggers rerender
+    setLiked(bool); // Changes heart colour
+    get_liked(user.id, data.updateList); // Triggers rerender
   };
 
   const handleLike = () => {
-    if (!liked){
-      post_like(data.post.author.id, user, data.post.id, "context", like_success);
-    }
-    else {
+    if (!liked) {
+      post_like(
+        data.post.author.id,
+        user,
+        data.post.id,
+        "context",
+        like_success
+      );
+    } else {
       //TODO delete like object
-      console.log("Liked already")
+      console.log("Liked already");
     }
-  }
-
-  useEffect(() => {
-    get_liked(data.post.author.id, data.updateList);
-  }, [changes]);
+  };
 
   //Comment Handling
   const [comment, setComment] = useState("");
@@ -76,7 +77,6 @@ export default function Post(data) {
         user.id
       );
       setComment("");
-
     } else {
       alert("enter the comment");
     }
@@ -84,22 +84,25 @@ export default function Post(data) {
 
   return (
     <div className="vflex">
-  
       <div className="list-item">
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">
           <a href={authorUrl}>
-          {<img alt="author" src={data.post.author.profileImage}></img>}
+            {<img alt="author" src={data.post.author.profileImage}></img>}
           </a>
         </div>
 
         {/* Will need to handle other post types here, plain for now */}
         <div className="post">
-        <h5><Link to={postUrl}>{data["post"]["title"]}</Link></h5>
+          <h5>
+            <Link to={postUrl}>{data["post"]["title"]}</Link>
+          </h5>
           {image && (
-            <img className="posted-image" 
-              alt={data["post"]["description"]} 
-              src={data["post"]["content"]}/>
+            <img
+              className="posted-image"
+              alt={data["post"]["description"]}
+              src={data["post"]["content"]}
+            />
           )}
           {markdown && (
             <ReactMarkdown
@@ -107,17 +110,19 @@ export default function Post(data) {
               children={data["post"]["content"]}
             />
           )}
-          {(!markdown && !image) && (
+          {!markdown && !image && (
             <div className="content">{data["post"]["content"]}</div>
           )}
         </div>
         <div className="interaction-options">
-          <LikeHeart handleLike={handleLike} liked={data.liked}/>
-          <CommentArrow setCommentType={setCommentType} setComment={setComment} submit={submitComment}/>
+          <LikeHeart handleLike={handleLike} liked={liked} />
+          <CommentArrow
+            setCommentType={setCommentType}
+            setComment={setComment}
+            submit={submitComment}
+          />
           {/* Share Button */}
-          {shareable && (
-          <ShareIcon/>
-          )}
+          {shareable && <ShareIcon />}
         </div>
       </div>
       <div className="timestamp">{data["post"]["published"]}</div>
