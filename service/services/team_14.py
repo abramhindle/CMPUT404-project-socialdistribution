@@ -140,8 +140,6 @@ def serialize_follow_request(request):
         "object": author
     }
 
-    print(json_request)
-
     url = HOST + "service/authors/" + author_guid + "/inbox/"
     print(url)
     try:  # try get Author

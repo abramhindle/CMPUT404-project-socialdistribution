@@ -40,7 +40,9 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:3000',
     'http://localhost:8000',
     'http://31552.yeg.rac.sh:8000',
-    "https://cmput404-group-project.herokuapp.com"
+    "https://cmput404-group-project.herokuapp.com",
+    "https://socialdistcmput404.herokuapp.com/"
+
 ]
 
 CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken', 'authorization']
@@ -48,7 +50,8 @@ CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-le
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     'http://31552.yeg.rac.sh:8000',
-    "https://cmput404-group-project.herokuapp.com"
+    "https://cmput404-group-project.herokuapp.com",
+    "https://socialdistcmput404.herokuapp.com/"
 ]
 
 # Application definition
@@ -123,7 +126,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3'
-    }
+    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'dj66vp52eijr1',
+    #     'USER': 'zfybjflxffmctb',
+    #     'PASSWORD': '98f10ace9ca82bc340d2f9787a86c269a6184b20d3c338d7b6af9905e9451707',
+    #     'HOST': 'ec2-34-226-11-94.compute-1.amazonaws.com',
+    #     'PORT': '5432',
+    # }
 }
 
 db_from_env = dj_database_url.config(conn_max_age=600)
