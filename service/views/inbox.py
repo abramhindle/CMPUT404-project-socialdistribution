@@ -247,14 +247,15 @@ class InboxView(APIView):
 
         if like.exists():
             raise ConflictException
-        
+
         foreign_author = Author()
         #foreign_author.toObject(body["author"])
 
         try:
-            Author.objects.get(_id=foreign_author._id, is_active=True)
+            print(foreign_author._id)
+            foreign_author = Author.objects.get(_id=body["author"]["id"], is_active=True)
         except ObjectDoesNotExist:
-
+            print("HERE")
             if author.host == settings.REMOTE_USERS[0][1]:
                 #team_14.get_multiple_posts(author)
                 pass
