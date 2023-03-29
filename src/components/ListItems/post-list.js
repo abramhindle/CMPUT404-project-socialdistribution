@@ -6,13 +6,8 @@ import { useSelector } from "react-redux";
 
 function PostList({ user_list }) {
   //gets a json object, and returns a list item for it
-<<<<<<< Updated upstream
-  console.log("USER LIST:", user_list);
-  const [liked, setLiked] = useState(null);
-=======
   console.log("LIST:", user_list);
-  const [liked, setLiked] = useState([]);
->>>>>>> Stashed changes
+  const [liked, setLiked] = useState(null);
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
