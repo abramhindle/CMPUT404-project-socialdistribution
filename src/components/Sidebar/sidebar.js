@@ -12,9 +12,12 @@ function Sidebar() {
    
     //Handle Navigations
     const navigate = useNavigate();
+    const goToStream = () =>{
+        navigate("/");
+    };
     //Navigate to Main Inbox Feed
     const goToInbox = () =>{
-        navigate("/");
+        navigate("/inbox");
     };//Navigate to Requests page
     const goToAdd = () => {
         navigate("/friends/");
@@ -58,11 +61,11 @@ function Sidebar() {
         {/* Navigation Menu */}
         <menu>
             <li>
-                <button className='Page' id="stream" onClick={goToInbox}>Stream</button>
+                <button className='Page' id="stream" onClick={goToStream}>Stream</button>
                 {/* Inbox Options Submenu, only show if Inbox selected */}
                 <ul className="Options-bar">
                     <li>
-                        <button className='Options' id="inbox">Inbox</button>
+                        <button className='Options' id="inbox" onClick={goToInbox}>Inbox</button>
                     </li>
                 </ul>
             </li>

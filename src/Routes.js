@@ -7,6 +7,7 @@ import Followers from "./pages/Friends/followers";
 import Request from "./pages/Friends/request";
 import Posts from "./pages/Posts/new-post-page";
 import Stream from "./pages/Stream";
+import Inbox from "./pages/Inbox/inbox";
 import Profile from "./pages/Profile/profile";
 import Realfriends from "./pages/Friends/realfriends";
 import PostDetail from "./pages/Posts/post-detail";
@@ -19,22 +20,18 @@ function App() {
         <Routes>
           {/* Inbox */}
           <Route
-            path="/"
+            exact path="/"
             element={
               <PrivateRoute>
-                <Stream filter="stream"/>
+                <Stream/>
               </PrivateRoute>
-            }>
-              <Route path="inbox"
-                element={
-                  <PrivateRoute>
-                    <Stream filter="inbox" />
-                  </PrivateRoute>
-                }>
-                </Route>
-              <Route path="foryou"/>
-              <Route path="likes"/>
-          </Route>
+            }/>
+          <Route exact path="/inbox"
+            element={
+              <PrivateRoute>
+                <Inbox/>
+              </PrivateRoute>
+            }/>
           {/* Friends */}
           <Route
             path="/friends"
