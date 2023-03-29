@@ -33,7 +33,7 @@ export const signIn_api = async (username, password, success) => {
     .then(function (res) {
       const csrftoken = getCookie("csrftoken");
       axios.defaults.headers.post["X-CSRFToken"] = csrftoken;
-      success(res);
+      success(res.data.author);
     })
     .catch(function (error) {
       console.log(error);
