@@ -20,7 +20,7 @@ export default function DisplayItem(props) {
     return <Like data={data} />;
   } else if (data.type === "follow") {
     //display follow request object
-    return <FollowRequest data={data.object} />;
+    return <FollowRequest data={data} />;
   } else {
     return;
   }
