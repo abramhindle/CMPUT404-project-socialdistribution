@@ -78,7 +78,7 @@ function App() {
           {/* Posting */}
           <Route
             path="/posts"
-            }>
+            >
             <Route path="new"
               element={
                 <PrivateRoute>
