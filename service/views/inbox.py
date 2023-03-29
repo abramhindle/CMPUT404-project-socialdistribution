@@ -249,12 +249,28 @@ class InboxView(APIView):
             raise ConflictException
         
         foreign_author = Author()
-        foreign_author.toObject(body["author"])
+        #foreign_author.toObject(body["author"])
 
         try:
             Author.objects.get(_id=foreign_author._id, is_active=True)
         except ObjectDoesNotExist:
-            foreign_author.save()
+
+            if author.host == settings.REMOTE_USERS[0][1]:
+                #team_14.get_multiple_posts(author)
+                pass
+            # remote-user-t22
+            elif author.host == settings.REMOTE_USERS[1][1]:
+                #team_22.get_multiple_posts(author)
+                pass
+            # remote-user-t16
+            elif author.host == settings.REMOTE_USERS[2][1]:
+                team_16.get_or_create_author(body["author"])
+
+            elif author.host == settings.REMOTE_USERS[3][1]:
+                team_10.get_or_create_author(body["author"])
+            else:
+                foreign_author.toObject(body["author"])
+                foreign_author.save()
 
         try:
             like = Like.objects.get(_id=id)
