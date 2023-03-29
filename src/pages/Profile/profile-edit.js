@@ -33,25 +33,31 @@ const ProfileEdit = () => {
 
         <form className="profile-update-form" onSubmit={submitProfile}>
           <div>
+            Display Name
             <input
               type="text"
               value={displayName}
+              placeholder="Display Name"
               required
               onChange={(e) => setDisplayName(e.target.value)}
             />
           </div>
           <div>
+            Github
             <input
               type="url"
               value={github}
+              placeholder="Github"
               required
               onChange={(e) => setGithub(e.target.value)}
             />
           </div>
           <div>
+            Profile Image
             <input
               type="url"
               value={profileImage}
+              placeholder="Profile Image"
               required
               onChange={(e) => setProfileImage(e.target.value)}
             />

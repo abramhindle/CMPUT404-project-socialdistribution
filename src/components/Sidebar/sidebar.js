@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { clearUser } from "../../reducer/userSlice";
 import { Link } from "react-router-dom";
-import EditProfile from "../Buttons/edit_button";
+import EditButton from "../Buttons/edit_button";
 
 function Sidebar() {
   //Get user & url info
@@ -48,7 +48,7 @@ function Sidebar() {
         <div className="Profile" id="profile-tab">
           <img className="profile-pic" src={user.profileImage} alt="profile" />
           <Link to={authorUrl + "/edit"}>
-            <EditProfile />
+            <EditButton />
           </Link>
 
           <p>
