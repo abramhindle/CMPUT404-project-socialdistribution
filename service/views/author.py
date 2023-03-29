@@ -29,7 +29,7 @@ class MultipleAuthors(APIView):
         if request.user.username not in [host[0] for host in settings.REMOTE_USERS]:  # if not remote host
             for remote_host in settings.REMOTE_USERS:
                 if remote_host[0] == "remote-user-t14":
-                    # team_14.get_multiple_authors() #sending us dupe data and inaccessible on deployed
+                    team_14.get_multiple_authors() #sending us dupe data and inaccessible on deployed
                     pass
                 elif remote_host[0] == "remote-user-t22":
                     #team_22.get_multiple_authors()
