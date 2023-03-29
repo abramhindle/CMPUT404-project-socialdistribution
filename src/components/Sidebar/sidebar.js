@@ -41,12 +41,7 @@ function Sidebar() {
     dispatch(clearUser(user));
   };
 
-
-  //Get stats
   //TODO: Attach to backend to pull actual numbers
-  var numFollowed = 1000;
-  var numFollowers = 99;
-  var numFriends = 27;
 
   return (
     <div>
@@ -63,13 +58,13 @@ function Sidebar() {
           </p>
           <div className="stats">
             <p>
-              <Link to={"/friends/true"}>Friends: {numFriends}</Link>
+              <Link to={"/friends/true"}>Friends</Link>
             </p>
             <p>
-              <Link to={"/friends/followers"}>Followers: {numFollowers}</Link>
+              <Link to={"/friends/followers"}>Followers</Link>
             </p>
             <p>
-              <Link to={"/friends/followed"}>Followed: {numFollowed}</Link>
+              <Link to={"/friends/followed"}>Following</Link>
             </p>
           </div>
         </div>
