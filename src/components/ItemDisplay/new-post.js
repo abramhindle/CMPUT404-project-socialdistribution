@@ -44,33 +44,6 @@ export default function NewPost() {
         setUnlisted(check);
     }
 
-//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-// by Melih Ekinci
-// from https://refine.dev/blog/how-to-base64-upload/
-    const convertBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
-    
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            };
-    
-            fileReader.onerror = (error) => {
-                reject(error);
-            };
-        });
-    };
-    
-    const uploadImage = async (event) => {
-        const file = event.target.files[0];
-        const base64 = await convertBase64(file);
-        document.getElementById("avatar").src = base64;
-
-        //TODO, upload file to db
-    };
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
     return (
         <div>
             <form encType="multipart/form-data" method="POST">
@@ -92,14 +65,6 @@ export default function NewPost() {
                         onChange={(e) => setContentType(e.target.value)}/>
                      Markdown
                      <br/>
-                     <input
-                        name="type"
-                        type="radio"
-                        value="image/*"
-                        required
-                        onChange={(e) => setContentType(e.target.value)}/>
-                     Image
-                     <br/>
                 <label>Title</label><br/>
                 <input
                     placeholder="Title.."
@@ -119,27 +84,6 @@ export default function NewPost() {
                     onChange={(e) => setDescription(e.target.value)}
                 /><br/>
                 <label>Body</label><br/>
-                    {contentType === "image/*" &&
-            {/*vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-            // Adapted from code by Melih Ekinci
-            // from https://refine.dev/blog/how-to-base64-upload/ */} &&
-                    <input
-                        className="form-control form-control-lg"
-                        id="selectAvatar"
-                        type="file"
-                        onChange={uploadImage}
-                        accept="image/*"/>}
-                        {contentType === "image/*" &&
-                        <div className="container">
-                            <div className="row">
-                                <div className="col">
-                                    <h6>Image Preview:</h6>
-                                    <img className="img" id="avatar" />
-                                </div>
-                            </div>
-                        </div>}
-        {/**^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */}
-        {contentType !== "image/*" &&
                     <textarea
                     placeholder="Content.."
                     name="content"
@@ -147,7 +91,7 @@ export default function NewPost() {
                     value={body}
                     required
                     onChange={(e) => setBody(e.target.value)}
-                />}<br/>
+                /><br/>
                 
                 <label>Visibility</label><br/>
                 Public
