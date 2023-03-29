@@ -111,6 +111,3 @@ def get_or_create_post(post_json, author, hostname):
         return new_post
 
 # FOLLOWER HELPERS
-
-def get_all_followers(author):
-    pass

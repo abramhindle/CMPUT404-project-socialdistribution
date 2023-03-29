@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
-from service.services import team_14, team_22
+from service.services import team_14, team_22, team_10
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -26,22 +26,25 @@ class FollowersAPI(APIView):
 
         # reach out and get followers for an author that isn't our own
 
+        followers_list = list()
+
         # remote-user-t14
         if author.host == settings.REMOTE_USERS[0][1]:
             #team_14.get_multiple_posts(author)
-
             pass
 
         # remote-user-t22
-        if author.host == settings.REMOTE_USERS[1][1]:
+        elif author.host == settings.REMOTE_USERS[1][1]:
             #team_22.get_multiple_posts(author)
-
             pass
 
-        followers_list = list()
+        # remote-user-t10
+        elif author.host == settings.REMOTE_USERS[3][1]:
+            followers_list = team_10.get_followers(author)
 
-        for follower in list(author.followers.all().order_by('displayName')):
-            followers_list.append(follower.toJSON())
+        else:
+            for follower in list(author.followers.all().order_by('displayName')):
+                followers_list.append(follower.toJSON())
 
         followers_json = encode_Follower_list(followers_list)
         return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)

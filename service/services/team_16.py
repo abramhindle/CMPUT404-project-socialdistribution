@@ -123,3 +123,4 @@ def post_to_object(post, json_object, author):
     post.visibility = json_object["visibility"]
     post.unlisted = bool(json_object["unlisted"])
     return post
+

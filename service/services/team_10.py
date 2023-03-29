@@ -170,10 +170,10 @@ def serialize_follow_request(request):
     return response
 
 def serialize_post(request):
-    author_guid = request["object"]["url"].rsplit('/', 2)[-2]
+    author_guid = request["object"]["url"].rsplit('/', 1)[-1]
     try:
         response = requests.get(HOST + "service/authors/" + author_guid + "/",
-                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+                                headers=AUTH)
         response.close()
     except:
         return None
@@ -195,7 +195,7 @@ def serialize_post(request):
 
     url = HOST + "service/authors/" + author_guid + "/inbox/"
     try:  # try get Author
-        response = requests.post(url, json=json_request, headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
+        response = requests.post(url, json=json_request, headers=AUTH)
         response.close()
     except Exception as e:
         print(e)
@@ -220,3 +220,26 @@ def handle_inbox(body):
         #id = Like.create_like_id(body["author"]["id"], body["object"])
 
     return response
+
+def get_followers(author):
+    author_guid = author.url.rsplit('/', 1)[-1]
+    try:
+        response = requests.get(HOST + "api/authors/" + author_guid + "/followers/",
+                                headers=AUTH)
+        response.close()
+    except:
+        return None
+
+    if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        return None
+
+    response_json = response.json()
+
+    authors = list()
+
+    for author in response_json["items"]:
+        authors.append(get_or_create_author(author, HOST).toJSON())
+
+    return authors
+
