@@ -1,3 +1,4 @@
+import "./posts.css"
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { send_api, post_api } from "../../api/post_display_api";
@@ -101,7 +102,7 @@ export default function ImageUpload() {
                     <div className="row">
                         <div className="col">
                             <h6>Image Preview:</h6>
-                            <img className="img" id="avatar" />
+                            <img className="posted-image" id="avatar" />
                         </div>
                     </div>
                 </div>
