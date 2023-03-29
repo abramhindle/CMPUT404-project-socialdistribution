@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 
 function PostList({ user_list }) {
   //gets a json object, and returns a list item for it
-  console.log("USER LIST:", user_list);
+  console.log("LIST:", user_list);
   const [liked, setLiked] = useState(null);
   const user = useSelector((state) => state.user);
 
@@ -15,6 +15,9 @@ function PostList({ user_list }) {
   }, []);
 
   function checkLiked(item) {
+    if (item.type === "follow") {
+      return;
+    }
     for (var i = 0; i < liked.length; i++) {
       if (liked[i].object === item.id) {
         return true;

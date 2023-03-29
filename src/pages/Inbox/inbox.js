@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PostList from "../../components/ListItems/post-list";
 import { useSelector } from "react-redux";
 
-function Inbox(filter) {
+function Inbox() {
   //Get user info
   let id = useSelector((state) => state.user).id;
   const author_id = `${id}/inbox`;

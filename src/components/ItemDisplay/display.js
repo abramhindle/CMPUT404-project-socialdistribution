@@ -1,9 +1,7 @@
 import Comment from "./comment";
-import PlainPost from "./post-text";
+import Post from "./post";
 import Like from "./like";
 import FollowRequest from "./follow-request";
-
-//TODO : follow request objects
 
 export default function DisplayItem(props) {
   const data = props.data;
@@ -15,7 +13,7 @@ export default function DisplayItem(props) {
   } else if (data.type === "post") {
     //display post
     return (
-      <PlainPost post={data} liked={liked} updateList={props.updateList} />
+      <Post post={data} liked={liked} updateList={props.updateList} />
     );
   } else if (data.type === "like") {
     //display like object
