@@ -181,17 +181,18 @@ class InboxView(APIView):
         if post.exists():
             raise ConflictException # conflict, item is already in inbox
 
-        post = Post.objects.get(_id=id)
-
-        if user.username == "remote-user-t14": #get the post from each DB
-            author = team_14.get_or_create_author(body["author"])
-            post = team_14.get_or_create_post(body, author, author.host)
-        elif user.username == "remote-user-t22":
-            author = team_22.get_or_create_author(body["author"])
-            post = team_22.get_or_create_post(body, author, author.host)
-        elif user.username == "remote-user-t16":
-            author = team_16.get_or_create_author(body["author"])
-            post = team_16.get_or_create_post(body, author, author.host)
+        try:
+            post = Post.objects.get(_id=id)
+        except ObjectDoesNotExist:
+            if user.username == "remote-user-t14": #get the post from each DB
+                author = team_14.get_or_create_author(body["author"])
+                post = team_14.get_or_create_post(body, author, author.host)
+            elif user.username == "remote-user-t22":
+                author = team_22.get_or_create_author(body["author"])
+                post = team_22.get_or_create_post(body, author, author.host)
+            elif user.username == "remote-user-t16":
+                author = team_16.get_or_create_author(body["author"])
+                post = team_16.get_or_create_post(body, author, author.host)
 
         inbox.posts.add(post)
         inbox.save()
@@ -211,7 +212,6 @@ class InboxView(APIView):
 
 #TODO: get or create author from the user
     def handle_follow(self, inbox: Inbox, body, author: Author): # we actually create the follow request here
-        foreign_author = Author()
 
         if author.host == settings.REMOTE_USERS[0][1]: #get the post from each DB
             foreign_author = team_14.get_or_create_author(body["actor"])
