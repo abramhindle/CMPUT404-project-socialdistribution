@@ -1,17 +1,14 @@
 import Sidebar from "../../components/Sidebar/sidebar";
-import '../pages.css'
+import "../pages.css";
 import "./profile.css";
 import { get_author } from "../../api/author_api";
 import { useEffect, useState } from "react";
-import {
-  useLocation,
-  useNavigate,
-  useParams
-} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { get_author_posts } from "../../api/post_display_api";
 import { get_followers_for_author } from "../../api/follower_api";
 import PostList from "../../components/ListItems/post-list";
 import AuthorList from "../../components/ListItems/author-list";
+import { useSelector } from "react-redux";
 
 function Profile() {
   const { author_id } = useParams();
@@ -79,7 +76,11 @@ function Profile() {
   };
 
   const page_buttons = () => {
-    if (!user_list || !user_list.items || (user_list.items.length < 5 && page === 1)) {
+    if (
+      !user_list ||
+      !user_list.items ||
+      (user_list.items.length < 5 && page === 1)
+    ) {
       return;
     } else if (page === 1) {
       return <button onClick={forward_page}>Next Page</button>; //only 1 button

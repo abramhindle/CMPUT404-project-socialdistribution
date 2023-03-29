@@ -13,12 +13,13 @@ export const userSlice = createSlice({
   },
   reducers: {
     signInUser: (state, action) => {
-      state.displayName = action.payload.data.author.displayName;
-      state.github = action.payload.data.author.github;
-      state.host = action.payload.data.author.host;
-      state.id = action.payload.data.author.id;
-      state.profileImage = action.payload.data.author.profileImage;
-      state.url = action.payload.data.author.url;
+      console.log(action);
+      state.displayName = action.payload.displayName;
+      state.github = action.payload.github;
+      state.host = action.payload.host;
+      state.id = action.payload.id;
+      state.profileImage = action.payload.profileImage;
+      state.url = action.payload.url;
       state.isLogin = true;
       return state;
     },

@@ -75,6 +75,6 @@ class FollowRequests(View):
 
 def encode_follow_request_list(authors):
     return {
-        "type": "Follows",
+        "type": "follows",
         "items": authors
     }

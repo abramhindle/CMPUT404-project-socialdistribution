@@ -8,13 +8,12 @@ let head = {
   },
 };
 
-export const post_api = async (authorId, post, successPost, successFollow) => {
+export const post_api = async (authorId, post, successPost) => {
   await axios
     .post(`authors/${authorId}/posts/`, post, head)
     .then(function (response) {
       console.log("Post res: ", response["data"]);
       successPost(response["data"]);
-      get_followers_for_author(authorId, successFollow);
     })
     .catch(function (error) {
       console.log(error);

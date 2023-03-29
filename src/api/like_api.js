@@ -83,7 +83,6 @@ export const comment_like = async (
   context,
   success
 ) => {
-
   const data = {
     type: "Like",
     context: context,
@@ -120,7 +119,7 @@ export const get_liked = async (authorId, success) => {
   });
 
   if (res.status === 200) {
-    console.log("Success! Likes received");
+    console.log("Success! Liked received");
     success(res.data.items);
   } else {
     console.log("Error Occured");

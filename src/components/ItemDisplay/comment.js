@@ -9,8 +9,8 @@ import LikeHeart from "../Buttons/like_button";
 export default function Comment(data) {
   let id = useSelector((state) => state.user).id;
   const user = useSelector((state) => state.user);
-  const [changes, setChanges] = useState(0);
-  var liked = data.liked;
+  const [liked, setLiked] = useState(data.liked);
+  console.log("Liked", data.liked);
 
   //Check if markdown
   let markdown = data["data"]["contentType"] === "text/markdown" ? true : false;
@@ -26,57 +26,61 @@ export default function Comment(data) {
 
   const like_success = (bool) => {
     /* Show Success Snackbar? */
-    liked = bool;
-    setChanges(changes+1);
+    setLiked(bool);
+    get_liked(id, data.updateList);
   };
 
   const handleLike = () => {
-    if (!liked){
-      comment_like(data.data.author.id, user, postUrl, data.data.id, "context", like_success);
-    }
-    else {
+    if (!liked) {
+      comment_like(
+        data.data.author.id,
+        user,
+        postUrl,
+        data.data.id,
+        "context",
+        like_success
+      );
+    } else {
       //TODO delete like object
-      console.log("Liked already")
+      console.log("Liked already");
     }
-  }
-
-  useEffect(() => {
-    console.log("Use effect triggered");
-    get_liked(id, data.updateList);
-  }, [changes]);
+  };
 
   return (
     <div className="vflex">
-      <h6><a href={authorUrl}>{data.data.author.displayName}</a> commented on your <a href={postUrl}>post</a></h6>
-      
+      <h6>
+        <a href={authorUrl}>{data.data.author.displayName}</a> commented on your{" "}
+        <a href={postUrl}>post</a>
+      </h6>
+
       <div className="list-item">
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">
           <a href={authorUrl}>
-          {<img alt="author" src={data.data.author.profileImage}></img>}
+            {<img alt="author" src={data.data.author.profileImage}></img>}
           </a>
         </div>
 
         {/* Title, message */}
-          <div className="comment">
-            {markdown && (
-              <ReactMarkdown
-                className="content"
-                children={data["data"]["comment"]}
-              >
-                {/* Mardown doesn't like leading whitespace */}
-              </ReactMarkdown>
-            )}
-            {!markdown && (
-              <div className="content">{data["data"]["comment"]}</div>
-            )}
-          </div>
-                  {/* Interaction Options (like, share) */}
+        <div className="comment">
+          {markdown && (
+            <ReactMarkdown
+              className="content"
+              children={data["data"]["comment"]}
+            >
+              {/* Mardown doesn't like leading whitespace */}
+            </ReactMarkdown>
+          )}
+          {!markdown && (
+            <div className="content">{data["data"]["comment"]}</div>
+          )}
+        </div>
+        {/* Interaction Options (like, share) */}
         <div>
-            <LikeHeart handleLike={handleLike} liked={liked}/>
+          <LikeHeart handleLike={handleLike} liked={liked} />
         </div>
-        </div>
-        <div className="timestamp">{data["data"]["published"]}</div>
       </div>
+      <div className="timestamp">{data["data"]["published"]}</div>
+    </div>
   );
 }

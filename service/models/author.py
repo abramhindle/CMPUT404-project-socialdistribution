@@ -13,8 +13,8 @@ class Author(models.Model):
     host = models.URLField(default=settings.DOMAIN, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True) #link an Author to a registered user -> not required
     displayName = models.CharField(max_length=128)
-    github = models.URLField()
-    profileImage = models.URLField()
+    github = models.URLField(blank=True)
+    profileImage = models.URLField(blank=True)
     followers = models.ManyToManyField('Author', blank=True)
     is_active = models.BooleanField(default=True)
 
