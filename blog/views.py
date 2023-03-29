@@ -86,7 +86,8 @@ class SignUpView(APIView):
 
         try:
             user = User.objects.create_user(username=username, password=password)
-            Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github, is_active=False)
+            #Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github, is_active=False)
+            Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github) # For now
             return Response({"success": "Sign Up Requested!"}, status=202)
         except IntegrityError:
             return Response({"error": "Username already in use"}, status=409)

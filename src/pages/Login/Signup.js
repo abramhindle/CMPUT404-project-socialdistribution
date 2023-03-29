@@ -19,7 +19,7 @@ export const SignUp = () => {
 
   const success = () => {
     alert("Success! Sign Up Requested! Wait for Approval");
-    navigate("/");
+    navigate("/signin");
   };
 
   const submit = async (e) => {
@@ -93,22 +93,20 @@ export const SignUp = () => {
           <div className="form-group mt-3">
             <input
               className="form-control mt-1"
-              placeholder="ProfileImage URL"
+              placeholder="ProfileImage URL(Optional)"
               name="profileImage"
               type="url"
               value={profileImage}
-              required
               onChange={(e) => setProfileImage(e.target.value)}
             />
           </div>
           <div className="form-group mt-3">
             <input
               className="form-control mt-1"
-              placeholder="Github URL"
+              placeholder="Github URL(Optional)"
               name="github"
               type="url"
               value={github}
-              required
               onChange={(e) => setGithub(e.target.value)}
             />
           </div>
