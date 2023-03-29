@@ -83,7 +83,7 @@ export default function ImageUpload() {
       }, []);
 
     useEffect(() => {
-        //only runs once
+        //runs when object posted
         sendPost();
       }, [posted]);
 

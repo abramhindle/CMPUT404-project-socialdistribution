@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { send_api, post_api } from "../../api/post_display_api";
 import { get_followers_for_author } from "../../api/follower_api";
 import ImageUpload from "./image-upload";
@@ -19,6 +19,14 @@ export default function NewPost() {
     const [followers, setFollowers] = useState([]);
     const [posted, setPosted] = useState(null);
 
+    const populateFollowers = async () => {
+        await get_followers_for_author(user, setFollowers);
+    }
+
+    const sendPost = async () => {
+        await send_api(followers, posted);
+    }
+
     const submit = async (e) => {
         console.log("Submitting ...");
         let data = {"title": title,
@@ -31,7 +39,7 @@ export default function NewPost() {
 
         e.preventDefault();
         console.log(user, "is attempting to post", data);
-        await post_api(user, data, setPosted).then(send_api(followers, posted));
+        await post_api(user, data, setPosted);
         
         //let followers = get_followers_for_author(user, setSucess);
         // console.log("Starting to send ...");
@@ -43,6 +51,16 @@ export default function NewPost() {
         let check = e.target.checked ? true : false;
         setUnlisted(check);
     }
+
+    useEffect(() => {
+        //only runs once
+        populateFollowers();
+      }, []);
+
+    useEffect(() => {
+        //runs when object posted
+        sendPost();
+      }, [posted]);
 
     return (
         <div>
