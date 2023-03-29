@@ -83,7 +83,7 @@ export default function Post(data) {
   };
 
   return (
-    <div className="vflex">
+    <div className="vflex center">
       <div className="list-item">
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">
