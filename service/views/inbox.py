@@ -14,7 +14,7 @@ from service.models.inbox import Inbox
 from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
-from service.services import team_14, team_16, team_22
+from service.services import team_14, team_16, team_22, team_10
 
 import requests
 
@@ -102,14 +102,21 @@ class InboxView(APIView):
         if author.host == settings.REMOTE_USERS[1][1]:
             #response = team_22.handle_inbox(body)
 
-            if response is None:
-                return HttpResponseServerError()
+            #if response is None:
+                #return HttpResponseServerError()
 
             return HttpResponse(status=202)
 
         # remote-user-t16
         if author.host == settings.REMOTE_USERS[2][1]:
             return HttpResponse()
+
+        if author.host == settings.REMOTE_USERS[3][1]:
+            response = team_10.handle_inbox(body)
+            # if response is None:
+            #     return HttpResponseServerError()
+
+            return HttpResponse(status=202)
 
         try:  # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
             inbox = Inbox.objects.get(author=author) # author_id is the primary key for an inbox

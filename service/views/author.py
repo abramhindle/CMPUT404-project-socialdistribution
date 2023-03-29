@@ -36,7 +36,6 @@ class MultipleAuthors(APIView):
                     pass
                 elif remote_host[0] == "remote-user-t16":
                     #uses paging
-                    pass
                     team_16.get_multiple_authors(page, size)
                 elif remote_host[0] == "remote-user-t10":
                     team_10.get_multiple_authors(page, size)
