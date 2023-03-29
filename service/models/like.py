@@ -33,5 +33,7 @@ class Like(models.Model):
     @staticmethod
     def create_like_id(author_id, post_id): #uses the last uuid value from author id, and generates a custom post_id
         author_uuid = author_id.rsplit('/', 1)[-1]
-        post_uuid = post_id.rsplit('/', 1)[-1]
+        post_uuid = post_id.rsplit('posts/', 1)[1]
+        print("Lookatme", post_id)
+        print(post_uuid)
         return f"{settings.DOMAIN}/authors/{author_uuid}/posts/{post_uuid}/like" #object = person being followed
