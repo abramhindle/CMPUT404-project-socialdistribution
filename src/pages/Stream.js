@@ -10,6 +10,7 @@ import PostList from "../components/ListItems/post-list";
 function Stream() {
   //Get user info
   let id = useSelector((state) => state.user).id;
+  //v So will work with stream endpoint, instead of inbox, even though using inbox function
   const author_id = `${id}/stream`;
   const [author, setAuthor] = useState({});
   const [post_list, setList] = useState({ items: [] });
@@ -29,10 +30,12 @@ function Stream() {
 
   useEffect(() => {
     //only runs once
+    // WORKS BECAUSE author_id includes /stream 
     get_inbox_posts(author_id, page, setList);
   }, [author_id]);
 
   const populateList = () => {
+    // Make sure list in right format for display functions
     if (!post_list.items){
       setList({items:[...post_list]});
     }
