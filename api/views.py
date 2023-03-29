@@ -804,7 +804,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             try:
                 LikeView.create_like(data_like)
             except Exception as e:
-                
+                print(e)
                 return Response(str(e), status=400)
         
         elif request.data.get('type', '').lower() == 'follow':
@@ -818,6 +818,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                     'foreign_author_id': foreign_author_id
                 })
             except Exception as e:
+                print(e)
                 return Response(str(e), status=400)
         
         elif request.data.get('type', '').lower() == 'comment':
@@ -834,7 +835,6 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                 CommentsView.create_comment(data_comment)
             except Exception as e:
                 print(e)
-
                 return Response(str(e), status=400)
 
         author_data = request.data.get('author', None)
@@ -852,7 +852,6 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             object_data = r.json()
         else:
             object_data = request.data
-        
         # end hacky stuff
         
         data = {
