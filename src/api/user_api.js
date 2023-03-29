@@ -63,3 +63,33 @@ export const signOut_api = async (success) => {
     console.log("failed");
   }
 };
+
+export const signUp_api = async (
+  username,
+  password,
+  displayName,
+  profileImage,
+  github,
+  success
+) => {
+  const user = {
+    username: username,
+    password: password,
+    displayName: displayName,
+    profileImage: profileImage,
+    github: github,
+  };
+  const res = await axios.post("api/signup/", user, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status === 202) {
+    console.log("success");
+    success();
+  } else {
+    console.log("failed");
+  }
+};
