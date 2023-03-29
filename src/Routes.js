@@ -11,6 +11,7 @@ import Inbox from "./pages/Inbox/inbox";
 import Profile from "./pages/Profile/profile";
 import Realfriends from "./pages/Friends/realfriends";
 import PostDetail from "./pages/Posts/post-detail";
+import ProfileEdit from "./pages/Profile/profile-edit";
 import ImagePost from "./pages/Posts/image-post-page";
 
 function App() {
@@ -39,39 +40,43 @@ function App() {
               <PrivateRoute>
                 <Friends />
               </PrivateRoute>
-            }/>
-              <Route path="/friends/requests"
-                element={
-                  <PrivateRoute>
-                    <Request />
-                  </PrivateRoute>
-              }/>
-              <Route path="/friends/true"
-                element={
-                  <PrivateRoute>
-                    <Realfriends />
-                  </PrivateRoute>
             }
-              />
-            <Route path="/friends/followed"
-              element={
-                <PrivateRoute>
-                  <Followed />
-                </PrivateRoute>
-            }/>
-              <Route path="/friends/followers"
-              element={
-                <PrivateRoute>
-                  <Followers />
-                </PrivateRoute>
-            }/>
+          />
+          <Route
+            path="/friends/requests"
+            element={
+              <PrivateRoute>
+                <Request />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/friends/true"
+            element={
+              <PrivateRoute>
+                <Realfriends />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/friends/followed"
+            element={
+              <PrivateRoute>
+                <Followed />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/friends/followers"
+            element={
+              <PrivateRoute>
+                <Followers />
+              </PrivateRoute>
+            }
+          />
           {/* Posting */}
           <Route
             path="/posts"
-            element={
-              <PrivateRoute>
-                <Posts />
-              </PrivateRoute>
             }>
             <Route path="new"
               element={
@@ -88,10 +93,19 @@ function App() {
               </PrivateRoute>
           }/>
           <Route
+            exact
             path="user/:author_id"
             element={
               <PrivateRoute>
                 <Profile />
+              </PrivateRoute>
+            }
+          ></Route>
+          <Route
+            path="user/:author_id/edit"
+            element={
+              <PrivateRoute>
+                <ProfileEdit />
               </PrivateRoute>
             }
           ></Route>
