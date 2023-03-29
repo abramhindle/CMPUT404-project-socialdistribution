@@ -222,7 +222,9 @@ class InboxView(APIView):
         elif author.host == settings.REMOTE_USERS[3][1]:
             foreign_author = team_10.get_or_create_author(body["actor"])
         else:
-            foreign_author = foreign_author.toObject(body["actor"])
+            print(body["actor"])
+            #foreign_author = foreign_author.toObject(body["actor"])
+            foreign_author = Author.objects.get(_id=body["actor"]["id"])
 
         if author._id == foreign_author._id:
             return HttpResponseBadRequest() #can't follow yourself!
