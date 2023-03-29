@@ -4,7 +4,7 @@ import "./profile-edit.css";
 import "../pages.css";
 
 import Sidebar from "../../components/Sidebar/sidebar";
-import { get_author, update_author } from "../../api/author_api";
+import { update_author } from "../../api/author_api";
 import { signInUser } from "../../reducer/userSlice";
 
 const ProfileEdit = () => {
@@ -29,7 +29,9 @@ const ProfileEdit = () => {
         <Sidebar />
       </div>
       <div className="myprofile sidebar-offset">
-        <form className="Auth-form" onSubmit={submitProfile}>
+        <h3 id="title">Update Profile</h3>
+
+        <form className="profile-update-form" onSubmit={submitProfile}>
           <div>
             <input
               type="text"
@@ -42,6 +44,7 @@ const ProfileEdit = () => {
             <input
               type="url"
               value={github}
+              required
               onChange={(e) => setGithub(e.target.value)}
             />
           </div>
@@ -57,7 +60,6 @@ const ProfileEdit = () => {
             id="comment-submit"
             //   disabled={comment ? false : true}
             type="submit"
-            onClick={submitProfile}
           >
             Submit
           </button>
