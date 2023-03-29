@@ -96,6 +96,7 @@ export const SignUp = () => {
               placeholder="ProfileImage URL(Optional)"
               name="profileImage"
               type="url"
+              required={false}
               value={profileImage}
               onChange={(e) => setProfileImage(e.target.value)}
             />
@@ -106,6 +107,7 @@ export const SignUp = () => {
               placeholder="Github URL(Optional)"
               name="github"
               type="url"
+              required={false}
               value={github}
               onChange={(e) => setGithub(e.target.value)}
             />

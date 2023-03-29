@@ -86,7 +86,7 @@ export const signUp_api = async (
     },
   });
 
-  if (res.status === 201) {
+  if (res.status === 202) {
     console.log("success");
     success();
   } else {
