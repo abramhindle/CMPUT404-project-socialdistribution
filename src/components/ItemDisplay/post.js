@@ -13,9 +13,12 @@ import LikeHeart from "../Buttons/like_button";
 import CommentArrow from "../Buttons/comment_button";
 import ShareIcon from "../Buttons/share_button";
 
-export default function PlainPost(data) {
+export default function Post(data) {
   // Visibility
   let markdown = data["post"]["contentType"] === "text/markdown" ? true : false;
+  let image =
+    data["post"]["contentType"].split("/")[0] === "image" ? true : false;
+  console.log(data);
   let shareable =
     data["post"]["visibility"] === "PUBLIC" ||
     data["post"]["visibility"] === "FRIENDS"
@@ -94,13 +97,20 @@ export default function PlainPost(data) {
           <h5>
             <Link to={postUrl}>{data["post"]["title"]}</Link>
           </h5>
+          {image && (
+            <img
+              className="posted-image"
+              alt={data["post"]["description"]}
+              src={data["post"]["content"]}
+            />
+          )}
           {markdown && (
             <ReactMarkdown
               className="content"
               children={data["post"]["content"]}
             />
           )}
-          {!markdown && (
+          {!markdown && !image && (
             <div className="content">{data["post"]["content"]}</div>
           )}
         </div>

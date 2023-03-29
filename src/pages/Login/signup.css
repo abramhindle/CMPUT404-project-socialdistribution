@@ -19,7 +19,7 @@
   margin-bottom: 10pt;
 }
 
-.form-group input {
+.form-group > input {
   width: 100%;
   height: 3em;
   border: solid;
@@ -35,8 +35,4 @@
   border: solid;
   border-radius: 5pt;
   border-width: 0.3pt;
-  background-color: var(--driftwood);
-  color: var(--champagne);
-  border-radius: 0.5em;
-  font-size: large;
 }

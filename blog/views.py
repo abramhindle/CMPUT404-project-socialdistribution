@@ -79,14 +79,18 @@ class SignUpView(APIView):
         profileImage = data["profileImage"]
         github = data["github"]
 
-        if not valid_url(github):
-            return Response({"error": "github field should be a url"}, status=400)
-        if not valid_url(profileImage):
-            return Response({"error": "profileImage field should be a url"}, status=400)
+        if github.strip():
+            if not valid_url(github):
+                return Response({"error": "github field should be a url"}, status=400)
+            
+        if profileImage.strip():    
+            if not valid_url(profileImage):
+                return Response({"error": "profileImage field should be a url"}, status=400)
 
         try:
             user = User.objects.create_user(username=username, password=password)
-            Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github, is_active=False)
+            #Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github, is_active=False)
+            Author.objects.create(displayName=displayName, user=user, profileImage=profileImage, github=github) # For now
             return Response({"success": "Sign Up Requested!"}, status=202)
         except IntegrityError:
             return Response({"error": "Username already in use"}, status=409)
