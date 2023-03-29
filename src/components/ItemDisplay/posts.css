@@ -30,6 +30,11 @@
     padding: 0.5em;
 }
 
+img.posted-image {
+    max-width: 50vw;
+    max-height: 100vh;
+}
+
 .content {
     width: fit-content;
     margin: 0;

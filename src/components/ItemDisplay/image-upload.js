@@ -18,6 +18,7 @@ export default function ImageUpload() {
 
     const submit = async (e) => { 
         console.log("Submitting Image...");
+
         let data = {
             "title": title,
             "description": description,
@@ -30,8 +31,7 @@ export default function ImageUpload() {
 
         e.preventDefault();
         console.log(user, "is attempting to post", data);
-        await post_api(user, data, setPosted, setFollowers)
-                .then(send_api(followers, posted));
+        await post_api(user, data, setPosted, setFollowers).then(send_api(followers, posted));
     };
 
     const handleCheckbox = (e) => {
@@ -60,10 +60,11 @@ export default function ImageUpload() {
 
     const uploadImage = async (event) => {
         const file = event.target.files[0];
+        console.log(event.target.files[0]);
+        setContentType(file.type);
         const base64 = await convertBase64(file);
         document.getElementById("avatar").src = base64;
-
-        //TODO, upload file to db
+        setBody(base64);
     };
 
     return (
