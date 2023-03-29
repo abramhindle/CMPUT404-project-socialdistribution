@@ -8,6 +8,8 @@ import requests
 from service.models.post import Post
 
 
+HOST = settings.REMOTE_USERS[0][1]
+
 # AUTHOR HELPERS
 
 def get_or_create_author(author_json, hostname):
@@ -111,3 +113,59 @@ def get_or_create_post(post_json, author, hostname):
         return new_post
 
 # FOLLOWER HELPERS
+def serialize_follow_request(request):
+    author_guid = request["object"]["url"].rsplit('/', 1)[-1]
+    try:
+        response = requests.get(HOST + "service/authors/" + author_guid + "/",
+                                auth=settings.REMOTE_USERS[0][2])
+        response.close()
+    except:
+        return None
+
+    author = response.json()
+
+    if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        author = None
+        return author
+
+    print(author)
+
+    request["actor"]["type"] = "author"
+
+    json_request = {
+        "type": "Follow",
+        "summary": request["Summary"],
+        "actor": request["actor"], #our own author
+        "object": author
+    }
+
+    print(json_request)
+
+    url = HOST + "service/authors/" + author_guid + "/inbox/"
+    print(url)
+    try:  # try get Author
+        response = requests.post(url, json=json_request, auth=settings.REMOTE_USERS[0][2])
+        response.close()
+    except Exception as e:
+        print(e)
+        return None  # just say not found
+
+    print(response.status_code)
+    return response
+
+def handle_inbox(body):
+    response = None
+    if body["type"] == "post":
+        pass
+        #self.handle_post(inbox, id, body, author, request.user)
+    elif body["type"] == "comment":
+        #self.handle_comment(inbox, id, body, author)
+        pass
+    elif body["type"] == "follow":
+        response = serialize_follow_request(body)
+    elif body["type"] == "Like":
+        pass
+        #id = Like.create_like_id(body["author"]["id"], body["object"])
+
+    return response

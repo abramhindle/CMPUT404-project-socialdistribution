@@ -96,7 +96,8 @@ class InboxView(APIView):
 
         # remote-user-t14
         if author.host == settings.REMOTE_USERS[0][1]:
-            return HttpResponse()
+            response = team_14.handle_inbox(body)
+            return HttpResponse(status=202)
 
         # remote-user-t22
         if author.host == settings.REMOTE_USERS[1][1]:
