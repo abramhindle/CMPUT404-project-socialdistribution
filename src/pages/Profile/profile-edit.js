@@ -43,23 +43,21 @@ const ProfileEdit = () => {
             />
           </div>
           <div>
-            Github
-            <input
-              type="url"
-              value={github}
-              placeholder="Github"
-              required
-              onChange={(e) => setGithub(e.target.value)}
-            />
-          </div>
-          <div>
             Profile Image
             <input
               type="url"
               value={profileImage}
-              placeholder="Profile Image"
-              required
+              placeholder="Profile Image (Optional)"
               onChange={(e) => setProfileImage(e.target.value)}
+            />
+          </div>
+          <div>
+            Github
+            <input
+              type="url"
+              value={github}
+              placeholder="Github (Optional)"
+              onChange={(e) => setGithub(e.target.value)}
             />
           </div>
           <button
