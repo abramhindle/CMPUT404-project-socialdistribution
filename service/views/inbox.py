@@ -132,7 +132,6 @@ class InboxView(APIView):
                 id = body["id"]
                 self.handle_comment(inbox, id, body, author)
             elif body["type"] == "follow": #TODO: fill these in once the objects are done
-
                 self.handle_follow(inbox, body, author)
             elif body["type"] == "Like":
                 id = Like.create_like_id(body["author"]["id"], body["object"])
@@ -213,16 +212,17 @@ class InboxView(APIView):
 #TODO: get or create author from the user
     def handle_follow(self, inbox: Inbox, body, author: Author): # we actually create the follow request here
         foreign_author = Author()
-        foreign_author.toObject(body["object"])
 
         if author.host == settings.REMOTE_USERS[0][1]: #get the post from each DB
-            author = team_14.get_or_create_author(body["actor"])
+            foreign_author = team_14.get_or_create_author(body["actor"])
         elif author.host == settings.REMOTE_USERS[1][1]:
-            author = team_22.get_or_create_author(body["actor"])
+            foreign_author = team_22.get_or_create_author(body["actor"])
         elif author.host == settings.REMOTE_USERS[2][1]:
-            author = team_16.get_or_create_author(body["actor"])
+            foreign_author = team_16.get_or_create_author(body["actor"])
         elif author.host == settings.REMOTE_USERS[3][1]:
-            author = team_10.get_or_create_author(body["actor"])
+            foreign_author = team_10.get_or_create_author(body["actor"])
+        else:
+            foreign_author = foreign_author.toObject(body["actor"])
 
         if author._id == foreign_author._id:
             return HttpResponseBadRequest() #can't follow yourself!
@@ -232,15 +232,13 @@ class InboxView(APIView):
             raise ConflictException # request already exists
         except ObjectDoesNotExist:
             r = Follow()
-            r._id = Follow.create_follow_id(foreign_author._id,author._id)
+            r._id = Follow.create_follow_id(foreign_author._id, author._id)
             r.actor = author
             r.object = foreign_author
             r.save()
 
         inbox.follow_requests.add(r)
         inbox.save()
-
-        return HttpResponse(status=409)
 
     def handle_like(self, inbox: Inbox, id, body, author: Author):
         like = inbox.likes.all().filter(_id=id)

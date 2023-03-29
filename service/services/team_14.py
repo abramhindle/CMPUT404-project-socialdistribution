@@ -54,9 +54,10 @@ def get_single_author(author):
 
     return get_or_create_author(response.json(), author.host)
 
-def get_multiple_authors():
+def get_multiple_authors(page, size):
+    #TODO: fix hardcoded page and size
     try:
-        response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/", auth=settings.REMOTE_USERS[0][2])
+        response = requests.get(settings.REMOTE_USERS[0][1] + "service/authors/?page=" + page + "&size=20", auth=settings.REMOTE_USERS[0][2])
         response.close()
     except:
         return
