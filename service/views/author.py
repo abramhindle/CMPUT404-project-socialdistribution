@@ -7,10 +7,11 @@ from django.views import View
 from service.models.author import Author
 from service.service_constants import *
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-
 class MultipleAuthors(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -34,7 +35,9 @@ class MultipleAuthors(APIView):
 
         return HttpResponse(json.dumps(authors), content_type=CONTENT_TYPE_JSON)
 
+
 class SingleAuthor(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post"]
 
     def get(self, request, *args, **kwargs):
@@ -77,7 +80,6 @@ class SingleAuthor(APIView):
         author_json = author.toJSON()
 
         return HttpResponse(json.dumps(author_json), status=202, content_type=CONTENT_TYPE_JSON)
-
 
 def encode_list(authors):
     return {

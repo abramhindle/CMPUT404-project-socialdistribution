@@ -27,9 +27,10 @@ export const SignIn = () => {
   };
 
   return (
-    <div className="Auth-form-container">
+    <div className="Auth-form-container Signin">
       <form className="Auth-form" onSubmit={submit}>
-        <h1 className="Auth-form-title">Sign In</h1>
+        <h1>Social Distribution</h1>
+        <h3 className="Auth-form-title">Sign In</h3>
         <div className="form-group mt-3">
           <input
             className="form-control mt-1"

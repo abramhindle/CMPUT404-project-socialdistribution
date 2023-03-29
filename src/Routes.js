@@ -3,9 +3,13 @@ import { PrivateRoute, SignInRoute } from "./utils/CustomRoute";
 import SignIn from "./pages/Login/Signin";
 import SignUp from "./pages/Login/Signup";
 import Friends from "./pages/Friends/friends";
+import Followed from "./pages/Friends/followed";
+import Followers from "./pages/Friends/followers";
+import Request from "./pages/Friends/request";
 import Posts from "./pages/Posts/new-post-page";
-import Main from "./pages/Main";
+import Stream from "./pages/Stream";
 import Profile from "./pages/Profile/profile";
+import Realfriends from "./pages/Friends/realfriends";
 import PostDetail from "./pages/Posts/post-detail";
 
 function App() {
@@ -18,20 +22,18 @@ function App() {
             path="/"
             element={
               <PrivateRoute>
-                <Main filter="feed" />
+                <Stream filter="stream"/>
               </PrivateRoute>
-            }
-          >
-            <Route
-              path="feed"
-              element={
-                <PrivateRoute>
-                  <Main filter="feed" />
-                </PrivateRoute>
-              }
-            ></Route>
-            <Route path="foryou" />
-            <Route path="likes" />
+            }>
+              <Route path="inbox"
+                element={
+                  <PrivateRoute>
+                    <Stream filter="inbox" />
+                  </PrivateRoute>
+                }>
+                </Route>
+              <Route path="foryou"/>
+              <Route path="likes"/>
           </Route>
           {/* Friends */}
           <Route
@@ -40,13 +42,32 @@ function App() {
               <PrivateRoute>
                 <Friends />
               </PrivateRoute>
+            }/>
+              <Route path="/friends/requests"
+                element={
+                  <PrivateRoute>
+                    <Request />
+                  </PrivateRoute>
+              }/>
+              <Route path="/friends/true"
+                element={
+                  <PrivateRoute>
+                    <Realfriends />
+                  </PrivateRoute>
             }
-          >
-            <Route path="requests" />
-            <Route path="true" />
-            <Route path="followed" />
-            <Route path="followers" />
-          </Route>
+              />
+            <Route path="/friends/followed"
+              element={
+                <PrivateRoute>
+                  <Followed />
+                </PrivateRoute>
+            }/>
+              <Route path="/friends/followers"
+              element={
+                <PrivateRoute>
+                  <Followers />
+                </PrivateRoute>
+            }/>
           {/* Posting */}
           <Route
             path="/posts"
@@ -54,10 +75,14 @@ function App() {
               <PrivateRoute>
                 <Posts />
               </PrivateRoute>
-            }
-          >
-            <Route path="new" />
-            <Route path="sent" />
+            }>
+            <Route path="new"
+            element={
+              <PrivateRoute>
+                <Posts />
+              </PrivateRoute>
+            }/>
+            <Route path="sent"/>
           </Route>
           <Route
             path="user/:author_id"

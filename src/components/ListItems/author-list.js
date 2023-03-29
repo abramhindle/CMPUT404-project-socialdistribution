@@ -1,5 +1,5 @@
 import React from 'react'
-import './post-list.css';
+import './author-list.css';
 
 function AuthorList({user_list}) { //gets a json object, and returns a list item for it
    
@@ -19,7 +19,7 @@ function AuthorList({user_list}) { //gets a json object, and returns a list item
     return (
     <div className='followersList'>
         <ul className='followers'>
-            {user_list.items.map((list_item) => <li className='follower' key={list_item.id}> {formatFollowerList(list_item)} </li>)};
+            {user_list.items.map((list_item) => <li className='follower' key={list_item.id}> {formatFollowerList(list_item)} </li>)}
         </ul>
     </div>
     );

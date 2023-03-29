@@ -1,9 +1,12 @@
-//import './friends.css';
+import './friends.css';
+import '../pages.css'
 import { get_author }from '../../api/author_api'
 import { get_all_authors }from '../../api/author_api'
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux"
 import { add_followers_for_author } from '../../api/follower_api';
+import { add_request } from '../../api/follower_api';
+import { post_inbox } from "../../api/inbox_api";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -20,13 +23,13 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Sidebar from '../../components/Sidebar/sidebar';
 
 
 
 function Friends() {
 
     const user = useSelector((state) => state.user);
-    const author_id = `http://localhost/authors/${user.id}/`
     const [follow_list, setList] = useState({"items": []}); 
     const [success, setSuccess] = useState(null); 
     const navigate = useNavigate();
@@ -49,8 +52,19 @@ function Friends() {
     
     get_search_params();
 
-    const followAuthor= (follow_id) => {
-        add_followers_for_author(user.id, follow_id, onSuccess)
+    //no need to handle anything here
+    const followAuthor= (object) => {
+        
+        const obj = {
+          "type":"follow",
+          "Summary": user.displayName + " wants to follow " + object.displayName,
+          "actor":user,
+          "object":object
+        }
+
+        post_inbox(user.id,obj,onSuccess);
+        //add_request(user.id, obj, onSuccess)
+        //add_followers_for_author(user.id, follow_id, onSuccess)
     }
 
     const onSuccess = () => {
@@ -58,14 +72,12 @@ function Friends() {
     }
     
     const page_buttons = () => {
-
-    /*  need fix here! */
  
-        if (follow_list.items.length < 5 && page == 1)
+        if (follow_list.items.length < 5 && page === 1)
         {
           return;
         }
-        if (page == 1)
+        if (page === 1)
         {
             return (<button onClick={forward_page}>Next Page</button>);
         } 
@@ -104,30 +116,33 @@ function Friends() {
     return (
         
         <>
+        <Sidebar/>
+        <div className="sidebar-offset">
         <div>
         <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
-          <Toolbar variant="dense">
-            <Button
+          <Toolbar variant="dense" className="table-head">
+          <Typography variant="h6" align="left" color="inherit" component="div">
+            Add friends
+          </Typography>
+          <Button
                 variant="contained"
+                id="back"
                 onClick={goBack}
                 >
                 back
             </Button>
-          <Typography variant="h6" align="left" color="inherit" component="div">
-            Add friends
-          </Typography>
           </Toolbar>
         </AppBar>
         </Box>
         </div>
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
+        <TableContainer component={Paper} className="table-container">
+        <Table sx={{ minWidth: 650 }} aria-label="simple table" className="table">
+          <TableHead className="table-titles">
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Follow</TableCell>
+              <TableCell id="title">ID</TableCell>
+              <TableCell id="title" align="right">Name</TableCell>
+              <TableCell id="title" align="right">Follow</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -143,7 +158,8 @@ function Friends() {
                 <TableCell align="right">
                   <Button
                     variant="contained"
-                    onClick={(e) => followAuthor(row.id)}
+                    id="follow"
+                    onClick={(e) => followAuthor(row)}
                   >
                     follow
                   </Button>
@@ -155,6 +171,7 @@ function Friends() {
       </TableContainer>
       <div style={{ width: "100%", textAlign: "center", paddingTop: 16 }}>
           {page_buttons()}
+      </div>
       </div>
       
 

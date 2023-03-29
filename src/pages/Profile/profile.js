@@ -1,14 +1,12 @@
 import Sidebar from "../../components/Sidebar/sidebar";
+import '../pages.css'
 import "./profile.css";
 import { get_author } from "../../api/author_api";
 import { useEffect, useState } from "react";
 import {
-  Navigate,
-  Route,
   useLocation,
   useNavigate,
-  useParams,
-  useSearchParams,
+  useParams
 } from "react-router-dom";
 import { get_author_posts } from "../../api/post_display_api";
 import { get_followers_for_author } from "../../api/follower_api";
@@ -114,7 +112,7 @@ function Profile() {
       <div>
         <Sidebar />
       </div>
-      <div className="myprofile">
+      <div className="myprofile sidebar-offset">
         <div className="profileHead">
           <h1>{author.displayName}</h1>
           GitHub: {author.github}
@@ -127,7 +125,7 @@ function Profile() {
             </ul>
           </nav>
         </div>
-        <div className="profileContent">{populateList()};</div>
+        <div className="profileContent">{populateList()}</div>
         {page_buttons()}
       </div>
     </div>

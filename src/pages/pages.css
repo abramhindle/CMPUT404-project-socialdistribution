@@ -1,0 +1,9 @@
+div.Page {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.sidebar-offset {
+    margin-left: 26vh; /* width of sidebar = width profile image + 2*profile padding */
+}

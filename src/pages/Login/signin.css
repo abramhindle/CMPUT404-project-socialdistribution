@@ -1,7 +1,3 @@
-body {
-  background-color: #57534c;
-}
-
 .Auth-form {
   position: absolute;
   left: 50%;
@@ -18,12 +14,12 @@ body {
   margin-top: 0pt;
 }
 
-div {
+.Auth-form div {
   margin-top: 10pt;
   margin-bottom: 10pt;
 }
 
-.form-group > input {
+.form-group input {
   width: 100%;
   height: 3em;
   border: solid;
@@ -39,4 +35,8 @@ div {
   border: solid;
   border-radius: 5pt;
   border-width: 0.3pt;
+  background-color: var(--driftwood);
+  color: var(--champagne);
+  border-radius: 0.5em;
+  font-size: large;
 }

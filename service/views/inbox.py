@@ -14,6 +14,8 @@ from service.models.like import Like
 from service.models.post import Post
 from service.service_constants import *
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
 
@@ -22,6 +24,7 @@ from rest_framework.views import APIView
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InboxView(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "delete"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -166,6 +169,31 @@ class InboxView(APIView):
         inbox.save()
 
     def handle_follow(self, inbox: Inbox, id, body, author: Author): # we actually create the follow request here
+        foreign_author = Author()
+        foreign_author.toObject(body["object"])
+        
+        if author._id == foreign_author._id:
+            return HttpResponseBadRequest() #can't follow yourself!
+
+        #author = Author.objects.get(_id = author._id)
+        #followed = Author.objects.get(_id = foreign_author_id)
+
+        try:
+            foreign_author.followers.get(_id=author._id)
+        except ObjectDoesNotExist:
+            r = Follow()
+            r._id = Follow.create_follow_id(foreign_author._id,author._id)
+            r.actor = author
+            r.object = foreign_author
+            r.save()
+
+            r_json = r.toJSON()
+
+            return HttpResponse(json.dumps(r_json), status=201, content_type = CONTENT_TYPE_JSON)
+
+        return HttpResponse(status=409)
+
+        """
         follow_req = inbox.follow_requests.all().filter(_id=id)
 
         if follow_req.exists():
@@ -179,6 +207,8 @@ class InboxView(APIView):
         except ObjectDoesNotExist:  # only create request if they are NOT already being followed
             follow_request = Follow.objects.create(actor=foreign_author, object=author)
             inbox.follow_requests.add(follow_request)
+        """
+       
 
     def handle_like(self, inbox: Inbox, id, body, author: Author):
         like = inbox.likes.all().filter(_id=id)
@@ -202,7 +232,8 @@ class InboxView(APIView):
             like = Like()
             like._id = id
             like.context = body["context"]
-            if(body["object"].split("/")[-2] == "post"):
+
+            if(body["object"].split("/")[-2] == "posts"):
                 like.summary = f"{foreign_author.displayName} likes your post"
             else:
                 like.summary = f"{foreign_author.displayName} likes your comment"
