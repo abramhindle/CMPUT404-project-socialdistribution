@@ -14,8 +14,8 @@ class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  # link an Author to a registered user -> not required
     url = models.URLField(blank=True, null=True, unique=True)  # this is essentially the ID we get from a remote host (or just the id if its local)
     displayName = models.CharField(max_length=128)
-    github = models.URLField()
-    profileImage = models.URLField()
+    github = models.URLField(blank=True)
+    profileImage = models.URLField(blank=True)
     followers = models.ManyToManyField('Author', blank=True)
     is_active = models.BooleanField(default=True)
 

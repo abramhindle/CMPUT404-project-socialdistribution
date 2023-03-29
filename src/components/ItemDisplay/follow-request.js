@@ -10,37 +10,32 @@ export default function FollowRequest(data) {
   const user = useSelector((state) => state.user);
   console.log("Data passed to FollowRequest obj:", data);
   const [follow_list, setList] = useState({"items": []}); 
-  const [success, setSuccess] = useState(null); 
+  const [success, setSuccess] = useState(false); 
   const navigate = useNavigate();
 
   const port = window.location.port ? `:${window.location.port}` : "";
   const authorUrl = `//${window.location.hostname}${port}/user/${(
-    data.data.author.id ?? ""
+    data.data.actor.id ?? ""
   )
     .split("/")
     .pop()}`; // allows linking to the author who sent request
 
-    useEffect(() => { 
-        get_request(user.id, setList)
-      
-    }, []);
-  
-    const DeleteRequest= (actor_id) => {
-        delete_request(user.id, actor_id, onSuccess)
-    }
-  
-    const AcceptRequest= (actor_id) => {
-        add_followers_for_author(user.id, actor_id, onSuccess)
-        delete_request(user.id, actor_id, onSuccess)
-    }
+  useEffect(() => { 
+      get_request(user.id, setList)
+  }, [success]);
 
-    const onSuccess = () => {
-        setSuccess(true);
-    }
-    
-    const goBack = () => {
-        navigate("/");
-    };
+  const DeleteRequest= () => {
+    delete_request(user.id, data.data.actor.id, onSuccess)
+  }
+
+  const AcceptRequest= () => {
+      add_followers_for_author(user.id, data.data.actor.id, onSuccess)
+      delete_request(user.id, data.data.actor.id, onSuccess)
+  }
+
+  const onSuccess = () => {
+      setSuccess(true);
+  }
 
   return (
     <div className="hflex">
@@ -48,18 +43,17 @@ export default function FollowRequest(data) {
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">
           <a href={authorUrl}>
-          {<img alt="author" src={data.author.profileImage}></img>}
+          {<img alt="author" src={data.data.actor.profileImage}></img>}
           </a>
         </div>
-        <h5 style={{"marginLeft":"0", "color":"white"}}>
-            <a href={authorUrl}>{data.author.displayName}</a>
-             wants to follow you!
-             <div className="vflex">
-                <button onClick={AcceptRequest}>accept</button>
-                <button onClick={DeleteRequest}>reject</button>
-             </div>
+        <h5>
+            <a href={authorUrl}>{data.data.actor.displayName}</a> wants to follow you!
         </h5>
 
+      </div>
+      <div className="buttons hflex">
+                <button onClick={AcceptRequest}>accept</button>
+                <button onClick={DeleteRequest}>reject</button>
       </div>
     </div>
   );

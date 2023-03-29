@@ -45,7 +45,7 @@ CORS_ORIGIN_WHITELIST = [
 
 ]
 
-CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken', 'authorization']
+CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken', 'authorization', 'referer']
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",

@@ -33,7 +33,7 @@ export const signIn_api = async (username, password, success) => {
     .then(function (res) {
       const csrftoken = getCookie("csrftoken");
       axios.defaults.headers.post["X-CSRFToken"] = csrftoken;
-      success(res);
+      success(res.data.author);
     })
     .catch(function (error) {
       console.log(error);
@@ -57,6 +57,36 @@ export const signOut_api = async (success) => {
     withCredentials: true,
   });
   if (res.status === 200) {
+    console.log("success");
+    success();
+  } else {
+    console.log("failed");
+  }
+};
+
+export const signUp_api = async (
+  username,
+  password,
+  displayName,
+  profileImage,
+  github,
+  success
+) => {
+  const user = {
+    username: username,
+    password: password,
+    displayName: displayName,
+    profileImage: profileImage,
+    github: github,
+  };
+  const res = await axios.post("api/signup/", user, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status === 202) {
     console.log("success");
     success();
   } else {
