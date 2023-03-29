@@ -131,8 +131,8 @@ class InboxView(APIView):
                 id = body["id"]
                 self.handle_comment(inbox, id, body, author)
             elif body["type"] == "follow": #TODO: fill these in once the objects are done
-                id = Follow.create_follow_id(body["object"]["id"], body["actor"]["id"])
-                self.handle_follow(inbox, id, body, author)
+
+                self.handle_follow(inbox, body, author)
             elif body["type"] == "Like":
                 id = Like.create_like_id(body["author"]["id"], body["object"])
                 self.handle_like(inbox, id, body, author)
@@ -198,26 +198,6 @@ class InboxView(APIView):
 
     def handle_comment(self, inbox: Inbox, id, body, author):
         # no idea how to handle this remotely with the spec
-        #post = Post.objects.get(_id=post_id)
-
-        # try:
-        #
-        # except ObjectDoesNotExist:
-        #     # comment._id = Comment.create_comment_id(self.author_id, self.post_id)
-        #     # comment.comment = body["comment"]
-        #     # comment.author = author
-        #     # comment.post = post
-        #     #
-        #     # is_valid = False
-        #     # if (body["contentType"] in ("text/markdown", "text/plain")):
-        #     #     is_valid = True
-        #     #
-        #     # if not is_valid:
-        #     #     raise KeyError #probably not a good choice
-        #     #
-        #     # comment.contentType = body["contentType"]
-        #     # comment.published = body["published"]
-        #     raise Exception
 
         comment = inbox.comments.all().filter(_id=id)
 
@@ -230,10 +210,19 @@ class InboxView(APIView):
         inbox.save()
 
 #TODO: get or create author from the user
-    def handle_follow(self, inbox: Inbox, id, body, author: Author): # we actually create the follow request here
+    def handle_follow(self, inbox: Inbox, body, author: Author): # we actually create the follow request here
         foreign_author = Author()
         foreign_author.toObject(body["object"])
-        
+
+        if author.host == settings.REMOTE_USERS[0][1]: #get the post from each DB
+            author = team_14.get_or_create_author(body["actor"])
+        elif author.host == settings.REMOTE_USERS[1][1]:
+            author = team_22.get_or_create_author(body["actor"])
+        elif author.host == settings.REMOTE_USERS[2][1]:
+            author = team_16.get_or_create_author(body["actor"])
+        elif author.host == settings.REMOTE_USERS[3][1]:
+            author = team_10.get_or_create_author(body["actor"])
+
         if author._id == foreign_author._id:
             return HttpResponseBadRequest() #can't follow yourself!
 

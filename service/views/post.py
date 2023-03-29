@@ -43,7 +43,6 @@ class PostCreation(APIView, RestService):
         size = request.GET.get('size', 5)
 
         # fetch remote posts for the author if they are marked as remote
-
         # remote-user-t14
         if author.host == settings.REMOTE_USERS[0][1]:
             team_14.get_multiple_posts(author)
@@ -68,7 +67,6 @@ class PostCreation(APIView, RestService):
             request_author_is_follower = request_author.followers.filter(_id=author._id).exists()
 
             if not author_is_follower or not request_author_is_follower: #don't show friend posts
-                print("NOT FRIENDS")
                 post_queryset = post_queryset.filter(visibility="PUBLIC") #only public visibility
 
         paged_posts = Paginator(post_queryset, size or 5)  # default to size 5
