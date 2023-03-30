@@ -1,5 +1,8 @@
 #from django.contrib.auth.models import User, Group
+import os
 from rest_framework import serializers
+
+from api.utils import build_url, which_node, KNOWN_TEAMS
 from .models import AuthorModel, PostsModel, ImageModel,  CommentsModel, LikeModel, FollowModel, InboxModel, NodeModel
 from rest_framework import validators
 
@@ -20,7 +23,41 @@ class AuthorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author = AuthorModel.objects.create(**validated_data)
         return author
- 
+    
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['url'] = repr['id']
+        
+        # Ensure host is the proper format without accidentally overwriting it
+        # If the host field is the correct format, leave it alone
+        if repr['host'] in KNOWN_TEAMS.keys():
+            pass
+        else:
+            # Else if it is a known team in the incorrect format, fix it
+            node_host = which_node(repr['id'], return_host=True)
+            if node_host != 'TEAM_UNKNOWN':
+                repr['host'] = node_host
+                
+        if KNOWN_TEAMS.get(repr['host']) == 'TEAM_16':
+            repr['profileImage'] = repr['id'] + '/image'
+
+        return repr
+    
+    def to_internal_value(self, data):
+        data['url'] = data['id']
+        
+        # Ensure host is the proper format without accidentally overwriting it
+        # If the host field is the correct format, leave it alone
+        if data['host'] in KNOWN_TEAMS.keys():
+            pass
+        else:
+            # Else if it is a known team in the incorrect format, fix it
+            node_host = which_node(data['id'], return_host=True)
+            if node_host != 'TEAM_UNKNOWN':
+                data['host'] = node_host
+                
+        return super().to_internal_value(data)
+
 
 class PostsSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(required=False)
@@ -61,6 +98,33 @@ class PostsSerializer(serializers.ModelSerializer):
             'validators': []
             },
         }
+        
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        
+        which_team = which_node(repr['id'])
+        
+        # Don't wanna be constantly sending binary image, so replace it with the url if it's ours.
+        if (which_team == 'TEAM_16') and ('image' in repr['contentType']) and ('base64' in repr['content']):
+            repr['content'] = repr['id'] + '/image'
+        
+        # Don't want no localhost in my urls
+        if 'localhost' in repr['source']:
+            repr['source'] = repr['id']
+        if 'localhost' in repr['origin']:
+            repr['origin'] = repr['id']
+
+        return repr
+    
+    def to_internal_value(self, data):
+         # Don't want no localhost in my urls
+        if 'localhost' in data['source']:
+            data['source'] = data['id']
+        if 'localhost' in data['origin']:
+            data['origin'] = data['id']        
+        
+        return super().to_internal_value(data)
+
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -81,10 +145,6 @@ class ImageSerializer(serializers.ModelSerializer):
             image = ImageModel.objects.create(post=post, **validated_data)
             return image
         
-        
-            
-
-
     class Meta:
         model = ImageModel
         fields = ('image', 'author', 'post')
@@ -128,7 +188,6 @@ class CommentsSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(required=False)
     
-
     def create(self, validated_data):
         author_data = validated_data.pop('author')
         author = AuthorModel.objects.get(**author_data)

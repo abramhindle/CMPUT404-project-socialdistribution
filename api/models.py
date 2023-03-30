@@ -52,8 +52,8 @@ class PostsModel(models.Model):
     id = models.URLField(default='', unique=True)
     type = models.CharField(max_length=100, blank=False, default='post')
     title = models.CharField(max_length=100, blank=False, default='')
-    source = models.URLField(default="")
-    origin = models.URLField(blank=False, default=os.getenv('HOST', 'http://localhost:8000'))
+    source = models.URLField(default=os.getenv('HOST', 'http://localhost:8000')+'/service/author/posts')
+    origin = models.URLField(blank=False, default=os.getenv('HOST', 'http://localhost:8000')+'/service/author/posts')
     description = models.TextField(blank=False, default='')
     contentType = models.CharField(max_length=100, blank=False, default='')
     content = models.TextField(blank=False, default='')
@@ -154,7 +154,7 @@ class FollowModel(models.Model):
 
 class InboxModel(models.Model):
     pkid = models.BigAutoField(primary_key=True, editable=False)
-    id = models.UUIDField(default=uuid.uuid4, unique=True)
+    id = models.UUIDField(default=uuid.uuid4, unique=True)      # I'm guessing this must be to avoid uuid clashes when receiving content from multiple servers
 
     class InboxType(models.TextChoices):
         POST = 'post'
