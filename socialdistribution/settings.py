@@ -53,10 +53,10 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken', 'authorization', 'referer']
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    'http://31552.yeg.rac.sh:8000',
-    "https://cmput404-group-project.herokuapp.com",
-    "https://socialdistcmput404.herokuapp.com"
+    "localhost:3000",
+    '31552.yeg.rac.sh:8000',
+    "cmput404-group-project.herokuapp.com",
+    "socialdistcmput404.herokuapp.com"
 ]
 
 # Application definition
