@@ -28,7 +28,6 @@ from rest_framework.permissions import IsAuthenticated
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InboxView(APIView):
-    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "delete"]
 
     def get(self, request: HttpRequest, *args, **kwargs):
@@ -266,7 +265,6 @@ class InboxView(APIView):
             # remote-user-t16
             elif author.host == settings.REMOTE_USERS[2][1]:
                 team_16.get_or_create_author(body["author"])
-
             elif author.host == settings.REMOTE_USERS[3][1]:
                 team_10.get_or_create_author(body["author"])
             else:

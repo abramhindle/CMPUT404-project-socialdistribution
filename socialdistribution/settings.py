@@ -33,8 +33,9 @@ ALLOWED_HOSTS = [
     'http://localhost:3000',
 ]
 
+CORS_REPLACE_HTTPS_REFERER = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
+CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://social-distribution-w23-t17.herokuapp.com',
     'http://127.0.0.1:3000',
