@@ -1,5 +1,6 @@
 import "./posts.css";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export default function Like(data) {
   const user = useSelector((state) => state.user);
@@ -12,13 +13,15 @@ export default function Like(data) {
   const type = data.data.summary.split(" ").pop();
   let postUrl = "";
   const authorUrl = `//${window.location.hostname}${port}/user/${(
-    data.data.author.id ?? ""
+    urlSegments[4] ?? ""
   )
     .split("/")
     .pop()}`; // allows linking to the author who wrote the comment
 
   if (type === "post") {
+    console.log(urlSegments);
     let postId = urlSegments.pop();
+    // console.log(postId);
     postUrl = authorUrl + `/post/${postId}`;
   } else if (type === "comment") {
     //Popping 'comments' and 'commentID' off first
@@ -53,11 +56,11 @@ export default function Like(data) {
         </svg>
 
         <h5>
-          <a href={authorUrl}>{data.data.author.displayName}</a> liked your{" "}
+          <Link to={authorUrl}>{data.data.author.displayName}</Link> liked your{" "}
           {type === "post" ? (
-            <a href={postUrl}>post</a>
+            <Link to={postUrl}>post</Link>
           ) : (
-            <a href={postUrl}> comment</a>
+            <Link to={postUrl}> comment</Link>
           )}
         </h5>
       </div>
