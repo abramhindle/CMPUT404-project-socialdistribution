@@ -872,7 +872,8 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         elif request.data.get('type', '').lower() == 'follow':
             data_follow = request.data
             
-            # print(data_follow)
+            print(data_follow)
+            
             foreign_author = data_follow.get('actor', {})
             if not (type(foreign_author) == dict):
                 foreign_author_id = foreign_author
@@ -881,8 +882,8 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
 
             try:
                 FollowView.create_follow(data_follow, **{
-                    'author_id': author_id,
-                    'foreign_author_id': foreign_author_id
+                    'author_id': foreign_author_id,     # Everything is mixed up, we are treating the foreign author as the local author in create_follow, so I changed the order of the arguments even though it now looks like it doesn't make sense
+                    'foreign_author_id': author_id
                 })
             except Exception as e:
                 print(e)
