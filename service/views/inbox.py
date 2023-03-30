@@ -81,6 +81,8 @@ class InboxView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs):
         self.author_id = kwargs['author_id']
 
+        print(request.body)
+
         # should also go out to the team and get their values
         try:
             author = Author.objects.get(_id=self.author_id, is_active=True)
@@ -130,7 +132,7 @@ class InboxView(APIView):
             elif body["type"] == "comment":
                 id = body["id"]
                 self.handle_comment(inbox, id, body, author)
-            elif body["type"] == "follow": #TODO: fill these in once the objects are done
+            elif body["type"] == "follow" or body["type"] == "Follow": #TODO: fill these in once the objects are done
                 self.handle_follow(inbox, body, author)
             elif body["type"] == "Like":
                 id = Like.create_like_id(body["author"]["id"], body["object"])
@@ -212,17 +214,18 @@ class InboxView(APIView):
 #TODO: get or create author from the user
     def handle_follow(self, inbox: Inbox, body, author: Author): # we actually create the follow request here
 
-        if author.host == settings.REMOTE_USERS[0][1]: #get the post from each DB
+        print(body["actor"]["host"])
+        print(settings.REMOTE_USERS[3][1])
+
+        if body["actor"]["host"] == settings.REMOTE_USERS[0][1]: #get the post from each DB
             foreign_author = team_14.get_or_create_author(body["actor"])
-        elif author.host == settings.REMOTE_USERS[1][1]:
+        elif body["actor"]["host"] == settings.REMOTE_USERS[1][1]:
             foreign_author = team_22.get_or_create_author(body["actor"])
-        elif author.host == settings.REMOTE_USERS[2][1]:
+        elif body["actor"]["host"] == settings.REMOTE_USERS[2][1]:
             foreign_author = team_16.get_or_create_author(body["actor"])
-        elif author.host == settings.REMOTE_USERS[3][1]:
+        elif body["actor"]["host"] == settings.REMOTE_USERS[3][1]:
             foreign_author = team_10.get_or_create_author(body["actor"])
         else:
-            print(body["actor"])
-            #foreign_author = foreign_author.toObject(body["actor"])
             foreign_author = Author.objects.get(_id=body["actor"]["id"])
 
         if author._id == foreign_author._id:
