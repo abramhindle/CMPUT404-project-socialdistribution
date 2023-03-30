@@ -872,10 +872,12 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         elif request.data.get('type', '').lower() == 'follow':
             data_follow = request.data
             
-            print(request)
-            print(data_follow)
-            
-            foreign_author_id = data_follow.get('actor', {}).get('id')
+            # print(data_follow)
+            foreign_author = data_follow.get('actor', {})
+            if not (type(foreign_author) == dict):
+                foreign_author_id = foreign_author
+            else:
+                foreign_author_id = foreign_author.get('id')
 
             try:
                 FollowView.create_follow(data_follow, **{
