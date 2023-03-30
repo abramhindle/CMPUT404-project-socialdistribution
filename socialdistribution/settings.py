@@ -29,8 +29,13 @@ SECRET_KEY = 'django-insecure-dybliy2*u14hioctad94q0woplw9gz0oeqt+22xcyw=qr7bkg3
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'http://localhost:8000',
     'http://localhost:3000',
+    'https://social-distribution-w23-t17.herokuapp.com',
+    'http://127.0.0.1:3000',
+    'http://localhost:8000',
+    'http://31552.yeg.rac.sh:8000',
+    "https://cmput404-group-project.herokuapp.com",
+    "https://socialdistcmput404.herokuapp.com"
 ]
 
 CORS_REPLACE_HTTPS_REFERER = True
