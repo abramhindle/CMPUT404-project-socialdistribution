@@ -169,8 +169,8 @@ def serialize_follow_request(request):
     #print(response.json())
     return response
 
-def serialize_post(request):
-    author_guid = request["author"]["url"].rsplit('/', 1)[-1]
+def serialize_post(request, author):
+    author_guid = author.url.rsplit('/', 1)[-1]
     print(author_guid)
 
     request["comments"] = request["id"] + "/comments/"
@@ -198,10 +198,10 @@ def serialize_post(request):
     print(response.json())
     return response
 
-def handle_inbox(body):
+def handle_inbox(body, author):
     response = None
     if body["type"] == "post":
-        response = serialize_post(body)
+        response = serialize_post(body, author)
     elif body["type"] == "comment":
         #self.handle_comment(inbox, id, body, author)
         pass
