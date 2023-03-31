@@ -10,10 +10,14 @@ export const post_comment = async (
   commentAuthorId
 ) => {
   console.log("Attempting to post a comment for", { postId });
-  const data = { contentType: type, comment: comment };
+  const data = {
+    contentType: type,
+    comment: comment,
+    commentAuthorId: commentAuthorId,
+  };
 
   const res = await axios.post(
-    `authors/${commentAuthorId}/posts/${postId}/comments/`,
+    `authors/${postAuthorId}/posts/${postId}/comments/`,
     data,
     {
       headers: {

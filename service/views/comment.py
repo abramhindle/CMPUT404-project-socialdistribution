@@ -57,13 +57,13 @@ class CommentView(APIView):
         self.author_id = kwargs['author_id']
         self.post_id = kwargs['post_id']
 
+        body = request.data
+
         try:
             post = Post.objects.get(_id=self.post_id)
-            author = Author.objects.get(_id=self.author_id, is_active=True)
+            author = Author.objects.get(_id=body["commentAuthorId"], is_active=True)
         except:
             return HttpResponseNotFound()
-
-        body = request.data
 
         comment = Comment()
 
