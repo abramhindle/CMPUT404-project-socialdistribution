@@ -190,6 +190,8 @@ def serialize_post(request):
         return None  # just say not found
 
     if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        print(response.text)
         return None
 
     print(response.status_code)
