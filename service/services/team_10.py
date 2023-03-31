@@ -170,7 +170,8 @@ def serialize_follow_request(request):
     return response
 
 def serialize_post(request):
-    author_guid = request["object"]["url"].rsplit('/', 1)[-1]
+    author_guid = request["url"].rsplit('/', 1)[-1]
+    print(author_guid)
 
     request["comments"] = request["id"] + "/comments/"
     if request["visibility"] == "PUBLIC":
