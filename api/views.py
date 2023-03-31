@@ -651,6 +651,9 @@ class CommentsView(generics.ListCreateAPIView):
             if author:
                 comment_data['author'] = AuthorSerializer(author).data
         if serializer.is_valid(raise_exception=True):
+            
+            print(serializer.validated_data)
+            
             serializer.save()
             
             return serializer.data
@@ -889,6 +892,8 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         
         elif item_type == 'comment':
             data_comment = request.data
+            
+            print(data_comment)
 
             author_id = kwargs['author_id']
             comment_id:str =data_comment.get('id')
