@@ -3,11 +3,12 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 export default function Like(data) {
-  const user = useSelector((state) => state.user);
   console.log("Data passed to Like obj:", data);
 
   const port = window.location.port ? `:${window.location.port}` : "";
   const urlSegments = data.data.object.split("/");
+
+  console.log("URL", urlSegments);
 
   //check type, build links
   const type = data.data.summary.split(" ").pop();
@@ -17,18 +18,23 @@ export default function Like(data) {
   )
     .split("/")
     .pop()}`; // allows linking to the author who wrote the comment
+  const objectAuthorUrl = `//${window.location.hostname}${port}/user/${(
+    urlSegments[4] ?? ""
+  )
+    .split("/")
+    .pop()}`; // allows linking to the author who wrote the comment
 
   if (type === "post") {
     console.log(urlSegments);
     let postId = urlSegments.pop();
     // console.log(postId);
-    postUrl = authorUrl + `/post/${postId}`;
+    postUrl = objectAuthorUrl + `/post/${postId}`;
   } else if (type === "comment") {
     //Popping 'comments' and 'commentID' off first
     urlSegments.pop();
     urlSegments.pop();
     let postId = urlSegments.pop(); //link to post
-    postUrl = authorUrl + `/post/${postId}`;
+    postUrl = objectAuthorUrl + `/post/${postId}`;
   }
 
   return (

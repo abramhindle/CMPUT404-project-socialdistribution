@@ -33,11 +33,10 @@ export default function Comment(data) {
     get_liked(id, data.updateList);
   };
 
-  console.log(data.data);
-
   const handleLike = () => {
     if (!liked) {
       comment_like(
+        data.data.id.split("/")[4],
         data.data.author.id,
         user,
         postUrl,

@@ -76,6 +76,7 @@ export const post_like = async (
 };
 
 export const comment_like = async (
+  objectAuthorId,
   likedAuthorId,
   likeAuthor,
   postId,
@@ -87,7 +88,7 @@ export const comment_like = async (
     type: "Like",
     context: context,
     author: likeAuthor,
-    object: `https://social-distribution-w23-t17.herokuapp.com/authors/${likedAuthorId
+    object: `https://social-distribution-w23-t17.herokuapp.com/authors/${objectAuthorId
       .split("/")
       .pop()}/posts/${postId.split("/").pop()}/comments/${commentId
       .split("/")
