@@ -904,8 +904,14 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             
             print(data_comment)
 
-            # author_id = kwargs['author_id']
+            author_id = kwargs['author_id']
+            
+            print(author_id)
+            
             comment_id:str = data_comment.get('id')
+            
+            print(comment_id)
+            
             post_id = comment_id.split('/')[-3]
             
             print(post_id)
