@@ -38,7 +38,6 @@ def handle_post(inbox: Inbox, id, body, author, user):
         post = team_16.get_or_create_post(body, author, author.host)
         post_id = post._id
     elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
-        print("HERE")
         author = team_10.get_or_create_author(body["author"])
         post = team_10.get_or_create_post(body, author)
         post_id = post._id
