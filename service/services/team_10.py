@@ -198,8 +198,6 @@ def serialize_post(request, author):
         print(response.text)
         return None
 
-    print(response.status_code)
-    print(response.json())
     return response
 
 def handle_inbox(body, author):
