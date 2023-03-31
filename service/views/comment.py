@@ -57,7 +57,11 @@ class CommentView(APIView):
         self.author_id = kwargs['author_id']
         self.post_id = kwargs['post_id']
 
-        body = request.data
+        try: 
+            body = request.data
+        except:
+            body = request.body.decode(UTF8)
+            body = json.loads(body)
 
         try:
             post = Post.objects.get(_id=self.post_id)

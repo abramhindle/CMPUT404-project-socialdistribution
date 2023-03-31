@@ -56,7 +56,11 @@ class SingleAuthor(APIView):
         return HttpResponse(json.dumps(author_json), content_type=CONTENT_TYPE_JSON)
 
     def post(self, request: HttpRequest, *args, **kwargs):
-        body = request.data
+        try: 
+            body = request.data
+        except:
+            body = request.body.decode(UTF8)
+            body = json.loads(body)
 
         author_id = kwargs['author_id']
 
