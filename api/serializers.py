@@ -66,7 +66,7 @@ class PostsSerializer(serializers.ModelSerializer):
         
         author_data = validated_data.pop('author', None)
         
-        author = AuthorModel.objects.get(author_data.get('id'))
+        author = AuthorModel.objects.get(id=author_data.get('id'))
         post = PostsModel.objects.create(author=author, **validated_data)
         return post
     
