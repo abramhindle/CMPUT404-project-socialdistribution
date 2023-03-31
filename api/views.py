@@ -934,13 +934,11 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
 
         serializer = self.serializer_class(data=data)
         
-        print(serializer.data)
-        
         if serializer.is_valid():
-            serializer.save()
             
             print(serializer.data)
             
+            serializer.save()
             return Response(serializer.data, status=201)
 
         return Response(serializer.errors, status=400)
