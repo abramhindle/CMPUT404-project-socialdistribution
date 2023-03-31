@@ -93,7 +93,7 @@ def get_multiple_posts(author):
 
     return items
 
-def get_or_create_post(post_json, author, hostname):
+def get_or_create_post(post_json, author, hostname=HOST):
     # use source as the id for the remote
     # use origin as the host name
     remote_source = str(post_json["id"])  # this is an int
@@ -184,19 +184,14 @@ def serialize_post(request):
         author = None
         return author
 
-    request["actor"]["type"] = "author"
-
-    json_request = {
-        "type": "Follow",
-        "summary": request["Summary"],
-        "actor": request["actor"], #our own author
-        "object": author
-    }
+    print(request)
 
     url = HOST + "service/authors/" + author_guid + "/inbox/"
     try:  # try get Author
-        response = requests.post(url, json=json_request, headers=AUTH)
-        response.close()
+        print(url)
+        pass
+        #response = requests.post(url, json=json_request, headers=AUTH)
+        #response.close()
     except Exception as e:
         print(e)
         return None  # just say not found
@@ -209,7 +204,7 @@ def handle_inbox(body):
     response = None
     if body["type"] == "post":
         pass
-        #self.handle_post(inbox, id, body, author, request.user)
+        response = serialize_post(body)
     elif body["type"] == "comment":
         #self.handle_comment(inbox, id, body, author)
         pass

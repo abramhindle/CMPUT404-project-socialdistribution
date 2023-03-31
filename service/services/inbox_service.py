@@ -24,23 +24,34 @@ def handle_comment(inbox: Inbox, id, body, author):
     inbox.save()
 
 def handle_post(inbox: Inbox, id, body, author, user):
-    post = inbox.posts.all().filter(_id=id)
+    print(body)
+    if body["author"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
+        author = team_14.get_or_create_author(body["author"])
+        post = team_16.get_or_create_post(body, author, author.host)
+        post_id = post._id
+    elif body["author"]["host"] == settings.REMOTE_USERS[1][1]:
+        author = team_22.get_or_create_author(body["author"])
+        post = team_16.get_or_create_post(body, author, author.host)
+        post_id = post._id
+    elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
+        author = team_16.get_or_create_author(body["author"])
+        post = team_16.get_or_create_post(body, author, author.host)
+        post_id = post._id
+    elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
+        print("HERE")
+        author = team_10.get_or_create_author(body["author"])
+        post = team_10.get_or_create_post(body, author)
+        post_id = post._id
+    else:
+        author = Author.objects.get(_id=body["author"]["id"], is_active=True)
+        post_id = body["id"]
 
-    if post.exists():
+    post = Post.objects.get(_id=post_id)
+
+    inbox_post = inbox.posts.all().filter(_id=post._id)
+
+    if inbox_post.exists():
         raise ConflictException  # conflict, item is already in inbox
-
-    try:
-        post = Post.objects.get(_id=id)
-    except ObjectDoesNotExist:
-        if user.username == "remote-user-t14":  # get the post from each DB
-            author = team_14.get_or_create_author(body["author"])
-            post = team_14.get_or_create_post(body, author, author.host)
-        elif user.username == "remote-user-t22":
-            author = team_22.get_or_create_author(body["author"])
-            post = team_22.get_or_create_post(body, author, author.host)
-        elif user.username == "remote-user-t16":
-            author = team_16.get_or_create_author(body["author"])
-            post = team_16.get_or_create_post(body, author, author.host)
 
     inbox.posts.add(post)
     inbox.save()
