@@ -10,13 +10,13 @@ from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
-from service.services import team_14, team_22, team_10
+from service.services import team_14, team_22, team_10, team_16
 from rest_framework.permissions import IsAuthenticated
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowersAPI(APIView):
-    """ GET an Author's all followers """
+    """ GET followers for an author """
     permission_classes = [IsAuthenticated]
     http_method_names = ['get']
 
@@ -38,6 +38,10 @@ class FollowersAPI(APIView):
             #team_22.get_multiple_posts(author)
             pass
 
+        # remote-user-t16
+        elif author.host == settings.REMOTE_USERS[2][1]:
+            followers_list = team_16.get_followers(author)
+
         # remote-user-t10
         elif author.host == settings.REMOTE_USERS[3][1]:
             followers_list = team_10.get_followers(author)
@@ -50,7 +54,7 @@ class FollowersAPI(APIView):
         return HttpResponse(json.dumps(followers_json), content_type = CONTENT_TYPE_JSON)
 
 class Follower_API(APIView):
-    # for follower page
+    """  """
     permission_classes = [IsAuthenticated]   
     http_method_names = ['get']
     def get(self, request, author_id):
@@ -71,7 +75,8 @@ class FollowerAPI(APIView):
     """ GET if is a follower PUT a new follower DELETE an existing follower"""
     permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'put', 'delete']
-    
+
+    # TODO: this should remove the foreign author from the author, not the other way
     def delete(self, request, author_id, foreign_author_id):
         author = Author.objects.get(_id=author_id, is_active=True)
         foreign_author = Author.objects.get(_id=foreign_author_id, is_active=True)
@@ -85,8 +90,12 @@ class FollowerAPI(APIView):
         if author_id == foreign_author_id:
             return HttpResponseBadRequest()  # can't follow yourself!
 
-        author = Author.objects.get(_id = author_id, is_active=True)
-        follower = Author.objects.get(_id = foreign_author_id, is_active=True)
+        # try and get both author and follower
+        try:
+            author = Author.objects.get(_id = author_id, is_active=True)
+            follower = Author.objects.get(_id = foreign_author_id, is_active=True)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
 
         try:
             author.followers.get(_id=foreign_author_id)
@@ -99,11 +108,14 @@ class FollowerAPI(APIView):
         return HttpResponse(status=409)
 
     def get(self, request, author_id, foreign_author_id):
-        author = Author.objects.get(_id=author_id, is_active=True)
-        foreign = Author.objects.get(_id=foreign_author_id, is_active=True)
+        try:
+            author = Author.objects.get(_id = author_id, is_active=True)
+            follower = Author.objects.get(_id = foreign_author_id, is_active=True)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
 
         try:
-            follower = author.followers.get(_id=foreign._id)
+            follower = author.followers.get(_id=follower._id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
         

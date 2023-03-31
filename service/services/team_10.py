@@ -18,7 +18,7 @@ HOST = settings.REMOTE_USERS[3][1]
 def get_or_create_author(author_json, hostname=HOST):
     try:
         # update old -> don't change host_url or id
-        old_author = Author.objects.get(url=author_json["url"])
+        old_author = Author.objects.get(url=author_json["id"])
 
         old_author.github = author_json["github"]
         old_author.displayName = author_json["displayName"]
@@ -32,7 +32,7 @@ def get_or_create_author(author_json, hostname=HOST):
         #new_author._id = f"{settings.DOMAIN}/authors/{author_json['id']}"  # we use the GUID sent to us
         new_author.github = author_json["github"]
         new_author.displayName = author_json["displayName"]
-        new_author.url = author_json["url"]
+        new_author.url = author_json["id"]
         new_author.host = hostname
         new_author.save()
 
@@ -225,7 +225,7 @@ def get_followers(author):
     author_guid = author.url.rsplit('/', 1)[-1]
     try:
         response = requests.get(HOST + "api/authors/" + author_guid + "/followers/",
-                                headers=AUTH)
+                                header=AUTH)
         response.close()
     except:
         return None

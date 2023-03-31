@@ -13,7 +13,7 @@ from service.models.post import Post
 AUTH = {'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]}
 HOST = settings.REMOTE_USERS[1][1]
 
-# AUTHOR HELPERS
+# region AUTHOR HELPERS
 
 def get_or_create_author(author_json, hostname):
     try:
@@ -71,7 +71,9 @@ def get_multiple_authors():
     for author in response_json["items"]:
         get_or_create_author(author, HOST)
 
-# POST HELPERS
+# endregion
+
+# region POST HELPERS
 
 def get_multiple_posts(author):
     url = HOST + "service/authors/" + author.url.rsplit('/', 2)[-2] + "/posts/"
@@ -126,6 +128,9 @@ def post_to_object(post, json_object, author):
     post.unlisted = bool(json_object["unlisted"])
     return post
 
+# endregion
+# region FOLLOW REQUESTS
+
 def serialize_follow_request(request):
     author_guid = request["object"]["url"].rsplit('/', 2)[-2]
     try:
@@ -135,11 +140,11 @@ def serialize_follow_request(request):
     except:
         return None
 
-    author = response.json()
-
     if response.status_code < 200 or response.status_code > 299:
         author = None
         return author
+
+    author = response.json()
 
     request["actor"]["type"] = "author"
 
@@ -158,45 +163,9 @@ def serialize_follow_request(request):
         print(e)
         return None  # just say not found
 
-    print(response.status_code)
-    print(response.json())
     return response
 
-def serialize_post(request):
-    author_guid = request["object"]["url"].rsplit('/', 2)[-2]
-    try:
-        response = requests.get(HOST + "service/authors/" + author_guid + "/",
-                                headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
-        response.close()
-    except:
-        return None
-
-    author = response.json()
-
-    if response.status_code < 200 or response.status_code > 299:
-        author = None
-        return author
-
-    request["actor"]["type"] = "author"
-
-    json_request = {
-        "type": "Follow",
-        "summary": request["Summary"],
-        "actor": request["actor"], #our own author
-        "object": author
-    }
-
-    url = HOST + "service/authors/" + author_guid + "/inbox/"
-    try:  # try get Author
-        response = requests.post(url, json=json_request, headers={'Authorization': 'Basic ' + settings.REMOTE_USERS[1][2]})
-        response.close()
-    except Exception as e:
-        print(e)
-        return None  # just say not found
-
-    print(response.status_code)
-    print(response.json())
-    return response
+# endregion
 
 def handle_inbox(body):
     response = None
