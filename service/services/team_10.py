@@ -180,7 +180,7 @@ def serialize_post(request):
 
     print(request)
 
-    url = HOST + "service/authors/" + author_guid + "/inbox/"
+    url = HOST + "api/authors/" + author_guid + "/inbox/"
     try:  # try get Author
         print(url)
         response = requests.post(url, json=request, headers=AUTH)
