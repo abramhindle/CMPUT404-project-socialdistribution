@@ -640,12 +640,21 @@ class CommentsView(generics.ListCreateAPIView):
 
     @staticmethod
     def create_comment(comment_data):
+        
+        print(comment_data)
+        
         post = comment_data.get('post_id')
+        
+        print(post)
+        
         post = PostsModel.objects.filter(id=post).first()
         comment_data['post'] = PostsSerializer(post).data
         comment_data.pop('id', None)
         serializer = CommentsSerializer(data=comment_data)
         author_id = comment_data.get('author', {}).get('id', None)
+        
+        print(author_id)
+        
         if author_id:
             author = AuthorModel.objects.filter(id=author_id).first()
             if author:
@@ -895,11 +904,17 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             
             print(data_comment)
 
-            author_id = kwargs['author_id']
-            comment_id:str =data_comment.get('id')
+            # author_id = kwargs['author_id']
+            comment_id:str = data_comment.get('id')
             post_id = comment_id.split('/')[-3]
             
+            print(post_id)
+            print(author_id)
+            
             post_id = build_post_url(author_id, post_id)
+            
+            print(post_id)
+            
             data_comment['post_id'] = post_id
             
             try:
