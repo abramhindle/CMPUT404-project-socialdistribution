@@ -461,9 +461,8 @@ class PostsView(generics.ListCreateAPIView):
             return Response({'detail': 'Author not found.'}, status=404)
         request.data['author'] = AuthorSerializer(author).data
 
-        serializer = self.serializer_class(data=request.data)
-        serializer.data['origin'] = author_id       # New post means author is the origin
-        serializer.data['source'] = author_id       # New post means author is the source
+        # New post means this post is the source and origin
+        serializer = self.serializer_class(data=request.data, context={'set_origin': True, 'set_source': True})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
