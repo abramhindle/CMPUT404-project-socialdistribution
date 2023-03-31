@@ -207,19 +207,22 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class InboxSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(read_only=True)
+    author = AuthorSerializer()
 
-    # def create(self, validated_data):
-    #     author_data = validated_data.pop('author')
+    def create(self, validated_data):
+        # author_data = validated_data.pop('author')
         
-    #     print(author_data)
+        # print(author_data)
         
-    #     author = AuthorModel.objects.get(**author_data)
-    #     inbox = InboxModel.objects.create(author=author, **validated_data)
-    #     return inbox
+        # author = AuthorModel.objects.get(**author_data)
+        # inbox = InboxModel.objects.create(author=author, **validated_data)
+        # return inbox
+        
+        author_id = validated_data.pop('author').get('id')
+        author = AuthorModel.objects.get(id=author_id)
+        validated_data['author'] = author
+        return super().create(validated_data)
 
     class Meta:
         model = InboxModel
         fields = ('id', 'type', 'author', 'object', 'created_at')
-
-    
