@@ -107,7 +107,7 @@ class AuthorView(generics.RetrieveUpdateAPIView):
             return Response(status=404)
         serializer = self.serializer_class(author, data=request.data)
         
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             
             return Response(serializer.data)
@@ -160,7 +160,7 @@ class AuthorsView(generics.ListCreateAPIView):
         if request.data.get('id'):
             request.data['id'] = build_author_url(request.data['id'])
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
@@ -259,7 +259,7 @@ class FollowView(generics.RetrieveUpdateDestroyAPIView):
             return Response({'detail': 'Follow not found.'}, status=404)
         
         serializer = self.serializer_class(follow, data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
@@ -294,7 +294,7 @@ class FollowView(generics.RetrieveUpdateDestroyAPIView):
         }
         
         serializer = FollowSerializer(data=follow_data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
 
 
@@ -360,7 +360,7 @@ class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView
         request.data['author'] = AuthorSerializer(author).data
         serializer = self.serializer_class(post, data=request.data)
 
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
@@ -392,7 +392,7 @@ class PostView(generics.RetrieveUpdateDestroyAPIView, generics.ListCreateAPIView
         request.data['author'] = AuthorSerializer(author).data
       
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
@@ -464,7 +464,7 @@ class PostsView(generics.ListCreateAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.data['origin'] = author_id       # New post means author is the origin
         serializer.data['source'] = author_id       # New post means author is the source
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
@@ -631,7 +631,7 @@ class CommentsView(generics.ListCreateAPIView):
         
         serializer = self.serializer_class(data=request.data)
         
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
 
@@ -651,7 +651,7 @@ class CommentsView(generics.ListCreateAPIView):
             author = AuthorModel.objects.filter(id=author_id).first()
             if author:
                 comment_data['author'] = AuthorSerializer(author).data
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             
             return serializer.data
@@ -709,7 +709,7 @@ class LikeView(generics.ListCreateAPIView):
             request.data['comment'] = object
         
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
@@ -742,11 +742,8 @@ class LikeView(generics.ListCreateAPIView):
 
         
         serializer = LikeSerializer(data=data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
-        else:
-            
-            raise Exception(serializer.errors)
         
 
 class GetLikeCommentView(generics.ListAPIView):
@@ -936,7 +933,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
 
         serializer = self.serializer_class(data=data)
         
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             
             print(serializer.data)
             
