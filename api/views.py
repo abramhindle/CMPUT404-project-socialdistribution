@@ -931,6 +931,8 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             'type': request.data.get('type', ''),
             'author': author_serialized.data
         }
+        
+        print(data)
 
         serializer = self.serializer_class(data=data)
         
