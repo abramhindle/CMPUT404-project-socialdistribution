@@ -27,6 +27,8 @@ class LikedView(APIView):
 class LikesView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, author_id, post_id):
+        
+
         if not Author.objects.filter(_id=author_id).exists():
             return Response({"error": "No author exists!"}, status=404)
         if not Post.objects.filter(_id=post_id).exists(): 

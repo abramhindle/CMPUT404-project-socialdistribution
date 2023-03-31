@@ -198,6 +198,46 @@ def serialize_post(request, author):
         print(response.text)
         return None
 
+    print(response.status_code)
+
+    return response
+
+def serialize_like(request, author):
+    author_guid = author.url.rsplit('/', 1)[-1]
+
+    post_id = request["object"].rsplit('/', 1)[-1]
+    post = Post.objects.get(_id=post_id)
+    post_guid = post.source.rsplit('/', 1)[-1]
+
+    print(post_guid)
+    print(author_guid)
+
+    request_json = {
+        "@context": request["context"],
+        "summary": request["summary"],
+        "type": request["Like"],
+        "author": request["author"],
+        "object": HOST + "api/authors/" + author_guid + "/posts/" + post_guid
+    }
+
+    print(request)
+
+    url = HOST + "api/authors/" + author_guid + "/inbox/"
+    try:  # try get Author
+        print(url)
+        response = requests.post(url, json=request_json, headers=AUTH)
+        response.close()
+    except Exception as e:
+        print(e)
+        return None  # just say not found
+
+    if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        print(response.text)
+        return None
+
+    print(response.status_code)
+
     return response
 
 def handle_inbox(body, author):
@@ -210,8 +250,7 @@ def handle_inbox(body, author):
     elif body["type"] == "follow":
         response = serialize_follow_request(body)
     elif body["type"] == "Like":
-        pass
-        #id = Like.create_like_id(body["author"]["id"], body["object"])
+        response = serialize_like(body, author)
 
     return response
 
@@ -219,7 +258,7 @@ def get_followers(author):
     author_guid = author.url.rsplit('/', 1)[-1]
     try:
         response = requests.get(HOST + "api/authors/" + author_guid + "/followers/",
-                                header=AUTH)
+                                headers=AUTH)
         response.close()
     except:
         return None
@@ -229,11 +268,19 @@ def get_followers(author):
         return None
 
     response_json = response.json()
-
     authors = list()
 
-    for author in response_json["items"]:
-        authors.append(get_or_create_author(author, HOST).toJSON())
+    for follower in response_json["items"]:
+        follower = get_or_create_author(follower, HOST)
+        author.followers.add(follower)
+        authors.append(follower.toJSON())
+
+    author.save()
 
     return authors
 
+def get_likes(author, post):
+    pass
+
+def get_comments(author, post):
+    pass
