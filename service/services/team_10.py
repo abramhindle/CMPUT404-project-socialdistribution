@@ -179,6 +179,8 @@ def serialize_post(request, author):
     request["count"] = 0
 
     request["categories"] = ", ".join(request["categories"])
+    request["source"] = settings.DOMAIN
+    request["origin"] = settings.DOMAIN
 
     print(request)
 
