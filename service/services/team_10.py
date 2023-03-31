@@ -178,6 +178,8 @@ def serialize_post(request, author):
         request["visibility"] = "VISIBLE"
     request["count"] = 0
 
+    request["categories"] = ", ".join(request["categories"])
+
     print(request)
 
     url = HOST + "api/authors/" + author_guid + "/inbox/"
