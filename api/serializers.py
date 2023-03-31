@@ -207,7 +207,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class InboxSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer()
+    author = AuthorSerializer(read_only=True)
 
     # def create(self, validated_data):
     #     author_data = validated_data.pop('author')
