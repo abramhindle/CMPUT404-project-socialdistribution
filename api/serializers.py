@@ -211,6 +211,9 @@ class InboxSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         author_data = validated_data.pop('author')
+        
+        print(author_data)
+        
         author = AuthorModel.objects.get(**author_data)
         inbox = InboxModel.objects.create(author=author, **validated_data)
         return inbox

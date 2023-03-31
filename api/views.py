@@ -861,7 +861,9 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         if not author:
             return Response({'detail': 'Author not found.'}, status=404)
 
-        if request.data.get('type', '').lower() == 'like':
+        item_type = request.data.get('type', '').lower()
+        
+        if item_type == 'like':
             data_like = request.data
             try:
                 LikeView.create_like(data_like)
@@ -869,7 +871,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
                 print(e)
                 return Response(str(e), status=400)
         
-        elif request.data.get('type', '').lower() == 'follow':
+        elif item_type == 'follow':
             data_follow = request.data
             
             print(data_follow)
@@ -882,14 +884,14 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
 
             try:
                 FollowView.create_follow(data_follow, **{
-                    'author_id': foreign_author_id,     # Everything is mixed up, we are treating the foreign author as the local author in create_follow, so I changed the order of the arguments even though it now looks like it doesn't make sense
-                    'foreign_author_id': author_id
+                    'author_id': author_id,
+                    'foreign_author_id': foreign_author_id
                 })
             except Exception as e:
                 print(e)
                 return Response(str(e), status=400)
         
-        elif request.data.get('type', '').lower() == 'comment':
+        elif item_type == 'comment':
             data_comment = request.data
 
             author_id = kwargs['author_id']
@@ -907,19 +909,21 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
 
         author_data = request.data.get('author', None)
 
-        if author_data and request.data.get('type', '').lower() != 'post':
+        if author_data and item_type != 'post':
             ## we dont want to add to our own inbox
             if author_data.get('id', None) == author_id:
                 return Response({}, status=201)
         author_serialized = AuthorSerializer(author)
         
+        print(author_serialized.data)
+        
+        object_data = request.data
         # start hacky stuff
-        post_link = request.data.get('object', '')
-        if post_link and 'sd7' in post_link:
-            r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')), timeout=5)
-            object_data = r.json()
-        else:
-            object_data = request.data
+        if item_type == 'post':
+            post_link = request.data.get('object', '')
+            if post_link and 'sd7' in post_link:
+                r = requests.get(post_link, auth=(os.getenv('T7_UNAME'), os.getenv('T7_PW')), timeout=5)
+                object_data = r.json()                
         # end hacky stuff
         
         data = {
@@ -929,8 +933,13 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         }
 
         serializer = self.serializer_class(data=data)
+        
+        print(serializer.data)
+        
         if serializer.is_valid():
             serializer.save()
+            
+            print(serializer.data)
             
             return Response(serializer.data, status=201)
 
