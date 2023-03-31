@@ -935,7 +935,7 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
         
         if serializer.is_valid(raise_exception=True):
             
-            print(serializer.data)
+            print(serializer.validated_data)
             
             serializer.save()
             return Response(serializer.data, status=201)
