@@ -97,6 +97,7 @@ def get_or_create_post(post_json, author, hostname=HOST):
     # use source as the id for the remote
     # use origin as the host name
     remote_source = str(post_json["id"])  # this is an int
+    print(remote_source)
 
     try:
         # update old -> don't change host_url or id
@@ -204,21 +205,28 @@ def serialize_post(request, author):
 
 def serialize_like(request, author):
     author_guid = author.url.rsplit('/', 1)[-1]
-
     post_id = request["object"].rsplit('/', 1)[-1]
-    post = Post.objects.get(_id=post_id)
+
+    local_post_guid = author._id + "/posts/" + post_id
+
+    post = Post.objects.get(_id=local_post_guid)
     post_guid = post.source.rsplit('/', 1)[-1]
 
-    print(post_guid)
-    print(author_guid)
+    print(post.source)
 
     request_json = {
-        "@context": request["context"],
-        "summary": request["summary"],
-        "type": request["Like"],
+        "type": "Like",
         "author": request["author"],
-        "object": HOST + "api/authors/" + author_guid + "/posts/" + post_guid
     }
+
+    if request["object"].split("/")[-2] == "posts":
+        request_json["summary"] = f"{request['author']['displayName']} likes your post"
+        request_json["object"] = HOST + "api/authors/" + author_guid + "/posts/" + post_guid
+        request_json["@context"] = "Post Like"
+    else:
+        pass
+        #request_json["summary"] = f"{request['author']['displayName']} likes your comment"
+        #request_json["object"] = HOST + "api/authors/" + author_guid + "/posts/" + post_guid + "/comments/"
 
     print(request_json)
 
@@ -250,6 +258,7 @@ def handle_inbox(body, author):
     elif body["type"] == "follow":
         response = serialize_follow_request(body)
     elif body["type"] == "Like":
+        print("HERE")
         response = serialize_like(body, author)
 
     return response
