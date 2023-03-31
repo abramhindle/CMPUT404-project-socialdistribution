@@ -943,6 +943,8 @@ class InboxView(generics.ListCreateAPIView, generics.DestroyAPIView):
             serializer.save()
             return Response(serializer.data, status=201)
 
+        print(serializer.errors)
+        
         return Response(serializer.errors, status=400)
 
     def delete(self, request, *args, **kwargs):
