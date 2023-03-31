@@ -220,7 +220,7 @@ def serialize_like(request, author):
         "object": HOST + "api/authors/" + author_guid + "/posts/" + post_guid
     }
 
-    print(request)
+    print(request_json)
 
     url = HOST + "api/authors/" + author_guid + "/inbox/"
     try:  # try get Author
