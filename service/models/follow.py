@@ -30,3 +30,6 @@ class Follow(models.Model): # list of an author's followers
             "actor": self.actor.toJSON(), #wants to follow
             "object": self.object.toJSON()
         }
+    
+    def __str__(self):
+        return f"{self.actor.displayName}, {self.object.displayName}"

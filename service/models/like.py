@@ -37,3 +37,6 @@ class Like(models.Model):
         print("Lookatme", post_id)
         print(post_uuid)
         return f"{settings.DOMAIN}/authors/{author_uuid}/posts/{post_uuid}/like" #object = person being followed
+    
+    def __str__(self):
+        return f"{self.summary}, {self._id}"
