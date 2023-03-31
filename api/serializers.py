@@ -2,7 +2,7 @@
 import os
 from rest_framework import serializers
 
-from api.utils import build_url, which_node, KNOWN_TEAMS
+from api.utils import build_url, which_node, KNOWN_TEAMS, create_author_url, create_post_url, create_comment_url
 from .models import AuthorModel, PostsModel, ImageModel,  CommentsModel, LikeModel, FollowModel, InboxModel, NodeModel
 from rest_framework import validators
 
@@ -116,20 +116,23 @@ class PostsSerializer(serializers.ModelSerializer):
 
         return repr
     
-    # def to_internal_value(self, data):
-    #     # For when we're creating brand new posts
-    #     if self.context['set_origin']:
-    #         data['origin'] = data['id']
-    #     if self.context['set_source']:      # Note: can use a similar idea for when (if) resharing is implemented
-    #         data['source'] = data['id']
+    def to_internal_value(self, data):
+        # For when we're creating brand new posts
+        if not data.get('id'):
+            data['id'] = create_post_url(data['author']['id'])
+            
+        if self.context['set_origin']:
+            data['origin'] = data['id']
+        if self.context['set_source']:      # Note: can use a similar idea for when (if) resharing is implemented
+            data['source'] = data['id']
         
-    #      # Don't want no localhost in my urls
-    #     if 'localhost' in data['source']:
-    #         data['source'] = data['id']
-    #     if 'localhost' in data['origin']:
-    #         data['origin'] = data['id']        
+         # Don't want no localhost in my urls
+        if 'localhost' in data['source']:
+            data['source'] = data['id']
+        if 'localhost' in data['origin']:
+            data['origin'] = data['id']        
         
-    #     return super().to_internal_value(data)
+        return super().to_internal_value(data)
 
 
 
