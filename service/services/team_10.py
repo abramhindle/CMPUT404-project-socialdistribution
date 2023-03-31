@@ -2,7 +2,7 @@ import json
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from service.models import Author
+from service.models import Author, Comment
 from django.conf import settings
 
 import requests
@@ -258,7 +258,6 @@ def handle_inbox(body, author):
     elif body["type"] == "follow":
         response = serialize_follow_request(body)
     elif body["type"] == "Like":
-        print("HERE")
         response = serialize_like(body, author)
 
     return response
@@ -292,4 +291,34 @@ def get_likes(author, post):
     pass
 
 def get_comments(author, post):
-    pass
+    author_guid = author.url.rsplit('/', 1)[-1]
+    post_guid = post.source.rsplit('/', 1)[-1]
+
+    try:
+        response = requests.get(HOST + "api/authors/" + author_guid + "/posts/" + post_guid + "/comments/",
+                                headers=AUTH)
+        response.close()
+    except:
+        return None
+
+    if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        return None
+
+    response_json = response.json()
+
+    response_json["items"] = response_json.pop("items")
+
+    # we CANNOT Store copies of their comments -> no way to differentiate, only one ID field
+    for comment in response_json["items"]:
+        comment["author"] = author.toJSON()
+        comment["comment"] = comment.pop("content")
+        print(json.dumps(comment))
+
+    print(response_json)
+
+    return response_json
+
+
+
+

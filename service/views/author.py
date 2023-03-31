@@ -83,7 +83,8 @@ class SingleAuthor(APIView):
             if author and author.host == settings.REMOTE_USERS[2][1]:
                 author = team_16.get_single_author(author)  # remote-user-t16
 
-            # put other teams here
+            if author and author.host == settings.REMOTE_USERS[3][1]:
+                author = team_10.get_single_author(author)  # remote-user-t16
 
         if not author:
             return HttpResponseNotFound()

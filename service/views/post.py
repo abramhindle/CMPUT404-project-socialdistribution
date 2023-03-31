@@ -60,6 +60,7 @@ class PostCreation(APIView, RestService):
 
         post_queryset = Post.objects.all().filter(author=author_id).order_by('-published')  # only get posts from author_id in the URL, order by the published date
 
+        # FILTERING for friends posts
         if request_author is not None and author._id != request_author._id:
             post_queryset = post_queryset.filter(unlisted=False)
 

@@ -1,14 +1,11 @@
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
-from service.service_constants import *
+from django.conf import settings
 from django.http import *
 import json
 from datetime import datetime, timezone
 
-from service.models.comment import Comment
-from service.models.post import Post
-from service.models.author import Author
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
 
@@ -18,6 +15,8 @@ from service.models.post import Post
 from service.service_constants import *
 
 from rest_framework.permissions import IsAuthenticated
+
+from service.services import team_14, team_22, team_16, team_10
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -29,30 +28,51 @@ class CommentView(APIView):
         self.post_id = kwargs['post_id']
 
         try:
-            Post.objects.get(_id=self.post_id)
+            author = Author.objects.get(_id=self.author_id)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
-        page = request.GET.get('page', 1)
-        size = request.GET.get('size', 5)
-
-        comment_queryset = Comment.objects.all().filter(post=self.post_id).order_by('-published')
-
-        host = request.build_absolute_uri('/') #gets the base of the host -> http://localhost:8000
-
-        paged_comments = Paginator(comment_queryset, size)
-
         try:
-            comment_page = paged_comments.page(page) #default to page 1
-        except:
-            comment_page = list()
+            post = Post.objects.get(_id=self.post_id)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
 
         comments = list()
 
-        for comment in comment_page:
-            comments.append(comment.toJSON())
+        if post.origin == settings.REMOTE_USERS[0][1]:
+            #team_14.get_multiple_posts(author)
+            pass
+        # remote-user-t22
+        elif post.origin == settings.REMOTE_USERS[1][1]:
+            #team_22.get_multiple_posts(author)
+            pass
+        # remote-user-t16
+        elif post.origin == settings.REMOTE_USERS[2][1]:
+            #team_16.(author, page, size)
+            pass
 
-        comments_json = encode_list(comments, host, page, size, self.author_id, self.post_id)
+        elif post.origin == settings.REMOTE_USERS[3][1]:
+            comments_json = team_10.get_comments(author, post)
+
+        else:
+            page = request.GET.get('page', 1)
+            size = request.GET.get('size', 5)
+
+            comment_queryset = Comment.objects.all().filter(post=self.post_id).order_by('-published')
+
+            host = request.build_absolute_uri('/') #gets the base of the host -> http://localhost:8000
+
+            paged_comments = Paginator(comment_queryset, size)
+
+            try:
+                comment_page = paged_comments.page(page) #default to page 1
+            except:
+                comment_page = list()
+
+            for comment in comment_page:
+                comments.append(comment.toJSON())
+
+            comments_json = encode_list(comments, host, page, size, self.author_id, self.post_id)
 
         return HttpResponse(json.dumps(comments_json), content_type = CONTENT_TYPE_JSON)
 
