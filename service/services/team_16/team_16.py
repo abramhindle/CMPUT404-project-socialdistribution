@@ -84,6 +84,7 @@ def get_or_create_post(post_json, author, hostname):
     try:
         # update old -> don't change host_url or id
         old_post = Post.objects.get(source=remote_source)
+        print("OLD")
         old_post = post_to_object(old_post, post_json)
         old_post.save()
 
@@ -92,6 +93,7 @@ def get_or_create_post(post_json, author, hostname):
     except ObjectDoesNotExist:
         # create new
         new_post = post_to_object(Post(), post_json)
+        print("NEW")
         new_post._id = Post.create_post_id(author._id)
         new_post.source = remote_source
         new_post.author = author
@@ -125,7 +127,6 @@ def get_multiple_posts(author):
 
 def post_to_object(post, json_object):
     post.title = json_object["title"]
-    post.source = json_object["source"]
     post.description = json_object["description"]
     post.contentType = json_object["contentType"]
     post.content = json_object["content"]
