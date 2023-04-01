@@ -222,9 +222,9 @@ def serialize_like(request, author):
         request_json["object"] = HOST + "authors/" + author_guid + "/posts/" + post_guid
         request_json["@context"] = "Post Like"
     else:
-        print(request)
-        post_guid = request_json["object"].split('/')
-        print(post_guid[-2])
+        #print(request)
+        #post_guid = request_json["object"].split('/')
+        #print(post_guid[-2])
         request_json["summary"] = f"{request['author']['displayName']} likes your comment"
         request_json["object"] = request["object"]
 
@@ -235,8 +235,8 @@ def serialize_like(request, author):
     url = HOST + "api/authors/" + author_guid + "/inbox/"
     try:  # try get Author
         print(url)
-        #response = requests.post(url, json=request_json, headers=AUTH)
-        #response.close()
+        response = requests.post(url, json=request_json, headers=AUTH)
+        response.close()
     except Exception as e:
         print(e)
         return None  # just say not found
