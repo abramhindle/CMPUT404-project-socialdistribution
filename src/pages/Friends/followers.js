@@ -3,6 +3,7 @@ import "./friends.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { get_followers_for_author } from "../../api/follower_api";
+import { delete_followers_for_author } from "../../api/follower_api";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -31,8 +32,8 @@ function Followed() {
     get_followers_for_author(user.id, setList);
   }, []);
 
-  const Details = (follow_id) => {
-    //TODO redirect to the followers page
+  const DeleteAuthor = (follow_id) => {
+    delete_followers_for_author(user.id, follow_id, onSuccess);
   };
 
   const onSuccess = () => {
@@ -87,10 +88,10 @@ function Followed() {
               <TableCell align="right">
                 <Button
                   variant="contained"
-                  color="success"
-                  onClick={(e) => Details(row.id)}
+                  color="error"
+                  onClick={(e) => DeleteAuthor(row.id)}
                 >
-                  Details
+                  Delete
                 </Button>
               </TableCell>
             </TableRow>
