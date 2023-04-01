@@ -4,7 +4,9 @@
     "title": "Social Distribution API Specification",
     "version": "1.0"
   },
-  "servers": [{ "url": "https://social-distribution-w23-t17.herokuapp.com/authors" }],
+  "servers": [
+    { "url": "https://social-distribution-w23-t17.herokuapp.com/authors" }
+  ],
   "tags": [
     {
       "name": "authors"
@@ -51,7 +53,7 @@
     "/{author_id}": {
       "parameters": [
         {
-          "name": "author_id", 
+          "name": "author_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -66,7 +68,7 @@
         "operationId": "getAuthorsById",
         "parameters": [
           {
-            "name": "author_id", 
+            "name": "author_id",
             "in": "path",
             "required": true,
             "schema": {
@@ -92,7 +94,7 @@
     "/{author_id}/posts": {
       "parameters": [
         {
-          "name": "author_id", 
+          "name": "author_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -163,7 +165,7 @@
     "/{author_id}/posts/{post_id}": {
       "parameters": [
         {
-          "name": "author_id", 
+          "name": "author_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -172,7 +174,7 @@
           }
         },
         {
-          "name": "post_id", 
+          "name": "post_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -246,7 +248,7 @@
     "/{author_id}/posts/{post_id}/comments/": {
       "parameters": [
         {
-          "name": "author_id", 
+          "name": "author_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -255,7 +257,7 @@
           }
         },
         {
-          "name": "post_id", 
+          "name": "post_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -274,25 +276,25 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "properties":{
-                    "type":{
-                        "type": "string"
+                  "properties": {
+                    "type": {
+                      "type": "string"
                     },
-                    "page":{
+                    "page": {
                       "type": "integer"
                     },
-                    "size":{
-                      "type":"integer"
+                    "size": {
+                      "type": "integer"
                     },
                     "post": {
-                      "type":"string",
+                      "type": "string",
                       "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
                     },
                     "id": {
-                      "type":"string",
+                      "type": "string",
                       "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e/comments"
                     },
-                    "items":{
+                    "items": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Comment"
@@ -315,6 +317,10 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Comment"
+              },
+              "commentAuthorId": {
+                "type": "string",
+                "example": "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
               }
             }
           },
@@ -343,7 +349,7 @@
     "/{author_id}/followers/{foreign_author_id}": {
       "parameters": [
         {
-          "name": "author_id", 
+          "name": "author_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -352,7 +358,7 @@
           }
         },
         {
-          "name": "foreign_author_id", 
+          "name": "foreign_author_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -415,99 +421,99 @@
           },
           "404": {
             "description": "Author was not found"
+          }
         }
       }
-    }
-  },
-  "/{author_id}/followers": {
-    "parameters": [
-      {
-        "name": "author_id", 
-        "in": "path",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+    },
+    "/{author_id}/followers": {
+      "parameters": [
+        {
+          "name": "author_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
         }
-      }
-    ],
-    "get": {
-      "tags": ["followers"],
-      "summary": "Get followers for an author",
-      "operationId": "getFollowers",
-      "responses": {
-        "200": {
-          "description": "Successful operation",
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "type":{
-                    "type": "string",
-                    "example": "followers"
-                  },
-                  "items":{
-                    "type": "array",
-                    "items":{
-                      "type": "object",
-                      "$ref": "#/components/schemas/Followers"
+      ],
+      "get": {
+        "tags": ["followers"],
+        "summary": "Get followers for an author",
+        "operationId": "getFollowers",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "followers"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/Followers"
+                      }
                     }
                   }
                 }
               }
             }
+          },
+          "404": {
+            "description": "Author doesn't exist"
           }
-        },
-        "404": {
-          "description": "Author doesn't exist"
         }
       }
-    }
-  },
-  "/{author_id}/inbox": {
-    "parameters": [
-      {
-        "name": "author_id", 
-        "in": "path",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+    },
+    "/{author_id}/inbox": {
+      "parameters": [
+        {
+          "name": "author_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
         }
-      }
-    ],
-    "put": {
-      "tags": ["inbox"],
-      "summary": "Add item to an author's inbox",
-      "operationId": "updateInbox",
-      "requestBody": {
-        "description": "Create Comment for a post",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/Comment"
-                },
-                {
-                  "$ref": "#/components/schemas/Post"
-                },
-                {
-                  "$ref": "#/components/schemas/Follow"
-                },
-                {
-                  "$ref": "#/components/schemas/Like"
-                }
-              ]
+      ],
+      "put": {
+        "tags": ["inbox"],
+        "summary": "Add item to an author's inbox",
+        "operationId": "updateInbox",
+        "requestBody": {
+          "description": "Create Comment for a post",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Comment"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Follow"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Like"
+                  }
+                ]
+              }
             }
-          }
+          },
+          "required": true
         },
-        "required": true
-      },
-      "responses": {
-        "200": {
-          "description": "Successful operation"
+        "responses": {
+          "200": {
+            "description": "Successful operation"
           }
         }
       },
@@ -523,33 +529,33 @@
                 "schema": {
                   "type": "object",
                   "$ref": "#/components/schemas/Inbox"
-                  }
                 }
               }
-            },
-            "404": {
-              "description": "Author not found"
             }
+          },
+          "404": {
+            "description": "Author not found"
           }
-        },
-        "delete": {
-          "tags": ["inbox"],
-          "summary": "Clears an author's inbox",
-          "operationId": "clearInbox",
-          "responses": {
-            "202": {
-              "description": "Accepted"
-              },
-              "404": {
-                "description": "Author not found"
-              }
-            }
         }
+      },
+      "delete": {
+        "tags": ["inbox"],
+        "summary": "Clears an author's inbox",
+        "operationId": "clearInbox",
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      }
     },
     "/{author_id}/posts/{post_id}/likes": {
       "parameters": [
         {
-          "name": "author_id", 
+          "name": "author_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -558,7 +564,7 @@
           }
         },
         {
-          "name": "post_id", 
+          "name": "post_id",
           "in": "path",
           "required": true,
           "schema": {
@@ -567,84 +573,84 @@
           }
         }
       ],
-        "get": {
-          "tags": ["likes"],
-          "summary": "Get all the likes on an author's post",
-          "operationId": "getPostLikes",
-          "responses": {
-            "200": {
-              "description": "Successful operation",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "properties": {
-                      "type":{
-                        "type": "string",
-                        "default": "liked"
-                      },
-                      "items":{
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "$ref": "#/components/schemas/Like"
-                          }
-                        }
+      "get": {
+        "tags": ["likes"],
+        "summary": "Get all the likes on an author's post",
+        "operationId": "getPostLikes",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "default": "liked"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/Like"
                       }
                     }
                   }
                 }
-              },
-              "404": {
-                "description": "Author or post not found"
               }
             }
+          },
+          "404": {
+            "description": "Author or post not found"
           }
-      },
-      "/{author_id}/liked/": {
-        "parameters": [
-          {
-            "name": "author_id", 
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
-            }
-          }
-        ],
-        "get": {
-          "tags": ["likes"],
-          "summary": "Get an author's likes",
-          "operationId": "getAuthorLikes",
-          "responses": {
-            "200": {
-              "description": "Successful operation",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "properties": {
-                      "type":{
-                        "type": "string",
-                        "default": "liked"
-                      },
-                      "items":{
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "$ref": "#/components/schemas/Like"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "404": {
-                "description": "Author not found"
-              }
-            }
-          }
+        }
       }
+    },
+    "/{author_id}/liked/": {
+      "parameters": [
+        {
+          "name": "author_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "http://localhost/authors/423b8c9a-06dc-47ee-9461-997dacf5f162"
+          }
+        }
+      ],
+      "get": {
+        "tags": ["likes"],
+        "summary": "Get an author's likes",
+        "operationId": "getAuthorLikes",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "default": "liked"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/Like"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      }
+    }
   },
   "components": {
     "schemas": {
@@ -788,7 +794,7 @@
           },
           "items": {
             "type": "array",
-            "items":{
+            "items": {
               "type": "object",
               "oneOf": [
                 {
