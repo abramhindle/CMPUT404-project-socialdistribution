@@ -128,6 +128,36 @@ class PostCreation(APIView, RestService):
 
         return HttpResponse(json.dumps(post_json), status=201, content_type = CONTENT_TYPE_JSON)
 
+    def create_post(self, post, author_id, author, body):
+        post._id = Post.create_post_id(author_id)
+        post.author = author
+        post.title = body["title"]
+        post.content = body["content"]
+        post.description = body["description"]
+        post.source = post._id  # use the local server as the source and origin, since this is a BRAND NEW post
+        post.origin = settings.DOMAIN
+
+        is_valid = self.valid_choice(body["contentType"],
+                                     Post.CONTENT_TYPES)  # we might not need this, but good to have just in case
+
+        if not is_valid:
+            return HttpResponseBadRequest()
+
+        post.contentType = body["contentType"]
+
+        post.published = datetime.now(timezone.utc)
+
+        # TODO: this should be handled by some sort of enum system
+        is_valid = self.valid_choice(body["visibility"], Post.VISIBILITY_CHOICES)
+
+        if not is_valid:
+            return HttpResponseBadRequest()
+
+        post.visibility = body["visibility"]
+        post.unlisted = body["unlisted"]
+
+        return post
+
 
 # endpoints with post_id and author_id
 @method_decorator(csrf_exempt, name='dispatch')
@@ -188,8 +218,28 @@ class PostWithId(APIView, RestService):
 
         return HttpResponse(json.dumps(post_json), status=201, content_type=CONTENT_TYPE_JSON)
 
-    def create_post(self, post, author_id, author, body):
+    # DELETE
+    def delete(self, request: HttpRequest, *args, **kwargs):
+        post_id = kwargs["post_id"]
+        author_id = kwargs["author_id"]
 
+        try:
+            post = Post.objects.get(_id=post_id)
+        except:
+            return HttpResponseNotFound()
+
+        if post.author._id != author_id: # cannot delete a post for an author that didn't write it
+            return HttpResponseNotFound()
+
+        post.delete()
+
+        return HttpResponse(status=202)
+
+    # PUT
+    def put(self, request: HttpRequest, *args, **kwargs):
+        return HttpResponse(status=405) # we will do this later, not super useful as a local API without multiple hosts
+
+    def create_post(self, post, author_id, author, body):
         post._id = Post.create_post_id(author_id)
         post.author = author
         post.title = body["title"]
@@ -218,27 +268,6 @@ class PostWithId(APIView, RestService):
         post.unlisted = body["unlisted"]
 
         return post
-
-    # DELETE
-    def delete(self, request: HttpRequest, *args, **kwargs):
-        post_id = kwargs["post_id"]
-        author_id = kwargs["author_id"]
-
-        try:
-            post = Post.objects.get(_id=post_id)
-        except:
-            return HttpResponseNotFound()
-
-        if post.author._id != author_id: # cannot delete a post for an author that didn't write it
-            return HttpResponseNotFound()
-
-        post.delete()
-
-        return HttpResponse(status=202)
-
-    # PUT
-    def put(self, request: HttpRequest, *args, **kwargs):
-        return HttpResponse(status=405) # we will do this later, not super useful as a local API without multiple hosts
 
 
 def create_categories(json_categories):
