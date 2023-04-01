@@ -10,9 +10,10 @@ from rest_framework.views import APIView
 
 from service.models.author import Author
 from service.service_constants import *
-from service.services import team_14, team_22, team_10, team_16
+from service.services import team_14, team_22, team_16
 from rest_framework.permissions import IsAuthenticated
 
+from service.services.team_16 import team_16 as team_16_followers
 from service.services.team_10 import followers as team_10_followers
 
 
@@ -42,7 +43,7 @@ class FollowersAPI(APIView):
 
         # remote-user-t16
         elif author.host == settings.REMOTE_USERS[2][1]:
-            followers_list = team_16.get_followers(author)
+            followers_list = team_16_followers.get_followers(author)
 
         # remote-user-t10
         elif author.host == settings.REMOTE_USERS[3][1]:

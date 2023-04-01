@@ -11,15 +11,14 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 
 from service.services.team_10 import posts as team_10_posts
+import service.services.team_16.team_16 as team_16
+
 from service.models.author import Author
 from service.models.post import Post, Category
 from service.service_constants import *
-from service.services import team_14, team_22, team_16
+from service.services import team_14, team_22
 from service.services.rest_service import RestService
 from rest_framework.permissions import IsAuthenticated
-
-
-
 
 # endpoints with just author_id
 @method_decorator(csrf_exempt, name='dispatch')

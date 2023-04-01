@@ -6,16 +6,26 @@ from django.conf import settings
 import requests
 
 from service.models.post import Post
-
+from service.services.remote_helpers import get_author_id
 
 HOST = settings.REMOTE_USERS[2][1]
 AUTH = settings.REMOTE_USERS[2][2]
 
+def get_remote(url):
+    try:
+        response = requests.get(url, auth=AUTH)
+        response.close()
+    except Exception as e:
+        print("Got an exception of: ", e)
+        return None
+
+    if response.status_code < 200 or response.status_code > 299:
+        print("Got a status code of: ", response.status_code)
+        return None
+
+    return response
 
 # region AUTHOR HELPERS
-
-def get_author_url(url):
-    return url.rsplit('/', 1)[-1]
 
 def get_or_create_author(author_json, hostname):
     try:
@@ -41,31 +51,20 @@ def get_or_create_author(author_json, hostname):
         return new_author
 
 def get_single_author(author):
-    author_guid = get_author_url(author.url)
-    try:
-        response = requests.get(HOST + "service/authors/" + author_guid,
-                                auth=AUTH)
-        response.close()
-    except Exception as e:
-        print(e)
-        return None
+    author_guid = get_author_id(author)
+    url = HOST + "service/authors/" + author_guid
+    response = get_remote(url)
 
-    if response.status_code < 200 or response.status_code > 299:
-        author = None
-        return author
+    if not response:
+        return None
 
     return get_or_create_author(response.json(), HOST)
 
 def get_multiple_authors(page, size):
-    try:
-        response = requests.get(HOST + "service/authors/?page=" + page + "&size=" + size,
-                                auth=AUTH)
-        response.close()
-    except Exception as e:
-        print(e)
-        return
+    url = HOST + "service/authors/"
+    response = get_remote(url)
 
-    if response.status_code < 200 or response.status_code > 299:  # unsuccessful
+    if not response:
         return
 
     response_json = response.json()
@@ -103,24 +102,21 @@ def get_or_create_post(post_json, author, hostname):
         return new_post
 
 def get_multiple_posts(author, page, size):
-    author_guid = get_author_url(author.url)
+    author_guid = get_author_id(author)
 
-    url = HOST + "service/authors/" + author_guid + "/posts/?page=" + page
+    url = HOST + "service/authors/" + author_guid + "/posts/"
+
+    response = get_remote(url)
+
+    if not response:
+        return None
 
     items = list()
 
-    try:
-        response = requests.get(url, auth=settings.REMOTE_USERS[2][2])
-        response.close()
-    except Exception as e:
-        print(e)
-        return items
-
-    if response.status_code < 200 or response.status_code > 299:  # unsuccessful
-        print("Got a code of :" + response.status_code)
-        return items
+    print(response.json())
 
     for item in response.json()["items"]:  # just returns a list
+        print(item)
         post = get_or_create_post(item, author, HOST)
         items.append(post.toJSON())
 
@@ -142,46 +138,39 @@ def post_to_object(post, json_object):
 # region FOLLOWER HELPERS
 
 def get_followers(author):
-    author_guid = get_author_url(author.url)
-    try:
-        response = requests.get(HOST + "service/authors/" + author_guid + "/followers/",
-                                auth=AUTH)
-        response.close()
-    except:
-        return None
+    author_guid = get_author_id(author)
+    url = HOST + "service/authors/" + author_guid + "/followers"
+    response = get_remote(url)
 
-    if response.status_code < 200 or response.status_code > 299:
-        print(response.status_code)
+    if not response:
         return None
 
     response_json = response.json()
 
     authors = list()
 
-    for author in response_json["items"]:
-        authors.append(get_or_create_author(author, HOST).toJSON())
+    for follower in response_json["items"]:
+        follower = get_or_create_author(follower, HOST)
+        author.followers.add(follower)
+        authors.append(follower.toJSON())
+
+    author.save()
 
     return authors
 
 def serialize_follow_request(request):
-    author_guid = get_author_url(request["object"]["url"])
+    author_guid = request["object"]["url"].rsplit('/', 1)[-1]
     print(author_guid)
-    try:
-        print(HOST + "service/authors/" + author_guid)
-        response = requests.get(HOST + "service/authors/" + author_guid,
-                                auth=AUTH)
-        response.close()
-    except:
-        return None
+    url = HOST + "service/authors/" + author_guid
+    response = get_remote(url)
 
-    if response.status_code < 200 or response.status_code > 299:
-        print(response.status_code)
-        author = None
-        return author
+    if not response:
+        return None
 
     author = response.json()
 
     request["actor"]["type"] = "author"
+    request["actor"].pop("isLogin")
 
     json_request = {
         "type": "Follow",
@@ -192,11 +181,6 @@ def serialize_follow_request(request):
 
     url = HOST + "service/authors/" + author_guid + "/inbox/"
     try:  # try get Author
-        print()
-        print("URL: " + url)
-        print()
-        print("JSON: " + str(json_request))
-        print()
         response = requests.post(url, json=json_request, auth=AUTH)
         response.close()
     except Exception as e:

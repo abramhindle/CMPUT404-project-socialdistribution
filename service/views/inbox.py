@@ -8,12 +8,12 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 
 import service.services.team_10.inbox as team_10
-
+import service.services.team_16.team_16 as team_16
 
 from service.models.author import Author
 from service.models.inbox import Inbox
 from service.service_constants import *
-from service.services import team_14, team_16
+from service.services import team_14
 
 from service.services.inbox_service import handle_follow, handle_post, handle_comment, handle_like, ConflictException
 
