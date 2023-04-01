@@ -63,7 +63,7 @@ class PostCreation(APIView, RestService):
 
         # FILTERING for friends posts
         if request_author is not None and author._id != request_author._id:
-            post_queryset = self.filter_posts(author, post_queryset, request_author)
+            post_queryset = filter_posts(author, post_queryset, request_author)
 
         paged_posts = Paginator(post_queryset, size or 5)  # default to size 5
 
@@ -78,18 +78,6 @@ class PostCreation(APIView, RestService):
         posts_json = encode_list(posts)
 
         return HttpResponse(json.dumps(posts_json), content_type=CONTENT_TYPE_JSON)
-
-
-    def filter_posts(self, author, post_queryset, request_author):
-        """ Helper function to filter out required posts """
-        post_queryset = post_queryset.filter(unlisted=False)
-        author_is_follower = author.followers.filter(_id=request_author._id).exists()
-        request_author_is_follower = request_author.followers.filter(_id=author._id).exists()
-
-        if not author_is_follower or not request_author_is_follower:  # don't show friend posts
-            post_queryset = post_queryset.filter(visibility="PUBLIC")  # only public visibility
-
-        return post_queryset
 
     def post(self, request: HttpRequest, *args, **kwargs):  # create a new post
         if request.content_type != CONTENT_TYPE_JSON:
@@ -158,6 +146,16 @@ class PostCreation(APIView, RestService):
 
         return post
 
+def filter_posts(author, post_queryset, request_author):
+    """ Helper function to filter out required posts """
+    post_queryset = post_queryset.filter(unlisted=False)
+    author_is_follower = author.followers.filter(_id=request_author._id).exists()
+    request_author_is_follower = request_author.followers.filter(_id=author._id).exists()
+
+    if not author_is_follower or not request_author_is_follower:  # don't show friend posts
+        post_queryset = post_queryset.filter(visibility="PUBLIC")  # only public visibility
+
+    return post_queryset
 
 # endpoints with post_id and author_id
 @method_decorator(csrf_exempt, name='dispatch')

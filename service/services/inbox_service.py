@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseBadRequest
 
+import service.services.team_10.helper_constants
 from service.models import Author, Comment
 from service.models.follow import Follow
 from service.models.inbox import Inbox
@@ -23,7 +24,7 @@ def handle_comment(inbox: Inbox, body, author):
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
         author = team_16.get_or_create_author(body["author"])
     elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
-        author = team_10_authors.get_or_create_author(body["author"])
+        author = service.services.team_10.helper_constants.get_or_create_author(body["author"])
     else:
         author = Author.objects.get(_id=body["author"]["id"], is_active=True)
 
@@ -72,7 +73,7 @@ def handle_post(inbox: Inbox, id, body, author, user):
         post = team_16.get_or_create_post(body, author, author.host)
         post_id = post._id
     elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
-        author = team_10_authors.get_or_create_author(body["author"])
+        author = service.services.team_10.helper_constants.get_or_create_author(body["author"])
         post = team_10_posts.get_or_create_post(body, author)
         post_id = post._id
     else:
@@ -98,7 +99,7 @@ def handle_follow(inbox: Inbox, body, author: Author):  # we actually create the
     elif body["actor"]["host"] == settings.REMOTE_USERS[2][1]:
         foreign_author = team_16.get_or_create_author(body["actor"])
     elif body["actor"]["host"] == settings.REMOTE_USERS[3][1]:
-        foreign_author = team_10_authors.get_or_create_author(body["actor"])
+        foreign_author = service.services.team_10.helper_constants.get_or_create_author(body["actor"])
     else:
         foreign_author = Author.objects.get(_id=body["actor"]["id"])
 
@@ -133,7 +134,7 @@ def handle_like(inbox: Inbox, body, author: Author):
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
         foreign_author = team_16.get_or_create_author(body["author"])
     elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
-        foreign_author = team_10_authors.get_or_create_author(body["author"])
+        foreign_author = service.services.team_10.helper_constants.get_or_create_author(body["author"])
     else: # otherwise get it from DB
         foreign_author = Author.objects.get(_id=body["author"]["id"], is_active=True)
 

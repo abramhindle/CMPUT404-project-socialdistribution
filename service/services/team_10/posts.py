@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from service.models.post import Post
+from service.services.team_10.authors import get_multiple_authors
 from service.services.team_10.helper_constants import HOST
 from service.services.remote_helpers import get_author_id, get_remote
 
@@ -42,7 +43,6 @@ def post_to_object(post, json_object, author):
 
     post.unlisted = bool(json_object["unlisted"])
     return post
-
 
 def get_multiple_posts(author):
     author_guid = get_author_id(author)

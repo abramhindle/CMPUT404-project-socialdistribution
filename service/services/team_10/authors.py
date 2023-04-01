@@ -1,33 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist
-
-from service.models import Author
-from service.services.team_10.helper_constants import HOST
+from service.services.team_10.followers import get_followers
+from service.services.team_10.helper_constants import HOST, get_or_create_author
 from service.services.remote_helpers import get_author_id, get_remote
-
-
-def get_or_create_author(author_json, hostname=HOST):
-    try:
-        # update old -> don't change host_url or id
-        old_author = Author.objects.get(url=author_json["id"])
-
-        old_author.github = author_json["github"]
-        old_author.displayName = author_json["displayName"]
-        old_author.save()
-
-        return old_author
-
-    except ObjectDoesNotExist:
-        # create new
-        new_author = Author()
-        # new_author._id = f"{settings.DOMAIN}/authors/{author_json['id']}"  # we use the GUID sent to us
-        new_author.github = author_json["github"]
-        new_author.displayName = author_json["displayName"]
-        new_author.url = author_json["id"]
-        new_author.host = hostname
-        new_author.save()
-
-        return new_author
-
 
 def get_single_author(author):
     author_guid = get_author_id(author)
@@ -40,7 +13,7 @@ def get_single_author(author):
     return get_or_create_author(response.json(), author.host)
 
 
-def get_multiple_authors(page, size):  # no paging yet
+def get_multiple_authors(page=None, size=None):  # no paging yet
     url = HOST + "api/authors/"
     response = get_remote(url)
 
@@ -49,5 +22,12 @@ def get_multiple_authors(page, size):  # no paging yet
 
     response_json = response.json()
 
+    authors = list()
+
     for author in response_json["items"]:
-        get_or_create_author(author, HOST)
+        author = get_or_create_author(author, HOST)
+        authors.append(author)
+
+    print(authors)
+
+    return authors

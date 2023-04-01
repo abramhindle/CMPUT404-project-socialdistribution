@@ -1,5 +1,4 @@
-from service.services.team_10.authors import get_or_create_author
-from service.services.team_10.helper_constants import HOST
+from service.services.team_10.helper_constants import HOST, get_or_create_author
 from service.services.remote_helpers import get_author_id, get_remote
 
 def get_followers(author):
