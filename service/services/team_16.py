@@ -210,13 +210,45 @@ def serialize_follow_request(request):
 
     return response
 
+def serialize_post(request, author):
+    author_guid = author.url.rsplit('/', 1)[-1]
+    print(author_guid)
+
+    #request["comments"] = request["id"] + "/comments/"
+    if request["visibility"] == "PUBLIC":
+        request["visibility"] = "VISIBLE"
+    request["count"] = 0
+
+    #request["categories"] = ", ".join(request["categories"])
+    request["source"] = settings.DOMAIN
+    request["origin"] = settings.DOMAIN
+
+    print(request)
+
+    url = HOST + "service/authors/" + author_guid + "/inbox/"
+    try:  # try get Author
+        print(url)
+        response = requests.post(url, json=request, auth=AUTH)
+        response.close()
+    except Exception as e:
+        print(e)
+        return None  # just say not found
+
+    if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        print(response.text)
+        return None
+
+    print(response.status_code)
+
+    return response
+
 # endregion
 
-def handle_inbox(body):
+def handle_inbox(body, author):
     response = None
     if body["type"] == "post":
-        pass
-        handle_post(inbox, id, body, author, request.user)
+        response = serialize_post(body, author)
     elif body["type"] == "comment":
         #self.handle_comment(inbox, id, body, author)
         pass

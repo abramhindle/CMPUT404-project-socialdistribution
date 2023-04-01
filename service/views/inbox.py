@@ -113,10 +113,10 @@ class InboxView(APIView):
 
         # remote-user-t16
         if author.host == settings.REMOTE_USERS[2][1]:
-            response = team_16.handle_inbox(body)
+            response = team_16.handle_inbox(body, author)
 
             if response is None:
-                return HttpResponse(status=503)
+                return HttpResponse(status=500)
 
             return HttpResponse(status=202)
 
@@ -125,7 +125,7 @@ class InboxView(APIView):
             response = team_10.handle_inbox(body, author)
 
             if response is None:
-                return HttpResponse(status=503)
+                return HttpResponse(status=500)
 
             return HttpResponse(status=202)
 
