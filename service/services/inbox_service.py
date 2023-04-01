@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseBadRequest
 
@@ -10,15 +12,49 @@ from service.models.like import Like
 from service.models.post import Post
 from service.services import team_10, team_16, team_14, team_22
 
-def handle_comment(inbox: Inbox, id, body, author):
+def handle_comment(inbox: Inbox, body, author):
     # no idea how to handle this remotely with the spec
+
+
+    if body["author"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
+        author = team_14.get_or_create_author(body["author"])
+    elif body["author"]["host"] == settings.REMOTE_USERS[1][1]:
+        author = team_22.get_or_create_author(body["author"])
+    elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
+        author = team_16.get_or_create_author(body["author"])
+    elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
+        author = team_10.get_or_create_author(body["author"])
+    else:
+        author = Author.objects.get(_id=body["author"]["id"], is_active=True)
+
+    id = body["id"]
 
     comment = inbox.comments.all().filter(_id=id)
 
     if comment.exists():
         raise ConflictException  # conflict, item is already in inbox
 
-    comment = Comment.objects.get(_id=id)
+
+
+    try:
+        comment = Comment.objects.get(_id=id)
+    except ObjectDoesNotExist:
+        post = Post.objects.get(_id=id)  # if they only pass us a post id, we assume they are creating
+        comment = Comment()
+        comment._id = Comment.create_comment_id(author._id, post._id)
+        comment.comment = body["comment"]
+        comment.author = author
+        comment.post = post
+
+        is_valid = False
+        if (body["contentType"] in ("text/markdown", "text/plain")):
+            is_valid = True
+
+        if not is_valid:
+            raise KeyError
+
+        comment.contentType = body["contentType"]
+        comment.published = datetime.now(timezone.utc)
 
     inbox.comments.add(comment)
     inbox.save()

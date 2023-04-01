@@ -13,7 +13,7 @@ from service.models.post import Post
 AUTH = {'Authorization': 'Token ' + settings.REMOTE_USERS[3][2]}
 HOST = settings.REMOTE_USERS[3][1]
 
-# AUTHOR HELPERS
+# region AUTHOR HELPERS
 
 def get_or_create_author(author_json, hostname=HOST):
     try:
@@ -69,7 +69,8 @@ def get_multiple_authors(page, size): #no paging yet
     for author in response_json["items"]:
         get_or_create_author(author, HOST)
 
-# POST HELPERS
+# endregion
+# region POST HELPERS
 
 def get_multiple_posts(author):
     url = HOST + "api/authors/" + author.url.rsplit('/', 1)[-1] + "/posts/"
@@ -130,6 +131,10 @@ def post_to_object(post, json_object, author):
 
     post.unlisted = bool(json_object["unlisted"])
     return post
+
+# endregion
+
+# region INBOX
 
 def serialize_follow_request(request):
     author_guid = request["object"]["url"].rsplit('/', 1)[-1]
@@ -222,12 +227,14 @@ def serialize_like(request, author):
         request_json["object"] = HOST + "authors/" + author_guid + "/posts/" + post_guid
         request_json["@context"] = "Post Like"
     else:
-        #print(request)
-        #post_guid = request_json["object"].split('/')
-        #print(post_guid[-2])
-        request_json["summary"] = f"{request['author']['displayName']} likes your comment"
-        request_json["object"] = request["object"]
+        object_guids = request["object"].split('/')
+        post_guid = object_guids[-3]
+        comment_guid = object_guids[-1]
 
+        object = HOST + "authors/" + author_guid + "/posts/" + post_guid + "/comments/" + comment_guid
+        request_json["object"] = object
+
+        request_json["summary"] = f"{request['author']['displayName']} likes your comment"
         request_json["@context"] = "Comment Like"
 
     print(request_json)
@@ -264,6 +271,8 @@ def handle_inbox(body, author):
 
     return response
 
+# endregion
+
 def get_followers(author):
     author_guid = author.url.rsplit('/', 1)[-1]
     try:
@@ -290,7 +299,28 @@ def get_followers(author):
     return authors
 
 def get_likes(author, post):
-    pass
+    author_guid = author.url.rsplit('/', 1)[-1]
+    post_guid = post.source.rsplit('/', 1)[-1]
+    try:
+        response = requests.get(HOST + "api/authors/" + author_guid + "/posts/" + post_guid + "/likes",
+                                headers=AUTH)
+        response.close()
+    except:
+        return None
+
+    if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        return None
+
+    response_json = response.json()
+
+    print(response_json)
+
+    for like in response_json["items"]:
+        like_author = get_or_create_author(like["author"], HOST)
+        like["author"] = like_author.toJSON()
+
+    return response_json["items"]
 
 def get_comments(author, post):
     author_guid = author.url.rsplit('/', 1)[-1]

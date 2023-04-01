@@ -136,8 +136,7 @@ class InboxView(APIView):
                 id = body["id"]
                 handle_post(inbox, id, body, author, request.user)
             elif body["type"] == "comment":
-                id = body["id"]
-                handle_comment(inbox, id, body, author)
+                handle_comment(inbox, body, author)
             elif body["type"] == "follow" or body["type"] == "Follow":
                 handle_follow(inbox, body, author)
             elif body["type"] == "Like":
