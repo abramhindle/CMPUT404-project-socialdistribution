@@ -167,8 +167,8 @@ def serialize_follow_request(request):
     author_guid = get_author_url(request["object"]["url"])
     print(author_guid)
     try:
-        print(HOST + "service/authors/" + author_guid + "/")
-        response = requests.get(HOST + "service/authors/" + author_guid + "/",
+        print(HOST + "service/authors/" + author_guid)
+        response = requests.get(HOST + "service/authors/" + author_guid,
                                 auth=AUTH)
         response.close()
     except:
@@ -195,13 +195,18 @@ def serialize_follow_request(request):
         print()
         print("URL: " + url)
         print()
-        print("JSON: " + json_request)
+        print("JSON: " + str(json_request))
         print()
-        #response = requests.post(url, json=json_request, auth=AUTH)
-        #response.close()
+        response = requests.post(url, json=json_request, auth=AUTH)
+        response.close()
     except Exception as e:
         print(e)
         return None
+
+    if response.status_code < 200 or response.status_code > 299:
+        print(response.status_code)
+        author = None
+        return author
 
     return response
 
@@ -211,7 +216,7 @@ def handle_inbox(body):
     response = None
     if body["type"] == "post":
         pass
-        #self.handle_post(inbox, id, body, author, request.user)
+        handle_post(inbox, id, body, author, request.user)
     elif body["type"] == "comment":
         #self.handle_comment(inbox, id, body, author)
         pass

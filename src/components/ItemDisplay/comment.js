@@ -31,6 +31,7 @@ export default function Comment(data) {
   };
 
   const handleLike = () => {
+    console.log(postUrl)
     if (!liked) {
       comment_like(
         data.data.author.id,

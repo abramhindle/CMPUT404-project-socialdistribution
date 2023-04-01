@@ -205,14 +205,7 @@ def serialize_post(request, author):
 
 def serialize_like(request, author):
     author_guid = author.url.rsplit('/', 1)[-1]
-    post_id = request["object"].rsplit('/', 1)[-1]
-
-    local_post_guid = author._id + "/posts/" + post_id
-
-    post = Post.objects.get(_id=local_post_guid)
-    post_guid = post.source.rsplit('/', 1)[-1]
-
-    print(post.source)
+    object_id = request["object"].rsplit('/', 1)[-1]
 
     request_json = {
         "type": "Like",
@@ -220,13 +213,19 @@ def serialize_like(request, author):
     }
 
     if request["object"].split("/")[-2] == "posts":
+        local_post_guid = author._id + "/posts/" + object_id
+
+        post = Post.objects.get(_id=local_post_guid)
+        post_guid = post.source.rsplit('/', 1)[-1]
+
         request_json["summary"] = f"{request['author']['displayName']} likes your post"
         request_json["object"] = HOST + "api/authors/" + author_guid + "/posts/" + post_guid
         request_json["@context"] = "Post Like"
     else:
-        pass
-        #request_json["summary"] = f"{request['author']['displayName']} likes your comment"
-        #request_json["object"] = HOST + "api/authors/" + author_guid + "/posts/" + post_guid + "/comments/"
+        request_json["summary"] = f"{request['author']['displayName']} likes your comment"
+        request_json["object"] = request["object"]
+
+        request_json["@context"] = "Comment Like"
 
     print(request_json)
 
