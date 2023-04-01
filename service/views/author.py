@@ -8,9 +8,12 @@ from django.db.models import Q
 from django.http import *
 from rest_framework.views import APIView
 
+import service.services.team_10.authors as team_10
 from service.models.author import Author
 from service.service_constants import *
-from service.services import team_14, team_22, team_16, team_10
+from service.services import team_14, team_22
+
+import service.services.team_16.team_16 as team_16
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -84,7 +87,7 @@ class SingleAuthor(APIView):
                 author = team_16.get_single_author(author)  # remote-user-t16
 
             if author and author.host == settings.REMOTE_USERS[3][1]:
-                author = team_10.get_single_author(author)  # remote-user-t16
+                author = team_10.get_single_author(author)  # remote-user-t10
 
         if not author:
             return HttpResponseNotFound()
@@ -94,7 +97,12 @@ class SingleAuthor(APIView):
         return HttpResponse(json.dumps(author_json), content_type=CONTENT_TYPE_JSON)
 
     def post(self, request: HttpRequest, *args, **kwargs):
-        body = request.data
+
+        try:
+            body = request.data
+        except AttributeError:  # tests don't run without this
+            body = request.body
+            body = json.loads(body)
 
         author_id = kwargs['author_id']
 
@@ -103,20 +111,22 @@ class SingleAuthor(APIView):
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
-        if "displayName" in body:
-            author.displayName = body["displayName"]
-
-        if "github" in body:
-            author.github = body["github"]
-
-        if "profileImage" in body:
-            author.profileImage = body["profileImage"]
+        self.update_author(author, body)
 
         author.save()  # updates whatever is set in the above if statements
 
         author_json = author.toJSON()
 
         return HttpResponse(json.dumps(author_json), status=202, content_type=CONTENT_TYPE_JSON)
+
+    def update_author(self, author, body):
+        if "displayName" in body:
+            author.displayName = body["displayName"]
+        if "github" in body:
+            author.github = body["github"]
+        if "profileImage" in body:
+            author.profileImage = body["profileImage"]
+
 
 def encode_list(authors):
     return {

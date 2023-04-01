@@ -8,7 +8,7 @@ from service.models.like import Like
 from service.models.post import Post
 from rest_framework.permissions import IsAuthenticated
 
-from service.services import team_10
+import service.services.team_10.likes as team_10
 from django.conf import settings
 
 

@@ -13,6 +13,8 @@ from service.service_constants import *
 from service.services import team_14, team_22, team_10, team_16
 from rest_framework.permissions import IsAuthenticated
 
+from service.services.team_10 import followers as team_10_followers
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class FollowersAPI(APIView):
@@ -44,7 +46,7 @@ class FollowersAPI(APIView):
 
         # remote-user-t10
         elif author.host == settings.REMOTE_USERS[3][1]:
-            followers_list = team_10.get_followers(author)
+            followers_list = team_10_followers.get_followers(author)
 
         else:
             for follower in list(author.followers.all().order_by('displayName')):
@@ -135,7 +137,6 @@ class FriendAPI(View):
             for follower in list(author.followers.all().order_by('displayName')):
                 if follower._id == author_id:
                     followers.append(author.toJSON())
-
 
         author = Author.objects.get(_id = author_id, is_active=True)
         followed = list()

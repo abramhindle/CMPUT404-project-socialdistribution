@@ -1,15 +1,15 @@
 from django.test import *
-from service.models.author import Author
-from service.models.comment import Comment
-from service.models.post import Post
 from django.contrib.auth.models import User
-from service.views.comment import *
-import uuid
 
 from django.urls import reverse
 
-class AuthorTests(TestCase):
+from service.views.comment import *
+from service.models.author import Author
+from service.models.comment import Comment
+from service.models.post import Post
 
+
+class AuthorTests(TestCase):
     def setUp(self):
 
         self.comment_view = CommentView()

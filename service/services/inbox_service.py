@@ -10,11 +10,13 @@ from django.conf import settings
 
 from service.models.like import Like
 from service.models.post import Post
-from service.services import team_10, team_16, team_14, team_22
+from service.services import team_16, team_14, team_22
+
+from service.services.team_10 import authors as team_10_authors, posts as team_10_posts
+
+
 
 def handle_comment(inbox: Inbox, body, author):
-    # no idea how to handle this remotely with the spec
-
 
     if body["author"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
         author = team_14.get_or_create_author(body["author"])
@@ -23,7 +25,7 @@ def handle_comment(inbox: Inbox, body, author):
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
         author = team_16.get_or_create_author(body["author"])
     elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
-        author = team_10.get_or_create_author(body["author"])
+        author = team_10_authors.get_or_create_author(body["author"])
     else:
         author = Author.objects.get(_id=body["author"]["id"], is_active=True)
 
@@ -33,8 +35,6 @@ def handle_comment(inbox: Inbox, body, author):
 
     if comment.exists():
         raise ConflictException  # conflict, item is already in inbox
-
-
 
     try:
         comment = Comment.objects.get(_id=id)
@@ -63,19 +63,19 @@ def handle_post(inbox: Inbox, id, body, author, user):
     print(body)
     if body["author"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
         author = team_14.get_or_create_author(body["author"])
-        post = team_16.get_or_create_post(body, author, author.host)
+        post = team_14.get_or_create_post(body, author, author.host)
         post_id = post._id
     elif body["author"]["host"] == settings.REMOTE_USERS[1][1]:
         author = team_22.get_or_create_author(body["author"])
-        post = team_16.get_or_create_post(body, author, author.host)
+        post = team_22.get_or_create_post(body, author, author.host)
         post_id = post._id
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
         author = team_16.get_or_create_author(body["author"])
         post = team_16.get_or_create_post(body, author, author.host)
         post_id = post._id
     elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
-        author = team_10.get_or_create_author(body["author"])
-        post = team_10.get_or_create_post(body, author)
+        author = team_10_authors.get_or_create_author(body["author"])
+        post = team_10_posts.get_or_create_post(body, author)
         post_id = post._id
     else:
         author = Author.objects.get(_id=body["author"]["id"], is_active=True)
@@ -107,7 +107,7 @@ def handle_follow(inbox: Inbox, body, author: Author):  # we actually create the
     elif body["actor"]["host"] == settings.REMOTE_USERS[2][1]:
         foreign_author = team_16.get_or_create_author(body["actor"])
     elif body["actor"]["host"] == settings.REMOTE_USERS[3][1]:
-        foreign_author = team_10.get_or_create_author(body["actor"])
+        foreign_author = team_10_authors.get_or_create_author(body["actor"])
     else:
         foreign_author = Author.objects.get(_id=body["actor"]["id"])
 
@@ -142,7 +142,7 @@ def handle_like(inbox: Inbox, body, author: Author):
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
         foreign_author = team_16.get_or_create_author(body["author"])
     elif body["author"]["host"] == settings.REMOTE_USERS[3][1]:
-        foreign_author = team_10.get_or_create_author(body["author"])
+        foreign_author = team_10_authors.get_or_create_author(body["author"])
     else: # otherwise get it from DB
         foreign_author = Author.objects.get(_id=body["author"]["id"], is_active=True)
 

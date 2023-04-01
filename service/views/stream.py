@@ -16,6 +16,7 @@ class AuthorStream(APIView):
     def get(self, request, *args, **kwargs):
         author_id = kwargs['author_id']
         # rework this so it goes out, gets all posts from other servers, then puts them in a list
+
         try:
             author = Author.objects.get(_id=author_id, is_active=True)
         except:

@@ -7,18 +7,13 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 
+import service.services.team_10.inbox as team_10
+
+
 from service.models.author import Author
-from service.models.comment import Comment
-from service.models.follow import Follow
 from service.models.inbox import Inbox
-from service.models.like import Like
-from service.models.post import Post
 from service.service_constants import *
-from service.services import team_14, team_16, team_22, team_10
-
-import requests
-
-from rest_framework.permissions import IsAuthenticated
+from service.services import team_14, team_16
 
 from service.services.inbox_service import handle_follow, handle_post, handle_comment, handle_like, ConflictException
 
