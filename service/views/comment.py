@@ -18,6 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from service.services import team_14, team_22, team_16
 import service.services.team_10.comments as team_10
+import service.services.team_16.team_16 as team_16
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -50,8 +51,7 @@ class CommentView(APIView):
             pass
         # remote-user-t16
         elif post.origin == settings.REMOTE_USERS[2][1]:
-            #team_16.(author, page, size)
-            pass
+            comments_json = team_16.get_comments(author, post)
         # team 10
         elif post.origin == settings.REMOTE_USERS[3][1]:
             comments_json = team_10.get_comments(author, post)

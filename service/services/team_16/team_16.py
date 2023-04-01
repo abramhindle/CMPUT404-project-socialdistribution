@@ -76,11 +76,10 @@ def get_multiple_authors(page, size):
 
 # region POST HELPERS
 
-
 def get_or_create_post(post_json, author, hostname):
     # use source as the id for the remote
     # use origin as the host name
-    remote_source = hostname + str(post_json["id"])  # this is an int
+    remote_source = str(post_json["id"])
 
     try:
         # update old -> don't change host_url or id
@@ -101,7 +100,7 @@ def get_or_create_post(post_json, author, hostname):
 
         return new_post
 
-def get_multiple_posts(author, page, size):
+def get_multiple_posts(author):
     author_guid = get_author_id(author)
 
     url = HOST + "service/authors/" + author_guid + "/posts/"
@@ -119,6 +118,8 @@ def get_multiple_posts(author, page, size):
         print(item)
         post = get_or_create_post(item, author, HOST)
         items.append(post.toJSON())
+
+    print(items)
 
     return items
 
@@ -243,3 +244,27 @@ def handle_inbox(body, author):
         #id = Like.create_like_id(body["author"]["id"], body["object"])
 
     return response
+
+def get_comments(author, post):
+    author_guid = author.url.rsplit('/', 1)[-1]
+    post_guid = post.source.rsplit('/', 1)[-1]
+
+    url = HOST + "api/authors/" + author_guid + "/posts/" + post_guid + "/comments/"
+
+    response = get_remote(url)
+    if not response:
+        return None
+
+    response_json = response.json()
+
+    response_json["items"] = response_json.pop("items")
+
+    # we CANNOT Store copies of their comments -> no way to differentiate, only one ID field
+    for comment in response_json["items"]:
+        author = get_or_create_author(comment["author"])
+        comment["author"] = author.toJSON()
+        comment["comment"] = comment.pop("content")
+
+    print(response_json)
+
+    return response_json

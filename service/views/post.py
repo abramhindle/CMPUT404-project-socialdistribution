@@ -53,7 +53,7 @@ class PostCreation(APIView, RestService):
             team_22.get_multiple_posts(author)
         # remote-user-t16
         elif author.host == settings.REMOTE_USERS[2][1]:
-            team_16.get_multiple_posts(author, page, size)
+            team_16.get_multiple_posts(author)
         elif author.host == settings.REMOTE_USERS[3][1]:
             team_10_posts.get_multiple_posts(author)
 
@@ -170,7 +170,6 @@ class PostWithId(APIView, RestService):
             post = Post.objects.get(_id=post_id)
         except:
             return HttpResponseNotFound()
-
 
         try:
             post = self.create_post(post, author_id, author, body)
