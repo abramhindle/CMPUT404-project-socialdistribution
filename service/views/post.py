@@ -240,7 +240,8 @@ class PostWithId(APIView, RestService):
         return HttpResponse(status=405) # we will do this later, not super useful as a local API without multiple hosts
 
     def create_post(self, post, author_id, author, body):
-        post._id = Post.create_post_id(author_id)
+        if not post._id:
+            post._id = Post.create_post_id(author_id)
         post.author = author
         post.title = body["title"]
         post.content = body["content"]

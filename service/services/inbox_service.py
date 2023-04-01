@@ -14,8 +14,6 @@ from service.services import team_16, team_14, team_22
 
 from service.services.team_10 import authors as team_10_authors, posts as team_10_posts
 
-
-
 def handle_comment(inbox: Inbox, body, author):
 
     if body["author"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
@@ -93,13 +91,6 @@ def handle_post(inbox: Inbox, id, body, author, user):
 
 
 def handle_follow(inbox: Inbox, body, author: Author):  # we actually create the follow request here
-    print("BODY")
-    print(body)
-    print()
-
-    #print(body["actor"]["host"])
-    #print(settings.REMOTE_USERS[3][1])
-
     if body["actor"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
         foreign_author = team_14.get_or_create_author(body["actor"])
     elif body["actor"]["host"] == settings.REMOTE_USERS[1][1]:
