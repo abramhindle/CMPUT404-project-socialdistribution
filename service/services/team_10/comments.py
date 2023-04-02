@@ -21,6 +21,6 @@ def get_comments(author, post):
         comment["author"] = author.toJSON()
         try:
             comment["comment"] = comment.pop("content")
-        except KeyError:
+        except:
             print(comment["comment"])
     return response_json

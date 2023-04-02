@@ -38,9 +38,13 @@ def handle_comment(inbox: Inbox, body, author):
     try:
         comment = Comment.objects.get(_id=id)
     except ObjectDoesNotExist:
-        post = Post.objects.get(_id=id)  # if they only pass us a post id, we assume they are creating
+
         comment = Comment()
-        comment._id = Comment.create_comment_id(post.author._id, post._id)
+        comment._id = id
+
+        local_post_id = id.rsplit('/', 2)[0]
+        post = Post.objects.get(_id=local_post_id)
+
         comment.comment = body["comment"]
         comment.author = author
         comment.post = post
