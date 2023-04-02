@@ -40,7 +40,7 @@ def handle_comment(inbox: Inbox, body, author):
     except ObjectDoesNotExist:
         post = Post.objects.get(_id=id)  # if they only pass us a post id, we assume they are creating
         comment = Comment()
-        comment._id = Comment.create_comment_id(author._id, post._id)
+        comment._id = Comment.create_comment_id(post.author._id, post._id)
         comment.comment = body["comment"]
         comment.author = author
         comment.post = post
