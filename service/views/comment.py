@@ -99,7 +99,7 @@ class CommentView(APIView):
         comment = Comment()
 
         try:
-            comment._id = Comment.create_comment_id(self.author_id, self.post_id)
+            comment._id = Comment.create_comment_id(post.author._id, self.post_id)
             comment.comment = body["comment"]
             comment.author = author
             comment.post = post

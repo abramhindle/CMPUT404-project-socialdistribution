@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from service.models.post import Post
 from service.services.team_10.authors import get_multiple_authors
 from service.services.team_10.helper_constants import HOST
 from service.services.remote_helpers import get_author_id, get_remote, post_remote
@@ -56,14 +57,40 @@ def serialize_post(request, author):
 
     return response
 
+def serialize_comment(request, author):
+    """ Creates a post and POSTs it to team_10 """
+    # author id in request id will always be our own
+    # post id in request id should be the remote
+    # comment id should be our own
+    author_guid = get_author_id(author)
+    comment_guid = request["id"].rsplit('/', 1)[-1]
+
+    request_json = {
+        "type": "comment",
+        "author": request["author"], #always a local author
+        "comment": request["comment"],
+        "contentType": request["contentType"],
+        "published": request["published"],
+    }
+
+    local_post_guid = request["id"].rsplit('/', 2)[0]
+
+    post = Post.objects.get(_id=local_post_guid)
+    post_guid = post.source.rsplit('/', 1)[-1] #remote post guid
+
+    request_json["id"] = HOST + "authors/" + author_guid + "/posts/" + post_guid + "/comments/" + comment_guid
+    url = HOST + "api/authors/" + author_guid + "/inbox/"
+    response = post_remote(url, request_json)
+
+    return response
+
 
 def handle_inbox(body, author):
     response = None
     if body["type"] == "post":
         response = serialize_post(body, author)
     elif body["type"] == "comment":
-        # self.handle_comment(inbox, id, body, author)
-        pass
+        response = serialize_comment(body, author)
     elif body["type"] == "follow":
         response = serialize_follow_request(body)
     elif body["type"] == "Like":

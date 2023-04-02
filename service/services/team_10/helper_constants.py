@@ -6,7 +6,6 @@ from service.models import Author
 AUTH = {'Authorization': 'Token ' + settings.REMOTE_USERS[3][2]}
 HOST = settings.REMOTE_USERS[3][1]
 
-
 def get_or_create_author(author_json, hostname=HOST):
     try:
         # update old -> don't change host_url or id
