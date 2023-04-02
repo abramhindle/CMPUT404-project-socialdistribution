@@ -6,12 +6,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from service.models.author import Author
+from service.models.inbox import Inbox
 from service.models.post import Post
 from service.service_constants import *
 from service.views.post import filter_posts
 
+import service.services.team_10.authors as team_10
+
 
 #returns an author's stream
+class ObjectNotFound:
+    pass
+
+
 class AuthorStream(APIView):
     permission_classes = [IsAuthenticated]
     http_method_names = ["get"]
@@ -30,16 +37,34 @@ class AuthorStream(APIView):
         if not author:
             return HttpResponseNotFound()
 
+        # get posts in inbox and user posts
+
         #get list of following
-        following = Author.objects.all().filter(followers___id__contains=author._id)
+        #following = Author.objects.all().filter(followers___id__contains=author._id)
         posts_json = list()
 
         #needs visibility filtering.
-        posts = Post.objects.all().filter(Q(author__in=following) | Q(author___id=author_id)).order_by('-published')
+        #posts = Post.objects.all().filter(Q(author__in=following) | Q(author___id=author_id)).order_by('-published')
+
+        try:
+            inbox = Inbox.objects.get(author=author)
+        except ObjectNotFound:
+            inbox = list()
+
+        inbox = list(inbox.posts.all())
+        print(inbox)
+
+        author_posts = list(Post.objects.all().filter(author=author))
+
+        inbox = inbox + author_posts
+
+        inbox.sort(key=lambda x: x.published, reverse=True)
+
+        #posts = Post.objects.all().filter(Q(author___id=author_id) | Q(=author_id)).order_by('-published')
 
         #posts = filter_posts(author, posts, author)
 
-        for post in list(posts):
+        for post in inbox:
             if post.unlisted:
                 continue
             if post.author != author and not is_friend(post.author, author):

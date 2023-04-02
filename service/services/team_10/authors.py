@@ -1,3 +1,4 @@
+from service.models import Author
 from service.services.team_10.followers import get_followers
 from service.services.team_10.helper_constants import HOST, get_or_create_author
 from service.services.remote_helpers import get_author_id, get_remote
@@ -27,7 +28,5 @@ def get_multiple_authors(page=None, size=None):  # no paging yet
     for author in response_json["items"]:
         author = get_or_create_author(author, HOST)
         authors.append(author)
-
-    print(authors)
 
     return authors
