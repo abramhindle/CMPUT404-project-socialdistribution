@@ -19,8 +19,4 @@ def get_comments(author, post):
     # we CANNOT Store copies of their comments -> no way to differentiate, only one ID field
     for comment in response_json["items"]:
         comment["author"] = author.toJSON()
-        try:
-            comment["comment"] = comment.pop("content")
-        except:
-            print(comment["comment"])
     return response_json

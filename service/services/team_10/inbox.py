@@ -68,7 +68,7 @@ def serialize_comment(request, author):
     request_json = {
         "type": "comment",
         "author": request["author"], #always a local author
-        "content": request["comment"],
+        "comment": request["comment"],
         "contentType": request["contentType"],
         "published": request["published"],
     }

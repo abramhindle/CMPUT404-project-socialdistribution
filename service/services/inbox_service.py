@@ -38,7 +38,6 @@ def handle_comment(inbox: Inbox, body, author):
     try:
         comment = Comment.objects.get(_id=id)
     except ObjectDoesNotExist:
-
         comment = Comment()
         comment._id = id
 
@@ -58,6 +57,7 @@ def handle_comment(inbox: Inbox, body, author):
 
         comment.contentType = body["contentType"]
         comment.published = datetime.now(timezone.utc)
+        comment.save()
 
     inbox.comments.add(comment)
     inbox.save()
