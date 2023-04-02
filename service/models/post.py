@@ -94,4 +94,6 @@ class Post(models.Model):
         author_uuid = author_id.rsplit('/', 1)[-1]
         return f"{settings.DOMAIN}/authors/{author_uuid}/posts/{post_id}"
 
+    def __str__(self):
+        return f"{self.title}, {self.author}, {self.published}"
 

@@ -43,4 +43,7 @@ class Author(models.Model):
         self.github = json_object["github"]
         self.profileImage = json_object["profileImage"]
 
+    def __str__(self):
+        return f"{self.displayName}, {self._id}"
+
     

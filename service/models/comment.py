@@ -52,3 +52,6 @@ class Comment(models.Model):
         author_uuid = author_id.rsplit('/', 1)[-1]
         post_uuid = post_id.rsplit('/', 1)[-1]
         return f"{settings.DOMAIN}/authors/{author_uuid}/posts/{post_uuid}/comments/{comment_id}" #TODO: rather than the whole id, just get the ends of _id and put those here
+    
+    def __str__(self):
+        return f"{self.author}, {self.published}"
