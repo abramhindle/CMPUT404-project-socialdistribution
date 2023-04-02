@@ -40,6 +40,11 @@ def serialize_post(request, author):
         request["visibility"] = "VISIBLE"
     request["count"] = 0
 
+    if request["contentType"] == "image/jpeg":
+        request["contentType"] = "image/jpeg;base64"
+    elif request["contentType"] == "image/png":
+        request["contentType"] = "image/png;base64"
+
     request["categories"] = ", ".join(request["categories"])
     request["source"] = settings.DOMAIN
     request["origin"] = settings.DOMAIN
