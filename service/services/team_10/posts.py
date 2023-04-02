@@ -20,6 +20,7 @@ def get_or_create_post(post_json, author, hostname=HOST):
         # create new
         new_post = post_to_object(Post(), post_json, author)
         new_post._id = Post.create_post_id(author._id)
+
         new_post.source = remote_source
         new_post.author = author
         new_post.origin = hostname
@@ -33,6 +34,12 @@ def post_to_object(post, json_object, author):
     post.source = json_object["source"]
     post.description = json_object["description"]
     post.contentType = json_object["contentType"]
+
+    if json_object["contentType"] == "image/jpeg;base64":
+        post.contentType = "image/jpeg"
+    elif json_object["contentType"] == "image/png;base64":
+        post.contentType = "image/png"
+
     post.content = json_object["content"]
     post.author = author
     post.published = json_object["published"]
