@@ -82,3 +82,15 @@ export const get_post = async (authorId, postId, success) => {
       console.log(error);
     });
 };
+
+export const edit_api = async (authorId, postId, post, onSuccess) => {
+  await axios
+  .post(`http://127.0.0.1:8000/authors/${authorId}/posts/${postId}/`, post, head)
+  .then(function (response) {
+    console.log("Edit res: ", response["data"]);
+    onSuccess(response["data"]);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}

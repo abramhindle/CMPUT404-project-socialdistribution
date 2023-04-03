@@ -173,7 +173,8 @@ class PostWithId(APIView, RestService):
             post.unlisted = bool(body["unlisted"])
 
         except KeyError as error:
-            return HttpResponseBadRequest()  # should probably include the error
+            print(error)
+            return HttpResponseBadRequest()
 
         post.save()
 

@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
-import { send_api, post_api } from "../../api/post_display_api";
+import { useState, useEffect, useNavigate } from "react";
+import { send_api, post_api, edit_api } from "../../api/post_display_api";
 import { get_followers_for_author } from "../../api/follower_api";
 import "./form.css";
+import { useLocation } from "react-router-dom";
 
-export default function NewPost(props) {
+export default function NewPost() {
     //Get user info
     const user = useSelector((state) => state.user).id;
 
@@ -16,20 +17,13 @@ export default function NewPost(props) {
     const [visibility, setVisibility] = useState("PUBLIC");
     const [unlisted, setUnlisted] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [id, setId] = useState("");
 
     const [followers, setFollowers] = useState([]);
     const [posted, setPosted] = useState(null);
 
-    // Check if editing
-    if (props.id) {
-        setEdit(true);
-        setTitle(props.title);
-        setDescription(props.description);
-        setContentType(props.contentType);
-        setBody(props.body);
-        setCategories(props.categories);
-        setVisibility(props.visibility);
-    }
+    const {state} = useLocation();
+    const navigate = useNavigate();
 
     const populateFollowers = async () => {
         await get_followers_for_author(user, setFollowers);
@@ -37,6 +31,7 @@ export default function NewPost(props) {
 
     const sendPost = async () => {
         await send_api(followers, posted);
+        navigate("/");
     }
 
     const submit = async (e) => {
@@ -50,12 +45,13 @@ export default function NewPost(props) {
         "categories": categories.split(",")};
 
         e.preventDefault();
-        console.log(user, "is attempting to post", data);
-        await post_api(user, data, setPosted);
-        
-        //let followers = get_followers_for_author(user, setSucess);
-        // console.log("Starting to send ...");
-        // send_api(followers, sendLink);
+        if (edit) {
+            console.log(user, "is attempting to edit post", id);
+            await edit_api(user, id, data, setPosted);
+        } else {
+            console.log(user, "is attempting to post", data);
+            await post_api(user, data, setPosted);
+        }
     };
 
     const handleCheckbox = (e) => {
@@ -63,6 +59,23 @@ export default function NewPost(props) {
         let check = e.target.checked ? true : false;
         setUnlisted(check);
     }
+
+    useEffect( () => {
+        let data = state;
+        if (data) {
+            data = data.postInfo;
+            setEdit(true);
+            setTitle(data.title);
+            setDescription(data.description);
+            setContentType(data.contentType);
+            setBody(data.content);
+            setCategories(data.categories);
+            setVisibility(data.visibility);
+            console.log("id:", data.id);
+            setId(data.id.split("/").pop());
+        }
+    }, []);
+
 
     useEffect(() => {
         //only runs once
@@ -77,7 +90,7 @@ export default function NewPost(props) {
     return (
         <div className="form-container">
             <form className="form" encType="multipart/form-data" method="POST">
-                <h1>New Text Post</h1>
+                {edit ? <h1>Edit Text Post</h1> : <h1>New Text Post</h1>}
                 <div className="form-group">
                     <label for="contentType">Content Type: </label>
                     <select value={contentType} 
@@ -111,13 +124,14 @@ export default function NewPost(props) {
                     Friends Only
                     </option>
                 </select>
-                <label>  Unlisted</label>
+                {!edit && <label>  Unlisted</label>&&
                 <input
                     name="unlisted"
                     type="checkbox"
                     defaultChecked={false}
                     onChange={handleCheckbox}
-                /><br/>
+                />}
+                <br/>
                 <div className="form-group">
                     <input
                         className="form-control"

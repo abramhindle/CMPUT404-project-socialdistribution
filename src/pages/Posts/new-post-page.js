@@ -3,7 +3,7 @@ import NewPost from "../../components/ItemDisplay/new-post";
 import '../pages.css'
 import './posts.css'
 
-function Posts() {
+function Posts(props) {
     return (
         <div className='Page'>
         <Sidebar/>
