@@ -15,7 +15,8 @@ import PostList from "../../components/ListItems/post-list";
 function PostDetail() {
   const { author_id, post_id } = useParams();
   const user = useSelector((state) => state.user);
-
+  
+  const [mine, setMine] = useState(false);
   const [postInfo, setPostInfo] = useState(null);
   const [markdown, setMarkdown] = useState(false);
   const [shareable, setShareable] = useState(false);
@@ -74,6 +75,9 @@ function PostDetail() {
     }
     if (postData.visibility === "PUBLIC" || postData.visibility === "FRIENDS") {
       setShareable(true);
+    }
+    if (postData.author.id === user.id) {
+      setMine(true);
     }
   };
 
@@ -152,6 +156,7 @@ function PostDetail() {
               <h6>
                 <Link to={authorUrl}>{postInfo.author.displayName}</Link>
               </h6>
+              {mine && <button>EDIT</button>}
             </div>
             <div className="postBody">
               {/* Will need to handle other post types here, plain for now */}
