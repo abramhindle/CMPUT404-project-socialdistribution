@@ -36,7 +36,7 @@ function Realfriends() {
   }, []);
 
   const Details = (follow_id) => {
-    //TODO redirect to the realfriends page
+    navigate(`/user/${follow_id.split("/").pop()}`);
   };
 
   const onSuccess = () => {

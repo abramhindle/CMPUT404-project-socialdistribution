@@ -80,7 +80,8 @@ class AuthorTests(TestCase):
 
         body = {
             "comment": "Actually I loved this post!",
-            "contentType": "text/markdown"
+            "contentType": "text/markdown",
+            "commentAuthorId": self.author2._id
         }
 
         post_request = self.request_factory.post(url, data=json.dumps(body), user = self.user1, content_type = CONTENT_TYPE_JSON)

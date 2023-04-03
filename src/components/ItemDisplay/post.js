@@ -66,6 +66,7 @@ export default function Post(data) {
   //Comment Handling
   const [comment, setComment] = useState("");
   const [commentType, setCommentType] = useState("text/plain");
+  const [commentFieldVisibilty, setCommentFieldVisibilty] = useState(false);
 
   const submitComment = () => {
     if (comment) {
@@ -77,6 +78,7 @@ export default function Post(data) {
         user.id
       );
       setComment("");
+      setCommentFieldVisibilty(false);
     } else {
       alert("enter the comment");
     }
@@ -117,14 +119,39 @@ export default function Post(data) {
         <div className="interaction-options">
           <LikeHeart handleLike={handleLike} liked={liked} />
           <CommentArrow
-            setCommentType={setCommentType}
-            setComment={setComment}
-            submit={submitComment}
-          />
+            setCommentFieldVisibilty={setCommentFieldVisibilty}
+           />
           {/* Share Button */}
           {shareable && <ShareIcon />}
         </div>
       </div>
+      {commentFieldVisibilty && (
+            <div className="comment-input-form">
+            <input
+                type="radio"
+                id="text"
+                name="contentType"
+                value="text/plain"
+                defaultChecked
+                onChange={(e) => setCommentType(e.target.value)}
+            />
+            <label htmlFor="text">Text</label>
+            <input
+                type="radio"
+                id="markdown"
+                name="contentType"
+                value="text/markdown"
+                onChange={(e) => setCommentType(e.target.value)}
+            />
+            <label htmlFor="markdown">Markdown</label>
+            <input
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Enter the comment here"
+                type="text"
+            />
+            <button onClick={submitComment}>Submit</button>
+            </div>
+            )}
       <div className="timestamp">{data["post"]["published"]}</div>
     </div>
   );

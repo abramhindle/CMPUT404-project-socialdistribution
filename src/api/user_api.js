@@ -18,7 +18,7 @@ function getCookie(name) {
   return cookieValue;
 }
 
-export const signIn_api = async (username, password, success) => {
+export const signIn_api = async (username, password, success, failed) => {
   const user = {
     username: username,
     password: password,
@@ -37,15 +37,8 @@ export const signIn_api = async (username, password, success) => {
     })
     .catch(function (error) {
       console.log(error);
+      failed(error.response.status);
     });
-  // if (res.status === 200) {
-  //   console.log("success");
-  //   console.log(res.headers["set-cookie"]);
-  //   axios.defaults.headers.post["X-CSRF-Token"] = res.data;
-  //   success(res);
-  // } else {
-  //   console.log("failed");
-  // }
 };
 
 export const signOut_api = async (success) => {

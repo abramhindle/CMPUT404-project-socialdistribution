@@ -1,7 +1,7 @@
 .list-item {
   background-color: none;
   list-style: none;
-  padding: 1em;
+  padding: 0.3em;
   margin: 0;
 }
 
@@ -13,4 +13,8 @@
 
 ul {
   padding: 0;
+}
+
+li {
+  padding: 0.5em;
 }

@@ -1,18 +1,12 @@
 import { useState } from "react";
 
 export default function CommentArrow(props){
-    const [commentFieldVisibilty, setCommentFieldVisibilty] = useState(false);
-
-    const submitComment = () => {
-        setCommentFieldVisibilty(false);
-        props.submit();
-    }
 
     return (
         <>
         <button className="interact"
             onClick={() =>
-            setCommentFieldVisibilty(commentFieldVisibilty ? false : true)
+            props.setCommentFieldVisibilty(props.commentFieldVisibilty ? false : true)
             }
         >
             <svg width="calc(2.5em)" height="calc(0.77*2.5em)" viewBox="0 0 18 14" version="1.1" >
@@ -37,34 +31,6 @@ export default function CommentArrow(props){
             </g>
             </svg>
         </button>
-      
-        {commentFieldVisibilty && (
-            <div className="comment-input-form">
-            <input
-                type="radio"
-                id="text"
-                name="contentType"
-                value="text/plain"
-                defaultChecked
-                onChange={(e) => props.setCommentType(e.target.value)}
-            />
-            <label htmlFor="text">Text</label>
-            <input
-                type="radio"
-                id="markdown"
-                name="contentType"
-                value="text/markdown"
-                onChange={(e) => props.setCommentType(e.target.value)}
-            />
-            <label htmlFor="markdown">Markdown</label>
-            <input
-                onChange={(e) => props.setComment(e.target.value)}
-                placeholder="Enter the comment here"
-                type="text"
-            />
-            <button onClick={submitComment}>Submit</button>
-            </div>
-            )}
         </>
     );
 }
