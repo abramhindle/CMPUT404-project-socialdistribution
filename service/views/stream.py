@@ -67,14 +67,11 @@ class AuthorStream(APIView):
         for post in inbox:
             if post.unlisted:
                 continue
-            if post.author != author and not is_friend(post.author, author):
+            if post.visibility == "FRIENDS" and post.author not in list(author.followers):
                 continue
             posts_json.append(post.toJSON())
 
         return HttpResponse(json.dumps(posts_json), content_type=CONTENT_TYPE_JSON)
-
-def is_friend(author1: Author, author2: Author):
-    return author1 in list(author2.followers.all()) and author2 in list(author1.followers.all())
 
 def encode_list(authors):
     return {

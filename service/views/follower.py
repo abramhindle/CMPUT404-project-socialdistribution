@@ -25,8 +25,6 @@ class FollowersAPI(APIView):
 
     def get(self, request, author_id):
 
-        print(author_id)
-
         try:
             author = Author.objects.get(_id=author_id, is_active=True)
         except ObjectDoesNotExist:

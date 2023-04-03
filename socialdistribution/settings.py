@@ -35,7 +35,8 @@ ALLOWED_HOSTS = [
     'http://localhost:8000',
     'http://31552.yeg.rac.sh:8000',
     "https://cmput404-group-project.herokuapp.com",
-    "https://socialdistcmput404.herokuapp.com"
+    "https://socialdistcmput404.herokuapp.com",
+    "https://sd16-api.herokuapp.com"
 ]
 
 CORS_REPLACE_HTTPS_REFERER = True
