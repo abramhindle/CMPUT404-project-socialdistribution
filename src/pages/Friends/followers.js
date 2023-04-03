@@ -72,6 +72,7 @@ function Followed() {
           <TableRow>
             <TableCell id="title">ID</TableCell>
             <TableCell id="title" align="right">Name</TableCell>
+            <TableCell/>
           </TableRow>
         </TableHead>
         <TableBody>
