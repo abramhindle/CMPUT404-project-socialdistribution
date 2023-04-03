@@ -35,8 +35,9 @@ class AuthorStream(APIView):
         #needs visibility filtering.
         posts = Post.objects.all()\
             .filter(author__in=following)\
+            .filter(visibility="PUBLIC")\
             .union(
-                Post.objects.all().filter(author___id=author._id)
+                Post.objects.all().filter(author___id=author._id).filter(visibility="PUBLIC")
             ).order_by('-published')
 
         for post in list(posts):
