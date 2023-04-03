@@ -64,10 +64,12 @@ class AuthorStream(APIView):
 
         #posts = filter_posts(author, posts, author)
 
+        followers = list(author.followers.all())
+
         for post in inbox:
             if post.unlisted:
                 continue
-            if post.visibility == "FRIENDS" and post.author not in list(author.followers):
+            if post.visibility == "FRIENDS" and post.author not in followers:
                 continue
             posts_json.append(post.toJSON())
 
