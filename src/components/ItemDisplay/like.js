@@ -38,7 +38,7 @@ export default function Like(data) {
   }
 
   return (
-    <div className="hflex">
+    <div className="hflex like">
       <div className="list-item">
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">

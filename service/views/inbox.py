@@ -102,8 +102,8 @@ class InboxView(APIView):
                 id = body["id"]
                 self.handle_comment(inbox, id, body, author)
             elif body["type"] == "follow": #TODO: fill these in once the objects are done
-                id = Follow.create_follow_id(body["object"]["id"], body["actor"]["id"])
-                self.handle_follow(inbox, id, body, author)
+                #id = Follow.create_follow_id(body["object"]["id"], body["actor"]["id"])
+                self.handle_follow(inbox, body, author)
             elif body["type"] == "Like":
                 id = Like.create_like_id(body["author"]["id"], body["object"])
                 self.handle_like(inbox, id, body, author)
@@ -172,26 +172,29 @@ class InboxView(APIView):
         inbox.comments.add(comment)
         inbox.save()
 
-    def handle_follow(self, inbox: Inbox, id, body, author: Author): # we actually create the follow request here
-        foreign_author = Author()
-        foreign_author.toObject(body["object"])
+    def handle_follow(self, inbox: Inbox, body, author: Author): # we actually create the follow request here
+        object = Author()
+        actor = Author()
+        actor.toObject(body["actor"])
+        object.toObject(body["object"])
         
-        if author._id == foreign_author._id:
+        if actor._id == object._id:
             return HttpResponseBadRequest() #can't follow yourself!
 
         #author = Author.objects.get(_id = author._id)
         #followed = Author.objects.get(_id = foreign_author_id)
 
         try:
-            foreign_author.followers.get(_id=author._id)
+            object.followers.get(_id=actor._id)
         except ObjectDoesNotExist:
             r = Follow()
-            r._id = Follow.create_follow_id(foreign_author._id,author._id)
-            r.actor = author
-            r.object = foreign_author
+            r._id = Follow.create_follow_id(object._id,actor._id)
+            r.actor = actor
+            r.object = object
             r.save()
 
             r_json = r.toJSON()
+            inbox.follow_requests.add(r)
 
             return HttpResponse(json.dumps(r_json), status=201, content_type = CONTENT_TYPE_JSON)
 
