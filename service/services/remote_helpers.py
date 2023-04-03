@@ -18,11 +18,11 @@ def get_remote(url):
         response = requests.get(url, headers=AUTH)
         response.close()
     except Exception as e:
-        print("Got an exception of: %s", e)
+        print("Got an exception of: ", e)
         return None
 
     if response.status_code < 200 or response.status_code > 299:
-        print("Got a status code of: %s", response.status_code)
+        print("Got a status code of: ", response.status_code)
         return None
 
     return response
@@ -33,10 +33,10 @@ def post_remote(url, request_json):
         response = requests.post(url, json=request_json, headers=AUTH)
         response.close()
     except Exception as e:
-        print("Got an exception of: %s", e)
+        print("Got an exception of: ", e)
         return None  # just say not found
 
     if response.status_code < 200 or response.status_code > 299:
-        print("Got a status code of: %s", response.status_code)
+        print("Got a status code of: ", response.status_code)
         return None
     return response

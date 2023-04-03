@@ -25,6 +25,19 @@ def get_remote(url):
 
     return response
 
+def post_remote(url, request_json):
+    try:
+        response = requests.post(url, json=request_json, auth=AUTH)
+        response.close()
+    except Exception as e:
+        print("Got an exception of: ", e)
+        return None  # just say not found
+
+    if response.status_code < 200 or response.status_code > 299:
+        print("Got a status code of: ", response.status_code)
+        return None
+    return response
+
 # region AUTHOR HELPERS
 
 def get_or_create_author(author_json, hostname):
@@ -160,9 +173,11 @@ def get_followers(author):
 
     return authors
 
+# region INBOX
+
 def serialize_follow_request(request):
     author_guid = request["object"]["url"].rsplit('/', 1)[-1]
-    print(author_guid)
+
     url = HOST + "service/authors/" + author_guid
     response = get_remote(url)
 
@@ -175,24 +190,14 @@ def serialize_follow_request(request):
     request["actor"].pop("isLogin")
 
     json_request = {
-        "type": "Follow",
+        "type": "follow",
         "summary": request["Summary"],
         "actor": request["actor"], #our own author
         "object": author
     }
 
     url = HOST + "service/authors/" + author_guid + "/inbox/"
-    try:  # try get Author
-        response = requests.post(url, json=json_request, auth=AUTH)
-        response.close()
-    except Exception as e:
-        print(e)
-        return None
-
-    if response.status_code < 200 or response.status_code > 299:
-        print(response.status_code)
-        author = None
-        return author
+    response = post_remote(url, json_request)
 
     return response
 
@@ -205,31 +210,14 @@ def serialize_post(request, author):
         request["visibility"] = "VISIBLE"
     request["count"] = 0
 
-    #request["categories"] = ", ".join(request["categories"])
     request["source"] = settings.DOMAIN
     request["origin"] = settings.DOMAIN
 
-    print(request)
-
     url = HOST + "service/authors/" + author_guid + "/inbox/"
-    try:  # try get Author
-        print(url)
-        response = requests.post(url, json=request, auth=AUTH)
-        response.close()
-    except Exception as e:
-        print(e)
-        return None  # just say not found
-
-    if response.status_code < 200 or response.status_code > 299:
-        print(response.status_code)
-        print(response.text)
-        return None
-
-    print(response.status_code)
+    response = post_remote(url, request)
 
     return response
 
-# endregion
 
 def handle_inbox(body, author):
     response = None
@@ -246,6 +234,8 @@ def handle_inbox(body, author):
 
     return response
 
+# endregion
+
 def get_comments(author, post):
     author_guid = author.url.rsplit('/', 1)[-1]
     post_guid = post.source.rsplit('/', 1)[-1]
@@ -257,8 +247,6 @@ def get_comments(author, post):
         return None
 
     response_json = response.json()
-
-    response_json["items"] = response_json.pop("items")
 
     # we CANNOT Store copies of their comments -> no way to differentiate, only one ID field
     for comment in response_json["items"]:
