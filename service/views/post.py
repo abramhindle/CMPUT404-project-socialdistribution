@@ -145,6 +145,9 @@ class PostWithId(APIView, RestService):
             post = Post.objects.get(_id=post_id)
         except:
             return HttpResponseNotFound()
+        
+        if post.visibility != "PUBLIC":     # can only edit public posts
+            return HttpResponseBadRequest()
 
         try:
             post.title = body["title"]
@@ -193,6 +196,9 @@ class PostWithId(APIView, RestService):
 
         if post.author._id != author_id: # cannot delete a post for an author that didn't write it
             return HttpResponseNotFound()
+        
+        if post.visibility != "PUBLIC":  # users can only delete public posts
+            return HttpResponseBadRequest()
 
         post.delete()
 

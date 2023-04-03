@@ -29,7 +29,6 @@ class AuthorStream(APIView):
 
         #get list of following
         following = Author.objects.all().filter(followers___id__contains=author._id)
-
         posts_json = list()
 
         #needs visibility filtering.
