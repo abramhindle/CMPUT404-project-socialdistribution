@@ -102,7 +102,6 @@ class CommentsModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        
         comment_url = create_comment_url(self.post.id)
         self.id = comment_url
         super(CommentsModel, self).save(*args, **kwargs)

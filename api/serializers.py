@@ -102,7 +102,8 @@ class PostsSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         
-        which_team = which_node(repr['id'])
+        
+        which_team = which_node(repr.get('id'))
         
         # Don't wanna be constantly sending binary image, so replace it with the url if it's ours.
         if (which_team == 'TEAM_16') and ('image' in repr['contentType']) and ('base64' in repr['content']):
@@ -114,24 +115,25 @@ class PostsSerializer(serializers.ModelSerializer):
         if 'localhost' in repr['origin']:
             repr['origin'] = repr['id']
 
+        
         return repr
     
     def to_internal_value(self, data):
         # For when we're creating brand new posts
-        if not data.get('id'):
+        
+        if not data.get('id', ''):
             data['id'] = create_post_url(data['author']['id'])
-            
-        if self.context['set_origin']:
             data['origin'] = data['id']
-        if self.context['set_source']:      # Note: can use a similar idea for when (if) resharing is implemented
             data['source'] = data['id']
+            
         
          # Don't want no localhost in my urls
         if 'localhost' in data['source']:
-            data['source'] = data['id']
+            data['source'] = data.get('id', '')
         if 'localhost' in data['origin']:
-            data['origin'] = data['id']        
+            data['origin'] = data.get('id', '')       
         
+      
         return super().to_internal_value(data)
 
 
@@ -168,9 +170,9 @@ class CommentsSerializer(serializers.ModelSerializer):
         author = validated_data.pop('author')
         post = validated_data.pop('post')
         post.pop('author')
-        
-        author = AuthorModel.objects.get(**author)
-        post = PostsModel.objects.filter(**post).first()
+
+        author = AuthorModel.objects.get(id=author.get('id'))
+        post = PostsModel.objects.get(id=post.get('id'))
         
         comment = CommentsModel.objects.create(
             post=post,
@@ -199,7 +201,7 @@ class LikeSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         author_data = validated_data.pop('author')
-        author = AuthorModel.objects.get(**author_data)
+        author = AuthorModel.objects.get(id=author_data.get('id'))
 
         like = LikeModel.objects.create(author=author, **validated_data)
         return like
@@ -214,19 +216,11 @@ class FollowSerializer(serializers.ModelSerializer):
         model = FollowModel
         fields = ('status', 'follower', 'following', 'created_at')
 
-
 class InboxSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
 
     def create(self, validated_data):
-        # author_data = validated_data.pop('author')
-        
-        # print(author_data)
-        
-        # author = AuthorModel.objects.get(**author_data)
-        # inbox = InboxModel.objects.create(author=author, **validated_data)
-        # return inbox
-        
+
         author_id = validated_data.pop('author').get('id')
         author = AuthorModel.objects.get(id=author_id)
         validated_data['author'] = author
