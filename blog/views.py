@@ -45,7 +45,7 @@ class SignInView(APIView):
                 auth.login(request, user)
                 return Response({"success": "User authenticated", "author": author.toJSON()}, status=200)
             except:
-                return Response({"error": "Error Authenticating"}, status=401)
+                return Response({"error": "Error Authenticating"}, status=403)
         
         return Response({"error": "Error Authenticating"}, status=401)
 

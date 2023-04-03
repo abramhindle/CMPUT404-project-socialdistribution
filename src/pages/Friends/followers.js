@@ -72,7 +72,6 @@ function Followed() {
           <TableRow>
             <TableCell id="title">ID</TableCell>
             <TableCell id="title" align="right">Name</TableCell>
-            <TableCell id="title" align="right">Follow</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
