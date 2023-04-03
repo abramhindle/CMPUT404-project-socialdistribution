@@ -96,8 +96,6 @@ class CommentView(APIView):
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
-       
-
         comment = Comment()
 
         try:

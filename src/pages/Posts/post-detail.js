@@ -11,6 +11,7 @@ import { get_post_like, post_like } from "../../api/like_api.js";
 import LikeHeart from "../../components/Buttons/like_button";
 import ShareIcon from "../../components/Buttons/share_button";
 import PostList from "../../components/ListItems/post-list";
+import profile from "../../images/profile.png";
 
 function PostDetail() {
   const { author_id, post_id } = useParams();
@@ -19,6 +20,7 @@ function PostDetail() {
   const [postInfo, setPostInfo] = useState(null);
   const [markdown, setMarkdown] = useState(false);
   const [shareable, setShareable] = useState(false);
+  const [image, setImage] = useState(false);
   const [likeInfo, setLikeInfo] = useState(null);
   const [liked, setLiked] = useState(false);
   const [commentsInfo, setCommentsInfo] = useState(null);
@@ -75,6 +77,10 @@ function PostDetail() {
     if (postData.visibility === "PUBLIC" || postData.visibility === "FRIENDS") {
       setShareable(true);
     }
+    if (postData.contentType.split("/")[0] === "image") {
+      setImage(true);
+    }
+  console.log(postData);
   };
 
   const successLike = (likeData) => {
@@ -148,7 +154,7 @@ function PostDetail() {
         <div className="Fragment sidebar-offset">
           <div className="message">
             <div className="from">
-              <img alt="author" src={postInfo.author.profileImage}></img>
+              <img alt="author" src={postInfo.author.profileImage == "" ? profile : postInfo.author.profileImage}></img>
               <h6>
                 <Link to={authorUrl}>{postInfo.author.displayName}</Link>
               </h6>
@@ -157,16 +163,18 @@ function PostDetail() {
               {/* Will need to handle other post types here, plain for now */}
               <div className="content-container">
                 <h3 id="title">{postInfo.title}</h3>
-                {markdown ? (
+                {image && <img 
+                            src={"data:"+postInfo.contentType+"base64;"+postInfo.content}
+                            className="posted-image"/>
+                }
+                {!image && (markdown ? (
                   <ReactMarkdown
                     className="content line"
                     children={postInfo.content}
-                  >
-                    {/* Mardown doesn't like leading whitespace */}
-                  </ReactMarkdown>
+                  />
                 ) : (
                   <div className="content line">{postInfo.content}</div>
-                )}
+                ))}
               </div>
               <div className="timestamp">{postInfo.published}</div>
             </div>
