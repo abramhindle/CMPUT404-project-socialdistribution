@@ -3,7 +3,6 @@ import "./friends.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { get_followed_for_author } from "../../api/follower_api";
-import { delete_followers_for_author } from "../../api/follower_api";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import * as React from "react";
@@ -34,10 +33,10 @@ function Followed() {
   useEffect(() => {
     get_followed_for_author(user.id, setList);
   }, []);
-
-  const DeleteAuthor = (follow_id) => {
-    delete_followers_for_author(user.id, follow_id, onSuccess);
-  };
+  
+  const Details = (follow_id) => {
+    navigate(`/user/${follow_id.split("/").pop()}`);
+  };  
 
   const onSuccess = () => {
     setSuccess(true);
@@ -131,10 +130,10 @@ function Followed() {
                   <TableCell align="right">
                     <Button
                       variant="contained"
-                      color="error"
-                      onClick={(e) => DeleteAuthor(row.id)}
+                      color="success"
+                      onClick={(e) => Details(row.id)}
                     >
-                      Delete
+                     Details
                     </Button>
                   </TableCell>
                 </TableRow>
