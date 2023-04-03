@@ -43,20 +43,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
         return repr
     
-    def to_internal_value(self, data):
-        data['url'] = data['id']
-        
-        # Ensure host is the proper format without accidentally overwriting it
-        # If the host field is the correct format, leave it alone
-        if data['host'] in KNOWN_TEAMS.keys():
-            pass
-        else:
-            # Else if it is a known team in the incorrect format, fix it
-            node_host = which_node(data['id'], return_host=True)
-            if node_host != 'TEAM_UNKNOWN':
-                data['host'] = node_host
-                
-        return super().to_internal_value(data)
+    
 
 
 class PostsSerializer(serializers.ModelSerializer):
