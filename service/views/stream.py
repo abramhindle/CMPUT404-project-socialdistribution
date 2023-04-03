@@ -33,7 +33,12 @@ class AuthorStream(APIView):
         posts_json = list()
 
         #needs visibility filtering.
-        posts = Post.objects.all().filter(author__in=following).order_by('-published')
+        posts = Post.objects.all()\
+            .filter(author__in=following)\
+            .filter(visibility="PUBLIC")\
+            .union(
+                Post.objects.all().filter(author___id=author._id).filter(visibility="PUBLIC")
+            ).order_by('-published')
 
         for post in list(posts):
             posts_json.append(post.toJSON())
