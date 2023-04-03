@@ -7,6 +7,7 @@ import { post_inbox } from "../api/inbox_api";
 const ShareModal = (props) => {
   const user = useSelector((state) => state.user);
   const [friends, setFriends] = useState(null);
+  const [filter, setFilter] = useState("");
 
   const style = {
     position: "absolute",
@@ -27,20 +28,31 @@ const ShareModal = (props) => {
     post_inbox(authorId, post);
   };
 
-  console.log("Friends", friends);
+  const filterFriend = (friend) => {
+    return friend.displayName.toLowerCase().includes(filter.toLowerCase());
+  };
 
   return (
     friends && (
       <Modal {...props}>
         <Box sx={style}>
-          {friends.items.map((friend) => (
-            <div>
-              {friend.displayName}
-              <button onClick={() => shareToInbox(friend.id, props.post)}>
-                Send
-              </button>
-            </div>
-          ))}
+          <input
+            name="filter"
+            type="text"
+            placeholder="Search friend"
+            onChange={(e) => setFilter(e.target.value)}
+            value={filter}
+          />
+          {friends.items
+            .filter((friend) => filterFriend(friend))
+            .map((friend) => (
+              <div>
+                {friend.displayName}
+                <button onClick={() => shareToInbox(friend.id, props.post)}>
+                  Send
+                </button>
+              </div>
+            ))}
         </Box>
       </Modal>
     )
