@@ -60,7 +60,7 @@ export default function ImageUpload() {
 
             fileReader.onload = () => {
                 resolve(
-                    fileReader.result.split("base64").pop());
+                    fileReader.result.split("base64,").pop());
             };
 
             fileReader.onerror = (error) => {
@@ -74,7 +74,9 @@ export default function ImageUpload() {
         console.log(event.target.files[0]);
         setContentType(file.type);
         const base64 = await convertBase64(file);
-        document.getElementById("avatar").src = "data:"+file.type+"base64;"+base64;
+        //data:image/jpeg;base64,
+        const img = "data:"+file.type+";base64,"+base64;
+        document.getElementById("avatar").src = img;
         setBody(base64);
     };
 

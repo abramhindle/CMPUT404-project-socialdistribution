@@ -105,7 +105,7 @@ export default function Post(data) {
             <img
               className="posted-image"
               alt={data["post"]["description"]}
-              src={"data:"+data["post"]["contentType"]+"base64;"+data["post"]["content"]}
+              src={"data:"+data["post"]["contentType"]+";base64,"+data["post"]["content"]}
             />
           )}
           {markdown && (

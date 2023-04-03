@@ -164,7 +164,7 @@ function PostDetail() {
               <div className="content-container">
                 <h3 id="title">{postInfo.title}</h3>
                 {image && <img 
-                            src={"data:"+postInfo.contentType+"base64;"+postInfo.content}
+                            src={"data:"+postInfo.contentType+";base64,"+postInfo.content}
                             className="posted-image"/>
                 }
                 {!image && (markdown ? (
