@@ -25,8 +25,12 @@ class FollowersAPI(APIView):
 
     def get(self, request, author_id):
 
-        author = Author.objects.get(_id=author_id, is_active=True)
+        print(author_id)
 
+        try:
+            author = Author.objects.get(_id=author_id, is_active=True)
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound()
         # reach out and get followers for an author that isn't our own
 
         followers_list = list()

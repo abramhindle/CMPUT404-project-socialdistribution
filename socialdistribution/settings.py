@@ -58,7 +58,7 @@ CSRF_TRUSTED_ORIGINS = [
     '31552.yeg.rac.sh:8000',
     "cmput404-group-project.herokuapp.com",
     "socialdistcmput404.herokuapp.com",
-    "https://sd16-api.herokuapp.com"
+    "sd16-api.herokuapp.com"
 ]
 
 # Application definition
