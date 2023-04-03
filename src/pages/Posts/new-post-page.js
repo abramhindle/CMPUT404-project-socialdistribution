@@ -8,9 +8,6 @@ function Posts() {
         <div className='Page'>
         <Sidebar/>
         <div className='Fragment sidebar-offset'>
-          <p>
-              This is now the new post creation page
-          </p>
           <NewPost/>
         </div>
       </div>
