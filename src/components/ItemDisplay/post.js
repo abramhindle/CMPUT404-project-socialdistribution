@@ -12,6 +12,8 @@ import ReactMarkdown from "react-markdown";
 import LikeHeart from "../Buttons/like_button";
 import CommentArrow from "../Buttons/comment_button";
 import ShareIcon from "../Buttons/share_button";
+import ShareModal from "../share-modal";
+import { Modal } from "@mui/material";
 
 import profile from "../../images/profile.png";
 
@@ -86,6 +88,10 @@ export default function Post(data) {
     }
   };
 
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <div className="vflex center">
       <div className="list-item">
@@ -124,7 +130,12 @@ export default function Post(data) {
             setCommentFieldVisibilty={setCommentFieldVisibilty}
            />
           {/* Share Button */}
-          {shareable && <ShareIcon />}
+          {shareable && (
+            <div>
+              <ShareIcon share={handleOpen} />
+              <ShareModal open={open} onClose={handleClose} post={data.post} />
+            </div>
+          )}
         </div>
       </div>
       {commentFieldVisibilty && (
