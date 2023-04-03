@@ -57,7 +57,8 @@ function Friends() {
       object: object,
     };
 
-    post_inbox(user.id, obj, onSuccess);
+
+    post_inbox(object.id, obj, onSuccess);
     //add_request(user.id, obj, onSuccess)
     //add_followers_for_author(user.id, follow_id, onSuccess)
   };

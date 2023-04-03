@@ -37,14 +37,17 @@ function Request() {
     get_request(user.id, setList);
   }, []);
 
-  const DeleteRequest = (actor_id) => {
-    delete_request(user.id, actor_id, onSuccess);
-  };
 
-  const AcceptRequest = (actor_id) => {
-    add_followers_for_author(user.id, actor_id, onSuccess);
-    delete_request(user.id, actor_id, onSuccess);
-  };
+  const DeleteRequest= (actor_id) => {
+      delete_request(user.id, actor_id, onSuccess)
+      window.location.reload();
+  }
+
+  const AcceptRequest= (actor_id) => {
+      add_followers_for_author(user.id, actor_id, onSuccess)
+      delete_request(user.id, actor_id, onSuccess)
+      window.location.reload();
+  }
 
   const onSuccess = () => {
     setSuccess(true);
@@ -54,36 +57,7 @@ function Request() {
     navigate("/");
   };
 
-  let page = 1;
-  const page_buttons = () => {
-    if (follow_list.items.length < 5 && page === 1) {
-      return;
-    }
-    if (page === 1) {
-      return <button onClick={forward_page}>Next Page</button>;
-    } else if (follow_list.items.length < 5) {
-      return <button onClick={back_page}>Prev Page</button>;
-    } else {
-      return (
-        <div>
-          <button onClick={back_page}>Prev Page</button>
-          <button onClick={forward_page}>Next Page</button>
-        </div>
-      );
-    }
-  };
 
-  const forward_page = () => {
-    page = page + 1;
-    navigate(`/friends/?page=${page}`);
-    navigate(0);
-  };
-
-  const back_page = () => {
-    page = page - 1;
-    navigate(`/friends/?page=${page}`);
-    navigate(0);
-  };
 
   return (
     <>
@@ -157,12 +131,10 @@ function Request() {
             </TableBody>
           </Table>
         </TableContainer>
-        <div style={{ width: "100%", textAlign: "center", paddingTop: 16 }}>
-          {page_buttons()}
-        </div>
       </div>
     </>
   );
 }
+
 
 export default Request;
