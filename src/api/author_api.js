@@ -3,10 +3,11 @@ import axios from "axios";
 export const get_author = async (authorId, success) => {
   console.log("Attempting to retrieve author info for", { authorId });
   await axios
-    .get(`authors/${authorId}`, {
+    .get(`authors/${authorId}/`, {
       headers: {
         Accept: "application/json",
       },
+      setTimeout: 10,
     })
     .then(function (response) {
       console.log("Author_api res: ", response);

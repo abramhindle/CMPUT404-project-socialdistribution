@@ -1,4 +1,6 @@
 from django.test import *
+
+from service.models import Comment
 from service.models.author import Author
 from django.contrib.auth.models import User
 from service.models.post import Post
@@ -27,7 +29,7 @@ class InboxTests(TestCase):
         #self.like1 = Like.objects.create(_id=Like.create_like_id(self.author1._id, self.post1._id), object=self.post1._id, author=self.author1, context="http://localhost", )
 
         self.request_factory = RequestFactory()
-    
+
     def tearDown(self):
         self.user1.delete()
         self.user2.delete() 
@@ -59,7 +61,8 @@ class InboxTests(TestCase):
 
         url = reverse('inbox_view', kwargs=self.kwargs) #reverse grabs the full relative url out of urls.py and attaches kwargs
 
-        post_request = self.request_factory.post(url, user = self.user1, data=json.dumps(post_json), content_type = CONTENT_TYPE_JSON)
+        post_request = self.request_factory.post(url, data=json.dumps(post_json), content_type = CONTENT_TYPE_JSON)
+        post_request.user = self.user1
 
         inbox_post_response = self.inbox_view.post(post_request, author_id=self.author1._id)
 
@@ -233,8 +236,6 @@ class InboxTests(TestCase):
             pass
         else:
             self.fail("Should have been not found")
-
-#TODO: add some tests to make sure only the current user can get their own inbox
 
     def create_like(self, author, id):
         return {

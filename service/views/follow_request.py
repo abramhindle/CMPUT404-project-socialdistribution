@@ -1,10 +1,13 @@
+import json
+
 from django.http import *
+from rest_framework.views import APIView
+
 from service.models.author import Author
 from service.models.follow import Follow
 from service.service_constants import *
 from django.views import View
 import json
-from djongo.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -13,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
 
 from django.views.decorators.csrf import csrf_exempt
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthorFollowRequests(View):

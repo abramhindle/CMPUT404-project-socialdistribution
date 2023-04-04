@@ -20,6 +20,11 @@ div.Page {
   width: 100%;
 }
 
+img.posted-image {
+  max-width: 60vw;
+  max-height: 100vh;
+}
+
 .content-container {
   display: flex;
   flex-direction: column;
