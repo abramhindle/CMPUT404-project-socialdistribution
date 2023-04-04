@@ -1,0 +1,17 @@
+.friend-row {
+  display: flex;
+  align-items: center;
+  padding: 2pt;
+}
+
+#profile-image {
+  width: 30pt;
+  margin-right: 10pt;
+}
+#display-name {
+  flex-grow: 1;
+}
+
+#share-button {
+  flex-grow: 1;
+}
