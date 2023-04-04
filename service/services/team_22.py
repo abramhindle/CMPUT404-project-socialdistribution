@@ -64,6 +64,7 @@ def get_multiple_authors():
 
     if response.status_code < 200 or response.status_code > 299:  # unsuccessful
         print(response.status_code)
+        print(response.text)
         return
 
     response_json = response.json()
