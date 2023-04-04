@@ -169,7 +169,8 @@ function PostDetail() {
       <Sidebar />
       {postInfo && (
         <div className="Fragment sidebar-offset">
-<<<<<<< HEAD
+          {!postInfo === 404 ? (
+          <>
           <div className="message">
             <div className="from">
               <img alt="author" src={postInfo.author.profileImage}></img>
@@ -262,19 +263,7 @@ function PostDetail() {
                   >
                     next
                   </button>
-=======
-          {postInfo === 404 ? (
-            <h2 style={{ color: "black" }}> 404 Post Not Found</h2>
-          ) : (
-            <div>
-              <div className="message">
-                <div className="from">
-                  <img alt="author" src={postInfo.author.profileImage}></img>
-                  <h6>
-                    <Link to={authorUrl}>{postInfo.author.displayName}</Link>
-                  </h6>
->>>>>>> 324886888b56375e3a0560a63249cdfc5cc11afa
-                </div>
+                </div>)}
                 <div className="postBody">
                   {/* Will need to handle other post types here, plain for now */}
                   <div className="content-container">
@@ -292,7 +281,7 @@ function PostDetail() {
                   </div>
                   <div className="timestamp">{postInfo.published}</div>
                 </div>
-              </div>
+            </div>
               <div className="Social">
                 {likeInfo && <div>{likeInfo.items.length} Liked this post</div>}
                 <div className="interaction-options">
@@ -364,7 +353,7 @@ function PostDetail() {
                 </div>
               </div>
             </div>
-          )}
+            </>) : (<h2 style={{ color: "black" }}> 404 Post Not Found</h2>) }
         </div>
       )}
     </div>
