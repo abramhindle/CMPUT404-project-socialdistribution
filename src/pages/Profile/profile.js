@@ -34,7 +34,7 @@ function Profile() {
   useEffect(() => {
     //only runs once
     get_author(
-      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}/`,
+      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
       setAuthor
     );
 

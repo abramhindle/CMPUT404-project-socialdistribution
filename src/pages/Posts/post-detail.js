@@ -11,6 +11,7 @@ import { get_post_like, post_like } from "../../api/like_api.js";
 import LikeHeart from "../../components/Buttons/like_button";
 import ShareIcon from "../../components/Buttons/share_button";
 import PostList from "../../components/ListItems/post-list";
+import profile from "../../images/profile.png";
 
 function PostDetail() {
   const { author_id, post_id } = useParams();
@@ -19,6 +20,7 @@ function PostDetail() {
   const [postInfo, setPostInfo] = useState(null);
   const [markdown, setMarkdown] = useState(false);
   const [shareable, setShareable] = useState(false);
+  const [image, setImage] = useState(false);
   const [likeInfo, setLikeInfo] = useState(null);
   const [liked, setLiked] = useState(false);
   const [commentsInfo, setCommentsInfo] = useState(null);
@@ -81,6 +83,10 @@ function PostDetail() {
         setShareable(true);
       }
     }
+    if (postData.contentType.split("/")[0] === "image") {
+      setImage(true);
+    }
+  console.log(postData);
   };
 
   const successLike = (likeData) => {
@@ -153,7 +159,7 @@ function PostDetail() {
       {postInfo && (
         <div className="Fragment sidebar-offset">
           {postInfo === 404 ? (
-            <h2 style={{ color: "black" }}> 404 Post Does Not Found</h2>
+            <h2 style={{ color: "black" }}> 404 Post Not Found</h2>
           ) : (
             <div>
               <div className="message">

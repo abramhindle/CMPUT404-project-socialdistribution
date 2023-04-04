@@ -27,7 +27,10 @@
 // Edit Icon
 // & Share Icon
 // Icon by <a href="https://freeicons.io/profile/714">Raj Dev</a> on <a href="https://freeicons.io">freeicons.io</a>
-                                
+
+// Default Profile image:
+// Crediting isn’t required, but linking back is greatly appreciated and allows image authors to gain exposure. You can use the following text:
+// Image by Stephanie Edwards from Pixabay 
 function Footer() {
 
 }   

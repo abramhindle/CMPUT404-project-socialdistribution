@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import profile from "../images/profile.png"
 
 export const userSlice = createSlice({
   name: "user",
@@ -18,7 +19,11 @@ export const userSlice = createSlice({
       state.github = action.payload.github;
       state.host = action.payload.host;
       state.id = action.payload.id;
-      state.profileImage = action.payload.profileImage;
+      if (action.payload.profileImage === ""){
+        state.profileImage = profile;
+      } else {
+        state.profileImage = action.payload.profileImage;
+      }
       state.url = action.payload.url;
       state.isLogin = true;
       return state;

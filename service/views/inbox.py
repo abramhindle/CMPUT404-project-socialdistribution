@@ -1,20 +1,21 @@
 import json
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import *
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+
+import service.services.team_10.inbox as team_10
+import service.services.team_16.team_16 as team_16
 
 from service.models.author import Author
-from service.models.comment import Comment
-from service.models.follow import Follow
 from service.models.inbox import Inbox
-from service.models.like import Like
-from service.models.post import Post
 from service.service_constants import *
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from service.services import team_14, team_22
+
+from service.services.inbox_service import handle_follow, handle_post, handle_comment, handle_like, ConflictException
 
 
 # import requests #TODO: decide if we are ok with using requests to make object creation requests
@@ -24,9 +25,9 @@ from rest_framework.permissions import IsAuthenticated
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InboxView(APIView):
-    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "delete"]
 
+    ### GET
     def get(self, request: HttpRequest, *args, **kwargs):
         author_id = kwargs['author_id']
 
@@ -60,7 +61,7 @@ class InboxView(APIView):
         paged_inbox_items = list()
 
         for i in range(0, page): # do this for as many times as we need for paging
-            #get size of items out of inbox_items
+            # get size of items out of inbox_items
             paged_inbox_items = inbox_items[0:size]
             inbox_items = inbox_items[size:]
 
@@ -75,44 +76,78 @@ class InboxView(APIView):
 
         return HttpResponse(json.dumps(inbox_json), content_type=CONTENT_TYPE_JSON)
 
+    ### POST
     def post(self, request: HttpRequest, *args, **kwargs):
-        author_id = kwargs['author_id']
+        self.author_id = kwargs['author_id']
 
-        try: 
-            body = request.data
-        except:
-            body = request.body.decode(UTF8)
-            body = json.loads(body)
+        print(self.author_id)
 
         try:
-            author = Author.objects.get(_id=author_id, is_active=True)
+            author = Author.objects.get(_id=self.author_id, is_active=True)
         except ObjectDoesNotExist:
             return HttpResponseNotFound()
 
-        try: # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
-            inbox = Inbox.objects.get(author=author) #author_id is the primary key for an inbox
-        except ObjectDoesNotExist:
-            inbox = Inbox.objects.create(author=author)
+        print(author)
 
-        try:    #TODO check if requires additional tweaking
+        try:
+            body = request.data
+        except AttributeError:  # tests don't run without this
+            body = request.body
+            body = json.loads(body)
+
+        # remote-user-t14
+        if author.host == settings.REMOTE_USERS[0][1]:
+            response = team_14.handle_inbox(body)
+            return HttpResponse(status=202)
+
+        # remote-user-t22
+        if author.host == settings.REMOTE_USERS[1][1]:
+            response = team_22.handle_inbox(body)
+
+            if response is None:
+                return HttpResponse(status=500)
+
+            return HttpResponse(status=202)
+
+        # remote-user-t16
+        if author.host == settings.REMOTE_USERS[2][1]:
+            response = team_16.handle_inbox(body, author)
+
+            if response is None:
+                return HttpResponse(status=500)
+
+            return HttpResponse(status=202)
+
+        # remote-user-t10
+        if author.host == settings.REMOTE_USERS[3][1]:
+            response = team_10.handle_inbox(body, author)
+
+            if response is None:
+                return HttpResponse(status=500)
+
+            return HttpResponse(status=202)
+
+        inbox = self.get_or_create_inbox(author)
+
+        try:
             if body["type"] == "post":
                 id = body["id"]
-                self.handle_post(inbox, id, body, author)
+                handle_post(inbox, id, body, author, request.user)
             elif body["type"] == "comment":
-                id = body["id"]
-                self.handle_comment(inbox, id, body, author)
-            elif body["type"] == "follow": #TODO: fill these in once the objects are done
-                #id = Follow.create_follow_id(body["object"]["id"], body["actor"]["id"])
-                self.handle_follow(inbox, body, author)
+                handle_comment(inbox, body, author)
+            elif body["type"] == "follow" or body["type"] == "Follow":
+                handle_follow(inbox, body, author)
             elif body["type"] == "Like":
-                id = Like.create_like_id(body["author"]["id"], body["object"])
-                self.handle_like(inbox, id, body, author)
+                #id = Like.create_like_id(body["author"]["id"], body["object"])
+                handle_like(inbox, body, author)
             else:
                 return HttpResponseBadRequest()
 
-        except KeyError:
+        except KeyError as e:
+            print(e)
             return HttpResponseBadRequest()
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist as e:
+            print(e)
             return HttpResponseNotFound()
         except ConflictException:
             return HttpResponse(status=409)
@@ -121,6 +156,7 @@ class InboxView(APIView):
 
         return HttpResponse(status=202)
 
+    ### DELETE
     def delete(self, request: HttpRequest, *args, **kwargs):
         author_id = kwargs['author_id']
 
@@ -145,113 +181,11 @@ class InboxView(APIView):
         inbox.delete()
 
         return HttpResponse(status=202)
-    
-    def handle_post(self, inbox: Inbox, id, body, author):
-        post = inbox.posts.all().filter(_id=id)
 
-        #TODO: make request and PUT post to DB if it isnt already there -> for now, we assume it IS there
-
-        # post_author = body["author"]["id"]
-        # post_id = body["id"]
-        # url = f"{settings.DOMAIN}/authors/{post_author}/posts/{post_id}"
-        # requests.put()
-
-        if post.exists():
-            raise ConflictException # conflict, item is already in inbox
-
-        post = Post.objects.get(_id=id)
-        inbox.posts.add(post)
-
-    def handle_comment(self, inbox: Inbox, id, body, author):
-        comment = inbox.comments.all().filter(_id=id)
-        
-        if comment.exists():
-            raise ConflictException # conflict, item is already in inbox
-
-        comment = Comment.objects.get(_id=id)
-        inbox.comments.add(comment)
-        inbox.save()
-
-    def handle_follow(self, inbox: Inbox, body, author: Author): # we actually create the follow request here
-        object = Author()
-        actor = Author()
-        actor.toObject(body["actor"])
-        object.toObject(body["object"])
-        
-        if actor._id == object._id:
-            return HttpResponseBadRequest() #can't follow yourself!
-
-        #author = Author.objects.get(_id = author._id)
-        #followed = Author.objects.get(_id = foreign_author_id)
-
-        try:
-            object.followers.get(_id=actor._id)
+    def get_or_create_inbox(self, author: Author):
+        try:  # if inbox is empty, it will likely not exist yet, so we need to either get it or instantiate it
+            inbox = Inbox.objects.get(author=author) # author_id is the primary key for an inbox
         except ObjectDoesNotExist:
-            r = Follow()
-            r._id = Follow.create_follow_id(object._id,actor._id)
-            r.actor = actor
-            r.object = object
-            r.save()
+            inbox = Inbox.objects.create(author=author)
 
-            r_json = r.toJSON()
-            inbox.follow_requests.add(r)
-
-            return HttpResponse(json.dumps(r_json), status=201, content_type = CONTENT_TYPE_JSON)
-
-        return HttpResponse(status=409)
-
-        """
-        follow_req = inbox.follow_requests.all().filter(_id=id)
-
-        if follow_req.exists():
-            raise ConflictException
-
-        foreign_author = Author()
-        foreign_author.toObject(body["actor"])
-
-        try:
-            author.followers.get(_id=foreign_author._id)
-        except ObjectDoesNotExist:  # only create request if they are NOT already being followed
-            follow_request = Follow.objects.create(actor=foreign_author, object=author)
-            inbox.follow_requests.add(follow_request)
-        """
-       
-
-    def handle_like(self, inbox: Inbox, id, body, author: Author):
-        like = inbox.likes.all().filter(_id=id)
-
-        if like.exists():
-            raise ConflictException
-        
-        foreign_author = Author()
-        foreign_author.toObject(body["author"])
-
-        try:
-            Author.objects.get(_id=foreign_author._id, is_active=True)
-        except ObjectDoesNotExist:
-            foreign_author.save()
-
-        try:
-            like = Like.objects.get(_id=id)
-        except ObjectDoesNotExist:
-            print(body)
-            print(foreign_author)
-            like = Like()
-            like._id = id
-            like.context = body["context"]
-
-            if(body["object"].split("/")[-2] == "posts"):
-                like.summary = f"{foreign_author.displayName} likes your post"
-            else:
-                like.summary = f"{foreign_author.displayName} likes your comment"
-            like.author = foreign_author
-            like.object = body["object"]
-            like.published
-            like.save()
-
-        inbox.likes.add(like)
-        inbox.save()
-    
-
-class ConflictException(Exception):
-    pass
+        return inbox

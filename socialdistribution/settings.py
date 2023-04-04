@@ -29,23 +29,37 @@ SECRET_KEY = 'django-insecure-dybliy2*u14hioctad94q0woplw9gz0oeqt+22xcyw=qr7bkg3
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'http://localhost:8000',
-    'http://localhost:3000',        
-]
-
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken']
-
-CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'https://social-distribution-w23-t17.herokuapp.com',
     'http://127.0.0.1:3000',
     'http://localhost:8000',
+    'http://31552.yeg.rac.sh:8000',
+    "https://cmput404-group-project.herokuapp.com",
+    "https://socialdistcmput404.herokuapp.com",
+    "https://sd16-api.herokuapp.com"
 ]
 
+CORS_REPLACE_HTTPS_REFERER = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://social-distribution-w23-t17.herokuapp.com',
+    'http://127.0.0.1:3000',
+    'http://localhost:8000',
+    'http://31552.yeg.rac.sh:8000',
+    "https://cmput404-group-project.herokuapp.com",
+    "https://socialdistcmput404.herokuapp.com",
+    "https://sd16-api.herokuapp.com"
+]
+
+CORS_ALLOW_HEADERS = ["access-control-allow-origin", 'content-type', 'content-length', 'x-csrftoken', 'authorization', 'referer']
+
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
+    "localhost:3000",
+    '31552.yeg.rac.sh:8000',
+    "cmput404-group-project.herokuapp.com",
+    "socialdistcmput404.herokuapp.com",
+    "sd16-api.herokuapp.com"
 ]
 
 # Application definition
@@ -66,9 +80,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -120,12 +134,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3'
-    }
+    },
 }
+
 
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -161,7 +175,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "/staticfiles/"
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static'),
@@ -169,7 +183,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -177,6 +191,13 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesSto
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DOMAIN = "https://social-distribution-w23-t17.herokuapp.com"
+
+REMOTE_USERS = [
+    ("remote-user-t14", "http://[2605:fd00:4:1001:f816:3eff:fe37:a65e]:8000/", ("ajinator", "ajinator")),
+    ("remote-user-t22", 'https://cmput404-group-project.herokuapp.com/', ("remote", "remote")),
+    ("remote-user-t16", "https://sd16-api.herokuapp.com/", ("Team17", "P*ssw0rd!")),
+    ("remote-user-t10", "https://socialdistcmput404.herokuapp.com/", "DCCEEC3C202C47737A82DCD8FA347824EEB0D02D")
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

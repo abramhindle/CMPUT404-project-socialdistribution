@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { comment_like } from "../../api/like_api";
 import { get_liked } from "../../api/like_api";
 import LikeHeart from "../Buttons/like_button";
+import profile from "../../images/profile.png"
 import { Link } from "react-router-dom";
 
 export default function Comment(data) {
@@ -34,6 +35,7 @@ export default function Comment(data) {
   };
 
   const handleLike = () => {
+    console.log(postUrl)
     if (!liked) {
       comment_like(
         data.data.id.split("/")[4],
@@ -61,7 +63,7 @@ export default function Comment(data) {
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">
           <Link to={authorUrl}>
-            {<img alt="author" src={data.data.author.profileImage}></img>}
+            {<img alt="author" src={data.data.author.profileImage === "" ? profile : data.data.author.profileImage}></img>}
           </Link>
         </div>
 
