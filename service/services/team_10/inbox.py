@@ -42,7 +42,6 @@ def serialize_post(request, author):
     request["count"] = 0
 
     if request["contentType"] == "image/jpeg":
-        print("HERE")
         request["contentType"] = "image/jpeg;base64"
     elif request["contentType"] == "image/png":
         request["contentType"] = "image/png;base64"

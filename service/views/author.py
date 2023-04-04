@@ -35,7 +35,7 @@ class MultipleAuthors(APIView):
                     #team_14.get_multiple_authors(page, size) #sending us dupe data and inaccessible on deployed
                     pass
                 elif remote_host[0] == "remote-user-t22":
-                    #team_22.get_multiple_authors()
+                    team_22.get_multiple_authors()
                     pass
                 elif remote_host[0] == "remote-user-t16":
                     #uses paging

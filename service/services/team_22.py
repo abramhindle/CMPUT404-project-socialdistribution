@@ -69,6 +69,7 @@ def get_multiple_authors():
     response_json = response.json()
 
     for author in response_json["items"]:
+        print(author)
         get_or_create_author(author, HOST)
 
 # endregion
