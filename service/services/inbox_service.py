@@ -126,15 +126,16 @@ def handle_follow(inbox: Inbox, body, author: Author):  # we actually create the
 def handle_like(inbox: Inbox, body, author: Author):
     foreign_author = Author()
 
+    print("HERE " + body)
+    print(foreign_author)
+
     # check if author is remote
     if body["author"]["host"] == settings.REMOTE_USERS[0][1]:
         foreign_author = team_14.get_or_create_author(body["author"])
-        print("HERE " + body)
-        print(foreign_author)
     # remote-user-t22
     elif body["author"]["host"] == settings.REMOTE_USERS[1][1] or body["author"]["host"] == "cmput404-group-project.herokuapp.com":
         team_22.get_or_create_author(body["author"])
-        pass
+        print("MADE IT")
     # remote-user-t16
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
         foreign_author = team_16.get_or_create_author(body["author"])
