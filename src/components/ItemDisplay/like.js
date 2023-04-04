@@ -1,5 +1,6 @@
 import "./posts.css";
 import { useSelector } from "react-redux";
+import profile from "../../images/profile.png";
 import { Link } from "react-router-dom";
 
 export default function Like(data) {
@@ -43,7 +44,7 @@ export default function Like(data) {
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">
           <a href={authorUrl}>
-            {<img alt="author" src={data.data.author.profileImage}></img>}
+            {<img alt="author" src={data.data.author.profileImage === "" ? profile : data.data.author.profileImage}></img>}
           </a>
         </div>
         <svg

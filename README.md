@@ -31,3 +31,8 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen
+
+# Docs
+
+    User Stories Sorted
+    https://docs.google.com/spreadsheets/d/10t76wJDSIDg5BpDNzYebwVsSHkkjZS7MWqe11bAEWM8/edit#gid=0

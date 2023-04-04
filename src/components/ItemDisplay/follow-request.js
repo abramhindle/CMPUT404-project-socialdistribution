@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { get_request } from '../../api/follower_api';
 import { delete_request } from '../../api/follower_api';
 import { add_followers_for_author } from '../../api/follower_api';
+import profile from "../../images/profile.png";
 
 export default function FollowRequest(data) {
   const user = useSelector((state) => state.user);
@@ -43,7 +44,7 @@ export default function FollowRequest(data) {
         {/* Profile image w/link to post author's profile */}
         <div className="profile from">
           <a href={authorUrl}>
-          {<img alt="author" src={data.data.actor.profileImage}></img>}
+          {<img alt="author" src={data.data.actor.profileImage === "" ? profile : data.data.actor.profileImage}></img>}
           </a>
         </div>
         <h5>

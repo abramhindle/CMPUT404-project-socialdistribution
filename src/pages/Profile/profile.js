@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 
 function Profile() {
   const { author_id } = useParams();
-  const [author, setAuthor] = useState({});
+  const [author, setAuthor] = useState(null);
   const [user_list, setList] = useState({ items: [] });
 
   let tab = "posts"; // default posts
@@ -34,7 +34,7 @@ function Profile() {
   useEffect(() => {
     //only runs once
     get_author(
-      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}/`,
+      `https://social-distribution-w23-t17.herokuapp.com/authors/${author_id}`,
       setAuthor
     );
 
@@ -113,22 +113,30 @@ function Profile() {
       <div>
         <Sidebar />
       </div>
-      <div className="myprofile sidebar-offset">
-        <div className="profileHead">
-          <h1>{author.displayName}</h1>
-          GitHub: {author.github}
+      {author && (
+        <div className="myprofile sidebar-offset">
+          {author === 404 ? (
+            <h2 style={{ color: "black" }}> 404 Author Does Not Found</h2>
+          ) : (
+            <div>
+              <div className="profileHead">
+                <h1>{author.displayName}</h1>
+                GitHub: {author.github}
+              </div>
+              <div>
+                <nav className="navbar">
+                  <ul>
+                    <a href="?tab=posts">Posts</a>
+                    <a href="?tab=followers">Followers</a>
+                  </ul>
+                </nav>
+              </div>
+              <div className="profileContent">{populateList()}</div>
+              {page_buttons()}
+            </div>
+          )}
         </div>
-        <div>
-          <nav className="navbar">
-            <ul>
-              <a href="?tab=posts">Posts</a>
-              <a href="?tab=followers">Followers</a>
-            </ul>
-          </nav>
-        </div>
-        <div className="profileContent">{populateList()}</div>
-        {page_buttons()}
-      </div>
+      )}
     </div>
   );
 }

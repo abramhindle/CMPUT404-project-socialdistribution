@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signInUser } from "../../reducer/userSlice";
 import { signIn_api } from "../../api/user_api";
-import { Alert, AlertTitle } from "@mui/material";
+import { Alert, Snackbar } from "@mui/material";
 import "./signin.css";
 
 // Define the Login function.
@@ -15,8 +15,12 @@ export const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [alert, setAlert] = useState(false);
-  const [alertContent, setAlertContent] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const success = (res) => {
     dispatch(signInUser(res));
@@ -25,13 +29,13 @@ export const SignIn = () => {
 
   const failed = (status) => {
     if (status === 403) {
-      setAlertContent(
+      setSnackbarMessage(
         "The account has not been approved yet! Please wait for approval"
       );
     } else {
-      setAlertContent("Wrong username or password!");
+      setSnackbarMessage("Wrong username or password!");
     }
-    setAlert(true);
+    setSnackbarOpen(true);
   };
 
   const submit = async (e) => {
@@ -42,12 +46,6 @@ export const SignIn = () => {
 
   return (
     <div>
-      {alert && (
-        <Alert severity="error">
-          <AlertTitle>Error</AlertTitle>
-          {alertContent}
-        </Alert>
-      )}
       <div className="Auth-form-container Signin">
         <form className="Auth-form" onSubmit={submit}>
           <h1>Social Distribution</h1>
@@ -83,6 +81,16 @@ export const SignIn = () => {
           <Link to="/signup">Sign Up Here!</Link>
         </form>
       </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={snackbarOpen}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -1,14 +1,24 @@
 import json
 
+from django.db.models import Q
 from django.http import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from service.models.author import Author
+from service.models.inbox import Inbox
 from service.models.post import Post
 from service.service_constants import *
+from service.views.post import filter_posts
+
+import service.services.team_10.authors as team_10
+
 
 #returns an author's stream
+class ObjectNotFound:
+    pass
+
+
 class AuthorStream(APIView):
     permission_classes = [IsAuthenticated]
     http_method_names = ["get"]
@@ -31,15 +41,26 @@ class AuthorStream(APIView):
         following = Author.objects.all().filter(followers___id__contains=author._id)
         posts_json = list()
 
-        #needs visibility filtering.
-        posts = Post.objects.all()\
-            .filter(author__in=following)\
-            .filter(visibility="PUBLIC")\
-            .union(
-                Post.objects.all().filter(author___id=author._id).filter(visibility="PUBLIC")
-            ).order_by('-published')
+        try:
+            inbox = Inbox.objects.get(author=author)
+        except ObjectNotFound:
+            inbox = list()
 
-        for post in list(posts):
+        inbox = list(inbox.posts.all())
+
+        author_posts = list(Post.objects.all().filter(author=author))
+
+        inbox = inbox + author_posts
+
+        inbox.sort(key=lambda x: x.published, reverse=True)
+
+        followers = list(author.followers.all())
+
+        for post in inbox:
+            if post.unlisted:
+                continue
+            if post.visibility == "FRIENDS" and post.author not in followers:
+                continue
             posts_json.append(post.toJSON())
 
         return HttpResponse(json.dumps(posts_json), content_type=CONTENT_TYPE_JSON)

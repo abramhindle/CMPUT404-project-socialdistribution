@@ -57,10 +57,7 @@ function Friends() {
       object: object,
     };
 
-
     post_inbox(object.id, obj, onSuccess);
-    //add_request(user.id, obj, onSuccess)
-    //add_followers_for_author(user.id, follow_id, onSuccess)
   };
 
   const onSuccess = () => {
@@ -148,7 +145,7 @@ function Friends() {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {row.id}
+                    {row.url}
                   </TableCell>
                   <TableCell align="right">
                     <Link to={`/user/${row.id.split("/").pop()}`}>
