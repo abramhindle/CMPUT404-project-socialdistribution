@@ -126,8 +126,8 @@ def handle_follow(inbox: Inbox, body, author: Author):  # we actually create the
 def handle_like(inbox: Inbox, body, author: Author):
     foreign_author = Author()
 
-    print("HERE " + body)
-    print(foreign_author)
+    print("HERE " + str(body))
+    print(author)
 
     # check if author is remote
     if body["author"]["host"] == settings.REMOTE_USERS[0][1]:
