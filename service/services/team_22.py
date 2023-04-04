@@ -135,7 +135,7 @@ def post_to_object(post, json_object, author):
 # region FOLLOW REQUESTS
 
 def serialize_follow_request(request):
-    author_guid = request["object"]["url"].rsplit('/', 2)[-2]
+    author_guid = request["object"]["url"].rsplit('/', 1)[-1]
     try:
         response = requests.get(HOST + "service/authors/" + author_guid + "/",
                                 auth=AUTH)

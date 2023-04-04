@@ -128,7 +128,7 @@ def handle_like(inbox: Inbox, body, author: Author):
 
     # check if author is remote
     if body["author"]["host"] == settings.REMOTE_USERS[0][1]:
-        team_14.get_or_create_author(body["author"])
+        foreign_author = team_14.get_or_create_author(body["author"])
     # remote-user-t22
     elif body["author"]["host"] == settings.REMOTE_USERS[1][1]:
         # team_22.get_multiple_posts(author)
