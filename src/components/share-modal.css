@@ -1,0 +1,11 @@
+.friend-row {
+  display: flex;
+}
+
+#display-name {
+  flex-grow: 1;
+}
+
+#share-button {
+  flex-grow: 1;
+}
