@@ -19,7 +19,7 @@ def handle_comment(inbox: Inbox, body, author):
 
     if body["author"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
         author = team_14.get_or_create_author(body["author"])
-    elif body["author"]["host"] == settings.REMOTE_USERS[1][1]:
+    elif body["author"]["host"] == settings.REMOTE_USERS[1][1] or body["author"]["host"] == "cmput404-group-project.herokuapp.com":
         author = team_22.get_or_create_author(body["author"])
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
         author = team_16.get_or_create_author(body["author"])
@@ -68,7 +68,7 @@ def handle_post(inbox: Inbox, id, body, author, user):
         author = team_14.get_or_create_author(body["author"])
         post = team_14.get_or_create_post(body, author, author.host)
         post_id = post._id
-    elif body["author"]["host"] == settings.REMOTE_USERS[1][1]:
+    elif body["author"]["host"] == settings.REMOTE_USERS[1][1] or body["author"]["host"] == "cmput404-group-project.herokuapp.com":
         author = team_22.get_or_create_author(body["author"])
         post = team_22.get_or_create_post(body, author, author.host)
         post_id = post._id
@@ -98,7 +98,7 @@ def handle_post(inbox: Inbox, id, body, author, user):
 def handle_follow(inbox: Inbox, body, author: Author):  # we actually create the follow request here
     if body["actor"]["host"] == settings.REMOTE_USERS[0][1]:  # get the author from remote hosts
         foreign_author = team_14.get_or_create_author(body["actor"])
-    elif body["actor"]["host"] == settings.REMOTE_USERS[1][1]:
+    elif body["actor"]["host"] == settings.REMOTE_USERS[1][1] or body["actor"]["host"] == "cmput404-group-project.herokuapp.com":
         foreign_author = team_22.get_or_create_author(body["actor"])
     elif body["actor"]["host"] == settings.REMOTE_USERS[2][1]:
         foreign_author = team_16.get_or_create_author(body["actor"])
@@ -132,8 +132,8 @@ def handle_like(inbox: Inbox, body, author: Author):
         print("HERE " + body)
         print(foreign_author)
     # remote-user-t22
-    elif body["author"]["host"] == settings.REMOTE_USERS[1][1]:
-        # team_22.get_multiple_posts(author)
+    elif body["author"]["host"] == settings.REMOTE_USERS[1][1] or body["author"]["host"] == "cmput404-group-project.herokuapp.com":
+        team_22.get_or_create_author(body["author"])
         pass
     # remote-user-t16
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:

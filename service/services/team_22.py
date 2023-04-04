@@ -35,7 +35,7 @@ def get_or_create_author(author_json, hostname):
         new_author.github = author_json["github"]
         new_author.displayName = author_json["displayName"]
         new_author.url = author_url
-        new_author.host = hostname
+        new_author.host = author_json["host"]
         new_author.save()
 
         return new_author
