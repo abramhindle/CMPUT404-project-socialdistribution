@@ -134,7 +134,7 @@ def handle_like(inbox: Inbox, body, author: Author):
         foreign_author = team_14.get_or_create_author(body["author"])
     # remote-user-t22
     elif body["author"]["host"] == settings.REMOTE_USERS[1][1] or body["author"]["host"] == "cmput404-group-project.herokuapp.com":
-        team_22.get_or_create_author(body["author"])
+        foreign_author = team_22.get_or_create_author(body["author"])
         print("MADE IT")
     # remote-user-t16
     elif body["author"]["host"] == settings.REMOTE_USERS[2][1]:
