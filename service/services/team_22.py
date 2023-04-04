@@ -15,7 +15,7 @@ HOST = settings.REMOTE_USERS[1][1]
 
 # region AUTHOR HELPERS
 
-def get_or_create_author(author_json, hostname):
+def get_or_create_author(author_json, hostname=HOST):
 
     author_url = author_json["id"].rstrip('/')
     try:

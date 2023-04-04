@@ -146,7 +146,8 @@ class InboxView(APIView):
         except KeyError as e:
             print(e)
             return HttpResponseBadRequest()
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist as e:
+            print(e)
             return HttpResponseNotFound()
         except ConflictException:
             return HttpResponse(status=409)
