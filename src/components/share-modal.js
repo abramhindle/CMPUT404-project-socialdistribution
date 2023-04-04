@@ -89,6 +89,7 @@ const ShareModal = (props) => {
         </Modal>
       )}
       <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={snackbarOpen}
         autoHideDuration={4000}
         onClose={handleClose}
