@@ -1,7 +1,12 @@
 .friend-row {
   display: flex;
+  align-items: center;
 }
 
+#profile-image {
+  width: 30pt;
+  margin-right: 10pt;
+}
 #display-name {
   flex-grow: 1;
 }

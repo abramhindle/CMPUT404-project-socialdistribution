@@ -8,7 +8,6 @@ import {
   Input,
   Modal,
   Snackbar,
-  Table,
   Typography,
 } from "@mui/material";
 import { post_inbox } from "../api/inbox_api";
@@ -72,6 +71,7 @@ const ShareModal = (props) => {
               .filter((friend) => filterFriend(friend))
               .map((friend) => (
                 <div className="friend-row">
+                  <img id="profile-image" src={friend.profileImage} />
                   <Typography id="display-name">
                     {friend.displayName}
                   </Typography>
