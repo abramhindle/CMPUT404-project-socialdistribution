@@ -1,6 +1,7 @@
 .friend-row {
   display: flex;
   align-items: center;
+  padding: 2pt;
 }
 
 #profile-image {

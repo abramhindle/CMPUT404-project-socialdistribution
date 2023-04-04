@@ -60,7 +60,7 @@ const ShareModal = (props) => {
         <Modal {...props}>
           <Box sx={style}>
             <Input
-              sx={{ width: "100%", mb: 5 }}
+              sx={{ width: "100%", mb: 3 }}
               name="filter"
               type="text"
               placeholder="Search friend"
