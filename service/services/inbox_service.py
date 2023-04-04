@@ -155,19 +155,29 @@ def handle_like(inbox: Inbox, body, author: Author):
 
     try:
         like = Like.objects.get(_id=id)
+        print(like)
     except ObjectDoesNotExist:
         like = Like()
+        print(like)
         like._id = id
         try:
             like.context = body["context"]
         except:
             like.context = body["@context"]
 
+        print(like)
+
         if(body["object"].split("/")[-2] == "posts"):
             like.summary = f"{foreign_author.displayName} likes your post"
         else:
             like.summary = f"{foreign_author.displayName} likes your comment"
+
+        print(like)
+
         like.author = foreign_author
+
+        print(like)
+
         like.object = body["object"]
         like.save()
         print(like)
