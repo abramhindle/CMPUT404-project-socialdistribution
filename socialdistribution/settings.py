@@ -194,7 +194,7 @@ DOMAIN = "https://social-distribution-w23-t17.herokuapp.com"
 
 REMOTE_USERS = [
     ("remote-user-t14", "http://[2605:fd00:4:1001:f816:3eff:fe37:a65e]:8000/", ("ajinator", "ajinator")),
-    ("remote-user-t22", 'https://cmput404-group-project.herokuapp.com/', "bb285f542713fbab2da7015018edc63086af6611"),
+    ("remote-user-t22", 'https://cmput404-group-project.herokuapp.com/', ("remote", "remote")),
     ("remote-user-t16", "https://sd16-api.herokuapp.com/", ("Team17", "P*ssw0rd!")),
     ("remote-user-t10", "https://socialdistcmput404.herokuapp.com/", "DCCEEC3C202C47737A82DCD8FA347824EEB0D02D")
 ]
