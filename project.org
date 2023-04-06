@@ -310,7 +310,7 @@
     - Example format:
       #+BEGIN_SRC json
       {
-          "type": "Follow",      
+          "type": "follow",      
           "summary":"Greg wants to follow Lara",
           "actor":{
               "type":"author",
