@@ -222,10 +222,10 @@
     - Example: GET ://service/authors/
       #+BEGIN_SRC json
       {
-          "type": "authors",      
+          "type": "Authors",      
           "items":[
               {
-                  "type":"author",
+                  "type":"Author",
                   "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                   "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                   "host":"http://127.0.0.1:5454/",
@@ -234,7 +234,7 @@
                   "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
               },
               {
-                  "type":"author",
+                  "type":"Author",
                   "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                   "host":"http://127.0.0.1:5454/",
                   "displayName":"Lara Croft",
@@ -253,7 +253,7 @@
     - Example Format:
       #+BEGIN_SRC json
       {
-          "type":"author",
+          "type":"Author",
           # ID of the Author
           "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
           # the home host of the author
@@ -278,10 +278,10 @@
     - Example: GET ://service/authors/{AUTHOR_ID}/followers
       #+BEGIN_SRC json
       {
-          "type": "followers",      
+          "type": "Followers",      
           "items":[
               {
-                  "type":"author",
+                  "type":"Author",
                   "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                   "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                   "host":"http://127.0.0.1:5454/",
@@ -290,7 +290,7 @@
                   "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
               },
               {
-                  "type":"author",
+                  "type":"Author",
                   "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                   "host":"http://127.0.0.1:5454/",
                   "displayName":"Lara Croft",
@@ -313,7 +313,7 @@
           "type": "Follow",      
           "summary":"Greg wants to follow Lara",
           "actor":{
-              "type":"author",
+              "type":"Author",
               "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
               "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
               "host":"http://127.0.0.1:5454/",
@@ -322,7 +322,7 @@
               "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
           },
           "object":{
-              "type":"author",
+              "type":"Author",
               # ID of the Author
               "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
               # the home host of the author
@@ -353,7 +353,7 @@
     - Example Format:
       #+BEGIN_SRC json
       {
-          "type":"post",
+          "type":"Post",
           # title of a post
           "title":"A post title about a post about web dev",
           # id of the post
@@ -376,7 +376,7 @@
           "content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
           # the author has an ID where by authors can be disambiguated
           "author":{
-                "type":"author",
+                "type":"Author",
                 # ID of the Author
                 "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                 # the home host of the author
@@ -403,16 +403,16 @@
           # should be sorted newest(first) to oldest(last)
           # this is to reduce API call counts
           "commentsSrc":{
-              "type":"comments",
+              "type":"Comments",
               "page":1,
               "size":5,
               "post":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
               "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
               "comments":[
                   {
-                      "type":"comment",
+                      "type":"Comment",
                       "author":{
-                          "type":"author",
+                          "type":"Author",
                           # ID of the Author (UUID)
                           "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                           # url to the authors information
@@ -459,13 +459,13 @@
 *** Comments
     - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
       - GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)
-      - POST [local] if you post an object of "type":"comment", it will add your comment to the post whose id is POST_ID
+      - POST [local] if you post an object of "type":"Comment", it will add your comment to the post whose id is POST_ID
     - example comment from ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
       #+BEGIN_SRC json
       {
-          "type":"comment",
+          "type":"Comment",
           "author":{
-              "type":"author",
+              "type":"Author",
               # ID of the Author (UUID)
               "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
               # url to the authors information
@@ -488,16 +488,16 @@
     - example comments from a post
       #+BEGIN_SRC json
       {
-          "type":"comments",
+          "type":"Comments",
           "page":1,
           "size":5,
           "post":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
           "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
           "comments":[
               {
-                  "type":"comment",
+                  "type":"Comment",
                   "author":{
-                      "type":"author",
+                      "type":"Author",
                       # ID of the Author (UUID)
                       "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                       # url to the authors information
@@ -537,7 +537,7 @@
           "summary": "Lara Croft Likes your post",         
           "type": "Like",
           "author":{
-              "type":"author",
+              "type":"Author",
               "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
               "host":"http://127.0.0.1:5454/",
               "displayName":"Lara Croft",
@@ -556,14 +556,14 @@
     - Example liked object:
       #+BEGIN_SRC json
       {
-          "type":"liked",
+          "type":"Liked",
           "items":[
               {
                   "@context": "https://www.w3.org/ns/activitystreams",
                   "summary": "Lara Croft Likes your post",         
                   "type": "Like",
                   "author":{
-                      "type":"author",
+                      "type":"Author",
                       "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                       "host":"http://127.0.0.1:5454/",
                       "displayName":"Lara Croft",
@@ -582,19 +582,19 @@
     - URL: ://service/authors/{AUTHOR_ID}/inbox
       - GET [local]: if authenticated get a list of posts sent to AUTHOR_ID (paginated)
       - POST [local, remote]: send a post to the author
-        - if the type is "post" then add that post to AUTHOR_ID's inbox
+        - if the type is "Post" then add that post to AUTHOR_ID's inbox
         - if the type is "Follow" then add that follow is added to AUTHOR_ID's inbox to approve later
         - if the type is "Like" then add that like to AUTHOR_ID's inbox
-        - if the type is "comment" then add that comment to AUTHOR_ID's inbox
+        - if the type is "Comment" then add that comment to AUTHOR_ID's inbox
       - DELETE [local]: clear the inbox
     - Example, retrieving an inbox
       #+BEGIN_SRC json
       {
-          "type":"inbox",
+          "type":"Inbox",
           "author":"http://127.0.0.1:5454/authors/c1e3db8ccea4541a0f3d7e5c75feb3fb",
           "items":[
               {
-                  "type":"post",
+                  "type":"Post",
                   "title":"A Friendly post title about a post about web dev",
                   "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
                   "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -603,7 +603,7 @@
                   "contentType":"text/plain",
                   "content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
                   "author":{
-                        "type":"author",
+                        "type":"Author",
                         "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                         "host":"http://127.0.0.1:5454/",
                         "displayName":"Lara Croft",
@@ -618,7 +618,7 @@
                   "unlisted":false
               },
               {
-                  "type":"post",
+                  "type":"Post",
                   "title":"DID YOU READ MY POST YET?",
                   "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/999999983dda1e11db47671c4a3bbd9e",
                   "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -627,7 +627,7 @@
                   "contentType":"text/plain",
                   "content":"Are you even reading my posts Arjun?",
                   "author":{
-                        "type":"author",
+                        "type":"Author",
                         "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                         "host":"http://127.0.0.1:5454/",
                         "displayName":"Lara Croft",
