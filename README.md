@@ -31,3 +31,4 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen 
+    Marc-Andre Haley
