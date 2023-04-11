@@ -1,0 +1,46 @@
+.myprofile {
+  text-align: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  flex: 1;
+  float: right;
+}
+
+.profileHead {
+  background-color: var(--driftwood);
+  padding: 1em;
+  float: top;
+}
+
+.navbar a {
+  color: white;
+  background-color: var(--bark);
+  flex-grow: 1;
+  text-decoration: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 1;
+  padding-inline: 3em;
+  display: inline;
+}
+
+.navbar a:hover {
+  background-color: var(--mud);
+}
+
+.navbar ul {
+  margin: 0;
+  display: flex;
+}
+
+.emptyList {
+  color: black;
+}
+
+.profileContent {
+  padding: 0;
+}
+
+.myprofile button {
+  margin: 1em;
+}

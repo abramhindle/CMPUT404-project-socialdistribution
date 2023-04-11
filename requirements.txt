@@ -1,0 +1,16 @@
+asgiref==3.6.0
+backports.zoneinfo==0.2.1;python_version<"3.9"
+Django==3.2
+django-cors-headers==3.13.0
+djangorestframework==3.14.0
+dnspython==2.3.0
+pymongo==3.12.3
+pytz==2022.7.1
+sqlparse==0.2.4
+django-on-heroku
+gunicorn
+pip~=23.0.1
+wheel~=0.38.4
+docutils~=0.19
+setuptools~=67.2.0
+requests

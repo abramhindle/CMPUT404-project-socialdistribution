@@ -1,0 +1,18 @@
+.Inbox {
+  background-color: var(--champagne);
+  text-align: center;
+  font-size: calc(10px + 2vmin);
+  color: var(--bark);
+  flex: 1;
+  scrollbar-width: 0;
+  -ms-overflow-style: none;
+  overflow: auto;
+}
+
+.Inbox::-webkit-scrollbar {
+  display: none;
+}
+
+.pageContent {
+  background-color: var(--champagne);
+}

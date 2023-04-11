@@ -1,0 +1,16 @@
+version: '3'
+
+tasks:
+  up:
+    cmds:
+      - docker compose create
+      - docker compose start
+
+  down:
+    cmds:
+      - 'docker stop postgresql'
+      - 'docker rm postgresql'
+
+  remove-db:
+    cmds:
+      - rm -rf sql/

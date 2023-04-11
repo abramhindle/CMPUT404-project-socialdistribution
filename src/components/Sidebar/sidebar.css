@@ -1,0 +1,133 @@
+.Profile {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    background-color: white;
+    align-items: center;
+    padding: 3vh;
+}
+
+.Profile p {
+    color: var(--mud);
+    text-align: center;
+    margin: 0.2em;
+}
+
+.Profile a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+.Profile img.profile-pic {
+    height: 20vh;
+    width: 20vh;
+    border-radius: 50%;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.Profile div.stats {
+    padding: 0.2em;
+    font-size: medium;
+}
+
+.Sidebar .Profile button {
+    color: var(--mud);
+    font-size: x-small;
+    size: 1em;
+    background-color: var(--champagne);
+    max-width: fit-content;
+}
+
+.Sidebar .Profile button:hover {
+    background-color: var(--scarlet);
+    color: white;
+}
+
+.Sidebar {
+    min-height: 100vh;
+    max-width: fit-content;
+    display: flex;
+    flex-direction: column;
+    font-size: calc(10px + 2vmin);
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    flex: 1;
+}
+
+.Right {
+    right: 0;
+    min-width: calc(23vh + 2em);
+    width: fit-content;
+}
+
+.Sidebar li {
+    display: block;
+    width: 100%;
+    margin: 0.2em;
+    margin-left: 0;
+    padding: 0;
+}
+
+.Sidebar button {
+    color: white;
+    font-size: large;
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding: 0.5em;
+    border-bottom-right-radius: 0.4em;
+    border-top-right-radius: 0.4em;
+    box-shadow: 3px 3px 3px var(--blush);
+}
+
+/* Page Menu */
+.Sidebar menu {
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    float: left;
+    padding: 0;
+    margin: 0;
+
+}
+
+/* Options Menus */
+.Sidebar ul.Options-bar {
+    /*display: none;      /* Hide by default */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Page Buttons */
+.Sidebar button.Page {
+    font-weight: bold;
+    border-style: none;
+    background-color: var(--sea);
+    text-align: left;
+    max-width: 88%;
+}
+
+    .Sidebar button.Page:hover {
+        background-color: var(--scarlet);
+    }
+
+/* Option Buttons */
+.Sidebar button.Options {
+    font-size: medium;
+    border-style: none;
+    background-color: var(--island);
+    max-width: 80%;
+}
+
+    .Sidebar button.Options:hover {
+        background-color: var(--sea);
+    }
+
+.current {
+    background-color: var(--scarlet);
+}

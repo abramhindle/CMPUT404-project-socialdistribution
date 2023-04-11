@@ -1,0 +1,44 @@
+/*List Item*/
+.follower li {
+  display: flex;
+}
+
+.follower img {
+  height: 2.3em;
+  width: 2.3em;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+h6 {
+  margin-top: 0.2em;
+  margin-left: 0;
+}
+
+/*List Div*/
+.followersList {
+  background-color: none;
+  list-style: none;
+  padding: 1em;
+  margin: 1em;
+  flex: 1; 
+}
+
+/*List Itself*/
+.followers {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.followers li {
+  background-color: white;
+  border: var(--driftwood);
+  padding: 1em;
+  margin-inline: 1em;
+  margin-bottom: 1em;
+  border-style: solid;
+  border-width: 2pt;
+  border-radius: 4pt;
+}
+

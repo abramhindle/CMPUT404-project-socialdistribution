@@ -1,0 +1,14 @@
+  .Fragment {
+    background-color: var(--blush);
+    text-align: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: var(--bark);
+    position: static;
+    flex: 2;
+    float: right;
+  }
+
+.message {
+  justify-content: center;
+}

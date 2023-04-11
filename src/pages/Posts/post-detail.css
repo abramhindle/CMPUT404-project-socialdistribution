@@ -1,0 +1,115 @@
+div.Page {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.Fragment {
+  background-color: var(--champagne);
+  text-align: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: var(--bark);
+  position: static;
+  flex: 2;
+  float: right;
+  padding: 1em;
+}
+
+.postBody {
+  width: 100%;
+}
+
+img.posted-image {
+  max-width: 60vw;
+  max-height: 100vh;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--bark);
+}
+
+.from {
+  border: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.from img {
+  height: 3em;
+  width: 3em;
+  object-fit: cover;
+  overflow: hidden;
+  padding: 0.5em;
+}
+
+#title {
+  margin: 0.5em;
+  color: black;
+}
+
+.line {
+  border-top: 1px solid var(--mud);
+  padding-inline: 1em;
+  width: 100%;
+}
+
+.content {
+  padding: 0.5em;
+  font-size: 12pt;
+  text-align: left;
+}
+
+.detail .timestamp {
+  color: black;
+  font-size: small;
+  text-align: right;
+  margin-right: 1.5em;
+  text-align: right;
+}
+
+.Social {
+  text-align: left;
+  margin-top: 2.5em;
+  margin-left: 0.5em;
+  font-size: medium;
+}
+
+.interaction-options {
+  margin-top: 0.5em;
+  display: flex;
+}
+
+.interaction-options > button {
+  padding: 0.2em;
+  vertical-align: top;
+}
+
+.comment-input-form {
+  margin-left: 5em;
+}
+
+#comment-input {
+  height: 3em;
+  border-radius: 5pt;
+  border-style: solid;
+  border-width: 2pt;
+  margin-left: 1em;
+  margin-right: 1em;
+  width: 25em;
+}
+
+.comments {
+  margin-top: 2.5em;
+  font-size: 14pt;
+}

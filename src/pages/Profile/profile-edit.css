@@ -1,0 +1,12 @@
+.profile-update-form input {
+  height: 2.5em;
+  width: 30em;
+  border-style: solid;
+  border-width: 2pt;
+  border-radius: 5pt;
+}
+
+.profile-update-form div {
+  color: black;
+  font-size: 0.5em;
+}
